@@ -1,7 +1,7 @@
 
 #!/bin/sh
 
-rm -r shimmer.sh
+rm -r node-installer.sh
 clear
 echo ""
 echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -109,6 +109,8 @@ echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 echo "GRAFANA_HOST=grafana.$VAR_HORNET_HOST" >> .env
+
+echo '      - "--dashboard.auth.username=${DASHBOARD_USERNAME}"' >> docker-compose.yml
 
 sed "/alias/s/node/$VAR_HORNET_HOST/g" config.json > config_tmp.json
 mv config_tmp.json config.json
