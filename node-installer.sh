@@ -1,6 +1,9 @@
 #!/bin/sh
 
-function MainMenu {
+rm node-installer.sh
+
+MainMenu() {
+
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -29,7 +32,7 @@ function MainMenu {
 	esac
 }
 
-function SystemUpdates {
+SystemUpdates() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -46,11 +49,30 @@ function SystemUpdates {
 	sudo apt-get autoremove -y
 
 	read -p 'Press [Enter] key to continue...' W
+
+	clear
 	
-	MainMenu
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+	echo "║                                                                             ║"
+	echo "║                            1. Main Menu                                     ║"
+	echo "║                            2. System Reboot                                 ║"
+	echo "║                                                                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo "select: "
+	echo ""
+	
+	read n
+    case $n in
+	1) MainMenu ;;
+	2) sudo reboot ;;
+	*) MainMenu ;;
+	esac
 }
 
-function Docker {
+Docker() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -62,7 +84,7 @@ function Docker {
 
 	cd /var/lib/hornet
 	docker-compose down
-	
+
 	sudo apt-get install jq -y
 
 	echo ""
@@ -112,7 +134,7 @@ function Docker {
 	MainMenu
 }
 
-function ShimmerMainnet {
+ShimmerMainnet() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -149,23 +171,42 @@ function ShimmerMainnet {
 	echo "remove tar.gz:"
 	rm -r install.tar.gz
 
+	read -p 'Press [Enter] key to continue...' W
+	
+	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                               Set parameter                                 ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	cd /var/lib/hornet
-
 	read -p 'Set domain-name: ' VAR_HORNET_HOST
 	read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
 	read -p 'Set dashboard username: ' VAR_USERNAME
 	read -p 'Set password (blank): ' VAR_PASSWORD
 
-	credentials=$(docker-compose run --rm hornet tool pwd-hash --json --password $VAR_PASSWORD | sed -e 's/\r//g')
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Prepare docker                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
 
-	VAR_DASHBOARD_PASSWORD=$(echo $credentials | jq -r '.passwordHash')
-	VAR_DASHBOARD_SALT=$(echo $credentials | jq -r '.passwordSalt')
+	cd /var/lib/hornet/
+	./prepare_docker.sh
+	
+	docker-compose pull
+	
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                            Generate Creditials                              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	credentials=$(docker-compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+
+	VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+	VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 
 	cd /var/lib/hornet
 	rm .env
@@ -180,18 +221,6 @@ function ShimmerMainnet {
 
 	echo '      - "--dashboard.auth.username=${DASHBOARD_USERNAME}"' >> docker-compose.yml
 
-	sed "/alias/s/node/$VAR_HORNET_HOST/g" config.json > config_tmp.json
-	mv config_tmp.json config.json
-
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Prepare docker                                ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	cd /var/lib/hornet/
-	./prepare_docker.sh
-
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                                Start Hornet                                 ║"
@@ -200,7 +229,7 @@ function ShimmerMainnet {
 
 	cd /var/lib/hornet/
 	docker-compose up -d
-	docker exec -it grafana grafana-cli admin reset-admin-password $VAR_PASSWORD
+	docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"
 
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -213,10 +242,8 @@ function ShimmerMainnet {
 	echo ""
 
 	read -p 'Press [Enter] key to continue...' W
-	
+
 	MainMenu
 }
-
-rm -r test.sh
 
 MainMenu
