@@ -221,6 +221,9 @@ ShimmerMainnet() {
 
 	echo '      - "--dashboard.auth.username=${DASHBOARD_USERNAME}"' >> docker-compose.yml
 
+	sed "/alias/s/node/$VAR_HORNET_HOST/g" config.json > config_tmp.json
+	mv config_tmp.json config.json
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                                Start Hornet                                 ║"
