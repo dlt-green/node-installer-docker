@@ -1,6 +1,7 @@
 
 #!/bin/sh
 
+rm -r shimmer.sh
 clear
 echo ""
 echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -72,7 +73,7 @@ echo "║                   Pull repo from iotaledger/hornet:develop            
 echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 echo ""
 
-wget -cO - https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha19/HORNET-2.0.0-alpha19-docker-example.tar.gz > install.tar.gz
+wget -cO - https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha20/HORNET-2.0.0-alpha20-docker-example.tar.gz > install.tar.gz
 
 echo "unpack:"
 tar -xzf install.tar.gz
@@ -93,10 +94,6 @@ read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
 read -p 'Set dashboard username: ' VAR_USERNAME
 read -p 'Set password (blank): ' VAR_PASSWORD
 
-VAR_USERNAME=${VAR_USERNAME:=admin}
-sed "/username/s/admin/$VAR_USERNAME/g" config.json > config_tmp.json
-mv config_tmp.json config.json
-
 credentials=$(docker-compose run --rm hornet tool pwd-hash --json --password $VAR_PASSWORD | sed -e 's/\r//g')
 
 VAR_DASHBOARD_PASSWORD=$(echo $credentials | jq -r '.passwordHash')
@@ -108,6 +105,7 @@ rm .env
 echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 echo "HORNET_HOST=$VAR_HORNET_HOST" >> .env
 echo "DASHBOARD_HOST=dashboard.$VAR_HORNET_HOST" >> .env
+echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 echo "GRAFANA_HOST=grafana.$VAR_HORNET_HOST" >> .env
