@@ -15,6 +15,7 @@ MainMenu() {
 	echo "║                              4. IOTA Devnet                                 ║"
 	echo "║                              5. SHIMMER Mainnet                             ║"
 	echo "║                              6. SHIMMER EVM                                 ║"
+	echo "║                              X. Abort Installer                             ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo "select: "
@@ -233,11 +234,13 @@ ShimmerMainnet() {
 
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
-	echo " Hornet Dashboard: https://dashboard.$VAR_HORNET_HOST"
+	echo " Hornet Dashboard: https://$VAR_HORNET_HOST/dashboard"
+	echo " Hornet Username: $VAR_USERNAME"
 	echo " Hornet Password: <set during install>"
-	echo " Grafana Dashboard: https://grafana.$VAR_HORNET_HOST"
+	echo " Grafana Dashboard: https://$VAR_HORNET_HOST/grafana"
 	echo " Grafana Username: admin"
 	echo " Grafana Password: <same as hornet password>"
+	echo " API: https://$VAR_HORNET_HOST/api/core/v2/info"
 	echo "═══════════════════════════════════════════════════════════════════════════════"
 	echo ""
 
