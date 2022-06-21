@@ -163,7 +163,7 @@ ShimmerMainnet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha20/HORNET-2.0.0-alpha20-docker-example.tar.gz > install.tar.gz
+	wget -cO - https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha21/HORNET-2.0.0-alpha21-docker-example.tar.gz > install.tar.gz
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
