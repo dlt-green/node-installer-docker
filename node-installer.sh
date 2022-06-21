@@ -163,7 +163,7 @@ ShimmerMainnet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha21/HORNET-2.0.0-alpha21-docker-example.tar.gz > install.tar.gz
+	wget -cO - https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha.21/HORNET-2.0.0-alpha.21-docker-example.tar.gz > install.tar.gz
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
@@ -213,13 +213,10 @@ ShimmerMainnet() {
 
 	echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 	echo "HORNET_HOST=$VAR_HORNET_HOST" >> .env
-	echo "DASHBOARD_HOST=dashboard.$VAR_HORNET_HOST" >> .env
 	echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 	echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 	echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 	echo "GRAFANA_HOST=grafana.$VAR_HORNET_HOST" >> .env
-
-	echo '      - "--dashboard.auth.username=${DASHBOARD_USERNAME}"' >> docker-compose.yml
 
 	sed "/alias/s/node/$VAR_HORNET_HOST/g" config.json > config_tmp.json
 	mv config_tmp.json config.json
