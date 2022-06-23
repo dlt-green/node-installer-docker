@@ -13,8 +13,8 @@ MainMenu() {
 	echo "║                              2. Docker Installation                         ║"
 	echo "║                              3. IOTA Mainnet                                ║"
 	echo "║                              4. IOTA Devnet                                 ║"
-	echo "║                              5. SHIMMER Mainnet                             ║"
-	echo "║                              6. SHIMMER EVM                                 ║"
+	echo "║                              5. Shimmer Mainnet                             ║"
+	echo "║                              6. Shimmer EVM                                 ║"
 	echo "║                              X. Abort Installer                             ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -25,10 +25,83 @@ MainMenu() {
     case $n in
 	1) SystemUpdates ;;
 	2) Docker ;;
-	3) MainMenu ;;
-	4) MainMenu ;;
-	5) ShimmerMainnet ;;
+	3) SubMenuIotaMainnet ;;
+	4) SubMenuIotaDevnet ;;
+	5) SubMenuShimmerMainnet ;;
 	6) MainMenu ;;
+	*) exit ;;
+	esac
+}
+
+SubMenuIotaMainnet() {
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+	echo "║                                                                             ║"
+	echo "║                              1. IOTA Hornet Mainnet                         ║"
+	echo "║                              2. IOTA Bee Mainnet                            ║"
+	echo "║                              3. IOTA Wasp                                   ║"
+	echo "║                              X. Abort Installer                             ║"
+	echo "║                                                                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo "select: "
+	echo ""
+
+	read n
+    case $n in
+	1) MainMenu ;;
+	2) MainMenu ;;
+	3) MainMenu ;;
+	*) exit ;;
+	esac
+}
+
+SubMenuIotaDevnet() {
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+	echo "║                                                                             ║"
+	echo "║                              1. IOTA Hornet Devnet                          ║"
+	echo "║                              2. IOTA Bee Devnet                             ║"
+	echo "║                              3. IOTA Goshimmer                              ║"
+	echo "║                              X. Abort Installer                             ║"
+	echo "║                                                                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo "select: "
+	echo ""
+
+	read n
+    case $n in
+	1) MainMenu ;;
+	2) MainMenu ;;
+	3) MainMenu ;;
+	*) exit ;;
+	esac
+}
+
+SubMenuShimmerMainnet() {
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+	echo "║                                                                             ║"
+	echo "║                              1. Shimmer Hornet Mainnet                      ║"
+	echo "║                              2. Shimmer Bee Mainnet                         ║"
+	echo "║                              X. Abort Installer                             ║"
+	echo "║                                                                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo "select: "
+	echo ""
+
+	read n
+    case $n in
+	1) ShimmerMainnet ;;
+	2) MainMenu ;;
 	*) exit ;;
 	esac
 }
