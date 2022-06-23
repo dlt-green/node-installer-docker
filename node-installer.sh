@@ -1,5 +1,8 @@
 #!/bin/sh
 
+VRSN="0.2.1"
+DockerShimmerMainnet="https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha.22/HORNET-2.0.0-alpha.22-docker-example.tar.gz"
+
 rm node-installer.sh
 
 MainMenu() {
@@ -8,6 +11,7 @@ MainMenu() {
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
 	echo "║                              1. System Updates                              ║"
 	echo "║                              2. Docker Installation                         ║"
@@ -39,11 +43,11 @@ SubMenuIotaMainnet() {
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
 	echo "║                              1. IOTA Hornet Mainnet                         ║"
 	echo "║                              2. IOTA Bee Mainnet                            ║"
-	echo "║                              3. IOTA Wasp                                   ║"
-	echo "║                              X. Abort Installer                             ║"
+	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo "select: "
@@ -53,8 +57,7 @@ SubMenuIotaMainnet() {
     case $n in
 	1) MainMenu ;;
 	2) MainMenu ;;
-	3) MainMenu ;;
-	*) exit ;;
+	*) MainMenu ;;
 	esac
 }
 
@@ -64,11 +67,13 @@ SubMenuIotaDevnet() {
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
 	echo "║                              1. IOTA Hornet Devnet                          ║"
 	echo "║                              2. IOTA Bee Devnet                             ║"
 	echo "║                              3. IOTA Goshimmer                              ║"
-	echo "║                              X. Abort Installer                             ║"
+	echo "║                              4. IOTA Wasp                                   ║"	
+	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo "select: "
@@ -79,7 +84,8 @@ SubMenuIotaDevnet() {
 	1) MainMenu ;;
 	2) MainMenu ;;
 	3) MainMenu ;;
-	*) exit ;;
+	4) MainMenu ;;
+	*) MainMenu ;;
 	esac
 }
 
@@ -89,10 +95,11 @@ SubMenuShimmerMainnet() {
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
 	echo "║                              1. Shimmer Hornet Mainnet                      ║"
 	echo "║                              2. Shimmer Bee Mainnet                         ║"
-	echo "║                              X. Abort Installer                             ║"
+	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo "select: "
@@ -102,7 +109,7 @@ SubMenuShimmerMainnet() {
     case $n in
 	1) ShimmerMainnet ;;
 	2) MainMenu ;;
-	*) exit ;;
+	*) MainMenu ;;
 	esac
 }
 
@@ -130,9 +137,10 @@ SystemUpdates() {
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
-	echo "║                            1. Main Menu                                     ║"
-	echo "║                            2. System Reboot                                 ║"
+	echo "║                            1. System Reboot (recommend)                     ║"
+	echo "║                            X. Main Menu                                     ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo "select: "
@@ -140,8 +148,7 @@ SystemUpdates() {
 	
 	read n
     case $n in
-	1) MainMenu ;;
-	2) sudo reboot ;;
+	1) sudo reboot ;;
 	*) MainMenu ;;
 	esac
 }
@@ -237,7 +244,7 @@ ShimmerMainnet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha.22/HORNET-2.0.0-alpha.22-docker-example.tar.gz > install.tar.gz
+	wget -cO - "$DockerShimmerMainnet" > install.tar.gz
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
