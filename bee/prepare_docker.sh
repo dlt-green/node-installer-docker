@@ -1,13 +1,5 @@
 #!/bin/bash
 
-beeImage="iotaledger/bee:latest"
-configDevnet="config.chrysalis-devnet.json"
-configMainnet="config.chrysalis-mainnet.json"
-scriptDir=$(dirname "$0")
-configPathMainnet="$scriptDir/data/config/$configMainnet"
-configPathDevnet="$scriptDir/data/config/$configDevnet"
-
-
 if [ ! -f .env ]; then
   cat README.md
   exit 0
@@ -17,6 +9,15 @@ if [[ "$OSTYPE" != "darwin"* && "$EUID" -ne 0 ]]; then
   echo "Please run as root or with sudo"
   exit
 fi
+
+source $(dirname "$0")/.env
+
+scriptDir=$(dirname "$0")
+beeImage="iotaledger/bee:$BEE_VERSION"
+configDevnet="config.chrysalis-devnet.json"
+configMainnet="config.chrysalis-mainnet.json"
+configPathMainnet="$scriptDir/data/config/$configMainnet"
+configPathDevnet="$scriptDir/data/config/$configDevnet"
 
 
 # Prepare db directory
@@ -39,8 +40,6 @@ docker rm $containerId
 
 
 # Update extracted config with values from .env
-source .env
-
 tmp=/tmp/config.tmp
 for configPath in $configPathMainnet $configPathDevnet; do
   jq ".network.bindAddress=\"/ip4/0.0.0.0/tcp/$BEE_GOSSIP_PORT\"" "$configPath" > "$tmp" && mv "$tmp" "$configPath"

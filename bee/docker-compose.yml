@@ -2,7 +2,7 @@ version: "3.9"
 services:
 
   bee:
-    image: iotaledger/bee:latest
+    image: iotaledger/bee:${BEE_VERSION}
     ulimits:
       nofile:
         soft: 16384
@@ -31,7 +31,7 @@ services:
     volumes:
       - ./data/storage:/app/storage
       - ./data/snapshots:/app/snapshots
-      - ./data/config/config.chrysalis-${NETWORK}.json:/app/config.json:ro
+      - ./data/config/config.chrysalis-${BEE_NETWORK}.json:/app/config.json:ro
 
 ##################################################################
 #  Reverse Proxy and SSL                                         #
