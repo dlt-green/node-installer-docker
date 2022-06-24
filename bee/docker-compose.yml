@@ -1,0 +1,62 @@
+version: "3.9"
+services:
+
+  bee:
+    image: iotaledger/bee:latest
+    ulimits:
+      nofile:
+        soft: 16384
+        hard: 16384
+    stop_grace_period: 5m
+    tty: true
+    working_dir: /app
+    ports:
+      - "${BEE_GOSSIP_PORT}:${BEE_GOSSIP_PORT}/tcp"
+      - "${BEE_AUTOPEERING_PORT}:${BEE_AUTOPEERING_PORT}/udp"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bee.service=bee"
+      - "traefik.http.routers.bee.rule=Host(`${BEE_HOST}`)"
+      - "traefik.http.routers.bee.entrypoints=websecure"
+      - "traefik.http.routers.bee.tls=true"
+#      - "traefik.http.routers.bee.tls.certresolver=myresolver"
+      - "traefik.http.services.bee.loadbalancer.server.port=8081"
+      - "traefik.http.routers.bee.middlewares=redirect-dashboard"
+      - "traefik.http.middlewares.redirect-dashboard.redirectregex.regex=^https:\\/\\/([^\\/]+)\\/?$$"
+      - "traefik.http.middlewares.redirect-dashboard.redirectregex.replacement=https://$$1/dashboard/"
+      - "traefik.http.middlewares.redirect-dashboard.redirectregex.permanent=true"
+    cap_drop:
+      - ALL
+    command: ["--config", "/app/config.json"]
+    volumes:
+      - ./data/storage:/app/storage
+      - ./data/snapshots:/app/snapshots
+      - ./data/config/config.chrysalis-${NETWORK}.json:/app/config.json:ro
+
+##################################################################
+#  Reverse Proxy and SSL                                         #
+##################################################################
+
+  traefik:
+    image: traefik:v2.6
+    command:
+#      - "--log.level=DEBUG"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:${BEE_HTTP_PORT}"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:${BEE_HTTPS_PORT}"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+#      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+#      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
+#      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "${BEE_HTTP_PORT}:${BEE_HTTP_PORT}/tcp"
+      - "${BEE_HTTPS_PORT}:${BEE_HTTPS_PORT}/tcp"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./data/letsencrypt:/letsencrypt"
+      - "./assets/traefik/traefik.yaml:/etc/traefik/dynamic/conf.yaml:ro"
+      - "/etc/letsencrypt/live/${BEE_HOST}/fullchain.pem:/certs/domain.cert:ro"
+      - "/etc/letsencrypt/live/${BEE_HOST}/privkey.pem:/certs/domain.key:ro"
