@@ -3,10 +3,10 @@
 Create a file named `.env` containing
 
 ```
-NETWORK=mainnet|devnet
-
 ACME_EMAIL=your-email@example.com
 
+BEE_VERSION=0.3.1
+BEE_NETWORK=mainnet|devnet
 BEE_HOST=node.your-domain.com
 BEE_HTTP_PORT=20080
 BEE_HTTPS_PORT=20443
