@@ -19,9 +19,7 @@ configFilename="config.chrysalis-${BEE_NETWORK:-mainnet}.json"
 configPath="${dataDir}/config/$configFilename"
 
 
-# Prepare for SSL (fake cert and key is used to prevent docker-compose failures on usage of letsencrypt)
-mkdir -p /tmp/bee && touch /tmp/bee/fake.cert && touch /tmp/bee/fake.key
-
+# Prepare for SSL
 if [[ ! -z $SSL_CONFIG ]] && [[ "$SSL_CONFIG" != "certs" && "$SSL_CONFIG" != "letsencrypt" ]]; then
   echo "Invalid SSL_CONFIG: $SSL_CONFIG"
   exit -1
