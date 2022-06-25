@@ -13,10 +13,10 @@ fi
 source $(dirname "$0")/.env
 
 scriptDir=$(dirname "$0")
+dataDir="${BEE_DATA_DIR:-$scriptDir/data}"
 beeImage="iotaledger/bee:$BEE_VERSION"
 configFilename="config.chrysalis-${BEE_NETWORK:-mainnet}.json"
-configPath="$scriptDir/data/config/$configFilename"
-
+configPath="${dataDir}/config/$configFilename"
 
 # Prepare for SSL (fake cert and key is used to prevent docker-compose failures on usage of letsencrypt)
 mkdir -p /tmp/bee && touch /tmp/bee/fake.cert && touch /tmp/bee/fake.key
@@ -43,14 +43,14 @@ fi
 
 
 # Prepare db directory
-mkdir -p data
-mkdir -p data/config
-mkdir -p data/storage
-mkdir -p data/snapshots
-mkdir -p data/letsencrypt
+mkdir -p "${dataDir}"
+mkdir -p "${dataDir}/config"
+mkdir -p "${dataDir}/storage"
+mkdir -p "${dataDir}/snapshots"
+mkdir -p "${dataDir}/letsencrypt"
 
 if [[ "$OSTYPE" != "darwin"* ]]; then
-  chown -R 65532:65532 data
+  chown -R 65532:65532 "${dataDir}"
 fi
 
 

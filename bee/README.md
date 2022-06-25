@@ -28,6 +28,7 @@ BEE_HOST=node.your-domain.com
 # BEE_HTTPS_PORT=443
 # BEE_GOSSIP_PORT=15600
 # BEE_AUTOPEERING_PORT=14626
+# BEE_DATA_DIR=<absolute path to data dir>
 
 # DASHBOARD_USERNAME=admin
 DASHBOARD_PASSWORD=0000000000000000000000000000000000000000000000000000000000000000
@@ -43,6 +44,7 @@ DASHBOARD_SALT=0000000000000000000000000000000000000000000000000000000000000000
 | BEE_HTTPS_PORT       |           |     443     | HTTPS port to access dashboard and api                                                                                                                              |
 | BEE_GOSSIP_PORT      |           |    15600    | Gossip port                                                                                                                                                         |
 | BEE_AUTOPEERING_PORT |           |    14626    | Autopeering port                                                                                                                                                    |
+| BEE_DATA_DIR         |           |    .data    | Directory containing configuration, database etc.                                                                                                               |
 | DASHBOARD_USERNAME   |           |    admin    | Username to access dashboard                                                                                                                                        |
 | DASHBOARD_PASSWORD   |     x     |             | Password hash (can be generated with `docker-compose run --rm bee password`)                                                                                        |
 | DASHBOARD_SALT       |     x     |             | Password salt (can be generated with `docker-compose run --rm bee password`)                                                                                        |
