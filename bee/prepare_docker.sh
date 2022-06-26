@@ -13,7 +13,7 @@ fi
 source $(dirname "$0")/.env
 
 scriptDir=$(dirname "$0")
-dataDir="${BEE_DATA_DIR:-$scriptDir/data}/${BEE_NETWORK:-mainnet}"
+dataDir="${BEE_DATA_DIR:-$scriptDir/data}"
 beeImage="iotaledger/bee:$BEE_VERSION"
 configFilename="config.chrysalis-${BEE_NETWORK:-mainnet}.json"
 configPath="${dataDir}/config/$configFilename"

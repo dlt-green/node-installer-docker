@@ -29,9 +29,8 @@ services:
       - ALL
     command: [ "--config", "/app/config.json" ]
     volumes:
-      - "${BEE_DATA_DIR:-./data}/${BEE_NETWORK:-mainnet}/storage:/app/storage"
-      - "${BEE_DATA_DIR:-./data}/${BEE_NETWORK:-mainnet}/snapshots:/app/snapshots"
-      - "${BEE_DATA_DIR:-./data}/${BEE_NETWORK:-mainnet}/config/config.chrysalis-${BEE_NETWORK:-mainnet}.json:/app/config.json:ro"
+      - "${BEE_DATA_DIR:-./data}/storage:/app/storage"
+      - "${BEE_DATA_DIR:-./data}/snapshots:/app/snapshots"
 
   ##################################################################
   #  Reverse Proxy and SSL                                         #
@@ -40,7 +39,7 @@ services:
   traefik:
     image: traefik:v2.6
     command:
-      #      - "--log.level=DEBUG"
+      # - "--log.level=DEBUG"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:${BEE_HTTP_PORT:-80}"
@@ -56,7 +55,7 @@ services:
       - "${BEE_HTTPS_PORT:-443}:${BEE_HTTPS_PORT:-443}/tcp"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "${BEE_DATA_DIR:-./data}/${BEE_NETWORK:-mainnet}/letsencrypt:/letsencrypt"
+      - "${BEE_DATA_DIR:-./data}/letsencrypt:/letsencrypt"
       - "./assets/traefik/${SSL_CONFIG:-letsencrypt}.yml:/etc/traefik/dynamic/config.yml:ro"
       - "${BEE_SSL_CERT:-./assets/traefik/certs/fake.cert}:/certs/domain.cert:ro"
       - "${BEE_SSL_KEY:-./assets/traefik/certs/fake.key}:/certs/domain.key:ro"
