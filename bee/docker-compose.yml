@@ -31,6 +31,7 @@ services:
     volumes:
       - "${BEE_DATA_DIR:-./data}/storage:/app/storage"
       - "${BEE_DATA_DIR:-./data}/snapshots:/app/snapshots"
+      - "${BEE_DATA_DIR:-./data}/config/config.chrysalis-${BEE_NETWORK:-mainnet}.json:/app/config.json:ro"
 
   ##################################################################
   #  Reverse Proxy and SSL                                         #
