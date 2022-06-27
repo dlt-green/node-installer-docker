@@ -1,10 +1,10 @@
 #!/bin/sh
 
-VRSN="0.2.1"
+VRSN="0.0.0"
 DockerShimmerMainnet="https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha.22/HORNET-2.0.0-alpha.22-docker-example.tar.gz"
 DockerBee="https://dlt.green/downloads/iota-bee.tar.gz"
 
-rm node-installer.sh
+rm node-installer1.sh
 
 MainMenu() {
 
@@ -220,7 +220,7 @@ BeeMainnet() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║              DLT.GREEN AUTOMATIC BBE INSTALLATION WITH DOCKER               ║"
+	echo "║              DLT.GREEN AUTOMATIC BEE INSTALLATION WITH DOCKER               ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -231,7 +231,7 @@ BeeMainnet() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                    Create bee directory /var/lib/hornet                     ║"
+	echo "║                     Create bee directory /var/lib/bee                       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -241,7 +241,7 @@ BeeMainnet() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                      Pull repo from dlt.green/bee:main                      ║"
+	echo "║                   Pull installer from dlt.green/bee:main                    ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -267,28 +267,14 @@ BeeMainnet() {
 	read -p 'Set dashboard username: ' VAR_USERNAME
 	read -p 'Set password (blank): ' VAR_PASSWORD
 
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Prepare docker                                ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	cd /var/lib/bee/
-	./prepare_docker.sh
-	
-	docker-compose pull
-	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                            Generate Creditials                              ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	credentials=$(docker-compose run --rm bee tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
-
-	VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-	VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+	read -p 'DASHBOARD_PASSWORD: ' VAR_DASHBOARD_PASSWORD
+	read -p 'DASHBOARD_SALT: ' VAR_DASHBOARD_SALT
 
 	cd /var/lib/bee
 	rm .env
@@ -304,6 +290,18 @@ BeeMainnet() {
 	sed "/alias/s/node/$VAR_BEE_HOST/g" config.json > config_tmp.json
 	mv config_tmp.json config.json
 
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Prepare docker                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	cd /var/lib/bee/
+	./prepare_docker.sh
+	
+	docker-compose pull
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                                 Start Bee                                   ║"
@@ -315,10 +313,10 @@ BeeMainnet() {
 
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
-	echo " Bee Dashboard: https://$VAR_HORNET_HOST/dashboard"
+	echo " Bee Dashboard: https://$VAR_BEE_HOST/dashboard"
 	echo " Bee Username: $VAR_USERNAME"
 	echo " Bee Password: <set during install>"
-	echo " API: https://$VAR_HORNET_HOST/api/core/v2/info"
+	echo " API: https://$VAR_BEE_HOST/api/core/v2/info"
 	echo "═══════════════════════════════════════════════════════════════════════════════"
 	echo ""
 
