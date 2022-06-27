@@ -265,16 +265,14 @@ BeeMainnet() {
 	read -p 'Set domain-name: ' VAR_BEE_HOST
 	read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
 	read -p 'Set dashboard username: ' VAR_USERNAME
-	read -p 'Set password (blank): ' VAR_PASSWORD
+	read -p 'Set password (hash): ' VAR_DASHBOARD_PASSWORD
+	read -p 'Set password (salt): ' VAR_DASHBOARD_SALT
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                            Generate Creditials                              ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-
-	read -p 'DASHBOARD_PASSWORD: ' VAR_DASHBOARD_PASSWORD
-	read -p 'DASHBOARD_SALT: ' VAR_DASHBOARD_SALT
 
 	cd /var/lib/bee
 	rm .env
