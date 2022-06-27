@@ -2,6 +2,7 @@
 
 VRSN="0.2.1"
 DockerShimmerMainnet="https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha.22/HORNET-2.0.0-alpha.22-docker-example.tar.gz"
+DockerBee="https://dlt.green/downloads/iota-bee.tar.gz"
 
 rm node-installer.sh
 
@@ -56,7 +57,7 @@ SubMenuIotaMainnet() {
 	read n
     case $n in
 	1) MainMenu ;;
-	2) MainMenu ;;
+	2) BeeMainnet ;;
 	*) MainMenu ;;
 	esac
 }
@@ -209,6 +210,117 @@ Docker() {
 
 	sudo apt-get update
 	sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
+
+	read -p 'Press [Enter] key to continue...' W
+
+	MainMenu
+}
+
+BeeMainnet() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║              DLT.GREEN AUTOMATIC BBE INSTALLATION WITH DOCKER               ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	read -p 'Press [Enter] key to continue...' W
+
+	cd /var/lib/bee
+	docker-compose down
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                    Create bee directory /var/lib/hornet                     ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	cd /var/lib
+	mkdir bee
+	cd bee
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                      Pull repo from dlt.green/bee:main                      ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	wget -cO - "$DockerBee" > install.tar.gz
+
+	echo "unpack:"
+	tar -xzf install.tar.gz
+
+	echo "remove tar.gz:"
+	rm -r install.tar.gz
+
+	read -p 'Press [Enter] key to continue...' W
+	
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Set parameter                                 ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	read -p 'Set domain-name: ' VAR_BEE_HOST
+	read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
+	read -p 'Set dashboard username: ' VAR_USERNAME
+	read -p 'Set password (blank): ' VAR_PASSWORD
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Prepare docker                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	cd /var/lib/bee/
+	./prepare_docker.sh
+	
+	docker-compose pull
+	
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                            Generate Creditials                              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	credentials=$(docker-compose run --rm bee tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+
+	VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+	VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+
+	cd /var/lib/bee
+	rm .env
+
+	echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+	echo "BEE_VERSION=0.3.1" >> .env
+	echo "BEE_NETWORK=mainnet" >> .env
+	echo "BEE_HOST=$VAR_BEE_HOST" >> .env
+	echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
+	echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
+	echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
+	sed "/alias/s/node/$VAR_BEE_HOST/g" config.json > config_tmp.json
+	mv config_tmp.json config.json
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                                 Start Bee                                   ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	cd /var/lib/bee/
+	docker-compose up -d
+
+	echo ""
+	echo "═══════════════════════════════════════════════════════════════════════════════"
+	echo " Bee Dashboard: https://$VAR_HORNET_HOST/dashboard"
+	echo " Bee Username: $VAR_USERNAME"
+	echo " Bee Password: <set during install>"
+	echo " API: https://$VAR_HORNET_HOST/api/core/v2/info"
+	echo "═══════════════════════════════════════════════════════════════════════════════"
+	echo ""
 
 	read -p 'Press [Enter] key to continue...' W
 
