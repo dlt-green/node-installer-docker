@@ -6,7 +6,7 @@
 set PASSWORD [lindex $argv 0]
 
 set timeout -1
-spawn ./password.sh $PASSWORD
+spawn ./password_scriptable_wrapper.sh $PASSWORD
 
 expect "Password: "
 send -- "$PASSWORD\n"

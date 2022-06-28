@@ -6,7 +6,7 @@
 4. Check the logs using `docker-compose -f logs`
 
 You will be able to access your node under  (mind eventually configured port):
-https://node.your-domain.com/api/core/v2/info
+https://node.your-domain.com/api/v1/info
 
 Your dashboard under (mind eventually configured port):
 https://node.your-domain.com/dashboard
