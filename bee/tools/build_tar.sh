@@ -1,2 +1,3 @@
 #!/bin/bash
-(cd ../..; tar -pcz --exclude='.env' -f ./bee/install.tar.gz bee)
+mkdir -p ../build
+tar -pcz --exclude='.env' --exclude='build' -f ../build/install.tar.gz ../../bee
