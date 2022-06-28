@@ -1,10 +1,10 @@
 #!/bin/sh
 
-VRSN="0.0.0"
+VRSN="0.2.1"
 DockerShimmerMainnet="https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha.22/HORNET-2.0.0-alpha.22-docker-example.tar.gz"
 DockerBee="https://dlt.green/downloads/iota-bee.tar.gz"
 
-rm node-installer1.sh
+rm node-installer.sh
 
 MainMenu() {
 
@@ -263,6 +263,7 @@ BeeMainnet() {
 	echo ""
 
 	read -p 'Set domain-name: ' VAR_BEE_HOST
+	read -p 'Set domain-port: ' VAR_BEE_HTTPS_PORT	
 	read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
 	read -p 'Set dashboard username: ' VAR_USERNAME
 	read -p 'Set password (hash): ' VAR_DASHBOARD_PASSWORD
@@ -281,6 +282,7 @@ BeeMainnet() {
 	echo "BEE_VERSION=0.3.1" >> .env
 	echo "BEE_NETWORK=mainnet" >> .env
 	echo "BEE_HOST=$VAR_BEE_HOST" >> .env
+	echo "BEE_HTTPS_PORT=$VAR_BEE_HTTPS_PORT" >> .env
 	echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 	echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 	echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
@@ -314,7 +316,7 @@ BeeMainnet() {
 	echo " Bee Dashboard: https://$VAR_BEE_HOST/dashboard"
 	echo " Bee Username: $VAR_USERNAME"
 	echo " Bee Password: <set during install>"
-	echo " API: https://$VAR_BEE_HOST/api/core/v2/info"
+	echo " API: https://$VAR_BEE_HOST/api/v1/info"
 	echo "═══════════════════════════════════════════════════════════════════════════════"
 	echo ""
 
