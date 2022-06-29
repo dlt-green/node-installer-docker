@@ -3,6 +3,7 @@ services:
 
   bee:
     image: iotaledger/bee:${BEE_VERSION:?BEE_VERSION is missing}
+    restart: unless-stopped
     ulimits:
       nofile:
         soft: 16384
@@ -39,6 +40,7 @@ services:
 
   traefik:
     image: traefik:v2.6
+    restart: unless-stopped
     command:
       # - "--log.level=DEBUG"
       - "--providers.docker=true"
