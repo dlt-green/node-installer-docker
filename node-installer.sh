@@ -168,7 +168,8 @@ Docker() {
 	docker-compose down
 
 	sudo apt-get install jq -y
-
+	sudo apt-get install expect -y
+	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║   Update and install packages to allow apt to use a repository over HTTPS   ║"
@@ -266,8 +267,7 @@ BeeMainnet() {
 	read -p 'Set domain-port: ' VAR_BEE_HTTPS_PORT	
 	read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
 	read -p 'Set dashboard username: ' VAR_USERNAME
-	read -p 'Set password (hash): ' VAR_DASHBOARD_PASSWORD
-	read -p 'Set password (salt): ' VAR_DASHBOARD_SALT
+	read -sp 'Set password (blank): ' VAR_PASSWORD
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -277,6 +277,11 @@ BeeMainnet() {
 
 	cd /var/lib/bee
 	rm .env
+
+	credentials=$(./password.sh "$VAR_PASSWORD" | sed -e 's/\r//g')
+
+	VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+	VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 
 	echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 	echo "BEE_VERSION=0.3.1" >> .env
