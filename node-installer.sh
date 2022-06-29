@@ -278,24 +278,23 @@ BeeMainnet() {
 	cd /var/lib/bee
 	rm .env
 
-	credentials=$(./password.sh "$VAR_PASSWORD" | sed -e 's/\r//g')
-
-	VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-	VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-
 	echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 	echo "BEE_VERSION=0.3.1" >> .env
 	echo "BEE_NETWORK=mainnet" >> .env
 	echo "BEE_HOST=$VAR_BEE_HOST" >> .env
 	echo "BEE_HTTPS_PORT=$VAR_BEE_HTTPS_PORT" >> .env
+	
+	docker-compose pull
+	
+	credentials=$(./password.sh "$VAR_PASSWORD" | sed -e 's/\r//g')
+
+	VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+	VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+
 	echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 	echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 	echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
-	sed "/alias/s/node/$VAR_BEE_HOST/g" config.json > config_tmp.json
-	mv config_tmp.json config.json
-
-	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                               Prepare docker                                ║"
@@ -304,8 +303,6 @@ BeeMainnet() {
 
 	cd /var/lib/bee/
 	./prepare_docker.sh
-	
-	docker-compose pull
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
