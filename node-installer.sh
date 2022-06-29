@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VRSN="0.2.1"
+VRSN="0.3.0"
 DockerShimmerMainnet="https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha.22/HORNET-2.0.0-alpha.22-docker-example.tar.gz"
 DockerBee="https://dlt.green/downloads/iota-bee.tar.gz"
 
