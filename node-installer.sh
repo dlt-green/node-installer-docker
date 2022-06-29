@@ -267,7 +267,7 @@ BeeMainnet() {
 	read -p 'Set domain-port: ' VAR_BEE_HTTPS_PORT	
 	read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
 	read -p 'Set dashboard username: ' VAR_USERNAME
-	read -sp 'Set password (blank): ' VAR_PASSWORD
+	read -p 'Set password (blank): ' VAR_PASSWORD
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
