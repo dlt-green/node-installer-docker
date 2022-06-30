@@ -12,8 +12,8 @@ services:
     tty: true
     working_dir: /app
     ports:
-      - "${BEE_GOSSIP_PORT:-15600}:${BEE_GOSSIP_PORT:-15600}/tcp"
-      - "${BEE_AUTOPEERING_PORT:-14626}:${BEE_AUTOPEERING_PORT:-14626}/udp"
+      - "${BEE_GOSSIP_PORT:-15601}:${BEE_GOSSIP_PORT:-15601}/tcp"
+      - "${BEE_AUTOPEERING_PORT:-14636}:${BEE_AUTOPEERING_PORT:-14636}/udp"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.bee.service=bee"
