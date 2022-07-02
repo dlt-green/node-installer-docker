@@ -1,17 +1,17 @@
 #!/bin/sh
 
-VRSN="0.3.0"
+VRSN="0.3.1"
 
 VAR_CERTIFICATE=0
+VAR_NETWORK=0
 VAR_HOST=''
 
 DockerShimmerMainnet="https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha.22/HORNET-2.0.0-alpha.22-docker-example.tar.gz"
-DockerBee="https://dlt.green/downloads/iota-bee.tar.gz"
+DockerIotaBee="https://dlt.green/downloads/iota-bee.tar.gz"
 
 if [ -f "node-installer.sh" ]; then rm node-installer.sh; fi
 
 CheckCertificate() {
-
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -21,7 +21,6 @@ CheckCertificate() {
 
 	if [ -f "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" ] 
 	then 
-
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -29,28 +28,25 @@ CheckCertificate() {
 		echo "║                                    $VRSN                                    ║"
 		echo "║                                                                             ║"
 		echo "║                            1. Use existing Let's Encrypt Certificate        ║"
-		echo "║                            X. Renew certificate                             ║"
+		echo "║                            X. Get new Certificate (don't use with SWARM)    ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo "select: "
 		echo ""
-	
+
 		read n
 		case $n in
 		1) VAR_CERT=1 ;;
 		*) echo "No existing Let's Encrypt Certificate found, generate a new one... "
 		   VAR_CERT=0 ;;
 		esac
-
 	else 
 		echo "No existing Let's Encrypt Certificate found, generate a new one... "
 		VAR_CERT=0
-	 fi 
-
+	fi 
 }
 
 MainMenu() {
-
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -70,7 +66,7 @@ MainMenu() {
 	echo ""
 
 	read n
-    case $n in
+	case $n in
 	1) SystemUpdates ;;
 	2) Docker ;;
 	3) SubMenuIotaMainnet ;;
@@ -82,7 +78,6 @@ MainMenu() {
 }
 
 SubMenuIotaMainnet() {
-
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -98,15 +93,15 @@ SubMenuIotaMainnet() {
 	echo ""
 
 	read n
-    case $n in
+	case $n in
 	1) MainMenu ;;
-	2) BeeMainnet ;;
+	2) VAR_NETWORK=3
+	   IotaBee ;;
 	*) MainMenu ;;
 	esac
 }
 
 SubMenuIotaDevnet() {
-
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -124,9 +119,10 @@ SubMenuIotaDevnet() {
 	echo ""
 
 	read n
-    case $n in
+	case $n in
 	1) MainMenu ;;
-	2) MainMenu ;;
+	2) VAR_NETWORK=4
+	   IotaBee ;;
 	3) MainMenu ;;
 	4) MainMenu ;;
 	*) MainMenu ;;
@@ -134,7 +130,6 @@ SubMenuIotaDevnet() {
 }
 
 SubMenuShimmerMainnet() {
-
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -150,8 +145,8 @@ SubMenuShimmerMainnet() {
 	echo ""
 
 	read n
-    case $n in
-	1) ShimmerMainnet ;;
+	case $n in
+	1) ShimmerHornet ;;
 	2) MainMenu ;;
 	*) MainMenu ;;
 	esac
@@ -165,7 +160,7 @@ SystemUpdates() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	clear
 	sudo apt-get update && apt-get upgrade -y
@@ -173,7 +168,7 @@ SystemUpdates() {
 	sudo apt upgrade -y
 	sudo apt-get autoremove -y
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	clear
 	
@@ -191,7 +186,7 @@ SystemUpdates() {
 	echo ""
 	
 	read n
-    case $n in
+	case $n in
 	1) sudo reboot ;;
 	*) MainMenu ;;
 	esac
@@ -205,10 +200,13 @@ Docker() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	cd /var/lib/hornet
-	docker-compose down
+	dir='/var/lib/shimmer-hornet'
+	if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
+
+	dir='/var/lib/iota-bee'
+	if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
 
 	sudo apt-get install jq -y
 	sudo apt-get install expect -y
@@ -255,12 +253,12 @@ Docker() {
 	sudo apt-get update
 	sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	MainMenu
 }
 
-BeeMainnet() {
+IotaBee() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -268,14 +266,14 @@ BeeMainnet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	dir=/var/lib/iota-bee
+	dir='/var/lib/iota-bee'
 	if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                     Create bee directory /var/lib/bee                       ║"
+	echo "║                     Create bee directory /var/lib/iota-bee                  ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -283,11 +281,11 @@ BeeMainnet() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                   Pull installer from dlt.green/bee:main                    ║"
+	echo "║                   Pull installer from dlt.green/iota-bee                    ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerBee" > install.tar.gz
+	wget -cO - "$DockerIotaBee" > install.tar.gz
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
@@ -295,12 +293,12 @@ BeeMainnet() {
 	echo "remove tar.gz:"
 	rm -r install.tar.gz
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 	
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Set parameter                                 ║"
+	echo "║                               Set Parameters                                ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -313,7 +311,7 @@ BeeMainnet() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                            Generate Creditials                              ║"
+	echo "║                              Write Parameters                               ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -321,19 +319,22 @@ BeeMainnet() {
 	if [ -f .env ]; then rm .env; fi
 
 	echo "BEE_VERSION=0.3.1" >> .env
-	echo "BEE_NETWORK=mainnet" >> .env
+
+	if [ $VAR_NETWORK = 3 ]; then echo "BEE_NETWORK=mainnet" >> .env; fi
+	if [ $VAR_NETWORK = 4 ]; then echo "BEE_NETWORK=devnet" >> .env; fi
+	
 	echo "BEE_HOST=$VAR_HOST" >> .env
 	echo "BEE_HTTPS_PORT=$VAR_BEE_HTTPS_PORT" >> .env
 	
 	if [ $VAR_CERT = 0 ]
-    then
+	then
 		read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
-        echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
-    else
-        echo "BEE_HTTP_PORT=8082" >> .env
-        echo "BEE_GOSSIP_PORT=15601" >> .env
-        echo "BEE_AUTOPEERING_PORT=14636" >> .env
-        echo "SSL_CONFIG=certs" >> .env
+		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+	else
+		echo "BEE_HTTP_PORT=8082" >> .env
+		echo "BEE_GOSSIP_PORT=15601" >> .env
+		echo "BEE_AUTOPEERING_PORT=14636" >> .env
+		echo "SSL_CONFIG=certs" >> .env
 		echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 		echo "BEE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 	fi
@@ -366,7 +367,7 @@ BeeMainnet() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Prepare docker                                ║"
+	echo "║                               Prepare Docker                                ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -396,7 +397,7 @@ BeeMainnet() {
 	MainMenu
 }
 
-ShimmerMainnet() {
+ShimmerHornet() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -404,20 +405,18 @@ ShimmerMainnet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	cd /var/lib/hornet
-	docker-compose down
+	dir='/var/lib/shimmer-hornet'
+	if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                   Create hornet directory /var/lib/hornet                   ║"
+	echo "║                   Create hornet directory /var/lib/shimmer-hornet           ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	cd /var/lib
-	mkdir hornet
-	cd hornet
+	if [ ! -d $dir ]; then mkdir $dir || exit; cd $dir || exit; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -433,35 +432,46 @@ ShimmerMainnet() {
 	echo "remove tar.gz:"
 	rm -r install.tar.gz
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 	
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Set parameter                                 ║"
+	echo "║                               Set Parameters                                ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Set domain-name: ' VAR_HORNET_HOST
-	read -p 'Set mail to request a new ssl-certificat: ' VAR_ACME_EMAIL
+	read -p 'Set domain-name: ' VAR_HOST
 	read -p 'Set dashboard username: ' VAR_USERNAME
 	read -p 'Set password (blank): ' VAR_PASSWORD
+	read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                              Write Parameters                               ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
+	if [ -f .env ]; then rm .env; fi
+
+	echo "HORNET_HOST=$VAR_HOST" >> .env
+	echo "GRAFANA_HOST=grafana.$VAR_HORNET_HOST" >> .env
+
+	read -p 'Press [Enter] key to continue...' W
 
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Prepare docker                                ║"
+	echo "║                                 Pull Data                                   ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	cd /var/lib/hornet/
-	./prepare_docker.sh
-	
 	docker-compose pull
-	
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                            Generate Creditials                              ║"
+	echo "║                               Set Creditials                                ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -469,19 +479,19 @@ ShimmerMainnet() {
 
 	VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 	VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-
-	cd /var/lib/hornet
-	rm .env
-
-	echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
-	echo "HORNET_HOST=$VAR_HORNET_HOST" >> .env
+	
 	echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 	echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 	echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
-	echo "GRAFANA_HOST=grafana.$VAR_HORNET_HOST" >> .env
 
-	sed "/alias/s/node/$VAR_HORNET_HOST/g" config.json > config_tmp.json
-	mv config_tmp.json config.json
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Prepare Docker                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
+	./prepare_docker.sh
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -489,19 +499,19 @@ ShimmerMainnet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	cd /var/lib/hornet/
+	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
 	docker-compose up -d
 	docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"
 
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
-	echo " Hornet Dashboard: https://$VAR_HORNET_HOST/dashboard"
+	echo " Hornet Dashboard: https://$VAR_HOST/dashboard"
 	echo " Hornet Username: $VAR_USERNAME"
 	echo " Hornet Password: <set during install>"
-	echo " Grafana Dashboard: https://$VAR_HORNET_HOST/grafana"
+	echo " Grafana Dashboard: https://$VAR_HOST/grafana"
 	echo " Grafana Username: admin"
 	echo " Grafana Password: <same as hornet password>"
-	echo " API: https://$VAR_HORNET_HOST/api/core/v2/info"
+	echo " API: https://$VAR_HOST/api/core/v2/info"
 	echo "═══════════════════════════════════════════════════════════════════════════════"
 	echo ""
 
