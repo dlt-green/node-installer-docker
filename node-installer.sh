@@ -326,14 +326,14 @@ BeeMainnet() {
 	echo "BEE_HTTPS_PORT=$VAR_BEE_HTTPS_PORT" >> .env
 	
 	if [ $VAR_CERT = 0 ]
-    then
+	then
 		read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
-        echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
-    else
-        echo "BEE_HTTP_PORT=8082" >> .env
-        echo "BEE_GOSSIP_PORT=15601" >> .env
-        echo "BEE_AUTOPEERING_PORT=14636" >> .env
-        echo "SSL_CONFIG=certs" >> .env
+		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+	else
+		echo "BEE_HTTP_PORT=8082" >> .env
+		echo "BEE_GOSSIP_PORT=15601" >> .env
+		echo "BEE_AUTOPEERING_PORT=14636" >> .env
+		echo "SSL_CONFIG=certs" >> .env
 		echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 		echo "BEE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 	fi
