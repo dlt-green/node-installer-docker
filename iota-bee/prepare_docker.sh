@@ -59,7 +59,7 @@ fi
 
 # Extract default config from image
 echo "Generating config..."
-rm -f $(dirname "$configPath")/$configFilename
+rm -Rf $(dirname "$configPath")/$configFilename
 containerId=$(docker create $beeImage)
 docker cp $containerId:/app/$configFilename "$configPath"
 docker rm $containerId
@@ -67,8 +67,8 @@ docker rm $containerId
 
 # Update extracted config with values from .env
 tmp=/tmp/config.tmp
-jq ".network.bindAddress=\"/ip4/0.0.0.0/tcp/${BEE_GOSSIP_PORT:-15600}\"" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
-jq ".autopeering.bindAddress=\"0.0.0.0:${BEE_AUTOPEERING_PORT:-14626}\"" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
+jq ".network.bindAddress=\"/ip4/0.0.0.0/tcp/${BEE_GOSSIP_PORT:-15601}\"" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
+jq ".autopeering.bindAddress=\"0.0.0.0:${BEE_AUTOPEERING_PORT:-14636}\"" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
 jq ".autopeering.enabled=true" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
 jq ".dashboard.auth.user=\"${DASHBOARD_USERNAME:-admin}\"" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
 jq ".dashboard.auth.passwordHash=\"$DASHBOARD_PASSWORD\"" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
