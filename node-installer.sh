@@ -1,10 +1,53 @@
 #!/bin/sh
 
 VRSN="0.3.0"
+
+VAR_CERTIFICATE=0
+VAR_HOST=''
+
 DockerShimmerMainnet="https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha.22/HORNET-2.0.0-alpha.22-docker-example.tar.gz"
 DockerBee="https://dlt.green/downloads/iota-bee.tar.gz"
 
-rm node-installer.sh
+if [ -f "node-installer.sh" ]; then rm node-installer.sh; fi
+
+CheckCertificate() {
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                      Check Let's Encrypt Certificate                        ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -f "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" ] 
+	then 
+
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+		echo "║                                    $VRSN                                    ║"
+		echo "║                                                                             ║"
+		echo "║                            1. Use existing Let's Encrypt Certificate        ║"
+		echo "║                            X. Renew certificate                             ║"
+		echo "║                                                                             ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo "select: "
+		echo ""
+	
+		read n
+		case $n in
+		1) VAR_CERT=1 ;;
+		*) echo "No existing Let's Encrypt Certificate found, generate a new one... "
+		   VAR_CERT=0 ;;
+		esac
+
+	else 
+		echo "No existing Let's Encrypt Certificate found, generate a new one... "
+		VAR_CERT=0
+	 fi 
+
+}
 
 MainMenu() {
 
@@ -227,8 +270,8 @@ BeeMainnet() {
 
 	read -p 'Press [Enter] key to continue...' W
 
-	cd /var/lib/bee
-	docker-compose down
+	dir=/var/lib/iota-bee
+	if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -236,9 +279,7 @@ BeeMainnet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	cd /var/lib
-	mkdir bee
-	cd bee
+	if [ ! -d $dir ]; then mkdir $dir || exit; cd $dir || exit; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -263,11 +304,12 @@ BeeMainnet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Set domain-name: ' VAR_BEE_HOST
+	read -p 'Set domain-name: ' VAR_HOST
 	read -p 'Set domain-port: ' VAR_BEE_HTTPS_PORT	
-	read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
 	read -p 'Set dashboard username: ' VAR_USERNAME
 	read -p 'Set password (blank): ' VAR_PASSWORD
+	
+	CheckCertificate
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -275,17 +317,44 @@ BeeMainnet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	cd /var/lib/bee
-	rm .env
+	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
+	if [ -f .env ]; then rm .env; fi
 
-	echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 	echo "BEE_VERSION=0.3.1" >> .env
 	echo "BEE_NETWORK=mainnet" >> .env
-	echo "BEE_HOST=$VAR_BEE_HOST" >> .env
+	echo "BEE_HOST=$VAR_HOST" >> .env
 	echo "BEE_HTTPS_PORT=$VAR_BEE_HTTPS_PORT" >> .env
 	
+	if [ $VAR_CERT = 0 ]
+    then
+		read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
+        echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+    else
+        echo "BEE_HTTP_PORT=8082" >> .env
+        echo "BEE_GOSSIP_PORT=15601" >> .env
+        echo "BEE_AUTOPEERING_PORT=14636" >> .env
+        echo "SSL_CONFIG=certs" >> .env
+		echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
+		echo "BEE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
+	fi
+
+	read -p 'Press [Enter] key to continue...' W
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                                 Pull Data                                   ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
 	docker-compose pull
 	
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Set Creditials                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
 	credentials=$(./password.sh "$VAR_PASSWORD" | sed -e 's/\r//g')
 
 	VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
@@ -301,7 +370,7 @@ BeeMainnet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	cd /var/lib/bee/
+	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
 	./prepare_docker.sh
 
 	echo ""
@@ -310,15 +379,15 @@ BeeMainnet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	cd /var/lib/bee/
+	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
 	docker-compose up -d
 
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
-	echo " Bee Dashboard: https://$VAR_BEE_HOST/dashboard"
+	echo " Bee Dashboard: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/dashboard"
 	echo " Bee Username: $VAR_USERNAME"
 	echo " Bee Password: <set during install>"
-	echo " API: https://$VAR_BEE_HOST/api/v1/info"
+	echo " API: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/api/v1/info"
 	echo "═══════════════════════════════════════════════════════════════════════════════"
 	echo ""
 
@@ -374,7 +443,7 @@ ShimmerMainnet() {
 	echo ""
 
 	read -p 'Set domain-name: ' VAR_HORNET_HOST
-	read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
+	read -p 'Set mail to request a new ssl-certificat: ' VAR_ACME_EMAIL
 	read -p 'Set dashboard username: ' VAR_USERNAME
 	read -p 'Set password (blank): ' VAR_PASSWORD
 
