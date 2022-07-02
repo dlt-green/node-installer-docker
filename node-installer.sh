@@ -45,7 +45,7 @@ CheckCertificate() {
 	else 
 		echo "No existing Let's Encrypt Certificate found, generate a new one... "
 		VAR_CERT=0
-	 fi 
+	fi 
 
 }
 
