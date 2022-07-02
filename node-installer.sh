@@ -11,7 +11,6 @@ DockerBee="https://dlt.green/downloads/iota-bee.tar.gz"
 if [ -f "node-installer.sh" ]; then rm node-installer.sh; fi
 
 CheckCertificate() {
-
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -21,7 +20,6 @@ CheckCertificate() {
 
 	if [ -f "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" ] 
 	then 
-
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -34,23 +32,20 @@ CheckCertificate() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo "select: "
 		echo ""
-	
+
 		read n
 		case $n in
 		1) VAR_CERT=1 ;;
 		*) echo "No existing Let's Encrypt Certificate found, generate a new one... "
 		   VAR_CERT=0 ;;
 		esac
-
 	else 
 		echo "No existing Let's Encrypt Certificate found, generate a new one... "
 		VAR_CERT=0
 	fi 
-
 }
 
 MainMenu() {
-
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -82,7 +77,6 @@ MainMenu() {
 }
 
 SubMenuIotaMainnet() {
-
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -106,7 +100,6 @@ SubMenuIotaMainnet() {
 }
 
 SubMenuIotaDevnet() {
-
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -134,7 +127,6 @@ SubMenuIotaDevnet() {
 }
 
 SubMenuShimmerMainnet() {
-
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
