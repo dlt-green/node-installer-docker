@@ -70,7 +70,7 @@ MainMenu() {
 	echo ""
 
 	read n
-    case $n in
+	case $n in
 	1) SystemUpdates ;;
 	2) Docker ;;
 	3) SubMenuIotaMainnet ;;
@@ -98,7 +98,7 @@ SubMenuIotaMainnet() {
 	echo ""
 
 	read n
-    case $n in
+	case $n in
 	1) MainMenu ;;
 	2) BeeMainnet ;;
 	*) MainMenu ;;
@@ -124,7 +124,7 @@ SubMenuIotaDevnet() {
 	echo ""
 
 	read n
-    case $n in
+	case $n in
 	1) MainMenu ;;
 	2) MainMenu ;;
 	3) MainMenu ;;
@@ -150,7 +150,7 @@ SubMenuShimmerMainnet() {
 	echo ""
 
 	read n
-    case $n in
+	case $n in
 	1) ShimmerMainnet ;;
 	2) MainMenu ;;
 	*) MainMenu ;;
@@ -191,7 +191,7 @@ SystemUpdates() {
 	echo ""
 	
 	read n
-    case $n in
+	case $n in
 	1) sudo reboot ;;
 	*) MainMenu ;;
 	esac
