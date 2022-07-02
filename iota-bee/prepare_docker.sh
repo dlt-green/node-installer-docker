@@ -59,7 +59,7 @@ fi
 
 # Extract default config from image
 echo "Generating config..."
-rm -f $(dirname "$configPath")/$configFilename
+rm -Rf $(dirname "$configPath")/$configFilename
 containerId=$(docker create $beeImage)
 docker cp $containerId:/app/$configFilename "$configPath"
 docker rm $containerId
