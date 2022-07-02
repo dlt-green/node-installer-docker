@@ -3,10 +3,11 @@
 VRSN="0.3.0"
 
 VAR_CERTIFICATE=0
+VAR_NETWORK=0
 VAR_HOST=''
 
 DockerShimmerMainnet="https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha.22/HORNET-2.0.0-alpha.22-docker-example.tar.gz"
-DockerBee="https://dlt.green/downloads/iota-bee.tar.gz"
+DockerIotaBee="https://dlt.green/downloads/iota-bee.tar.gz"
 
 if [ -f "node-installer.sh" ]; then rm node-installer.sh; fi
 
@@ -27,7 +28,7 @@ CheckCertificate() {
 		echo "║                                    $VRSN                                    ║"
 		echo "║                                                                             ║"
 		echo "║                            1. Use existing Let's Encrypt Certificate        ║"
-		echo "║                            X. Renew certificate                             ║"
+		echo "║                            X. Get new Certificate (don't use with SWARM)    ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo "select: "
@@ -94,7 +95,8 @@ SubMenuIotaMainnet() {
 	read n
 	case $n in
 	1) MainMenu ;;
-	2) BeeMainnet ;;
+	2) VAR_NETWORK=3
+	   IotaBee ;;
 	*) MainMenu ;;
 	esac
 }
@@ -119,7 +121,8 @@ SubMenuIotaDevnet() {
 	read n
 	case $n in
 	1) MainMenu ;;
-	2) MainMenu ;;
+	2) VAR_NETWORK=4
+	   IotaBee ;;
 	3) MainMenu ;;
 	4) MainMenu ;;
 	*) MainMenu ;;
@@ -157,7 +160,7 @@ SystemUpdates() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	clear
 	sudo apt-get update && apt-get upgrade -y
@@ -165,7 +168,7 @@ SystemUpdates() {
 	sudo apt upgrade -y
 	sudo apt-get autoremove -y
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	clear
 	
@@ -197,7 +200,7 @@ Docker() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	cd /var/lib/hornet
 	docker-compose down
@@ -247,12 +250,12 @@ Docker() {
 	sudo apt-get update
 	sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	MainMenu
 }
 
-BeeMainnet() {
+IotaBee() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -260,9 +263,9 @@ BeeMainnet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	dir=/var/lib/iota-bee
+	dir='/var/lib/iota-bee'
 	if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
 
 	echo ""
@@ -275,11 +278,11 @@ BeeMainnet() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                   Pull installer from dlt.green/bee:main                    ║"
+	echo "║                   Pull installer from dlt.green/iota-bee                    ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerBee" > install.tar.gz
+	wget -cO - "$DockerIotaBee" > install.tar.gz
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
@@ -287,7 +290,7 @@ BeeMainnet() {
 	echo "remove tar.gz:"
 	rm -r install.tar.gz
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 	
 	clear
 	echo ""
@@ -313,7 +316,10 @@ BeeMainnet() {
 	if [ -f .env ]; then rm .env; fi
 
 	echo "BEE_VERSION=0.3.1" >> .env
-	echo "BEE_NETWORK=mainnet" >> .env
+
+	if [ $VAR_NETWORK = 3 ]; then echo "BEE_NETWORK=mainnet" >> .env; fi
+	if [ $VAR_NETWORK = 4 ]; then echo "BEE_NETWORK=devnet" >> .env; fi
+	
 	echo "BEE_HOST=$VAR_HOST" >> .env
 	echo "BEE_HTTPS_PORT=$VAR_BEE_HTTPS_PORT" >> .env
 	
