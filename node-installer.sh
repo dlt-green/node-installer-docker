@@ -384,10 +384,10 @@ BeeMainnet() {
 
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
-	echo " Bee Dashboard: https://$VAR_HOST/dashboard"
+	echo " Bee Dashboard: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/dashboard"
 	echo " Bee Username: $VAR_USERNAME"
 	echo " Bee Password: <set during install>"
-	echo " API: https://$VAR_HOST/api/v1/info"
+	echo " API: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/api/v1/info"
 	echo "═══════════════════════════════════════════════════════════════════════════════"
 	echo ""
 
