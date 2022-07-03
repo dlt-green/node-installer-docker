@@ -381,7 +381,10 @@ IotaBee() {
 	echo ""
 
 	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
+
 	docker-compose up -d
+	docker container rename iota-bee_bee_1 iota-bee
+	docker container rename iota-bee_traefik_1 iota-bee-traefik
 
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -500,7 +503,11 @@ ShimmerHornet() {
 	echo ""
 
 	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
+
 	docker-compose up -d
+	docker container rename shimmmer-hornet_hornet_1 shimmmer-hornet
+	docker container rename shimmmer-hornet_traefik_1 shimmmer-hornet-traefik
+
 	docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"
 
 	echo ""
