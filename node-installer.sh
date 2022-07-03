@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VRSN="0.3.1"
+VRSN="0.3.2"
 
 VAR_CERTIFICATE=0
 VAR_NETWORK=0
