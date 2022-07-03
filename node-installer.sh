@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 VRSN="0.3.2"
 
@@ -27,7 +27,7 @@ CheckCertificate() {
 		echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 		echo "║                                    $VRSN                                    ║"
 		echo "║                                                                             ║"
-		echo "║                            1. Use existing Let's Encrypt Certificate        ║"
+		echo "║                            1. Use existing Certificate (recommend)          ║"
 		echo "║                            X. Get new Certificate (don't use with SWARM)    ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -325,15 +325,16 @@ IotaBee() {
 	
 	echo "BEE_HOST=$VAR_HOST" >> .env
 	echo "BEE_HTTPS_PORT=$VAR_BEE_HTTPS_PORT" >> .env
+	echo "BEE_GOSSIP_PORT=15601" >> .env
+	echo "BEE_AUTOPEERING_PORT=14636" >> .env
 	
 	if [ $VAR_CERT = 0 ]
 	then
+		echo "BEE_HTTP_PORT=80" >> .env
 		read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
 		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 	else
 		echo "BEE_HTTP_PORT=8082" >> .env
-		echo "BEE_GOSSIP_PORT=15601" >> .env
-		echo "BEE_AUTOPEERING_PORT=14636" >> .env
 		echo "SSL_CONFIG=certs" >> .env
 		echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 		echo "BEE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
@@ -385,6 +386,7 @@ IotaBee() {
 	docker-compose up -d
 	docker container rename iota-bee_bee_1 iota-bee
 	docker container rename iota-bee_traefik_1 iota-bee.traefik
+	docker container rename iota-bee_traefik-certs-dumper_1 iota-bee.traefik-certs-dumper
 
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
