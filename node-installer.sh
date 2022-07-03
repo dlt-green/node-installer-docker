@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VRSN="0.3.1"
+VRSN="0.3.2"
 
 VAR_CERTIFICATE=0
 VAR_NETWORK=0
@@ -381,7 +381,10 @@ IotaBee() {
 	echo ""
 
 	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
+
 	docker-compose up -d
+	docker container rename iota-bee_bee_1 iota-bee
+	docker container rename iota-bee_traefik_1 iota-bee.traefik
 
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -500,7 +503,17 @@ ShimmerHornet() {
 	echo ""
 
 	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
+
 	docker-compose up -d
+	docker container rename shimmer-hornet_hornet_1 shimmer-hornet
+	docker container rename shimmer-hornet_traefik_1 shimmer-hornet.traefik
+	docker container rename shimmer-hornet_inx-participation_1 shimmer-hornet.inx-participation
+	docker container rename shimmer-hornet_inx-dashboard_1 shimmer-hornet.inx-dashboard
+	docker container rename shimmer-hornet_inx-indexer_1 shimmer-hornet.inx-indexer
+	docker container rename shimmer-hornet_inx-poi_1 shimmer-hornet.inx-poi
+	docker container rename shimmer-hornet_inx-spammer_1 shimmer-hornet.inx-spammer
+	docker container rename shimmer-hornet_inx-mqtt_1 shimmer-hornet.inx-mqtt
+	
 	docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"
 
 	echo ""

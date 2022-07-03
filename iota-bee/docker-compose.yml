@@ -45,20 +45,34 @@ services:
       # - "--log.level=DEBUG"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:${BEE_HTTP_PORT:-80}"
+      - "--entrypoints.web.address=:80"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--entrypoints.websecure.address=:${BEE_HTTPS_PORT:-443}"
+      - "--entrypoints.websecure.address=:443"
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL:-}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
-      - "${BEE_HTTP_PORT:-80}:${BEE_HTTP_PORT:-80}/tcp"
-      - "${BEE_HTTPS_PORT:-443}:${BEE_HTTPS_PORT:-443}/tcp"
+      - "${BEE_HTTP_PORT:-80}:80/tcp"
+      - "${BEE_HTTPS_PORT:-443}:443/tcp"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "${BEE_DATA_DIR:-./data}/letsencrypt:/letsencrypt"
       - "./assets/traefik/${SSL_CONFIG:-letsencrypt}.yml:/etc/traefik/dynamic/config.yml:ro"
       - "${BEE_SSL_CERT:-./assets/traefik/certs/fake.cert}:/certs/domain.cert:ro"
       - "${BEE_SSL_KEY:-./assets/traefik/certs/fake.key}:/certs/domain.key:ro"
+
+  traefik-certs-dumper:
+    image: ldez/traefik-certs-dumper:v2.8.1
+    restart: unless-stopped
+    entrypoint: |
+      sh -c '
+        apk add jq
+        while [ ! -e /data/acme.json ] || [ `jq ".[] | .Certificates | length" /data/acme.json` == 0 ]; do
+          sleep 1;
+        done
+        traefik-certs-dumper file --version v2 --watch --source /data/acme.json --dest /data/certs
+      '
+    volumes:
+      - ${BEE_DATA_DIR:-./data}/letsencrypt:/data

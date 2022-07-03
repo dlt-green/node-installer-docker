@@ -58,21 +58,47 @@ fi
 
 
 # Extract default config from image
+if [ -z "$(docker images | grep iotaledger/bee | grep $BEE_VERSION)" ]; then
+  echo "Pulling docker image $beeImage..."
+  docker pull $beeImage >/dev/null 2>&1
+fi
+
 echo "Generating config..."
 rm -Rf $(dirname "$configPath")/$configFilename
-containerId=$(docker create $beeImage)
-docker cp $containerId:/app/$configFilename "$configPath"
-docker rm $containerId
+docker create --name iota-bee-tmp $beeImage >/dev/null 2>&1
+docker cp iota-bee-tmp:/app/$configFilename "$configPath"
+docker rm iota-bee-tmp >/dev/null 2>&1
 
 
 # Update extracted config with values from .env
 tmp=/tmp/config.tmp
-jq ".network.bindAddress=\"/ip4/0.0.0.0/tcp/${BEE_GOSSIP_PORT:-15601}\"" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
-jq ".autopeering.bindAddress=\"0.0.0.0:${BEE_AUTOPEERING_PORT:-14636}\"" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
-jq ".autopeering.enabled=true" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
-jq ".dashboard.auth.user=\"${DASHBOARD_USERNAME:-admin}\"" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
-jq ".dashboard.auth.passwordHash=\"$DASHBOARD_PASSWORD\"" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
-jq ".dashboard.auth.passwordSalt=\"$DASHBOARD_SALT\"" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
+read_config () {
+  # param1:  jsonpath to read value from configuration
+  local value=$(jq "$1" "$configPath")
+  echo "$value"
+}
+
+set_config () {
+  # param1: jsonpath to set value in configuration
+  # param2: configuration value
+  echo "  $1: $2"
+  jq "$1=$2" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
+}
+
+set_config_conditionally () {
+  # param1: name of env variable containing value
+  # param2: jsonpath to set value in configuration
+  DEFAULT_VALUE=$(read_config "$2")
+  if [ ! -z "${!1}" ]; then set_config "$2" "${!1:-$DEFAULT_VALUE}"; else echo "  $2: $DEFAULT_VALUE (default)"; fi
+}
+
+set_config ".network.bindAddress"         "\"/ip4/0.0.0.0/tcp/${BEE_GOSSIP_PORT:-15601}\""
+set_config ".autopeering.bindAddress"     "\"0.0.0.0:${BEE_AUTOPEERING_PORT:-14636}\""
+set_config ".autopeering.enabled"         "true"
+set_config ".dashboard.auth.user"         "\"${DASHBOARD_USERNAME:-admin}\""
+set_config ".dashboard.auth.passwordHash" "\"$DASHBOARD_PASSWORD\""
+set_config ".dashboard.auth.passwordSalt" "\"$DASHBOARD_SALT\""
+set_config ".pruning.delay"               "${BEE_PRUNING_DELAY:-60480}"
 rm -f $tmp
 
 echo "Finished"
