@@ -29,6 +29,7 @@ BEE_HOST=node.your-domain.com
 # BEE_GOSSIP_PORT=15601
 # BEE_AUTOPEERING_PORT=14636
 # BEE_DATA_DIR=<absolute path to data dir>
+# BEE_PRUNING_DELAY=<pruning delay>
 
 # DASHBOARD_USERNAME=admin
 DASHBOARD_PASSWORD=0000000000000000000000000000000000000000000000000000000000000000
@@ -45,6 +46,7 @@ DASHBOARD_SALT=0000000000000000000000000000000000000000000000000000000000000000
 | BEE_GOSSIP_PORT      |           |    15601    | Gossip port                                                                                                                                                         |
 | BEE_AUTOPEERING_PORT |           |    14636    | Autopeering port                                                                                                                                                    |
 | BEE_DATA_DIR         |           |    .data    | Directory containing configuration, database, snapshots etc.                                                                                                        |
+| BEE_PRUNING_DELAY    |           |    60480    | Number of milestones to keep in the database                                                                                                                        |
 | DASHBOARD_USERNAME   |           |    admin    | Username to access dashboard                                                                                                                                        |
 | DASHBOARD_PASSWORD   |     x     |             | Password hash (can be generated with `docker-compose run --rm bee password` or non-interactively with `tools/password_scriptable.sh`)                               |
 | DASHBOARD_SALT       |     x     |             | Password salt (can be generated with `docker-compose run --rm bee password` or non-interactively with `tools/password_scriptable.sh`)                               |
