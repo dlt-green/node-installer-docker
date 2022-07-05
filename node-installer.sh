@@ -340,7 +340,7 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR; fi
+	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
 	cd /var/lib/$VAR_DIR || exit
 
 	echo ""
@@ -366,9 +366,9 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Set domain-name: ' VAR_HOST
-	read -p 'Set domain-port: ' VAR_BEE_HTTPS_PORT	
-	read -p 'Set dashboard username: ' VAR_USERNAME
+	read -p 'Set domain-name (e.g. maxmustermann.dlt.green): ' VAR_HOST
+	read -p 'Set domain-port (e.g. 440): ' VAR_BEE_HTTPS_PORT	
+	read -p 'Set dashboard username (e.g. maxmustermann): ' VAR_USERNAME
 	read -p 'Set password (blank): ' VAR_PASSWORD
 	
 	CheckCertificate
@@ -395,7 +395,7 @@ IotaBee() {
 	if [ $VAR_CERT = 0 ]
 	then
 		echo "BEE_HTTP_PORT=80" >> .env
-		read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
+		read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 	else
 		echo "BEE_HTTP_PORT=8082" >> .env
@@ -482,7 +482,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR; fi
+	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
 	cd /var/lib/$VAR_DIR || exit
 
 	echo ""
@@ -508,10 +508,10 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Set domain-name: ' VAR_HOST
-	read -p 'Set dashboard username: ' VAR_USERNAME
+	read -p 'Set domain-name (e.g. maxmustermann.dlt.green): ' VAR_HOST
+	read -p 'Set dashboard username (e.g. maxmustermann): ' VAR_USERNAME
 	read -p 'Set password (blank): ' VAR_PASSWORD
-	read -p 'Set mail for certificat renewal: ' VAR_ACME_EMAIL
+	read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
