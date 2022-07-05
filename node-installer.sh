@@ -256,7 +256,11 @@ SystemUpdates() {
 	
 	read n
 	case $n in
-	1) sudo reboot ;;
+	1) 	echo 'rebooting...'; sleep 3
+		sudo docker ps -a -q
+	    sleep 3
+		sudo reboot
+		;;
 	*) MainMenu ;;
 	esac
 }
@@ -448,7 +452,9 @@ IotaBee() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
+	sleep 3
 	RenameContainer
+	sleep 3
 
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
