@@ -523,8 +523,9 @@ ShimmerHornet() {
 	if [ -f .env ]; then rm .env; fi
 
 	echo "HORNET_HOST=$VAR_HOST" >> .env
-	echo "GRAFANA_HOST=grafana.$VAR_HORNET_HOST" >> .env
-
+	echo "GRAFANA_HOST=grafana.$VAR_HOST" >> .env
+	echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+		
 	read -p 'Press [Enter] key to continue...' W
 
 	clear
@@ -569,8 +570,9 @@ ShimmerHornet() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
+	sleep 3
 	RenameContainer
-	
+	sleep 3
 	docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"
 
 	echo ""
