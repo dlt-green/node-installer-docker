@@ -340,7 +340,8 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; cd /var/lib/$VAR_DIR || exit; fi
+	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR; fi
+	cd /var/lib/$VAR_DIR || exit
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -378,7 +379,7 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 	if [ -f .env ]; then rm .env; fi
 
 	echo "BEE_VERSION=0.3.1" >> .env
@@ -435,7 +436,7 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 	./prepare_docker.sh
 
 	echo ""
@@ -444,7 +445,7 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
 	RenameContainer
@@ -481,7 +482,8 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
+	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR; fi
+	cd /var/lib/$VAR_DIR || exit
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -517,7 +519,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 	if [ -f .env ]; then rm .env; fi
 
 	echo "HORNET_HOST=$VAR_HOST" >> .env
@@ -555,7 +557,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 	./prepare_docker.sh
 
 	echo ""
@@ -564,7 +566,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
 	RenameContainer
