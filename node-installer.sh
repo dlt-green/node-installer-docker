@@ -589,17 +589,17 @@ ShimmerHornet() {
 }
 
 RenameContainer() {
-	docker container rename iota-bee_bee_1 iota-bee
-	docker container rename iota-bee_traefik_1 iota-bee.traefik
-	docker container rename iota-bee_traefik-certs-dumper_1 iota-bee.traefik-certs-dumper
-	docker container rename shimmer-hornet_hornet_1 shimmer-hornet
-	docker container rename shimmer-hornet_traefik_1 shimmer-hornet.traefik
-	docker container rename shimmer-hornet_inx-participation_1 shimmer-hornet.inx-participation
-	docker container rename shimmer-hornet_inx-dashboard_1 shimmer-hornet.inx-dashboard
-	docker container rename shimmer-hornet_inx-indexer_1 shimmer-hornet.inx-indexer
-	docker container rename shimmer-hornet_inx-poi_1 shimmer-hornet.inx-poi
-	docker container rename shimmer-hornet_inx-spammer_1 shimmer-hornet.inx-spammer
-	docker container rename shimmer-hornet_inx-mqtt_1 shimmer-hornet.inx-mqtt
+	docker container rename iota-bee_bee_1 iota-bee >/dev/null 2>&1
+	docker container rename iota-bee_traefik_1 iota-bee.traefik >/dev/null 2>&1
+	docker container rename iota-bee_traefik-certs-dumper_1 iota-bee.traefik-certs-dumper >/dev/null 2>&1
+	docker container rename shimmer-hornet_hornet_1 shimmer-hornet >/dev/null 2>&1
+	docker container rename shimmer-hornet_traefik_1 shimmer-hornet.traefik >/dev/null 2>&1
+	docker container rename shimmer-hornet_inx-participation_1 shimmer-hornet.inx-participation >/dev/null 2>&1
+	docker container rename shimmer-hornet_inx-dashboard_1 shimmer-hornet.inx-dashboard >/dev/null 2>&1
+	docker container rename shimmer-hornet_inx-indexer_1 shimmer-hornet.inx-indexer >/dev/null 2>&1
+	docker container rename shimmer-hornet_inx-poi_1 shimmer-hornet.inx-poi >/dev/null 2>&1
+	docker container rename shimmer-hornet_inx-spammer_1 shimmer-hornet.inx-spammer >/dev/null 2>&1
+	docker container rename shimmer-hornet_inx-mqtt_1 shimmer-hornet.inx-mqtt >/dev/null 2>&1
 }
 
 MainMenu
