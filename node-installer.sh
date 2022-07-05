@@ -3,9 +3,11 @@
 VRSN="0.3.3"
 
 VAR_HOST=''
+VAR_DIR=''
 VAR_CERTIFICATE=0
 VAR_NETWORK=0
 VAR_NODE=0
+
 
 DockerShimmerMainnet='https://github.com/iotaledger/hornet/releases/download/v2.0.0-alpha.22/HORNET-2.0.0-alpha.22-docker-example.tar.gz'
 DockerIotaBee='https://dlt.green/downloads/iota-bee.tar.gz'
@@ -105,8 +107,10 @@ SubMenuIotaMainnet() {
 	read n
 	case $n in
 	1) VAR_NODE=1
+	   VAR_DIR='iota-hornet'
 	   MainMenu ;;
 	2) VAR_NODE=2
+	   VAR_DIR='iota-bee'
 	   SubMenuMaintenance ;;
 	*) MainMenu ;;
 	esac
@@ -132,12 +136,16 @@ SubMenuIotaDevnet() {
 	read n
 	case $n in
 	1) VAR_NODE=1
+	   VAR_DIR='iota-hornet'
 	   MainMenu ;;
 	2) VAR_NODE=2
+	   VAR_DIR='iota-bee'
 	   SubMenuMaintenance ;;
 	3) VAR_NODE=3
+	   VAR_DIR='iota-goshimmer'
 	   MainMenu ;;
 	4) VAR_NODE=4
+	   VAR_DIR='iota-wasp'
 	   MainMenu ;;
 	*) MainMenu ;;
 	esac
@@ -161,8 +169,10 @@ SubMenuShimmerMainnet() {
 	read n
 	case $n in
 	1) VAR_NODE=1
+	   VAR_DIR='shimmer-hornet'
 	   SubMenuMaintenance ;;
 	2) VAR_NODE=2
+	   VAR_DIR='shimmer-bee'
 	   MainMenu ;;
 	*) MainMenu ;;
 	esac
@@ -176,10 +186,9 @@ SubMenuMaintenance() {
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
 	echo "║                              1. Install/Update                              ║"
-	echo "║                              2. Start                                       ║"
+	echo "║                              2. Start/Restart                               ║"
 	echo "║                              3. Stopp                                       ║"
-	echo "║                              4. Restart                                     ║"	
-	echo "║                              5. Reset Database                              ║"	
+	echo "║                              4. Reset Database                              ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -192,38 +201,22 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
 	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then ShimmerHornet; fi
 	   ;;
-	2) if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then echo starting...;          sleep 3; docker start iota-bee; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then echo starting...;          sleep 3; docker start iota-bee; fi
-	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then echo starting...;          sleep 3; dir=$DirShimmerHornet
-	                                                          if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
-	                                                          if [ -d $dir ]; then cd $dir || exit; docker-compose up -d; fi
-															  ShimmerHornetContainerRename; fi
-	   sleep 3; SubMenuMaintenance ;;
-	3) if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then echo stopping...;          sleep 3; docker stop iota-bee; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then echo stopping...;          sleep 3; docker stop iota-bee; fi
-	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then echo stopping...;          sleep 3; dir=$DirShimmerHornet
-	                                                          if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
-															  fi
-	   sleep 3; SubMenuMaintenance ;;
-	4) if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then echo restarting...;        sleep 3; docker restart iota-bee; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then echo restarting...;        sleep 3; docker restart iota-bee; fi
-	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then echo restarting...;        sleep 3; dir=$DirShimmerHornet
-	                                                          if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
-	                                                          if [ -d $dir ]; then cd $dir || exit; docker-compose up -d; fi
-															  ShimmerHornetContainerRename; fi
-	   sleep 3; SubMenuMaintenance ;;
-	5) if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then echo stopping...;          sleep 3; docker stop iota-bee
-	                                                          echo deleting database...; sleep 3; rm -r /var/lib/iota-bee/data/storage/mainnet/tangle
-	                                                          echo starting...;          sleep 3; docker start iota-bee; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then echo stopping...;          sleep 3; docker stop iota-bee
-	                                                          echo deleting database...; sleep 3; rm -r /var/lib/iota-bee/data/storage/devnet/tangle
-	                                                          echo starting...;          sleep 3; docker start iota-bee; fi
-	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then echo stopping...;          sleep 3; dir=$DirShimmerHornet
-	                                                          if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
-	                                                          echo deleting database...; sleep 3; rm -r $dir/data/database;
-	                                                          if [ -d $dir ]; then cd $dir || exit; docker-compose up -d; fi
-															  ShimmerHornetContainerRename; fi
-	   sleep 3; SubMenuMaintenance ;;
+	2) echo '(re)starting...'; sleep 3
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose up -d; fi
+	   RenameContainer; sleep 3; SubMenuMaintenance
+	   ;;
+	3) echo 'stopping...'; sleep 3
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
+	   sleep 3; SubMenuMaintenance
+	   ;;
+	4) echo 'resetting...'; sleep 3
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down; fi
+	   if [ -d /var/lib/$VAR_DIR/data/database ]; then rm -r /var/lib/$VAR_DIR/data/database; fi
+	   if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
+	   RenameContainer; sleep 3; SubMenuMaintenance
+	   ;;
 	*) MainMenu ;;
 	esac
 }
@@ -278,12 +271,7 @@ Docker() {
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	dir=$DirShimmerHornet
-	if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
-
-	dir=$DirIotaBee
-	if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
-
+	sudo docker ps -a -q
 	sudo apt-get install jq -y
 	sudo apt-get install expect -y
 	
@@ -344,8 +332,7 @@ IotaBee() {
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	dir=$DirIotaBee
-	if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -353,7 +340,7 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d $dir ]; then mkdir $dir || exit; cd $dir || exit; fi
+	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; cd /var/lib/$VAR_DIR || exit; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -391,7 +378,7 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
+	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
 	if [ -f .env ]; then rm .env; fi
 
 	echo "BEE_VERSION=0.3.1" >> .env
@@ -448,7 +435,7 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
+	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
 	./prepare_docker.sh
 
 	echo ""
@@ -457,10 +444,10 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
+	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
-	BeeIotaContainerRename
+	RenameContainer
 
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -486,8 +473,7 @@ ShimmerHornet() {
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	dir='/var/lib/shimmer-hornet'
-	if [ -d $dir ]; then cd $dir || exit; docker-compose down; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -495,7 +481,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d $dir ]; then mkdir $dir || exit; cd $dir || exit; fi
+	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -531,7 +517,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
+	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
 	if [ -f .env ]; then rm .env; fi
 
 	echo "HORNET_HOST=$VAR_HOST" >> .env
@@ -569,7 +555,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
+	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
 	./prepare_docker.sh
 
 	echo ""
@@ -578,10 +564,10 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ ! -d $dir ]; then exit; cd $dir || exit; fi
+	if [ ! -d /var/lib/$VAR_DIR ]; then exit; cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
-	ShimmerHornetContainerRename
+	RenameContainer
 	
 	docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"
 
@@ -602,7 +588,10 @@ ShimmerHornet() {
 	SubMenuMaintenance
 }
 
-ShimmerHornetContainerRename() {
+RenameContainer() {
+	docker container rename iota-bee_bee_1 iota-bee
+	docker container rename iota-bee_traefik_1 iota-bee.traefik
+	docker container rename iota-bee_traefik-certs-dumper_1 iota-bee.traefik-certs-dumper
 	docker container rename shimmer-hornet_hornet_1 shimmer-hornet
 	docker container rename shimmer-hornet_traefik_1 shimmer-hornet.traefik
 	docker container rename shimmer-hornet_inx-participation_1 shimmer-hornet.inx-participation
@@ -611,12 +600,6 @@ ShimmerHornetContainerRename() {
 	docker container rename shimmer-hornet_inx-poi_1 shimmer-hornet.inx-poi
 	docker container rename shimmer-hornet_inx-spammer_1 shimmer-hornet.inx-spammer
 	docker container rename shimmer-hornet_inx-mqtt_1 shimmer-hornet.inx-mqtt
-}
-
-BeeIotaContainerRename() {
-	docker container rename iota-bee_bee_1 iota-bee
-	docker container rename iota-bee_traefik_1 iota-bee.traefik
-	docker container rename iota-bee_traefik-certs-dumper_1 iota-bee.traefik-certs-dumper
 }
 
 MainMenu
