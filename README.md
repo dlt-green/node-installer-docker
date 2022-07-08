@@ -28,7 +28,9 @@ Die Konfiguration der Nodes sollte immer über den von DLT.GREEN bereitgestellte
 #
 
 ### NODE-INSTALLER ausführen
-`sudo wget https://dlt.green/downloads/node-installer.sh && sh node-installer.sh`
+```console
+sudo wget https://dlt.green/downloads/node-installer.sh && sh node-installer.sh
+```
 
 ### Bedienung
 Die Bedienung des Skripts erfolgt über die Eingabe der Zahlen, welche im Menü angezeigt werden.
