@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.3.5"
+VRSN="0.4.0"
 
 VAR_HOST=''
 VAR_DIR=''
@@ -25,7 +25,7 @@ CheckCertificate() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ -f "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" ] 
+	if [ -f "/etc/letsencrypt/live/$VAR_HOST/cert.pem" ] 
 	then 
 		clear
 		echo ""
@@ -50,6 +50,34 @@ CheckCertificate() {
 		echo "No existing Let's Encrypt Certificate found, generate a new one... "
 		VAR_CERT=0
 	fi 
+}
+
+SetCertificateGlobal() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+	echo "║                                    $VRSN                                    ║"
+	echo "║                                                                             ║"
+	echo "║                            1. Set Certificate as Global (recommend)         ║"
+	echo "║                            X. Use Certificate only for this Node            ║"
+	echo "║                                                                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo "select: "
+	echo ""
+
+	read n
+	case $n in
+	1) mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
+	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" ]; then
+	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/cert.pem"
+	   fi
+	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/certs/private/$VAR_HOST.key" ]; then
+	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/privkey.pem"
+	   fi
+	   ;;
+	X) ;;
+	esac	   
 }
 
 MainMenu() {
@@ -399,13 +427,13 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Set domain-name (e.g. maxmustermann.dlt.green): ' VAR_HOST
+	read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
 	read -p 'Set domain-port (e.g. 440): ' VAR_BEE_HTTPS_PORT	
-	read -p 'Set dashboard username (e.g. maxmustermann): ' VAR_USERNAME
+	read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
 	read -p 'Set password (blank): ' VAR_PASSWORD
 	
 	CheckCertificate
-
+	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                              Write Parameters                               ║"
@@ -433,11 +461,11 @@ IotaBee() {
 	else
 		echo "BEE_HTTP_PORT=8082" >> .env
 		echo "SSL_CONFIG=certs" >> .env
-		echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
+		echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/cert.pem" >> .env
 		echo "BEE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 	fi
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	clear
 	echo ""
@@ -481,10 +509,19 @@ IotaBee() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
+	
 	sleep 3
+	
 	RenameContainer
-	sleep 3
 
+	echo ""
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	SetCertificateGlobal
+
+	clear
+	echo ""
+	echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
 	echo " Bee Dashboard: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/dashboard"
@@ -494,7 +531,7 @@ IotaBee() {
 	echo "═══════════════════════════════════════════════════════════════════════════════"
 	echo ""
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	SubMenuMaintenance
 }
@@ -543,8 +580,8 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Set domain-name (e.g. maxmustermann.dlt.green): ' VAR_HOST
-	read -p 'Set dashboard username (e.g. maxmustermann): ' VAR_USERNAME
+	read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
+	read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
 	read -p 'Set password (blank): ' VAR_PASSWORD
 	read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 
@@ -560,7 +597,7 @@ ShimmerHornet() {
 	echo "HORNET_HOST=$VAR_HOST" >> .env
 	echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	clear
 	echo ""
@@ -604,11 +641,21 @@ ShimmerHornet() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
+	
 	sleep 3
+	
 	RenameContainer
-	sleep 3
+
 	docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"
 
+	echo ""
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	SetCertificateGlobal
+	
+	clear
+	echo ""	
+	echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
 	echo " Hornet Dashboard: https://$VAR_HOST/dashboard"
@@ -621,7 +668,7 @@ ShimmerHornet() {
 	echo "═══════════════════════════════════════════════════════════════════════════════"
 	echo ""
 
-	read -p 'Press [Enter] key to continue...' W
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	SubMenuMaintenance
 }
