@@ -1,0 +1,100 @@
+version: '3'
+services:
+
+  goshimmer:
+    image: iotaledger/goshimmer:v${GOSHIMMER_VERSION:?GOSHIMMER_VERSION is missing}
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 16384
+        hard: 16384
+    stop_grace_period: 5m
+    tty: true
+    working_dir: /app
+    ports:
+      - "${GOSHIMMER_GOSSIP_PORT:-14666}:${GOSHIMMER_GOSSIP_PORT:-14666}/tcp"
+      - "${GOSHIMMER_AUTOPEERING_PORT:-14626}:${GOSHIMMER_AUTOPEERING_PORT:-14626}/udp"
+    labels:
+      - "proxy.constraint=goshimmer"
+      - "traefik.enable=true"
+
+      - "traefik.http.services.dashboard.loadbalancer.server.port=8081"
+      - "traefik.http.routers.dashboard.service=dashboard"
+      - "traefik.http.routers.dashboard.rule=Host(`${GOSHIMMER_HOST:?GOSHIMMER_HOST is missing}`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
+      - "traefik.http.routers.dashboard.middlewares=redirect-dashboard"
+      - "traefik.http.middlewares.redirect-dashboard.redirectregex.regex=^https:\\/\\/([^\\/]+)\\/?$$"
+      - "traefik.http.middlewares.redirect-dashboard.redirectregex.replacement=https://$$1/dashboard/"
+      - "traefik.http.middlewares.redirect-dashboard.redirectregex.permanent=true"
+
+      - "traefik.http.services.webapi.loadbalancer.server.port=8080"
+      - "traefik.http.routers.webapi.service=webapi"
+      - "traefik.http.routers.webapi.rule=Host(`${GOSHIMMER_HOST:?GOSHIMMER_HOST is missing}`) && PathPrefix(`/info`, `/healthz`, `/autopeering`, `/manualpeering`, `/data`, `/messages`, `/ledgerstate`, `/mana`, `/snapshot`, `/faucet`, `/spammer`, `/tools`, `/weightprovider`)"
+      - "traefik.http.routers.webapi.entrypoints=websecure"
+      - "traefik.http.routers.webapi.tls=true"
+      - "traefik.http.routers.webapi.tls.certresolver=myresolver"
+    cap_drop:
+      - ALL
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "${GOSHIMMER_DATA_DIR:-./data}/mainnetdb:/app/mainnetdb"
+      - "${GOSHIMMER_DATA_DIR:-./data}/peerdb:/app/peerdb"
+      - "${GOSHIMMER_DATA_DIR:-./data}/config/config.json:/app/config.json:ro"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+
+  ##################################################################
+  #  Reverse Proxy and SSL                                         #
+  ##################################################################
+
+  traefik:
+    image: traefik:v2.6
+    restart: unless-stopped
+    command:
+      # - "--log.level=DEBUG"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.constraints=Label(`proxy.constraint`,`goshimmer`)"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL:-}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "${GOSHIMMER_HTTP_PORT:-80}:80/tcp"
+      - "${GOSHIMMER_HTTPS_PORT:-443}:443/tcp"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "${GOSHIMMER_DATA_DIR:-./data}/letsencrypt:/letsencrypt"
+      - "./assets/traefik/${SSL_CONFIG:-letsencrypt}.yml:/etc/traefik/dynamic/config.yml:ro"
+      - "${GOSHIMMER_SSL_CERT:-./assets/traefik/certs/fake.cert}:/certs/domain.cert:ro"
+      - "${GOSHIMMER_SSL_KEY:-./assets/traefik/certs/fake.key}:/certs/domain.key:ro"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+
+  traefik-certs-dumper:
+    image: ldez/traefik-certs-dumper:v2.8.1
+    restart: unless-stopped
+    entrypoint: |
+      sh -c '
+        apk add jq
+        while [ ! -f /data/acme.json ] || [ -z `jq ".[] | .Certificates | length" /data/acme.json` ] || [ `jq ".[] | .Certificates | length" /data/acme.json` == 0 ]; do
+          sleep 1;
+        done
+        traefik-certs-dumper file --version v2 --watch --source /data/acme.json --dest /data/certs
+      '
+    volumes:
+      - ${GOSHIMMER_DATA_DIR:-./data}/letsencrypt:/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
