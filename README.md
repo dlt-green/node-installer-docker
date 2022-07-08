@@ -10,12 +10,12 @@ DLT.GREEN Node-Installer ist ein Skript zur Installation von Iota Nodes (Bee, Ho
 ### Mindestanforderungen für eine Node
  - 8 GB RAM 
  - 4 CPU Kerne
- - 160 GB Speicher (SSD empfohlen)
+ - 160 GB Speicher (SSD)
 
 ### Mindestanforderungen für Nodes die auch Events (Staking, Voting, etc.) tracken möchten
  - 16 GB RAM 
  - 4+ CPU Kerne 
- - 250+ GB Speicher (SSD empfohlen)
+ - 250+ GB Speicher (SSD)
 
 # Installation
 ### Wichtig
