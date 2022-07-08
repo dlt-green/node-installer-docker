@@ -89,7 +89,7 @@ set_config_conditionally () {
   if [ ! -z "${!1}" ]; then set_config "$2" "${!1:-$DEFAULT_VALUE}"; else echo "  $2: $DEFAULT_VALUE (default)"; fi
 }
 
-set_config ".autoPeering.bindAddress"   "\"0.0.0.0:${GOSHIMMER_AUTOPEERING_PORT:-14626}\""
+set_config ".autoPeering.bindAddress"   "\"0.0.0.0:${GOSHIMMER_AUTOPEERING_PORT:-14646}\""
 set_config ".gossip.bindAddress"        "\"0.0.0.0:${GOSHIMMER_GOSSIP_PORT:-14666}\""
 set_config ".dashboard.bindAddress"     "\"0.0.0.0:8081\""
 set_config ".profiling.bindAddress"     "\"0.0.0.0:6061\""

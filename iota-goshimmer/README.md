@@ -26,7 +26,7 @@ GOSHIMMER_HOST=node.your-domain.com
 # GOSHIMMER_HTTP_PORT=80
 # GOSHIMMER_HTTPS_PORT=443
 # GOSHIMMER_GOSSIP_PORT=14666
-# GOSHIMMER_AUTOPEERING_PORT=14626
+# GOSHIMMER_AUTOPEERING_PORT=14646
 # GOSHIMMER_DATA_DIR=<absolute path to data dir>
 
 # DASHBOARD_USERNAME=admin
@@ -40,7 +40,7 @@ GOSHIMMER_HOST=node.your-domain.com
 | GOSHIMMER_HTTP_PORT        |           |     80      | HTTP port to access dashboard and api. Must be 80 if letsencrypt is used.                                                                                                       |
 | GOSHIMMER_HTTPS_PORT       |           |     443     | HTTPS port to access dashboard and api                                                                                                                                          |
 | GOSHIMMER_GOSSIP_PORT      |           |    14666    | Gossip port                                                                                                                                                                     |
-| GOSHIMMER_AUTOPEERING_PORT |           |    14626    | Autopeering port                                                                                                                                                                |
+| GOSHIMMER_AUTOPEERING_PORT |           |    14646    | Autopeering port                                                                                                                                                                |
 | GOSHIMMER_DATA_DIR         |           |    .data    | Directory containing configuration, database, snapshots etc.                                                                                                                    |
 | DASHBOARD_USERNAME         |           |    admin    | Username to access dashboard                                                                                                                                                    |
 | DASHBOARD_PASSWORD         |     x     |             | Password in clear text (not hashed, so take care!!!)                                                                                                                            |

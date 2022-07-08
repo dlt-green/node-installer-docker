@@ -13,7 +13,7 @@ services:
     working_dir: /app
     ports:
       - "${GOSHIMMER_GOSSIP_PORT:-14666}:${GOSHIMMER_GOSSIP_PORT:-14666}/tcp"
-      - "${GOSHIMMER_AUTOPEERING_PORT:-14626}:${GOSHIMMER_AUTOPEERING_PORT:-14626}/udp"
+      - "${GOSHIMMER_AUTOPEERING_PORT:-14646}:${GOSHIMMER_AUTOPEERING_PORT:-14646}/udp"
     labels:
       - "proxy.constraint=goshimmer"
       - "traefik.enable=true"
