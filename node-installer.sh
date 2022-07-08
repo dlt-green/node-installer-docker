@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.3.4"
+VRSN="0.3.5"
 
 VAR_HOST=''
 VAR_DIR=''
@@ -9,7 +9,7 @@ VAR_NETWORK=0
 VAR_NODE=0
 
 
-DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-2.0.0-alpha.22-docker-example.tar.gz"
+DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-2.0.0-alpha.23-docker-example.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
 
 DirShimmerHornet='/var/lib/shimmer-hornet'
