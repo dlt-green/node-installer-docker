@@ -19,7 +19,7 @@ DLT.GREEN Node-Installer ist ein Skript zur Installation von Iota Nodes (Bee, Ho
 
 # Installation
 ### Wichtig
-Die Konfiguration der Nodes sollte immer über den von DLT.GREEN bereitgestellten Node-Installer erfolgen. Es ist nicht ratsam, die erweiterte Konfiguration zu verwenden, um Veränderungen an den Parametern zu machen, da die eingestellten direkten Parameter bei einem Update nicht berücksichtigt werden und somit zurückgesetzt werden.
+Die Konfiguration der Nodes sollte immer über den von DLT.GREEN bereitgestellten Node-Installer erfolgen. Es ist nicht ratsam Veränderungen an den Parametern zu machen, da die eingestellten direkten Parameter bei einem Update nicht berücksichtigt werden und somit zurückgesetzt werden.
 
 ### Ein Server oder VPS muss vorhanden sein, bevor mit der Installation begonnen wird.
 
