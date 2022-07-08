@@ -40,7 +40,7 @@ if [[ "$SSL_CONFIG" == "certs" ]]; then
 fi
 
 
-# Prepare db directory
+# Prepare data directory
 if [[ ! -z $BEE_NETWORK ]] && [[ "$BEE_NETWORK" != "mainnet" && "$BEE_NETWORK" != "devnet" ]]; then
   echo "Invalid BEE_NETWORK: $BEE_NETWORK"
   exit -1

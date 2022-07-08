@@ -15,6 +15,7 @@ services:
       - "${BEE_GOSSIP_PORT:-15601}:${BEE_GOSSIP_PORT:-15601}/tcp"
       - "${BEE_AUTOPEERING_PORT:-14636}:${BEE_AUTOPEERING_PORT:-14636}/udp"
     labels:
+      - "proxy.constraint=bee-${BEE_NETWORK:-mainnet}"
       - "traefik.enable=true"
       - "traefik.http.routers.bee.service=bee"
       - "traefik.http.routers.bee.rule=Host(`${BEE_HOST:?BEE_HOST is missing}`)"
@@ -30,9 +31,14 @@ services:
       - ALL
     command: [ "--config", "/app/config.json" ]
     volumes:
+      - "/etc/localtime:/etc/localtime:ro"
       - "${BEE_DATA_DIR:-./data}/storage:/app/storage"
       - "${BEE_DATA_DIR:-./data}/snapshots:/app/snapshots"
       - "${BEE_DATA_DIR:-./data}/config/config.chrysalis-${BEE_NETWORK:-mainnet}.json:/app/config.json:ro"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
 
   ##################################################################
   #  Reverse Proxy and SSL                                         #
@@ -45,6 +51,7 @@ services:
       # - "--log.level=DEBUG"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.constraints=Label(`proxy.constraint`,`bee-${BEE_NETWORK:-mainnet}`)"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
@@ -62,6 +69,10 @@ services:
       - "./assets/traefik/${SSL_CONFIG:-letsencrypt}.yml:/etc/traefik/dynamic/config.yml:ro"
       - "${BEE_SSL_CERT:-./assets/traefik/certs/fake.cert}:/certs/domain.cert:ro"
       - "${BEE_SSL_KEY:-./assets/traefik/certs/fake.key}:/certs/domain.key:ro"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
 
   traefik-certs-dumper:
     image: ldez/traefik-certs-dumper:v2.8.1
@@ -69,10 +80,14 @@ services:
     entrypoint: |
       sh -c '
         apk add jq
-        while [ ! -e /data/acme.json ] || [ `jq ".[] | .Certificates | length" /data/acme.json` == 0 ]; do
+        while [ ! -f /data/acme.json ] || [ -z `jq ".[] | .Certificates | length" /data/acme.json` ] || [ `jq ".[] | .Certificates | length" /data/acme.json` == 0 ]; do
           sleep 1;
         done
         traefik-certs-dumper file --version v2 --watch --source /data/acme.json --dest /data/certs
       '
     volumes:
       - ${BEE_DATA_DIR:-./data}/letsencrypt:/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
