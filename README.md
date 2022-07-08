@@ -11,11 +11,13 @@ DLT.GREEN Node-Installer ist ein Skript zur Installation von Iota Nodes (Bee, Ho
  - 8 GB RAM 
  - 4 CPU Kerne
  - 160 GB Speicher (SSD)
+ - Ubuntu 22.04 LTS
 
 ### Mindestanforderungen für Nodes die auch Events (Staking, Voting, etc.) tracken möchten
  - 16 GB RAM 
  - 4+ CPU Kerne 
  - 250+ GB Speicher (SSD)
+ - Ubuntu 22.04 LTS
 
 # Installation
 ### Wichtig
