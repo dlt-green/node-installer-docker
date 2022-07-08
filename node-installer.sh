@@ -11,6 +11,7 @@ VAR_NODE=0
 
 DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-2.0.0-alpha.23-docker-example.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
+DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
 
 DirShimmerHornet='/var/lib/shimmer-hornet'
 DirIotaBee='/var/lib/iota-bee'
