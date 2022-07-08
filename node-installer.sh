@@ -64,7 +64,7 @@ MainMenu() {
 	echo "║                              3. IOTA Mainnet                                ║"
 	echo "║                              4. IOTA Devnet                                 ║"
 	echo "║                              5. Shimmer Mainnet                             ║"
-	echo "║                              6. Shimmer EVM                                 ║"
+	echo "║                              6. License Information                         ║"
 	echo "║                              X. Abort Installer                             ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -84,8 +84,37 @@ MainMenu() {
 	5) VAR_NETWORK=5
 	   SubMenuShimmerMainnet ;;
 	6) VAR_NETWORK=6
-	   MainMenu ;;
+	   SubMenuLicense ;;
 	*) exit ;;
+	esac
+}
+
+SubMenuLicense() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+	echo "║                                    $VRSN                                    ║"
+	echo "║                                                                             ║"
+	echo "║                      GNU General Public License v3.0                        ║"
+	echo "║                                                                             ║"
+	echo "║    https://github.com/dlt-green/node-installer-docker/blob/main/license     ║"
+	echo "║                                                                             ║"	
+	echo "║                              X. Main Menu                                   ║"
+	echo "║                                                                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo "select: "
+	echo ""
+
+	read n
+	case $n in
+	1) VAR_NODE=1
+	   VAR_DIR='iota-hornet'
+	   MainMenu ;;
+	2) VAR_NODE=2
+	   VAR_DIR='iota-bee'
+	   SubMenuMaintenance ;;
+	*) MainMenu ;;
 	esac
 }
 
