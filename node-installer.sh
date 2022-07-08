@@ -216,7 +216,7 @@ SubMenuShimmerMainnet() {
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
-	echo "║                              1. Shimmer Hornet Mainnet                      ║"
+	echo "║                              1. Shimmer Hornet Mainnet (soon)               ║"
 	echo "║                              2. Shimmer Bee Mainnet (soon)                  ║"
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
@@ -226,7 +226,7 @@ SubMenuShimmerMainnet() {
 
 	read n
 	case $n in
-	1) VAR_NODE=1
+	8) VAR_NODE=1
 	   VAR_DIR='shimmer-hornet'
 	   SubMenuMaintenance ;;
 	2) VAR_NODE=2
