@@ -6,15 +6,12 @@ Wir sind ein Team von Leuten aus der IOTA Community, welches sich die Vision ges
 # DLT.GREEN AUTOMATIC NODE-INSTALLER DOCKER
 ![image](https://user-images.githubusercontent.com/89119285/174690387-d5e3ff9a-7058-47ec-9eed-34ccfc178139.png)
 
-TODO: Kurze Beschreibung zum Skript hinzufügen
-Der Node-Installer erleichtert die Installation von Iota Nodes (Bee, Hornet, GoShimmer und Wasp). Die Installation erfolgt über Docker.
+DLT.GREEN Node-Installer ist ein Skript zur Installtion von Iota Nodes (Bee, Hornet, GoShimmer und Wasp). Die Installation erfolgt mit Docker im Hintergrund und soll es jedem, auch Anfängern, ermöglichen in kurzer Zeit Iota Nodes auf einem Server oder einem Virtual Private Server (VPS) einrichten zu können.
 
 # Voraussetzungen
 TODO: Voraussetzungen für VPS und OS angeben
 
 # Installation
-TODO: Installations Schritte erklären
-
 ### Wichtig
 Die Konfiguration der Nodes sollte immer über den von DLT.GREEN bereitgestellten Node-Installer erfolgen. Es ist nicht ratsam, die erweiterte Konfiguration zu verwenden, um Veränderungen an den Parametern zu machen, da die eingestellten direkten Parameter bei einem Update nicht berücksichtigt werden und somit zurückgesetzt werden.
 
