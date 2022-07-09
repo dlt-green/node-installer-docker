@@ -35,12 +35,10 @@ sudo wget https://dlt.green/downloads/node-installer.sh && sh node-installer.sh
 ### Bedienung
 Die Bedienung des Skripts erfolgt über die Eingabe der Zahlen, welche im Menü angezeigt werden.
 
-![image](https://user-images.githubusercontent.com/89119285/178085343-9c8285bf-e550-4f80-9bf3-f13b2f9d7946.png)
-
 <div align="center">
       <a href="ttps://dlt.green/downloads/install-bee.mp4">
      <img 
-      src="" 
+      src="https://user-images.githubusercontent.com/89119285/178085343-9c8285bf-e550-4f80-9bf3-f13b2f9d7946.png" 
       alt="Installation Bee with Docker additional to SWARM" 
       style="width:100%;">
       </a>
