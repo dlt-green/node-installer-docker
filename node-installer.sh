@@ -537,6 +537,156 @@ IotaBee() {
 	SubMenuMaintenance
 }
 
+IotaGoshimmer() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║              DLT.GREEN AUTOMATIC BEE INSTALLATION WITH DOCKER               ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                     Create bee directory /var/lib/iota-bee                  ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
+	cd /var/lib/$VAR_DIR || exit
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                   Pull installer from dlt.green/iota-bee                    ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	wget -cO - "$DockerIotaGoshimmer" > install.tar.gz
+
+	echo "unpack:"
+	tar -xzf install.tar.gz
+
+	echo "remove tar.gz:"
+	rm -r install.tar.gz
+
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Set Parameters                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
+	read -p 'Set domain-port (e.g. 446): ' VAR_GOSHIMMER_HTTPS_PORT	
+	read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
+	read -p 'Set password (blank): ' VAR_PASSWORD
+	
+	CheckCertificate
+	
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                              Write Parameters                               ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+	if [ -f .env ]; then rm .env; fi
+
+	echo "GOSHIMMER_VERSION=0.9.1" >> .env
+
+	echo "GOSHIMMER_HOST=$VAR_HOST" >> .env
+	echo "GOSHIMMER_HTTPS_PORT=$VAR_GOSHIMMER_HTTPS_PORT" >> .env
+	echo "GOSHIMMER_GOSSIP_PORT=14666" >> .env
+	echo "GOSHIMMER_AUTOPEERING_PORT=14646" >> .env
+	
+	if [ $VAR_CERT = 0 ]
+	then
+		echo "GOSHIMMER_HTTP_PORT=80" >> .env
+		read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+	else
+		echo "GOSHIMMER_HTTP_PORT=8083" >> .env
+		echo "SSL_CONFIG=certs" >> .env
+		echo "GOSHIMMER_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
+		echo "GOSHIMMER_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
+	fi
+
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                                 Pull Data                                   ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	docker-compose pull
+	
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Set Creditials                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	credentials=$(./password.sh "$VAR_PASSWORD" | sed -e 's/\r//g')
+
+	VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+	VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+
+	echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
+	echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
+	echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Prepare Docker                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+	./prepare_docker.sh
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                                 Start Bee                                   ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+
+	docker-compose up -d
+	
+	sleep 3
+	
+	RenameContainer
+
+	echo ""
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	SetCertificateGlobal
+
+	clear
+	echo ""
+	echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+	echo ""
+	echo "═══════════════════════════════════════════════════════════════════════════════"
+	echo " Bee Dashboard: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/dashboard"
+	echo " Bee Username: $VAR_USERNAME"
+	echo " Bee Password: <set during install>"
+	echo " API: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/info"
+	echo "═══════════════════════════════════════════════════════════════════════════════"
+	echo ""
+
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	SubMenuMaintenance
+}
+
 ShimmerHornet() {
 	clear
 	echo ""
