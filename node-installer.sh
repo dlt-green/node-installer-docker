@@ -245,7 +245,7 @@ SubMenuMaintenance() {
 	echo "║                                                                             ║"
 	echo "║                              1. Install/Update                              ║"
 	echo "║                              2. Start/Restart                               ║"
-	echo "║                              3. Stopp                                       ║"
+	echo "║                              3. Stop                                        ║"
 	echo "║                              4. Reset Database                              ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
