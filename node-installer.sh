@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.4.0"
+VRSN="0.4.1"
 
 VAR_HOST=''
 VAR_DIR=''
@@ -11,6 +11,7 @@ VAR_NODE=0
 
 DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-2.0.0-alpha.23-docker-example.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
+DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
 
 DirShimmerHornet='/var/lib/shimmer-hornet'
 DirIotaBee='/var/lib/iota-bee'
@@ -25,7 +26,7 @@ CheckCertificate() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ -f "/etc/letsencrypt/live/$VAR_HOST/cert.pem" ] 
+	if [ -f "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" ] 
 	then 
 		clear
 		echo ""
@@ -70,7 +71,7 @@ SetCertificateGlobal() {
 	case $n in
 	1) mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
 	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" ]; then
-	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/cert.pem"
+	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
 	   fi
 	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/certs/private/$VAR_HOST.key" ]; then
 	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/privkey.pem"
@@ -215,7 +216,7 @@ SubMenuShimmerMainnet() {
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
-	echo "║                              1. Shimmer Hornet Mainnet                      ║"
+	echo "║                              1. Shimmer Hornet Mainnet (soon)               ║"
 	echo "║                              2. Shimmer Bee Mainnet (soon)                  ║"
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
@@ -225,7 +226,7 @@ SubMenuShimmerMainnet() {
 
 	read n
 	case $n in
-	1) VAR_NODE=1
+	8) VAR_NODE=1
 	   VAR_DIR='shimmer-hornet'
 	   SubMenuMaintenance ;;
 	2) VAR_NODE=2
@@ -461,7 +462,7 @@ IotaBee() {
 	else
 		echo "BEE_HTTP_PORT=8082" >> .env
 		echo "SSL_CONFIG=certs" >> .env
-		echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/cert.pem" >> .env
+		echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 		echo "BEE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 	fi
 
