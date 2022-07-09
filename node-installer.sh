@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.4.0"
+VRSN="0.4.1"
 
 VAR_HOST=''
 VAR_DIR=''
@@ -26,7 +26,7 @@ CheckCertificate() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ -f "/etc/letsencrypt/live/$VAR_HOST/cert.pem" ] 
+	if [ -f "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" ] 
 	then 
 		clear
 		echo ""
@@ -71,7 +71,7 @@ SetCertificateGlobal() {
 	case $n in
 	1) mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
 	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" ]; then
-	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/cert.pem"
+	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
 	   fi
 	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/certs/private/$VAR_HOST.key" ]; then
 	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/privkey.pem"
@@ -462,7 +462,7 @@ IotaBee() {
 	else
 		echo "BEE_HTTP_PORT=8082" >> .env
 		echo "SSL_CONFIG=certs" >> .env
-		echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/cert.pem" >> .env
+		echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 		echo "BEE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 	fi
 
