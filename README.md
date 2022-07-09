@@ -54,5 +54,4 @@ Wenn du Fehler gefunden hast oder Verbesserungsvorschläge für unser Skript has
 Bitte beachten, dass die Verwendung dieses Skripts auf eigenes Risiko erfolgt und DLT.GREEN für eventuelle Schäden nicht haftet.
 
 # Disclosure
-YOU USE IT ON YOUR OWN RISK
-IT'S NO OFFICIAL INSTALLER FROM IF - AND YOU WILL GET NO SUPPORT BY IF WHEN YOU USE IT
+IT'S NO OFFICIAL INSTALLER FROM IF - YOU WILL GET NO SUPPORT BY IF WHEN YOU USE IT - BUT YOU WILL GET SUPPORT BY DLT.GREEN IN OUR DICORD
