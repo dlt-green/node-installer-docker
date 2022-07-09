@@ -818,7 +818,7 @@ RenameContainer() {
 	docker container rename iota-bee_bee_1 iota-bee >/dev/null 2>&1
 	docker container rename iota-bee_traefik_1 iota-bee.traefik >/dev/null 2>&1
 	docker container rename iota-bee_traefik-certs-dumper_1 iota-bee.traefik-certs-dumper >/dev/null 2>&1
-	docker container rename iota-goshimmer_1 iota-goshimmer >/dev/null 2>&1
+	docker container rename iota-goshimmer_goshimmer_1 iota-goshimmer >/dev/null 2>&1
 	docker container rename iota-goshimmer_traefik_1 iota-goshimmer.traefik >/dev/null 2>&1
 	docker container rename iota-goshimmer_traefik-certs-dumper_1 iota-goshimmer.traefik-certs-dumper >/dev/null 2>&1
 	docker container rename shimmer-hornet_hornet_1 shimmer-hornet >/dev/null 2>&1
