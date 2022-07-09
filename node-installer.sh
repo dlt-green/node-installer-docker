@@ -584,8 +584,6 @@ IotaGoshimmer() {
 
 	read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
 	read -p 'Set domain-port (e.g. 446): ' VAR_GOSHIMMER_HTTPS_PORT	
-	read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
-	read -p 'Set password (blank): ' VAR_PASSWORD
 	
 	CheckCertificate
 	
