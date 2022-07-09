@@ -183,7 +183,7 @@ SubMenuIotaDevnet() {
 	echo "║                                                                             ║"
 	echo "║                              1. IOTA Hornet Devnet (soon)                   ║"
 	echo "║                              2. IOTA Bee Devnet                             ║"
-	echo "║                              3. IOTA Goshimmer (soon)                       ║"
+	echo "║                              3. IOTA Goshimmer                              ║"
 	echo "║                              4. IOTA Wasp (soon)                            ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
@@ -201,7 +201,7 @@ SubMenuIotaDevnet() {
 	   SubMenuMaintenance ;;
 	3) VAR_NODE=3
 	   VAR_DIR='iota-goshimmer'
-	   MainMenu ;;
+	   SubMenuMaintenance ;;
 	4) VAR_NODE=4
 	   VAR_DIR='iota-wasp'
 	   MainMenu ;;
@@ -257,6 +257,7 @@ SubMenuMaintenance() {
 	case $n in
 	1) if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then IotaGoshimmer; fi
 	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then ShimmerHornet; fi
 	   ;;
 	2) echo '(re)starting...'; sleep 3
@@ -272,6 +273,7 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down; fi
 	   if [ -d /var/lib/$VAR_DIR/data/database ]; then rm -r /var/lib/$VAR_DIR/data/database; fi
 	   if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle; fi
+	   if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb; fi
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; sleep 3; SubMenuMaintenance
 	   ;;
@@ -537,6 +539,143 @@ IotaBee() {
 	SubMenuMaintenance
 }
 
+IotaGoshimmer() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║           DLT.GREEN AUTOMATIC GOSHIMMER INSTALLATION WITH DOCKER            ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                  Create bee directory /var/lib/iota-goshimmer               ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
+	cd /var/lib/$VAR_DIR || exit
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                Pull installer from dlt.green/iota-goshimmer                 ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	wget -cO - "$DockerIotaGoshimmer" > install.tar.gz
+
+	echo "unpack:"
+	tar -xzf install.tar.gz
+
+	echo "remove tar.gz:"
+	rm -r install.tar.gz
+
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Set Parameters                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
+	read -p 'Set domain-port (e.g. 446): ' VAR_GOSHIMMER_HTTPS_PORT	
+	
+	CheckCertificate
+	
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                              Write Parameters                               ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+	if [ -f .env ]; then rm .env; fi
+
+	echo "GOSHIMMER_VERSION=0.9.1" >> .env
+
+	echo "GOSHIMMER_HOST=$VAR_HOST" >> .env
+	echo "GOSHIMMER_HTTPS_PORT=$VAR_GOSHIMMER_HTTPS_PORT" >> .env
+	echo "GOSHIMMER_GOSSIP_PORT=14666" >> .env
+	echo "GOSHIMMER_AUTOPEERING_PORT=14646" >> .env
+	
+	if [ $VAR_CERT = 0 ]
+	then
+		echo "GOSHIMMER_HTTP_PORT=80" >> .env
+		read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+	else
+		echo "GOSHIMMER_HTTP_PORT=8083" >> .env
+		echo "SSL_CONFIG=certs" >> .env
+		echo "GOSHIMMER_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
+		echo "GOSHIMMER_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
+	fi
+
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                                 Pull Data                                   ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	docker-compose pull
+	
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                            No Creditials Needed                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Prepare Docker                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+	./prepare_docker.sh
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                              Start Goshimmer                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+
+	docker-compose up -d
+	
+	sleep 3
+	
+	RenameContainer
+
+	echo ""
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	SetCertificateGlobal
+
+	clear
+	echo ""
+	echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+	echo ""
+	echo "═══════════════════════════════════════════════════════════════════════════════"
+	echo " Goshimmer Dashboard: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/dashboard"
+	echo " API: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/info"
+	echo "═══════════════════════════════════════════════════════════════════════════════"
+	echo ""
+
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	SubMenuMaintenance
+}
+
 ShimmerHornet() {
 	clear
 	echo ""
@@ -678,6 +817,9 @@ RenameContainer() {
 	docker container rename iota-bee_bee_1 iota-bee >/dev/null 2>&1
 	docker container rename iota-bee_traefik_1 iota-bee.traefik >/dev/null 2>&1
 	docker container rename iota-bee_traefik-certs-dumper_1 iota-bee.traefik-certs-dumper >/dev/null 2>&1
+	docker container rename iota-goshimmer_goshimmer_1 iota-goshimmer >/dev/null 2>&1
+	docker container rename iota-goshimmer_traefik_1 iota-goshimmer.traefik >/dev/null 2>&1
+	docker container rename iota-goshimmer_traefik-certs-dumper_1 iota-goshimmer.traefik-certs-dumper >/dev/null 2>&1
 	docker container rename shimmer-hornet_hornet_1 shimmer-hornet >/dev/null 2>&1
 	docker container rename shimmer-hornet_traefik_1 shimmer-hornet.traefik >/dev/null 2>&1
 	docker container rename shimmer-hornet_inx-participation_1 shimmer-hornet.inx-participation >/dev/null 2>&1
