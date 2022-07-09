@@ -34,8 +34,15 @@ sudo wget https://dlt.green/downloads/node-installer.sh && sh node-installer.sh
 
 ### Bedienung
 Die Bedienung des Skripts erfolgt über die Eingabe der Zahlen, welche im Menü angezeigt werden.
+Wenn Sie auf das Bild klicken, sehen Sie ein Tutorial für das Hinzufügen der Docker-Bee-Installation zu SWARM. Dauer 3min :-)
 
-![image](https://user-images.githubusercontent.com/89119285/174690387-d5e3ff9a-7058-47ec-9eed-34ccfc178139.png)
+<div align="center">
+      <a href="https://dlt.green/downloads/install-bee.mp4">
+     <img 
+      src="https://user-images.githubusercontent.com/89119285/178085632-2572a076-1117-49d6-970c-f4e454b5056e.png" 
+      alt="Installation Bee with Docker additional to SWARM">
+      </a>
+</div>
 
 # Fehlermeldungen und Vorschläge
 Wenn du Fehler gefunden hast oder Verbesserungsvorschläge für unser Skript hast, erstelle ein Issue auf Github oder wende dich an unser Team in unserem Discord Channel
