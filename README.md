@@ -39,9 +39,9 @@ Wenn Sie auf das Bild klicken, sehen Sie ein Tutorial für das Hinzufügen der D
 <div align="center">
       <a href="https://dlt.green/downloads/install-bee.mp4">
      <img 
-      src="https://user-images.githubusercontent.com/89119285/178085343-9c8285bf-e550-4f80-9bf3-f13b2f9d7946.png" 
+      src="https://user-images.githubusercontent.com/89119285/178085632-2572a076-1117-49d6-970c-f4e454b5056e.png" 
       alt="Installation Bee with Docker additional to SWARM" 
-      style="width:100%;">
+      style="width:80%;">
       </a>
 </div>
 
