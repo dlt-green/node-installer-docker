@@ -183,7 +183,7 @@ SubMenuIotaDevnet() {
 	echo "║                                                                             ║"
 	echo "║                              1. IOTA Hornet Devnet (soon)                   ║"
 	echo "║                              2. IOTA Bee Devnet                             ║"
-	echo "║                              3. IOTA Goshimmer (soon)                       ║"
+	echo "║                              3. IOTA Goshimmer                              ║"
 	echo "║                              4. IOTA Wasp (soon)                            ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
@@ -201,7 +201,7 @@ SubMenuIotaDevnet() {
 	   SubMenuMaintenance ;;
 	3) VAR_NODE=3
 	   VAR_DIR='iota-goshimmer'
-	   MainMenu ;;
+	   SubMenuMaintenance ;;
 	4) VAR_NODE=4
 	   VAR_DIR='iota-wasp'
 	   MainMenu ;;
@@ -257,6 +257,7 @@ SubMenuMaintenance() {
 	case $n in
 	1) if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then IotaGoshimmer; fi
 	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then ShimmerHornet; fi
 	   ;;
 	2) echo '(re)starting...'; sleep 3
@@ -541,7 +542,7 @@ IotaGoshimmer() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║              DLT.GREEN AUTOMATIC BEE INSTALLATION WITH DOCKER               ║"
+	echo "║           DLT.GREEN AUTOMATIC GOSHIMMER INSTALLATION WITH DOCKER            ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -551,7 +552,7 @@ IotaGoshimmer() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                     Create bee directory /var/lib/iota-bee                  ║"
+	echo "║                  Create bee directory /var/lib/iota-goshimmer               ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -560,7 +561,7 @@ IotaGoshimmer() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                   Pull installer from dlt.green/iota-bee                    ║"
+	echo "║                Pull installer from dlt.green/iota-goshimmer                 ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -629,18 +630,9 @@ IotaGoshimmer() {
 	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Set Creditials                                ║"
+	echo "║                            No Creditials Needed                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-
-	credentials=$(./password.sh "$VAR_PASSWORD" | sed -e 's/\r//g')
-
-	VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-	VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-
-	echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
-	echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
-	echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -653,7 +645,7 @@ IotaGoshimmer() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                                 Start Bee                                   ║"
+	echo "║                              Start Goshimmer                                ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -675,9 +667,7 @@ IotaGoshimmer() {
 	echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	echo ""
 	echo "═══════════════════════════════════════════════════════════════════════════════"
-	echo " Bee Dashboard: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/dashboard"
-	echo " Bee Username: $VAR_USERNAME"
-	echo " Bee Password: <set during install>"
+	echo " Goshimmer Dashboard: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/dashboard"
 	echo " API: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/info"
 	echo "═══════════════════════════════════════════════════════════════════════════════"
 	echo ""
@@ -828,6 +818,9 @@ RenameContainer() {
 	docker container rename iota-bee_bee_1 iota-bee >/dev/null 2>&1
 	docker container rename iota-bee_traefik_1 iota-bee.traefik >/dev/null 2>&1
 	docker container rename iota-bee_traefik-certs-dumper_1 iota-bee.traefik-certs-dumper >/dev/null 2>&1
+	docker container rename iota-goshimmer_1 iota-goshimmer >/dev/null 2>&1
+	docker container rename iota-goshimmer_traefik_1 iota-goshimmer.traefik >/dev/null 2>&1
+	docker container rename iota-goshimmer_traefik-certs-dumper_1 iota-goshimmer.traefik-certs-dumper >/dev/null 2>&1
 	docker container rename shimmer-hornet_hornet_1 shimmer-hornet >/dev/null 2>&1
 	docker container rename shimmer-hornet_traefik_1 shimmer-hornet.traefik >/dev/null 2>&1
 	docker container rename shimmer-hornet_inx-participation_1 shimmer-hornet.inx-participation >/dev/null 2>&1
