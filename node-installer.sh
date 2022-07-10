@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.4.1"
+VRSN="0.4.2"
 
 VAR_HOST=''
 VAR_DIR=''
@@ -183,7 +183,7 @@ SubMenuIotaDevnet() {
 	echo "║                                                                             ║"
 	echo "║                              1. IOTA Hornet Devnet (soon)                   ║"
 	echo "║                              2. IOTA Bee Devnet                             ║"
-	echo "║                              3. IOTA Goshimmer                              ║"
+	echo "║                              3. IOTA Goshimmer (soon)                       ║"
 	echo "║                              4. IOTA Wasp (soon)                            ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
@@ -271,9 +271,9 @@ SubMenuMaintenance() {
 	   ;;
 	4) echo 'resetting...'; sleep 3
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down; fi
-	   if [ -d /var/lib/$VAR_DIR/data/database ]; then rm -r /var/lib/$VAR_DIR/data/database; fi
-	   if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle; fi
-	   if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb; fi
+	   if [ -d /var/lib/$VAR_DIR/data/database ]; then rm -r /var/lib/$VAR_DIR/data/database/*; fi
+	   if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
+	   if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; sleep 3; SubMenuMaintenance
 	   ;;
@@ -505,6 +505,18 @@ IotaBee() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                             Configure Firewall                              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ $VAR_CERT = 0 ]; then echo ufw allow "80/tcp" && ufw allow "80/tcp"; fi	
+	
+	echo ufw allow "$VAR_BEE_HTTPS_PORT/tcp" && ufw allow "$VAR_BEE_HTTPS_PORT/tcp"
+	echo ufw allow "15601/tcp" && ufw allow "15601/tcp"
+	echo ufw allow "14636/udp" && ufw allow "14636/udp"
+	
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                                 Start Bee                                   ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
@@ -642,6 +654,18 @@ IotaGoshimmer() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 	./prepare_docker.sh
 
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                             Configure Firewall                              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ $VAR_CERT = 0 ]; then echo ufw allow "80/tcp" && ufw allow "80/tcp"; fi	
+	
+	echo ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp" && ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp"
+	echo ufw allow "14666/tcp" && ufw allow "14666/tcp"
+	echo ufw allow "14646/udp" && ufw allow "14646/udp"
+	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                              Start Goshimmer                                ║"
