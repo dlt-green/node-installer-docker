@@ -42,6 +42,7 @@ services:
       - "${GOSHIMMER_DATA_DIR:-./data}/mainnetdb:/app/mainnetdb"
       - "${GOSHIMMER_DATA_DIR:-./data}/peerdb:/app/peerdb"
       - "${GOSHIMMER_DATA_DIR:-./data}/config/config.json:/app/config.json:ro"
+      - "${GOSHIMMER_DATA_DIR:-./data}/snapshots/${GOSHIMMER_SNAPSHOT:-snapshot.bin}:/app/snapshot.bin:ro"
     logging:
       driver: "json-file"
       options:

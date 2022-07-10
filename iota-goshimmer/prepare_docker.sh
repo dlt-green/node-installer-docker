@@ -46,13 +46,9 @@ mkdir -p "${dataDir}/config"
 mkdir -p "${dataDir}/mainnetdb"
 mkdir -p "${dataDir}/peerdb"
 mkdir -p "${dataDir}/letsencrypt"
+mkdir -p "${dataDir}/snapshots"
 
-if [[ "$OSTYPE" != "darwin"* ]]; then
-  chown -R 65532:65532 "${dataDir}"
-fi
-
-
-# Extract default config from image
+# Extract default config and snapshot.bin from image
 imageWithoutTag=$(echo $image | cut -d ':' -f 1)
 echo $imageWithoutTag
 if [ -z "$(docker images | grep $imageWithoutTag | grep $GOSHIMMER_VERSION)" ]; then
@@ -60,14 +56,23 @@ if [ -z "$(docker images | grep $imageWithoutTag | grep $GOSHIMMER_VERSION)" ]; 
   docker pull $image >/dev/null 2>&1
 fi
 
-echo "Generating config..."
 rm -Rf $(dirname "$configPath")/$configFilename
 docker create --name iota-goshimmer-tmp $image >/dev/null 2>&1
+echo "Extracting default config from docker image..."
 docker cp iota-goshimmer-tmp:/app/$configFilename "$configPath"
+if [ ! -e "$dataDir/snapshots/snapshot.bin" ]; then
+  echo "Extracting default snapshot from docker image..."
+  docker cp iota-goshimmer-tmp:/app/snapshot.bin "$dataDir/snapshots/snapshot.bin"
+fi
 docker rm iota-goshimmer-tmp >/dev/null 2>&1
+
+if [[ "$OSTYPE" != "darwin"* ]]; then
+  chown -R 65532:65532 "${dataDir}"
+fi
 
 
 # Update extracted config with values from .env
+echo "Generating config..."
 tmp=/tmp/config.tmp
 read_config () {
   # param1:  jsonpath to read value from configuration
