@@ -656,6 +656,18 @@ IotaGoshimmer() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                             Configure Firewall                              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ $VAR_CERT = 0 ]; then echo ufw allow "80/tcp" && ufw allow "80/tcp"; fi	
+	
+	echo ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp" && ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp"
+	echo ufw allow "14666/tcp" && ufw allow "14666/tcp"
+	echo ufw allow "14646/udp" && ufw allow "14646/udp"
+	
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                              Start Goshimmer                                ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
