@@ -248,7 +248,7 @@ SubMenuMaintenance() {
 	echo "║                              2. Start/Restart                               ║"
 	echo "║                              3. Stop                                        ║"
 	echo "║                              4. Reset Database                              ║"	
-	echo "║                              5. Load Snapshot                               ║"	
+	echo "║                              5. Show Logs                                   ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -279,19 +279,26 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; sleep 3; SubMenuMaintenance
 	   ;;
-	5) echo 'loading...'; sleep 3
+	5) docker logs $VAR_DIR
+	   read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W	
+	   SubMenuMaintenance
+	   ;;
+
+	6) echo 'loading...'; sleep 3
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down; fi
 	   
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]
 	   then
 	      if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
-	      if [ -f /var/lib/$VAR_DIR/data/snapshots/snapshot.bin ]; then wget $SnapshotIotaGoshimmer; mv snapshot-latest.bin snapshot.bin; fi
+	      if [ -f /var/lib/$VAR_DIR/data/snapshots/snapshot.bin ]; then cd /var/lib/$VAR_DIR/data/snapshots || MainMenu; wget $SnapshotIotaGoshimmer; mv snapshot-latest.bin snapshot.bin; fi
+		  cd /var/lib/$VAR_DIR || MainMenu;
+		  sudo chmod 777 -c -R /var/lib/$VAR_DIR/data/snapshots/snapshot.bin
 	   else
 	      echo "no snapshot available"
 	   fi
 	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
-	   RenameContainer; sleep 3; SubMenuMaintenance
+	   RenameContainer; SubMenuMaintenance
 	   ;;
 	*) MainMenu ;;
 	esac
@@ -681,6 +688,7 @@ IotaGoshimmer() {
 	echo ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp" && ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp"
 	echo ufw allow "14666/tcp" && ufw allow "14666/tcp"
 	echo ufw allow "14646/udp" && ufw allow "14646/udp"
+	echo ufw allow "5000/tcp" && ufw allow "5000/tcp"
 	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"

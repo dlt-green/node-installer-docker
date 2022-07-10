@@ -14,6 +14,7 @@ services:
     ports:
       - "${GOSHIMMER_GOSSIP_PORT:-14666}:${GOSHIMMER_GOSSIP_PORT:-14666}/tcp"
       - "${GOSHIMMER_AUTOPEERING_PORT:-14646}:${GOSHIMMER_AUTOPEERING_PORT:-14646}/udp"
+      - "${GOSHIMMER_TXSTREAM_PORT:-5000}:5000"
     labels:
       - "proxy.constraint=goshimmer"
       - "traefik.enable=true"
