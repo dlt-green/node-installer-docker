@@ -1,0 +1,82 @@
+version: '3'
+services:
+
+  wasp:
+    image: dlt.green/wasp-node:v${WASP_VERSION:?WASP_VERSION is missing}
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 16384
+        hard: 16384
+    stop_grace_period: 1m
+    tty: true
+    working_dir: /app
+    user: "65532"
+    ports:
+      - "${WASP_PEERING_PORT:-4000}:${WASP_PEERING_PORT:-4000}/udp"
+      - "${WASP_NANO_MSG_PORT:-5550}:${WASP_NANO_MSG_PORT:-5550}/tcp"
+    labels:
+      - "proxy.constraint=wasp"
+      - "traefik.enable=true"
+
+      - "traefik.http.services.dashboard.loadbalancer.server.port=7000"
+      - "traefik.http.routers.dashboard.service=dashboard"
+      - "traefik.http.routers.dashboard.rule=Host(`${WASP_HOST:?WASP_HOST is missing}`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
+
+      - "traefik.http.services.webapi.loadbalancer.server.port=9090"
+      - "traefik.http.routers.webapi.service=webapi"
+      - "traefik.http.routers.webapi.rule=Host(`${WASP_HOST:?WASP_HOST is missing}`)"
+      - "traefik.http.routers.webapi.entrypoints=webapisecure"
+      - "traefik.http.routers.webapi.tls=true"
+      - "traefik.http.routers.webapi.tls.certresolver=myresolver"
+    cap_drop:
+      - ALL
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "${WASP_DATA_DIR:-./data}/waspdb:/app/waspdb"
+      - "${WASP_DATA_DIR:-./data}/config/config.json:/etc/wasp_config.json:ro"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+
+  ##################################################################
+  #  Reverse Proxy and SSL                                         #
+  ##################################################################
+
+  traefik:
+    image: traefik:v2.6
+    restart: unless-stopped
+    command:
+      # - "--log.level=DEBUG"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.constraints=Label(`proxy.constraint`,`wasp`)"
+
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.webapisecure.address=:448"
+
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL:-}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "${WASP_HTTP_PORT:-80}:80/tcp"
+      - "${WASP_HTTPS_PORT:-443}:443/tcp"
+      - "${WASP_API_PORT:-448}:448/tcp"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "${WASP_DATA_DIR:-./data}/letsencrypt:/letsencrypt"
+      - "./assets/traefik/${SSL_CONFIG:-letsencrypt}.yml:/etc/traefik/dynamic/config.yml:ro"
+      - "${WASP_SSL_CERT:-./assets/traefik/certs/fake.cert}:/certs/domain.cert:ro"
+      - "${WASP_SSL_KEY:-./assets/traefik/certs/fake.key}:/certs/domain.key:ro"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
