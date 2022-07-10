@@ -505,6 +505,18 @@ IotaBee() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                             Configure Firewall                              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ $VAR_CERT = 0 ]; then echo ufw allow "80/tcp" && ufw allow "80/tcp"; fi	
+	
+	echo ufw allow "$VAR_BEE_HTTPS_PORT/tcp" && ufw allow "$VAR_BEE_HTTPS_PORT/tcp"
+	echo ufw allow "15601/tcp" && ufw allow "15601/tcp"
+	echo ufw allow "14636/udp" && ufw allow "14636/udp"
+	
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                                 Start Bee                                   ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
