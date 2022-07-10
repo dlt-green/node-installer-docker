@@ -271,9 +271,9 @@ SubMenuMaintenance() {
 	   ;;
 	4) echo 'resetting...'; sleep 3
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down; fi
-	   if [ -d /var/lib/$VAR_DIR/data/database ]; then rm -r /var/lib/$VAR_DIR/data/database; fi
-	   if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle; fi
-	   if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb; fi
+	   if [ -d /var/lib/$VAR_DIR/data/database ]; then rm -r /var/lib/$VAR_DIR/data/database/*; fi
+	   if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
+	   if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; sleep 3; SubMenuMaintenance
 	   ;;
