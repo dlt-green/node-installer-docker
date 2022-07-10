@@ -183,7 +183,7 @@ SubMenuIotaDevnet() {
 	echo "║                                                                             ║"
 	echo "║                              1. IOTA Hornet Devnet (soon)                   ║"
 	echo "║                              2. IOTA Bee Devnet                             ║"
-	echo "║                              3. IOTA Goshimmer                              ║"
+	echo "║                              3. IOTA Goshimmer (soon)                       ║"
 	echo "║                              4. IOTA Wasp (soon)                            ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
