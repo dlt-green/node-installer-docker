@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.4.2"
+VRSN="0.4.3"
 
 VAR_HOST=''
 VAR_DIR=''
@@ -12,6 +12,7 @@ VAR_NODE=0
 DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-2.0.0-alpha.23-docker-example.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
 DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
+SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 
 DirShimmerHornet='/var/lib/shimmer-hornet'
 DirIotaBee='/var/lib/iota-bee'
@@ -247,6 +248,7 @@ SubMenuMaintenance() {
 	echo "║                              2. Start/Restart                               ║"
 	echo "║                              3. Stop                                        ║"
 	echo "║                              4. Reset Database                              ║"	
+	echo "║                              5. Load Snapshot                               ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -274,6 +276,20 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR/data/database ]; then rm -r /var/lib/$VAR_DIR/data/database/*; fi
 	   if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
 	   if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
+	   RenameContainer; sleep 3; SubMenuMaintenance
+	   ;;
+	5) echo 'loading...'; sleep 3
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down; fi
+	   
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]
+	   then
+	      if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
+	      if [ -f /var/lib/$VAR_DIR/data/snapshots/snapshot.bin ]; then wget $SnapshotIotaGoshimmer; mv snapshot-latest.bin snapshot.bin; fi
+	   else
+	      echo "no snapshot available"
+	   fi
+	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; sleep 3; SubMenuMaintenance
 	   ;;

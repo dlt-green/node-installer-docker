@@ -30,7 +30,7 @@ upload () {
   else
     source "$envFile"
     echo "Uploading *.tar.gz files in $BUILD_DIR to $UPLOAD_HOST:$UPLOAD_PATH"
-    rsync -rzP --delete --include="*.tar.gz" $BUILD_DIR/* $UPLOAD_USER@$UPLOAD_HOST:$UPLOAD_PATH
+    rsync -rzP --include="*.tar.gz" $BUILD_DIR/* $UPLOAD_USER@$UPLOAD_HOST:$UPLOAD_PATH
   fi
 }
 
