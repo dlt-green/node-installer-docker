@@ -1,13 +1,13 @@
 #!/bin/bash
 
-VRSN="0.4.3"
+VRSN="0.4.4"
 
 VAR_HOST=''
 VAR_DIR=''
 VAR_CERTIFICATE=0
 VAR_NETWORK=0
 VAR_NODE=0
-
+VAR_CONF_RESET=0
 
 DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-2.0.0-alpha.23-docker-example.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
@@ -51,6 +51,42 @@ CheckCertificate() {
 	else 
 		echo "No existing Let's Encrypt Certificate found, generate a new one... "
 		VAR_CERT=0
+	fi 
+}
+
+CheckConfiguration() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                         Check *.env Configuration                           ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -f "/var/lib/$VAR_DIR/.env" ] 
+	then 
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+		echo "║                                    $VRSN                                    ║"
+		echo "║                                                                             ║"
+		echo "║                            1. Reset Configuration (*.env)                   ║"
+		echo "║                            X. Use existing Configuration (*.env)            ║"
+		echo "║                                                                             ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo "select: "
+		echo ""
+
+		read n
+		case $n in
+		1) echo "Reset Configuration... "
+		   VAR_CONF_RESET=1 ;;
+		*) echo "Use existing Configuration... "
+		   VAR_CONF_RESET=0 ;;
+		esac
+	else 
+	    echo "New Configuration... "
+		VAR_CONF_RESET=1
 	fi 
 }
 
@@ -445,52 +481,57 @@ IotaBee() {
 	rm -r install.tar.gz
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
-	
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Set Parameters                                ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
 
-	read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
-	read -p 'Set domain-port (e.g. 440): ' VAR_BEE_HTTPS_PORT	
-	read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
-	read -p 'Set password (blank): ' VAR_PASSWORD
+	CheckConfiguration
 	
-	CheckCertificate
+	if [ $VAR_CONF_RESET = 1 ]; then
 	
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                              Write Parameters                               ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                               Set Parameters                                ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
-	if [ -f .env ]; then rm .env; fi
-
-	echo "BEE_VERSION=0.3.1" >> .env
-
-	if [ $VAR_NETWORK = 3 ]; then echo "BEE_NETWORK=mainnet" >> .env; fi
-	if [ $VAR_NETWORK = 4 ]; then echo "BEE_NETWORK=devnet" >> .env; fi
+		read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
+		read -p 'Set domain-port (e.g. 440): ' VAR_BEE_HTTPS_PORT	
+		read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
+		read -p 'Set password (blank): ' VAR_PASSWORD
 	
-	echo "BEE_HOST=$VAR_HOST" >> .env
-	echo "BEE_HTTPS_PORT=$VAR_BEE_HTTPS_PORT" >> .env
-	echo "BEE_GOSSIP_PORT=15601" >> .env
-	echo "BEE_AUTOPEERING_PORT=14636" >> .env
+		CheckCertificate
 	
-	if [ $VAR_CERT = 0 ]
-	then
-		echo "BEE_HTTP_PORT=80" >> .env
-		read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
-		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
-	else
-		echo "BEE_HTTP_PORT=8082" >> .env
-		echo "SSL_CONFIG=certs" >> .env
-		echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
-		echo "BEE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                              Write Parameters                               ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+		if [ -f .env ]; then rm .env; fi
+
+		echo "BEE_VERSION=0.3.1" >> .env
+
+		if [ $VAR_NETWORK = 3 ]; then echo "BEE_NETWORK=mainnet" >> .env; fi
+		if [ $VAR_NETWORK = 4 ]; then echo "BEE_NETWORK=devnet" >> .env; fi
+	
+		echo "BEE_HOST=$VAR_HOST" >> .env
+		echo "BEE_HTTPS_PORT=$VAR_BEE_HTTPS_PORT" >> .env
+		echo "BEE_GOSSIP_PORT=15601" >> .env
+		echo "BEE_AUTOPEERING_PORT=14636" >> .env
+	
+		if [ $VAR_CERT = 0 ]
+		then
+			echo "BEE_HTTP_PORT=80" >> .env
+				read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+		else
+			echo "BEE_HTTP_PORT=8082" >> .env
+			echo "SSL_CONFIG=certs" >> .env
+			echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
+			echo "BEE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
+		fi
 	fi
-
+	
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	clear
@@ -501,22 +542,25 @@ IotaBee() {
 	echo ""
 
 	docker-compose pull
+
+	if [ $VAR_CONF_RESET = 1 ]; then
 	
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Set Creditials                                ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                               Set Creditials                                ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
 
-	credentials=$(./password.sh "$VAR_PASSWORD" | sed -e 's/\r//g')
+		credentials=$(./password.sh "$VAR_PASSWORD" | sed -e 's/\r//g')
 
-	VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-	VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 
-	echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
-	echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
-	echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
-
+		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
+		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
+		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+	fi
+	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                               Prepare Docker                                ║"
@@ -526,17 +570,20 @@ IotaBee() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 	./prepare_docker.sh
 
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                             Configure Firewall                              ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	if [ $VAR_CONF_RESET = 1 ]; then
 
-	if [ $VAR_CERT = 0 ]; then echo ufw allow "80/tcp" && ufw allow "80/tcp"; fi	
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                             Configure Firewall                              ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		if [ $VAR_CERT = 0 ]; then echo ufw allow "80/tcp" && ufw allow "80/tcp"; fi	
 	
-	echo ufw allow "$VAR_BEE_HTTPS_PORT/tcp" && ufw allow "$VAR_BEE_HTTPS_PORT/tcp"
-	echo ufw allow "15601/tcp" && ufw allow "15601/tcp"
-	echo ufw allow "14636/udp" && ufw allow "14636/udp"
+		echo ufw allow "$VAR_BEE_HTTPS_PORT/tcp" && ufw allow "$VAR_BEE_HTTPS_PORT/tcp"
+		echo ufw allow "15601/tcp" && ufw allow "15601/tcp"
+		echo ufw allow "14636/udp" && ufw allow "14636/udp"
+	fi
 	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -555,20 +602,26 @@ IotaBee() {
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	SetCertificateGlobal
+	if [ $VAR_CONF_RESET = 1 ]; then SetCertificateGlobal; fi
 
 	clear
 	echo ""
-	echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
-	echo ""
-	echo "═══════════════════════════════════════════════════════════════════════════════"
-	echo " Bee Dashboard: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/dashboard"
-	echo " Bee Username: $VAR_USERNAME"
-	echo " Bee Password: <set during install>"
-	echo " API: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/api/v1/info"
-	echo "═══════════════════════════════════════════════════════════════════════════════"
-	echo ""
 
+	if [ $VAR_CONF_RESET = 1 ]; then	
+	
+	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+	    echo ""
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+		echo " Bee Dashboard: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/dashboard"
+		echo " Bee Username: $VAR_USERNAME"
+		echo " Bee Password: <set during install>"
+		echo " API: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/api/v1/info"
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+	else
+	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	fi
+	echo ""
+	
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	SubMenuMaintenance
@@ -610,47 +663,52 @@ IotaGoshimmer() {
 	rm -r install.tar.gz
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
-	
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Set Parameters                                ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
 
-	read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
-	read -p 'Set domain-port (e.g. 446): ' VAR_GOSHIMMER_HTTPS_PORT	
-	
-	CheckCertificate
-	
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                              Write Parameters                               ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	CheckConfiguration
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
-	if [ -f .env ]; then rm .env; fi
-
-	echo "GOSHIMMER_VERSION=0.9.1" >> .env
-
-	echo "GOSHIMMER_HOST=$VAR_HOST" >> .env
-	echo "GOSHIMMER_HTTPS_PORT=$VAR_GOSHIMMER_HTTPS_PORT" >> .env
-	echo "GOSHIMMER_GOSSIP_PORT=14666" >> .env
-	echo "GOSHIMMER_AUTOPEERING_PORT=14646" >> .env
+	if [ $VAR_CONF_RESET = 1 ]; then
 	
-	if [ $VAR_CERT = 0 ]
-	then
-		echo "GOSHIMMER_HTTP_PORT=80" >> .env
-		read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
-		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
-	else
-		echo "GOSHIMMER_HTTP_PORT=8083" >> .env
-		echo "SSL_CONFIG=certs" >> .env
-		echo "GOSHIMMER_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
-		echo "GOSHIMMER_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                               Set Parameters                                ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
+		read -p 'Set domain-port (e.g. 446): ' VAR_GOSHIMMER_HTTPS_PORT	
+	
+		CheckCertificate
+
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                              Write Parameters                               ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+		if [ -f .env ]; then rm .env; fi
+
+		echo "GOSHIMMER_VERSION=0.9.1" >> .env
+
+		echo "GOSHIMMER_HOST=$VAR_HOST" >> .env
+		echo "GOSHIMMER_HTTPS_PORT=$VAR_GOSHIMMER_HTTPS_PORT" >> .env
+		echo "GOSHIMMER_GOSSIP_PORT=14666" >> .env
+		echo "GOSHIMMER_AUTOPEERING_PORT=14646" >> .env
+	
+		if [ $VAR_CERT = 0 ]
+		then
+			echo "GOSHIMMER_HTTP_PORT=80" >> .env
+			read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+		else
+			echo "GOSHIMMER_HTTP_PORT=8083" >> .env
+			echo "SSL_CONFIG=certs" >> .env
+			echo "GOSHIMMER_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
+			echo "GOSHIMMER_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
+		fi
 	fi
-
+	
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	clear
@@ -661,13 +719,16 @@ IotaGoshimmer() {
 	echo ""
 
 	docker-compose pull
-	
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                            No Creditials Needed                             ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
 
+	if [ $VAR_CONF_RESET = 1 ]; then
+	
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                            No Creditials Needed                             ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+	fi
+	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                               Prepare Docker                                ║"
@@ -677,18 +738,21 @@ IotaGoshimmer() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 	./prepare_docker.sh
 
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                             Configure Firewall                              ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	if [ $VAR_CONF_RESET = 1 ]; then
 
-	if [ $VAR_CERT = 0 ]; then echo ufw allow "80/tcp" && ufw allow "80/tcp"; fi	
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                             Configure Firewall                              ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		if [ $VAR_CERT = 0 ]; then echo ufw allow "80/tcp" && ufw allow "80/tcp"; fi	
 	
-	echo ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp" && ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp"
-	echo ufw allow "14666/tcp" && ufw allow "14666/tcp"
-	echo ufw allow "14646/udp" && ufw allow "14646/udp"
-	echo ufw allow "5000/tcp" && ufw allow "5000/tcp"
+		echo ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp" && ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp"
+		echo ufw allow "14666/tcp" && ufw allow "14666/tcp"
+		echo ufw allow "14646/udp" && ufw allow "14646/udp"
+		echo ufw allow "5000/tcp" && ufw allow "5000/tcp"
+	fi
 	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -707,17 +771,24 @@ IotaGoshimmer() {
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	SetCertificateGlobal
+	if [ $VAR_CONF_RESET = 1 ]; then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
-	echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
-	echo ""
-	echo "═══════════════════════════════════════════════════════════════════════════════"
-	echo " Goshimmer Dashboard: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/dashboard"
-	echo " API: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/info"
-	echo "═══════════════════════════════════════════════════════════════════════════════"
-	echo ""
+	
+	if [ $VAR_CONF_RESET = 1 ]; then
+	
+		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+		echo ""
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+		echo " Goshimmer Dashboard: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/dashboard"
+		echo " API: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/info"
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+		echo ""
+	else
+	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	fi
+	echo ""	
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
@@ -760,31 +831,36 @@ ShimmerHornet() {
 	rm -r install.tar.gz
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	CheckConfiguration
+
+	if [ $VAR_CONF_RESET = 1 ]; then
 	
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Set Parameters                                ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                               Set Parameters                                ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
 
-	read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
-	read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
-	read -p 'Set password (blank): ' VAR_PASSWORD
-	read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+		read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
+		read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
+		read -p 'Set password (blank): ' VAR_PASSWORD
+		read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                              Write Parameters                               ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                              Write Parameters                               ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
-	if [ -f .env ]; then rm .env; fi
+		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+		if [ -f .env ]; then rm .env; fi
 
-	echo "HORNET_HOST=$VAR_HOST" >> .env
-	echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
-		
+		echo "HORNET_HOST=$VAR_HOST" >> .env
+		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+	fi
+
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
 	clear
@@ -796,20 +872,23 @@ ShimmerHornet() {
 
 	docker-compose pull
 
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Set Creditials                                ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	if [ $VAR_CONF_RESET = 1 ]; then
 
-	credentials=$(docker-compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                               Set Creditials                                ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
 
-	VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-	VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		credentials=$(docker-compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+
+		VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 	
-	echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
-	echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
-	echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
+		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
+		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+	fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -819,6 +898,21 @@ ShimmerHornet() {
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 	./prepare_docker.sh
+
+	if [ $VAR_CONF_RESET = 1 ]; then
+
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                             Configure Firewall                              ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		if [ $VAR_CERT = 0 ]; then echo ufw allow "80/tcp" && ufw allow "80/tcp"; fi	
+	
+		echo ufw allow "$443/tcp" && ufw allow "$443/tcp"
+		echo ufw allow "15600/tcp" && ufw allow "15600/tcp"
+		echo ufw allow "14626/udp" && ufw allow "14626/udp"
+	fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -839,22 +933,29 @@ ShimmerHornet() {
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	SetCertificateGlobal
+	if [ $VAR_CONF_RESET = 1 ]; then SetCertificateGlobal; fi
 	
 	clear
 	echo ""	
-	echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
-	echo ""
-	echo "═══════════════════════════════════════════════════════════════════════════════"
-	echo " Hornet Dashboard: https://$VAR_HOST/dashboard"
-	echo " Hornet Username: $VAR_USERNAME"
-	echo " Hornet Password: <set during install>"
-	echo " Grafana Dashboard: https://$VAR_HOST/grafana"
-	echo " Grafana Username: admin"
-	echo " Grafana Password: <same as hornet password>"
-	echo " API: https://$VAR_HOST/api/core/v2/info"
-	echo "═══════════════════════════════════════════════════════════════════════════════"
-	echo ""
+
+	if [ $VAR_CONF_RESET = 1 ]; then
+	
+		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+		echo ""
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+		echo " Hornet Dashboard: https://$VAR_HOST/dashboard"
+		echo " Hornet Username: $VAR_USERNAME"
+		echo " Hornet Password: <set during install>"
+		echo " Grafana Dashboard: https://$VAR_HOST/grafana"
+		echo " Grafana Username: admin"
+		echo " Grafana Password: <same as hornet password>"
+		echo " API: https://$VAR_HOST/api/core/v2/info"
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+		echo ""
+	else
+	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	fi
+	echo ""		
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
