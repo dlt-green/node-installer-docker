@@ -248,7 +248,7 @@ SubMenuMaintenance() {
 	echo "║                              2. Start/Restart                               ║"
 	echo "║                              3. Stop                                        ║"
 	echo "║                              4. Reset Database                              ║"	
-	echo "║                              5. Show Logfile                                ║"	
+	echo "║                              5. Show Logs                                   ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -688,6 +688,7 @@ IotaGoshimmer() {
 	echo ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp" && ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp"
 	echo ufw allow "14666/tcp" && ufw allow "14666/tcp"
 	echo ufw allow "14646/udp" && ufw allow "14646/udp"
+	echo ufw allow "5000/tcp" && ufw allow "5000/tcp"
 	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
