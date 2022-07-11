@@ -107,11 +107,14 @@ SetCertificateGlobal() {
 	read n
 	case $n in
 	1) mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
-	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" ]; then
-	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
+	   cd "/var/lib/$VAR_DIR/data/letsencrypt" || exit
+	   cat acme.json | jq -r '.myresolver .Certificates[] | select(.domain.main=="'$VAR_HOST'") | .certificate' | base64 -d > "$VAR_HOST.crt"
+	   cat acme.json | jq -r '.myresolver .Certificates[] | select(.domain.main=="'$VAR_HOST'") | .key' | base64 -d > "$VAR_HOST.key"
+	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" ]; then
+	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
 	   fi
-	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/certs/private/$VAR_HOST.key" ]; then
-	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/certs/certs/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/privkey.pem"
+	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" ]; then
+	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" "/etc/letsencrypt/live/$VAR_HOST/privkey.pem"
 	   fi
 	   ;;
 	X) ;;
@@ -578,11 +581,11 @@ IotaBee() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ $VAR_CERT = 0 ]; then echo ufw allow "80/tcp" && ufw allow "80/tcp"; fi	
+		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi	
 	
 		echo ufw allow "$VAR_BEE_HTTPS_PORT/tcp" && ufw allow "$VAR_BEE_HTTPS_PORT/tcp"
-		echo ufw allow "15601/tcp" && ufw allow "15601/tcp"
-		echo ufw allow "14636/udp" && ufw allow "14636/udp"
+		echo ufw allow '15601/tcp' && ufw allow '15601/tcp'
+		echo ufw allow '14636/udp' && ufw allow '14636/udp'
 	fi
 	
 	echo ""
@@ -746,12 +749,12 @@ IotaGoshimmer() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ $VAR_CERT = 0 ]; then echo ufw allow "80/tcp" && ufw allow "80/tcp"; fi	
+		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi	
 	
 		echo ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp" && ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp"
-		echo ufw allow "14666/tcp" && ufw allow "14666/tcp"
-		echo ufw allow "14646/udp" && ufw allow "14646/udp"
-		echo ufw allow "5000/tcp" && ufw allow "5000/tcp"
+		echo ufw allow '14666/tcp' && ufw allow '14666/tcp'
+		echo ufw allow '14646/udp' && ufw allow '14646/udp'
+		echo ufw allow '5000/tcp' && ufw allow '5000/tcp'
 	fi
 	
 	echo ""
@@ -907,11 +910,11 @@ ShimmerHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ $VAR_CERT = 0 ]; then echo ufw allow "80/tcp" && ufw allow "80/tcp"; fi	
-	
-		echo ufw allow "$443/tcp" && ufw allow "$443/tcp"
-		echo ufw allow "15600/tcp" && ufw allow "15600/tcp"
-		echo ufw allow "14626/udp" && ufw allow "14626/udp"
+		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi	
+
+		echo ufw allow '443/tcp' && ufw allow '443/tcp'
+		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
+		echo ufw allow '14626/udp' && ufw allow '14626/udp'
 	fi
 
 	echo ""
