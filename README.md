@@ -29,7 +29,7 @@ Die Konfiguration der Nodes sollte immer über den von DLT.GREEN bereitgestellte
 
 ### NODE-INSTALLER ausführen
 ```console
-sudo wget https://dlt.green/downloads/node-installer.sh && sh node-installer.sh
+sudo wget https://github.com/dlt-green/node-installer-docker/releases/download/v.0.4.5/node-installer.sh && sh node-installer.sh
 ```
 
 ### Bedienung
@@ -37,7 +37,7 @@ Die Bedienung des Skripts erfolgt über die Eingabe der Zahlen, welche im Menü 
 Wenn Sie auf das Bild klicken, sehen Sie ein Tutorial für das Hinzufügen der Docker-Bee-Installation zu SWARM. Dauer 3min :-)
 
 <div align="center">
-      <a href="https://github.com/dlt-green/node-installer-docker/releases/download/v.0.4.5/install-bee.mp4">
+      <a href="https://dlt.green/downloads/install-bee.mp4">
      <img 
       src="https://user-images.githubusercontent.com/89119285/178085632-2572a076-1117-49d6-970c-f4e454b5056e.png" 
       alt="Installation Bee with Docker additional to SWARM">
