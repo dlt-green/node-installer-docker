@@ -4,7 +4,7 @@ VRSN="0.4.4"
 
 VAR_HOST=''
 VAR_DIR=''
-VAR_CERTIFICATE=0
+VAR_CERT=0
 VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
@@ -111,10 +111,10 @@ SetCertificateGlobal() {
 	   cat acme.json | jq -r '.myresolver .Certificates[] | select(.domain.main=="'$VAR_HOST'") | .certificate' | base64 -d > "$VAR_HOST.crt"
 	   cat acme.json | jq -r '.myresolver .Certificates[] | select(.domain.main=="'$VAR_HOST'") | .key' | base64 -d > "$VAR_HOST.key"
 	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" ]; then
-	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
+	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
 	   fi
 	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" ]; then
-	     cp -u "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" "/etc/letsencrypt/live/$VAR_HOST/privkey.pem"
+	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" "/etc/letsencrypt/live/$VAR_HOST/privkey.pem"
 	   fi
 	   ;;
 	X) ;;
@@ -605,7 +605,7 @@ IotaBee() {
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ $VAR_CONF_RESET = 1 ]; then SetCertificateGlobal; fi
+	if [ "$VAR_CERT" = 0 ]; then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -774,7 +774,7 @@ IotaGoshimmer() {
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ $VAR_CONF_RESET = 1 ]; then SetCertificateGlobal; fi	
+	if [ "$VAR_CERT" = 0 ]; then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -936,7 +936,7 @@ ShimmerHornet() {
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ $VAR_CONF_RESET = 1 ]; then SetCertificateGlobal; fi
+	if [ "$VAR_CERT" = 0 ]; then SetCertificateGlobal; fi
 	
 	clear
 	echo ""	
