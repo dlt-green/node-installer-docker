@@ -460,6 +460,8 @@ IotaBee() {
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
 
+	rm docker-compose.yml
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                     Create bee directory /var/lib/iota-bee                  ║"
@@ -642,6 +644,8 @@ IotaGoshimmer() {
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
 
+	rm docker-compose.yml
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                  Create bee directory /var/lib/iota-goshimmer               ║"
@@ -810,6 +814,8 @@ ShimmerHornet() {
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
 
+	rm docker-compose.yml
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                   Create hornet directory /var/lib/shimmer-hornet           ║"
@@ -925,13 +931,15 @@ ShimmerHornet() {
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
+	jq '.app.enablePlugins=["Autopeering", "INX", "Prometheus"]' config.json > config.json.tmp && mv config.json.tmp config.json
+	
 	docker-compose up -d
 	
 	sleep 3
 	
 	RenameContainer
 
-	docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"
+	if [ "$VAR_CERT" = 0 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
