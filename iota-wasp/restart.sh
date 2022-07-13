@@ -1,7 +1,10 @@
 #!/bin/bash
+set -e
+
 if [[ "$OSTYPE" != "darwin"* && "$EUID" -ne 0 ]]; then
-  echo "Please run as root or with sudo"
-  exit
+  echo "Elevating to root privileges..."
+  sudo "$0" "$@"
+  exit $?
 fi
 
 $(dirname "$0")/prepare_docker.sh

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 if [[ ! -f .env ]] || [[ "$1" == "--help" ]]; then
   cat README.md
@@ -6,8 +7,9 @@ if [[ ! -f .env ]] || [[ "$1" == "--help" ]]; then
 fi
 
 if [[ "$OSTYPE" != "darwin"* && "$EUID" -ne 0 ]]; then
-  echo "Please run as root or with sudo"
-  exit
+  echo "Elevating to root privileges..."
+  sudo "$0" "$@"
+  exit $?
 fi
 
 source $(dirname "$0")/.env
