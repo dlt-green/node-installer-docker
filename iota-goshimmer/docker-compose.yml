@@ -82,21 +82,3 @@ services:
       driver: "json-file"
       options:
         max-size: "200m"
-
-  traefik-certs-dumper:
-    image: ldez/traefik-certs-dumper:v2.8.1
-    restart: unless-stopped
-    entrypoint: |
-      sh -c '
-        apk add jq
-        while [ ! -f /data/acme.json ] || [ -z `jq ".[] | .Certificates | length" /data/acme.json` ] || [ `jq ".[] | .Certificates | length" /data/acme.json` == 0 ]; do
-          sleep 1;
-        done
-        traefik-certs-dumper file --version v2 --watch --source /data/acme.json --dest /data/certs
-      '
-    volumes:
-      - ${GOSHIMMER_DATA_DIR:-./data}/letsencrypt:/data
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
