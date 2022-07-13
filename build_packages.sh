@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 BUILD_DIR=./build
 EXCLUSIONS="build, data, .env, build.sh, .gitignore"
 WASP_VERSION=v0.2.5
@@ -17,7 +19,7 @@ build_node () {
 
   mkdir -p $BUILD_DIR
   rsync -a $sourceDir $BUILD_DIR $rsyncExclusions
-  find $BUILD_DIR -type f -exec sed -i 's/\r//' {} \;
+  find $BUILD_DIR/$node -type f -exec sed -i 's/\r//' {} \;
   (cd $BUILD_DIR/$node; tar -pcz -f ../$node.tar.gz *)
   rm -Rf $BUILD_DIR/$node
   echo "$node.tar.gz built successfully"
