@@ -9,7 +9,7 @@ VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
 
-DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-2.0.0-alpha.24-docker.tar.gz"
+DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-2.0.0-alpha.25-docker.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
 DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -45,12 +45,10 @@ CheckCertificate() {
 		read n
 		case $n in
 		1) VAR_CERT=1 ;;
-		*) echo "No existing Let's Encrypt Certificate found, generate a new one... "
-		   VAR_CERT=0 ;;
+		*) echo "No existing Let's Encrypt Certificate found, generate a new one... " ;;
 		esac
 	else 
 		echo "No existing Let's Encrypt Certificate found, generate a new one... "
-		VAR_CERT=0
 	fi 
 }
 
@@ -458,9 +456,7 @@ IotaBee() {
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
-
-	rm docker-compose.yml
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -607,7 +603,7 @@ IotaBee() {
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ "$VAR_CERT" = 0 ]; then SetCertificateGlobal; fi	
+	if [ $VAR_CERT = 0 ]; then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -642,9 +638,7 @@ IotaGoshimmer() {
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
-
-	rm docker-compose.yml
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -778,7 +772,7 @@ IotaGoshimmer() {
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ "$VAR_CERT" = 0 ]; then SetCertificateGlobal; fi	
+	if [ $VAR_CERT = 0 ]; then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -812,9 +806,7 @@ ShimmerHornet() {
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
-
-	rm docker-compose.yml
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -931,20 +923,18 @@ ShimmerHornet() {
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
-	jq '.app.enablePlugins=["Autopeering", "INX", "Prometheus"]' config.json > config.json.tmp && mv config.json.tmp config.json
-	
 	docker-compose up -d
 	
 	sleep 3
 	
 	RenameContainer
 
-	if [ "$VAR_CERT" = 0 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ "$VAR_CERT" = 0 ]; then SetCertificateGlobal; fi
+	if [ $VAR_CERT = 0 ]; then SetCertificateGlobal; fi
 	
 	clear
 	echo ""	
