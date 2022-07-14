@@ -285,7 +285,8 @@ SubMenuMaintenance() {
 	echo "║                              2. Start/Restart                               ║"
 	echo "║                              3. Stop                                        ║"
 	echo "║                              4. Reset Database                              ║"	
-	echo "║                              5. Show Logs                                   ║"	
+	echo "║                              5. Loading Snaphot                             ║"	
+	echo "║                              6. Show Logs                                   ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -316,12 +317,12 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; sleep 3; SubMenuMaintenance
 	   ;;
-	5) docker logs $VAR_DIR
+	6) docker logs $VAR_DIR
 	   read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W	
 	   SubMenuMaintenance
 	   ;;
 
-	6) echo 'loading...'; sleep 3
+	5) echo 'loading...'; sleep 3
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down; fi
 	   
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]
@@ -690,7 +691,7 @@ IotaGoshimmer() {
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
-		echo "GOSHIMMER_VERSION=0.9.1" >> .env
+		echo "GOSHIMMER_VERSION=0.9.2" >> .env
 
 		echo "GOSHIMMER_HOST=$VAR_HOST" >> .env
 		echo "GOSHIMMER_HTTPS_PORT=$VAR_GOSHIMMER_HTTPS_PORT" >> .env
