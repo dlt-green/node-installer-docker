@@ -54,7 +54,7 @@ services:
     image: traefik:v2.8.1
     restart: unless-stopped
     command:
-      # - "--log.level=DEBUG"
+      - "--log.level=WARN"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.constraints=Label(`proxy.constraint`,`wasp`)"
