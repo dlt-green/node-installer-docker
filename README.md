@@ -29,7 +29,7 @@ Die Konfiguration der Nodes sollte immer über den von DLT.GREEN bereitgestellte
 
 ### NODE-INSTALLER ausführen
 ```console
-sudo wget https://github.com/dlt-green/node-installer-docker/releases/latest/download/node-installer.sh && sh node-installer.sh
+sudo wget https://github.com/dlt-green/node-installer-docker/releases/latest/download/node-installer.sh && sudo sh node-installer.sh
 ```
 
 ### Bedienung
