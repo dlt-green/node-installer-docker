@@ -31,6 +31,9 @@ services:
       - "traefik.http.middlewares.redirect-dashboard.redirectregex.permanent=true"
 
       - "traefik.http.services.webapi.loadbalancer.server.port=8080"
+      - "traefik.http.services.webapi.loadbalancer.healthCheck.path=/info"
+      - "traefik.http.services.webapi.loadbalancer.healthCheck.interval=10s"
+      - "traefik.http.services.webapi.loadbalancer.healthCheck.timeout=3s"
       - "traefik.http.routers.webapi.service=webapi"
       - "traefik.http.routers.webapi.rule=Host(`${GOSHIMMER_HOST:?GOSHIMMER_HOST is missing}`) && PathPrefix(`/info`, `/healthz`, `/autopeering`, `/manualpeering`, `/data`, `/messages`, `/ledgerstate`, `/mana`, `/snapshot`, `/faucet`, `/spammer`, `/tools`, `/weightprovider`)"
       - "traefik.http.routers.webapi.entrypoints=websecure"
@@ -54,7 +57,7 @@ services:
   ##################################################################
 
   traefik:
-    image: traefik:v2.6
+    image: traefik:v2.8.1
     restart: unless-stopped
     command:
       # - "--log.level=DEBUG"
@@ -62,9 +65,13 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.constraints=Label(`proxy.constraint`,`goshimmer`)"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.transport.respondingTimeouts.readTimeout=10"
+      - "--entrypoints.web.transport.respondingTimeouts.writeTimeout=10"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.transport.respondingTimeouts.readTimeout=10"
+      - "--entrypoints.websecure.transport.respondingTimeouts.writeTimeout=10"
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL:-}"
