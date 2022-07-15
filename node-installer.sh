@@ -9,7 +9,7 @@ VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
 
-DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-2.0.0-alpha.24-docker.tar.gz"
+DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-2.0.0-alpha.25-docker.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
 DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -45,12 +45,10 @@ CheckCertificate() {
 		read n
 		case $n in
 		1) VAR_CERT=1 ;;
-		*) echo "No existing Let's Encrypt Certificate found, generate a new one... "
-		   VAR_CERT=0 ;;
+		*) echo "No existing Let's Encrypt Certificate found, generate a new one... " ;;
 		esac
 	else 
 		echo "No existing Let's Encrypt Certificate found, generate a new one... "
-		VAR_CERT=0
 	fi 
 }
 
@@ -287,7 +285,8 @@ SubMenuMaintenance() {
 	echo "║                              2. Start/Restart                               ║"
 	echo "║                              3. Stop                                        ║"
 	echo "║                              4. Reset Database                              ║"	
-	echo "║                              5. Show Logs                                   ║"	
+	echo "║                              5. Loading Snaphot                             ║"	
+	echo "║                              6. Show Logs                                   ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -315,27 +314,29 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR/data/database ]; then rm -r /var/lib/$VAR_DIR/data/database/*; fi
 	   if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
 	   if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
+	   if [ -d /var/lib/$VAR_DIR/data/peerdb ]; then rm -r /var/lib/$VAR_DIR/data/peerdb/*; fi
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; sleep 3; SubMenuMaintenance
 	   ;;
-	5) docker logs $VAR_DIR
+	6) docker logs $VAR_DIR
 	   read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W	
 	   SubMenuMaintenance
 	   ;;
 
-	6) echo 'loading...'; sleep 3
+	5) echo 'loading...'; sleep 3
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down; fi
 	   
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]
 	   then
 	      if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
+	      if [ -d /var/lib/$VAR_DIR/data/peerdb ]; then rm -r /var/lib/$VAR_DIR/data/peerdb/*; fi
 	      if [ -f /var/lib/$VAR_DIR/data/snapshots/snapshot.bin ]; then cd /var/lib/$VAR_DIR/data/snapshots || MainMenu; wget $SnapshotIotaGoshimmer; mv snapshot-latest.bin snapshot.bin; fi
 		  cd /var/lib/$VAR_DIR || MainMenu;
-		  sudo chmod 777 -c -R /var/lib/$VAR_DIR/data/snapshots/snapshot.bin
 	   else
 	      echo "no snapshot available"
 	   fi
 	   
+	   ./prepare_docker.sh
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; SubMenuMaintenance
 	   ;;
@@ -458,9 +459,7 @@ IotaBee() {
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
-
-	rm docker-compose.yml
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -607,7 +606,7 @@ IotaBee() {
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ "$VAR_CERT" = 0 ]; then SetCertificateGlobal; fi	
+	if [ $VAR_CERT = 0 ]; then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -642,9 +641,7 @@ IotaGoshimmer() {
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
-
-	rm docker-compose.yml
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -696,7 +693,7 @@ IotaGoshimmer() {
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
-		echo "GOSHIMMER_VERSION=0.9.1" >> .env
+		echo "GOSHIMMER_VERSION=0.9.2" >> .env
 
 		echo "GOSHIMMER_HOST=$VAR_HOST" >> .env
 		echo "GOSHIMMER_HTTPS_PORT=$VAR_GOSHIMMER_HTTPS_PORT" >> .env
@@ -778,7 +775,7 @@ IotaGoshimmer() {
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ "$VAR_CERT" = 0 ]; then SetCertificateGlobal; fi	
+	if [ $VAR_CERT = 0 ]; then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -812,9 +809,7 @@ ShimmerHornet() {
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
-
-	rm docker-compose.yml
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -931,20 +926,18 @@ ShimmerHornet() {
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
-	jq '.app.enablePlugins=["Autopeering", "INX", "Prometheus"]' config.json > config.json.tmp && mv config.json.tmp config.json
-	
 	docker-compose up -d
 	
 	sleep 3
 	
 	RenameContainer
 
-	if [ "$VAR_CERT" = 0 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ "$VAR_CERT" = 0 ]; then SetCertificateGlobal; fi
+	if [ $VAR_CERT = 0 ]; then SetCertificateGlobal; fi
 	
 	clear
 	echo ""	
