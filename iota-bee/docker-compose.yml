@@ -17,12 +17,16 @@ services:
     labels:
       - "proxy.constraint=bee-${BEE_NETWORK:-mainnet}"
       - "traefik.enable=true"
+
+      - "traefik.http.services.bee.loadbalancer.server.port=8081"
+      - "traefik.http.services.bee.loadbalancer.healthCheck.path=/api/v1/info"
+      - "traefik.http.services.bee.loadbalancer.healthCheck.interval=10s"
+      - "traefik.http.services.bee.loadbalancer.healthCheck.timeout=3s"
       - "traefik.http.routers.bee.service=bee"
       - "traefik.http.routers.bee.rule=Host(`${BEE_HOST:?BEE_HOST is missing}`)"
       - "traefik.http.routers.bee.entrypoints=websecure"
       - "traefik.http.routers.bee.tls=true"
       - "traefik.http.routers.bee.tls.certresolver=myresolver"
-      - "traefik.http.services.bee.loadbalancer.server.port=8081"
       - "traefik.http.routers.bee.middlewares=redirect-dashboard"
       - "traefik.http.middlewares.redirect-dashboard.redirectregex.regex=^https:\\/\\/([^\\/]+)\\/?$$"
       - "traefik.http.middlewares.redirect-dashboard.redirectregex.replacement=https://$$1/dashboard/"
@@ -45,7 +49,7 @@ services:
   ##################################################################
 
   traefik:
-    image: traefik:v2.6
+    image: traefik:v2.8.1
     restart: unless-stopped
     command:
       # - "--log.level=DEBUG"
@@ -53,9 +57,13 @@ services:
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.constraints=Label(`proxy.constraint`,`bee-${BEE_NETWORK:-mainnet}`)"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.transport.respondingTimeouts.readTimeout=10"
+      - "--entrypoints.web.transport.respondingTimeouts.writeTimeout=10"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.transport.respondingTimeouts.readTimeout=10"
+      - "--entrypoints.websecure.transport.respondingTimeouts.writeTimeout=10"
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
       - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL:-}"
