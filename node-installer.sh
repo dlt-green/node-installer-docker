@@ -9,7 +9,11 @@ VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
 
-DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-2.0.0-beta.1-docker.tar.gz"
+VAR_BEE_VERSION='0.3.1'
+VAR_GOSHIMMER_VERSION='0.9.2'
+VAR_SHIMMER_VERSION='2.0.0-beta.1'
+
+DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-$VAR_SHIMMER_VERSION-docker.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
 DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -513,7 +517,7 @@ IotaBee() {
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
-		echo "BEE_VERSION=0.3.1" >> .env
+		echo "BEE_VERSION=$VAR_BEE_VERSION" >> .env
 
 		if [ $VAR_NETWORK = 3 ]; then echo "BEE_NETWORK=mainnet" >> .env; fi
 		if [ $VAR_NETWORK = 4 ]; then echo "BEE_NETWORK=devnet" >> .env; fi
@@ -534,6 +538,8 @@ IotaBee() {
 			echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "BEE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
+	else
+		if [ -f .env ]; then sed -i "s/BEE_VERSION=.*/BEE_VERSION=$VAR_BEE_VERSION/g" .env; fi
 	fi
 	
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
@@ -606,7 +612,7 @@ IotaBee() {
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ $VAR_CERT = 0 ]; then SetCertificateGlobal; fi	
+	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -693,7 +699,7 @@ IotaGoshimmer() {
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
-		echo "GOSHIMMER_VERSION=0.9.2" >> .env
+		echo "GOSHIMMER_VERSION=$VAR_GOSHIMMER_VERSION" >> .env
 
 		echo "GOSHIMMER_HOST=$VAR_HOST" >> .env
 		echo "GOSHIMMER_HTTPS_PORT=$VAR_GOSHIMMER_HTTPS_PORT" >> .env
@@ -711,6 +717,8 @@ IotaGoshimmer() {
 			echo "GOSHIMMER_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "GOSHIMMER_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
+	else
+		if [ -f .env ]; then sed -i "s/GOSHIMMER_VERSION=.*/GOSHIMMER_VERSION=$VAR_GOSHIMMER_VERSION/g" .env; fi
 	fi
 	
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
@@ -775,7 +783,7 @@ IotaGoshimmer() {
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ $VAR_CERT = 0 ]; then SetCertificateGlobal; fi	
+	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -937,7 +945,7 @@ ShimmerHornet() {
 	echo ""
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	if [ $VAR_CERT = 0 ]; then SetCertificateGlobal; fi
+	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi
 	
 	clear
 	echo ""	
