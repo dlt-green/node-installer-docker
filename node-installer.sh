@@ -305,11 +305,21 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then ShimmerHornet; fi
 	   ;;
 	2) echo '(re)starting...'; sleep 3
+	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
+	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then docker stop shimmer-hornet; fi
+	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose up -d; fi
 	   RenameContainer; sleep 3; SubMenuMaintenance
 	   ;;
 	3) echo 'stopping...'; sleep 3
+	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
+	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then docker stop shimmer-hornet; fi
+	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
 	   sleep 3; SubMenuMaintenance
 	   ;;
@@ -322,7 +332,7 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; sleep 3; SubMenuMaintenance
 	   ;;
-	6) docker logs $VAR_DIR
+	6) docker logs --follow $VAR_DIR
 	   read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W	
 	   SubMenuMaintenance
 	   ;;
@@ -384,7 +394,8 @@ SystemUpdates() {
 	read n
 	case $n in
 	1) 	echo 'rebooting...'; sleep 3
-		sudo docker ps -a -q
+	    docker stop $(docker ps -a -q)
+		docker ps -a -q
 	    sleep 3
 		sudo reboot
 		;;
