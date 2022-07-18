@@ -130,7 +130,7 @@ MainMenu() {
 	echo "║                              2. Docker Installation                         ║"
 	echo "║                              3. IOTA Mainnet                                ║"
 	echo "║                              4. IOTA Devnet                                 ║"
-	echo "║                              5. Shimmer Mainnet                             ║"
+	echo "║                              5. Shimmer Testnet Beta                        ║"
 	echo "║                              6. License Information                         ║"
 	echo "║                              X. Abort Installer                             ║"
 	echo "║                                                                             ║"
@@ -221,7 +221,7 @@ SubMenuIotaDevnet() {
 	echo "║                                                                             ║"
 	echo "║                              1. IOTA Hornet Devnet (soon)                   ║"
 	echo "║                              2. IOTA Bee Devnet                             ║"
-	echo "║                              3. IOTA Goshimmer (soon)                       ║"
+	echo "║                              3. IOTA Goshimmer                              ║"
 	echo "║                              4. IOTA Wasp (soon)                            ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
@@ -254,7 +254,7 @@ SubMenuShimmerMainnet() {
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
-	echo "║                              1. Shimmer Hornet Mainnet (soon)               ║"
+	echo "║                              1. Shimmer Hornet Mainnet                      ║"
 	echo "║                              2. Shimmer Bee Mainnet (soon)                  ║"
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
@@ -264,7 +264,7 @@ SubMenuShimmerMainnet() {
 
 	read n
 	case $n in
-	8) VAR_NODE=1
+	1) VAR_NODE=1
 	   VAR_DIR='shimmer-hornet'
 	   SubMenuMaintenance ;;
 	2) VAR_NODE=2
