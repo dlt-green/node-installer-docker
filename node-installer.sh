@@ -10,7 +10,7 @@ VAR_NODE=0
 VAR_CONF_RESET=0
 
 VAR_BEE_VERSION='0.3.1'
-VAR_GOSHIMMER_VERSION='0.9.2'
+VAR_GOSHIMMER_VERSION='0.9.3'
 VAR_SHIMMER_VERSION='2.0.0-beta.1'
 
 DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-$VAR_SHIMMER_VERSION-docker.tar.gz"
@@ -332,7 +332,7 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; sleep 3; SubMenuMaintenance
 	   ;;
-	6) docker logs --follow $VAR_DIR
+	6) docker logs -f --tail 300 $VAR_DIR
 	   read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W	
 	   SubMenuMaintenance
 	   ;;
