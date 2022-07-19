@@ -332,7 +332,7 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; sleep 3; SubMenuMaintenance
 	   ;;
-	6) docker logs --follow $VAR_DIR
+	6) docker logs -f --tail 300 $VAR_DIR
 	   read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W	
 	   SubMenuMaintenance
 	   ;;
