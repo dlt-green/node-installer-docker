@@ -340,16 +340,21 @@ SubMenuMaintenance() {
 	5) echo 'loading...'; sleep 3
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down; fi
 	   
+	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then
+	      if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
+	      if [ -d /var/lib/$VAR_DIR/data/snapshots/mainnet ]; then rm -r /var/lib/$VAR_DIR/data/snapshots/mainnet/*; fi
+	   fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then
+	      if [ -d /var/lib/$VAR_DIR/data/storage/devnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/devnet/tangle/*; fi
+	      if [ -d /var/lib/$VAR_DIR/data/snapshots/devnet ]; then rm -r /var/lib/$VAR_DIR/data/snapshots/devnet/*; fi
+	   fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]
 	   then
 	      if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
 	      if [ -d /var/lib/$VAR_DIR/data/peerdb ]; then rm -r /var/lib/$VAR_DIR/data/peerdb/*; fi
 	      if [ -f /var/lib/$VAR_DIR/data/snapshots/snapshot.bin ]; then cd /var/lib/$VAR_DIR/data/snapshots || MainMenu; wget $SnapshotIotaGoshimmer; mv snapshot-latest.bin snapshot.bin; fi
-		  cd /var/lib/$VAR_DIR || MainMenu;
-	   else
-	      echo "no snapshot available"
 	   fi
-	   
+	   cd /var/lib/$VAR_DIR || MainMenu;
 	   ./prepare_docker.sh
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; SubMenuMaintenance
