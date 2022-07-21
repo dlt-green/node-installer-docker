@@ -11,7 +11,7 @@ VAR_CONF_RESET=0
 
 VAR_BEE_VERSION='0.3.1'
 VAR_GOSHIMMER_VERSION='0.9.3'
-VAR_SHIMMER_VERSION='2.0.0-beta.1'
+VAR_SHIMMER_VERSION='2.0.0-beta.2'
 
 DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-$VAR_SHIMMER_VERSION-docker.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
