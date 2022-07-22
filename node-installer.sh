@@ -11,7 +11,13 @@ VAR_CONF_RESET=0
 
 VAR_BEE_VERSION='0.3.1'
 VAR_GOSHIMMER_VERSION='0.9.3'
+VAR_WASP_VERSION='0.2.5'
 VAR_SHIMMER_VERSION='2.0.0-beta.2'
+
+ca='\033[36m'
+xx='\033[0m'
+
+echo $xx
 
 DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-$VAR_SHIMMER_VERSION-docker.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
@@ -43,7 +49,8 @@ CheckCertificate() {
 		echo "║                            X. Get new Certificate (don't use with SWARM)    ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo "select: "
+		echo ""
+		echo "select menu item: "
 		echo ""
 
 		read n
@@ -76,7 +83,8 @@ CheckConfiguration() {
 		echo "║                            X. Use existing Configuration (*.env)            ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo "select: "
+		echo ""		
+		echo "select menu item: "
 		echo ""
 
 		read n
@@ -103,7 +111,8 @@ SetCertificateGlobal() {
 	echo "║                            X. Use Certificate only for this Node            ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo "select: "
+	echo ""
+		echo "select menu item: "
 	echo ""
 
 	read n
@@ -139,7 +148,8 @@ MainMenu() {
 	echo "║                              X. Abort Installer                             ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo "select: "
+	echo ""
+	echo "select menu item: "
 	echo ""
 
 	read n
@@ -174,7 +184,8 @@ SubMenuLicense() {
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo "select: "
+	echo ""
+	echo "select menu item: "
 	echo ""
 
 	read n
@@ -201,7 +212,8 @@ SubMenuIotaMainnet() {
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo "select: "
+	echo ""
+	echo "select menu item: "
 	echo ""
 
 	read n
@@ -230,7 +242,8 @@ SubMenuIotaDevnet() {
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo "select: "
+	echo ""
+	echo "select menu item: "
 	echo ""
 
 	read n
@@ -263,7 +276,8 @@ SubMenuShimmerMainnet() {
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo "select: "
+	echo ""
+	echo "select menu item: "
 	echo ""
 
 	read n
@@ -277,6 +291,7 @@ SubMenuShimmerMainnet() {
 	*) MainMenu ;;
 	esac
 }
+
 
 SubMenuMaintenance() {
 	clear
@@ -294,7 +309,12 @@ SubMenuMaintenance() {
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo "select: "
+	echo ""
+	if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_BEE_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_BEE_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_GOSHIMMER_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_VERSION""$xx"; fi	
+	echo "select menu item: "
 	echo ""
 
 	read n
@@ -393,7 +413,8 @@ SystemUpdates() {
 	echo "║                            X. Main Menu                                     ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo "select: "
+	echo ""
+	echo "select menu item: "
 	echo ""
 	
 	read n
