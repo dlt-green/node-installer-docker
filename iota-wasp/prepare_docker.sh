@@ -16,7 +16,7 @@ source $(dirname "$0")/.env
 
 scriptDir=$(dirname "$0")
 dataDir="${WASP_DATA_DIR:-$scriptDir/data}"
-image="dlt.green/iota-wasp:v$WASP_VERSION"
+image="dltgreen/iota-wasp:v$WASP_VERSION"
 configFilename="config.json"
 configPath="${dataDir}/config/$configFilename"
 
