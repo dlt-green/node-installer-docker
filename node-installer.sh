@@ -862,9 +862,9 @@ IotaWasp() {
 		echo " Wasp Username: $VAR_USERNAME"
 		echo " Wasp Password: <set during install>"
 		echo " API: https://$VAR_HOST:$VAR_WASP_API_PORT/info"
-		echo " PEERING: https://$VAR_HOST:$VAR_WASP_PEERING_PORT"
-		echo " NANO-MSG: https://$VAR_HOST:$VAR_WASP_NANO_MSG_PORT"
-		echo " LEDGER-CONNECTION: https://$VAR_WASP_LEDGER_CONNECTION"
+		echo " PEERING: $VAR_HOST:$VAR_WASP_PEERING_PORT"
+		echo " NANO-MSG: $VAR_HOST:$VAR_WASP_NANO_MSG_PORT"
+		echo " LEDGER-CONNECTION: $VAR_WASP_LEDGER_CONNECTION"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
