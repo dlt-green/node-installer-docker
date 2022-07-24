@@ -715,6 +715,7 @@ IotaWasp() {
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
+	sed -i -e 's/v${WASP_VERSION/${WASP_VERSION/g' ./docker-compose.yml
 	sed -i -e 's/dlt.green/dltgreen/g' ./docker-compose.yml
 	sed -i -e 's/dlt.green/dltgreen/g' ./prepare_docker.sh
 
