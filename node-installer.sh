@@ -332,6 +332,7 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then docker stop shimmer-hornet; fi
 	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
@@ -342,6 +343,7 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then docker stop shimmer-hornet; fi
 	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
@@ -353,6 +355,7 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
 	   if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
 	   if [ -d /var/lib/$VAR_DIR/data/peerdb ]; then rm -r /var/lib/$VAR_DIR/data/peerdb/*; fi
+	   if [ -d /var/lib/$VAR_DIR/data/waspdb ]; then rm -r /var/lib/$VAR_DIR/data/waspdb/*; fi
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; sleep 3; SubMenuMaintenance
 	   ;;
@@ -736,7 +739,7 @@ IotaWasp() {
 		read -p 'Set api-port (e.g. 448): ' VAR_WASP_API_PORT
 		read -p 'Set peering-port (e.g. 4000): ' VAR_WASP_PEERING_PORT	
 		read -p 'Set nano-msg-port (e.g. 5550): ' VAR_WASP_NANO_MSG_PORT	
-		read -p 'Set ledger-connection/txstream (e.g. 5000): ' VAR_WASP_LEDGER_CONNECTION
+		read -p 'Set ledger-connection/txstream (e.g. 127.0.0.1:5000): ' VAR_WASP_LEDGER_CONNECTION
 		
 		read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
 		read -p 'Set password (blank): ' VAR_PASSWORD
@@ -859,8 +862,8 @@ IotaWasp() {
 		echo " Wasp Password: <set during install>"
 		echo " API: https://$VAR_HOST:$VAR_WASP_API_PORT/info"
 		echo " PEERING: https://$VAR_HOST:$VAR_WASP_PEERING_PORT"
-		echo " NANO_MSG: https://$VAR_HOST:$VAR_WASP_NANO_MSG_PORT"
-		echo " LEDGER_CONNECTION: https://$VAR_HOST:$VAR_WASP_LEDGER_CONNECTION"
+		echo " NANO-MSG: https://$VAR_HOST:$VAR_WASP_NANO_MSG_PORT"
+		echo " LEDGER-CONNECTION: https://$VAR_WASP_LEDGER_CONNECTION"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
@@ -1212,10 +1215,10 @@ ShimmerHornet() {
 RenameContainer() {
 	docker container rename iota-bee_bee_1 iota-bee >/dev/null 2>&1
 	docker container rename iota-bee_traefik_1 iota-bee.traefik >/dev/null 2>&1
-	docker container rename iota-bee_traefik-certs-dumper_1 iota-bee.traefik-certs-dumper >/dev/null 2>&1
 	docker container rename iota-goshimmer_goshimmer_1 iota-goshimmer >/dev/null 2>&1
 	docker container rename iota-goshimmer_traefik_1 iota-goshimmer.traefik >/dev/null 2>&1
-	docker container rename iota-goshimmer_traefik-certs-dumper_1 iota-goshimmer.traefik-certs-dumper >/dev/null 2>&1
+	docker container rename iota-wasp_traefik_1 iota-wasp.traefik >/dev/null 2>&1
+	docker container rename iota-wasp_wasp_1 iota-wasp >/dev/null 2>&1
 	docker container rename shimmer-hornet_hornet_1 shimmer-hornet >/dev/null 2>&1
 	docker container rename shimmer-hornet_traefik_1 shimmer-hornet.traefik >/dev/null 2>&1
 	docker container rename shimmer-hornet_inx-participation_1 shimmer-hornet.inx-participation >/dev/null 2>&1
