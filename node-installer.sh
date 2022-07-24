@@ -22,10 +22,12 @@ echo $xx
 DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-$VAR_SHIMMER_VERSION-docker.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
 DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
+DockerIotaWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-wasp.tar.gz"
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 
 DirShimmerHornet='/var/lib/shimmer-hornet'
 DirIotaBee='/var/lib/iota-bee'
+DirIotaWasp='/var/lib/iota-wasp'
 
 if [ -f "node-installer.sh" ]; then rm node-installer.sh; fi
 
@@ -238,7 +240,7 @@ SubMenuIotaDevnet() {
 	echo "║                              1. IOTA Hornet Devnet (soon)                   ║"
 	echo "║                              2. IOTA Bee Devnet                             ║"
 	echo "║                              3. IOTA Goshimmer                              ║"
-	echo "║                              4. IOTA Wasp (soon)                            ║"	
+	echo "║                              4. IOTA Wasp                                   ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -259,7 +261,7 @@ SubMenuIotaDevnet() {
 	   SubMenuMaintenance ;;
 	4) VAR_NODE=4
 	   VAR_DIR='iota-wasp'
-	   MainMenu ;;
+	   SubMenuMaintenance ;;
 	*) MainMenu ;;
 	esac
 }
@@ -313,6 +315,7 @@ SubMenuMaintenance() {
 	if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_BEE_VERSION""$xx"; fi
 	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_BEE_VERSION""$xx"; fi
 	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_GOSHIMMER_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_WASP_VERSION""$xx"; fi	
 	if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_VERSION""$xx"; fi	
 	echo "select menu item: "
 	echo ""
@@ -322,12 +325,14 @@ SubMenuMaintenance() {
 	1) if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then IotaGoshimmer; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then IotaWasp; fi
 	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then ShimmerHornet; fi
 	   ;;
 	2) echo '(re)starting...'; sleep 3
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then docker stop shimmer-hornet; fi
 	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
@@ -338,6 +343,7 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then docker stop shimmer-hornet; fi
 	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
@@ -349,6 +355,7 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
 	   if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
 	   if [ -d /var/lib/$VAR_DIR/data/peerdb ]; then rm -r /var/lib/$VAR_DIR/data/peerdb/*; fi
+	   if [ -d /var/lib/$VAR_DIR/data/waspdb ]; then rm -r /var/lib/$VAR_DIR/data/waspdb/*; fi
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
 	   RenameContainer; sleep 3; SubMenuMaintenance
 	   ;;
@@ -663,6 +670,200 @@ IotaBee() {
 		echo " Bee Username: $VAR_USERNAME"
 		echo " Bee Password: <set during install>"
 		echo " API: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/api/v1/info"
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+	else
+	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	fi
+	echo ""
+	
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	SubMenuMaintenance
+}
+
+IotaWasp() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║             DLT.GREEN AUTOMATIC WASP INSTALLATION WITH DOCKER               ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                    Create wasp directory /var/lib/iota-wasp                 ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
+	cd /var/lib/$VAR_DIR || exit
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                    Pull installer from dlt.green/iota-wasp                  ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	wget -cO - "$DockerIotaWasp" > install.tar.gz
+
+	echo "unpack:"
+	tar -xzf install.tar.gz
+
+	echo "remove tar.gz:"
+	rm -r install.tar.gz
+
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	sed -i -e 's/v${WASP_VERSION/${WASP_VERSION/g' ./docker-compose.yml
+	sed -i -e 's/v$WASP_VERSION/$WASP_VERSION/g' ./prepare_docker.sh
+	sed -i -e 's/dlt.green/dltgreen/g' ./docker-compose.yml
+	sed -i -e 's/dlt.green/dltgreen/g' ./prepare_docker.sh
+
+	CheckConfiguration
+	
+	if [ $VAR_CONF_RESET = 1 ]; then
+	
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                               Set Parameters                                ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
+		read -p 'Set dashboard-port (e.g. 447): ' VAR_WASP_HTTPS_PORT	
+		read -p 'Set api-port (e.g. 448): ' VAR_WASP_API_PORT
+		read -p 'Set peering-port (e.g. 4000): ' VAR_WASP_PEERING_PORT	
+		read -p 'Set nano-msg-port (e.g. 5550): ' VAR_WASP_NANO_MSG_PORT	
+		read -p 'Set ledger-connection/txstream (e.g. 127.0.0.1:5000): ' VAR_WASP_LEDGER_CONNECTION
+		
+		read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
+		read -p 'Set password (blank): ' VAR_PASSWORD
+	
+		CheckCertificate
+	
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                              Write Parameters                               ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+		if [ -f .env ]; then rm .env; fi
+
+		echo "WASP_VERSION=$VAR_WASP_VERSION" >> .env
+
+		echo "WASP_HOST=$VAR_HOST" >> .env
+		echo "WASP_HTTPS_PORT=$VAR_WASP_HTTPS_PORT" >> .env
+		echo "WASP_API_PORT=$VAR_WASP_API_PORT" >> .env
+		echo "WASP_PEERING_PORT=$VAR_WASP_PEERING_PORT" >> .env
+		echo "WASP_NANO_MSG_PORT=$VAR_WASP_NANO_MSG_PORT" >> .env
+		echo "WASP_LEDGER_CONNECTION=$VAR_WASP_LEDGER_CONNECTION" >> .env
+	
+		if [ $VAR_CERT = 0 ]
+		then
+			echo "WASP_HTTP_PORT=80" >> .env
+				read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+		else
+			echo "WASP_HTTP_PORT=8084" >> .env
+			echo "SSL_CONFIG=certs" >> .env
+			echo "WASP_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
+			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
+		fi
+	else
+		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_WASP_VERSION/g" .env; fi
+	fi
+	
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                                 Pull Data                                   ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	docker-compose pull
+
+	if [ $VAR_CONF_RESET = 1 ]; then
+	
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                               Set Creditials                                ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		VAR_DASHBOARD_PASSWORD=VAR_PASSWORD
+
+		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
+		echo "DASHBOARD_PASSWORD=$VAR_PASSWORD" >> .env
+	fi
+	
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Prepare Docker                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+	./prepare_docker.sh
+
+	if [ $VAR_CONF_RESET = 1 ]; then
+
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                             Configure Firewall                              ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi	
+	
+		echo ufw allow "$VAR_WASP_HTTPS_PORT/tcp" && ufw allow "$VAR_WASP_HTTPS_PORT/tcp"
+		echo ufw allow "$VAR_WASP_API_PORT/tcp" && ufw allow "$VAR_WASP_API_PORT/tcp"
+		echo ufw allow "$VAR_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_WASP_PEERING_PORT/tcp"
+		echo ufw allow "$VAR_WASP_NANO_MSG_PORT/tcp" && ufw allow "$VAR_WASP_NANO_MSG_PORT/tcp"		
+		echo ufw allow "$VAR_WASP_LEDGER_CONNECTION/tcp" && ufw allow "$VAR_WASP_LEDGER_CONNECTION/tcp"
+	fi
+	
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                                Start Wasp                                   ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+
+	docker-compose up -d
+	
+	sleep 3
+	
+	RenameContainer
+
+	echo ""
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+
+	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi	
+
+	clear
+	echo ""
+
+	if [ $VAR_CONF_RESET = 1 ]; then	
+	
+	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+	    echo ""
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+		echo " Wasp Dashboard: https://$VAR_HOST:$VAR_WASP_HTTPS_PORT/dashboard"
+		echo " Wasp Username: $VAR_USERNAME"
+		echo " Wasp Password: <set during install>"
+		echo " API: https://$VAR_HOST:$VAR_WASP_API_PORT/info"
+		echo " PEERING: https://$VAR_HOST:$VAR_WASP_PEERING_PORT"
+		echo " NANO-MSG: https://$VAR_HOST:$VAR_WASP_NANO_MSG_PORT"
+		echo " LEDGER-CONNECTION: https://$VAR_WASP_LEDGER_CONNECTION"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
@@ -1014,10 +1215,10 @@ ShimmerHornet() {
 RenameContainer() {
 	docker container rename iota-bee_bee_1 iota-bee >/dev/null 2>&1
 	docker container rename iota-bee_traefik_1 iota-bee.traefik >/dev/null 2>&1
-	docker container rename iota-bee_traefik-certs-dumper_1 iota-bee.traefik-certs-dumper >/dev/null 2>&1
 	docker container rename iota-goshimmer_goshimmer_1 iota-goshimmer >/dev/null 2>&1
 	docker container rename iota-goshimmer_traefik_1 iota-goshimmer.traefik >/dev/null 2>&1
-	docker container rename iota-goshimmer_traefik-certs-dumper_1 iota-goshimmer.traefik-certs-dumper >/dev/null 2>&1
+	docker container rename iota-wasp_traefik_1 iota-wasp.traefik >/dev/null 2>&1
+	docker container rename iota-wasp_wasp_1 iota-wasp >/dev/null 2>&1
 	docker container rename shimmer-hornet_hornet_1 shimmer-hornet >/dev/null 2>&1
 	docker container rename shimmer-hornet_traefik_1 shimmer-hornet.traefik >/dev/null 2>&1
 	docker container rename shimmer-hornet_inx-participation_1 shimmer-hornet.inx-participation >/dev/null 2>&1

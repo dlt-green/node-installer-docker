@@ -2,7 +2,7 @@ version: '3'
 services:
 
   wasp:
-    image: dltgreen/iota-wasp:v${WASP_VERSION:?WASP_VERSION is missing}
+    image: dltgreen/iota-wasp:${WASP_VERSION:?WASP_VERSION is missing}
     restart: unless-stopped
     ulimits:
       nofile:
