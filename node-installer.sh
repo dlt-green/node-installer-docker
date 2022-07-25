@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.5.0"
+VRSN="0.5.1"
 
 VAR_HOST=''
 VAR_DIR=''
