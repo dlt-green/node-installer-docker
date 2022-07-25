@@ -25,10 +25,6 @@ DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases
 DockerIotaWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-wasp.tar.gz"
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 
-DirShimmerHornet='/var/lib/shimmer-hornet'
-DirIotaBee='/var/lib/iota-bee'
-DirIotaWasp='/var/lib/iota-wasp'
-
 if [ -f "node-installer.sh" ]; then rm node-installer.sh; fi
 
 CheckCertificate() {
