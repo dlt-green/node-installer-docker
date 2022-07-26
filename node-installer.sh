@@ -15,6 +15,7 @@ VAR_WASP_VERSION='0.2.5'
 VAR_SHIMMER_VERSION='2.0.0-beta.2'
 
 ca='\033[36m'
+rd='\033[91m'
 xx='\033[0m'
 
 echo $xx
@@ -25,7 +26,9 @@ DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases
 DockerIotaWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-wasp.tar.gz"
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 
-if [ -f "node-installer.sh" ]; then rm node-installer.sh; fi
+clear
+if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
+if [ $(id -u) -ne 0 ]; then	echo $rd && echo 'Please run DLT.GREEN Automatic Node-Installer with sudo or as root' && echo $xx; exit; fi
 
 CheckCertificate() {
 	clear
