@@ -544,7 +544,7 @@ IotaBee() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
+		read -p 'Set domain-name (e.g. vrom.dlt.green): ' VAR_HOST
 		read -p 'Set domain-port (e.g. 440): ' VAR_BEE_HTTPS_PORT	
 		read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
 		read -p 'Set password (blank): ' VAR_PASSWORD
@@ -733,7 +733,7 @@ IotaWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
+		read -p 'Set domain-name (e.g. vrom.dlt.green): ' VAR_HOST
 		read -p 'Set dashboard-port (e.g. 447): ' VAR_WASP_HTTPS_PORT	
 		read -p 'Set api-port (e.g. 448): ' VAR_WASP_API_PORT
 		read -p 'Set peering-port (e.g. 4000): ' VAR_WASP_PEERING_PORT	
@@ -923,7 +923,7 @@ IotaGoshimmer() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
+		read -p 'Set domain-name (e.g. vrom.dlt.green): ' VAR_HOST
 		read -p 'Set domain-port (e.g. 446): ' VAR_GOSHIMMER_HTTPS_PORT	
 	
 		CheckCertificate
@@ -1093,7 +1093,7 @@ ShimmerHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		read -p 'Set domain-name (e.g. node.dlt.green): ' VAR_HOST
+		read -p 'Set domain-name (e.g. vrom.dlt.builders): ' VAR_HOST
 		read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
 		read -p 'Set password (blank): ' VAR_PASSWORD
 		read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
