@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.5.1"
+VRSN="0.5.2"
 
 VAR_HOST=''
 VAR_DIR=''
@@ -54,7 +54,7 @@ CheckCertificate() {
 		echo "select menu item: "
 		echo ""
 
-		read n
+		read  -p '> ' n
 		case $n in
 		1) VAR_CERT=1 ;;
 		*) echo "No existing Let's Encrypt Certificate found, generate a new one... " ;;
@@ -88,7 +88,7 @@ CheckConfiguration() {
 		echo "select menu item: "
 		echo ""
 
-		read n
+		read  -p '> ' n
 		case $n in
 		1) echo "Reset Configuration... "
 		   VAR_CONF_RESET=1 ;;
@@ -116,7 +116,7 @@ SetCertificateGlobal() {
 		echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
 	   cd "/var/lib/$VAR_DIR/data/letsencrypt" || exit
@@ -153,7 +153,7 @@ MainMenu() {
 	echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) VAR_NETWORK=0
 	   SystemUpdates ;;
@@ -167,7 +167,7 @@ MainMenu() {
 	   SubMenuShimmerMainnet ;;
 	6) VAR_NETWORK=6
 	   SubMenuLicense ;;
-	*) exit ;;
+	*) clear; exit ;;
 	esac
 }
 
@@ -189,7 +189,7 @@ SubMenuLicense() {
 	echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) VAR_NODE=1
 	   VAR_DIR='iota-hornet'
@@ -217,7 +217,7 @@ SubMenuIotaMainnet() {
 	echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) VAR_NODE=1
 	   VAR_DIR='iota-hornet'
@@ -247,7 +247,7 @@ SubMenuIotaDevnet() {
 	echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) VAR_NODE=1
 	   VAR_DIR='iota-hornet'
@@ -281,7 +281,7 @@ SubMenuShimmerMainnet() {
 	echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) VAR_NODE=1
 	   VAR_DIR='shimmer-hornet'
@@ -319,7 +319,7 @@ SubMenuMaintenance() {
 	echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
@@ -423,7 +423,7 @@ SystemUpdates() {
 	echo "select menu item: "
 	echo ""
 	
-	read n
+	read  -p '> ' n
 	case $n in
 	1) 	echo 'rebooting...'; sleep 3
 	    docker stop $(docker ps -a -q)
@@ -544,11 +544,20 @@ IotaBee() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		read -p 'Set domain-name (e.g. vrom.dlt.green): ' VAR_HOST
-		read -p 'Set domain-port (e.g. 440): ' VAR_BEE_HTTPS_PORT	
-		read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
-		read -p 'Set password (blank): ' VAR_PASSWORD
-	
+		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
+		read -p '> ' VAR_HOST
+		echo ''
+		echo "Set the dashboard port (example: $ca""440""$xx):"
+		read -p '> ' VAR_BEE_HTTPS_PORT
+		echo ''
+		echo "Set the dashboard username (example: $ca""vrom""$xx):"
+		read -p '> ' VAR_USERNAME
+		echo ''
+		echo "Set the dashboard password:"
+		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
+		read -p '> ' VAR_PASSWORD
+		echo ''
+		
 		CheckCertificate
 	
 		echo ""
@@ -666,9 +675,9 @@ IotaBee() {
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo " Bee Dashboard: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/dashboard"
-		echo " Bee Username: $VAR_USERNAME"
-		echo " Bee Password: <set during install>"
-		echo " API: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/api/v1/info"
+		echo " Bee Dashboard Username: $VAR_USERNAME"
+		echo " Bee Dashboard Password: <set during install>"
+		echo " Bee API: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/api/v1/info"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
@@ -733,16 +742,32 @@ IotaWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		read -p 'Set domain-name (e.g. vrom.dlt.green): ' VAR_HOST
-		read -p 'Set dashboard-port (e.g. 447): ' VAR_WASP_HTTPS_PORT	
-		read -p 'Set api-port (e.g. 448): ' VAR_WASP_API_PORT
-		read -p 'Set peering-port (e.g. 4000): ' VAR_WASP_PEERING_PORT	
-		read -p 'Set nano-msg-port (e.g. 5550): ' VAR_WASP_NANO_MSG_PORT	
-		read -p 'Set ledger-connection/txstream (e.g. 127.0.0.1:5000): ' VAR_WASP_LEDGER_CONNECTION
+		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
+		read -p '> ' VAR_HOST
+		echo ''
+		echo "Set the dashboard port (example: $ca""447""$xx):"
+		read -p '> ' VAR_WASP_HTTPS_PORT
+		echo ''
+		echo "Set the api port (example: $ca""448""$xx):"
+		read -p '> ' VAR_WASP_API_PORT
+		echo ''
+		echo "Set the peering port (example: $ca""4000""$xx):"
+		read -p '> ' VAR_WASP_PEERING_PORT
+		echo ''
+		echo "Set the nano-msg-port (example: $ca""5550""$xx):"
+		read -p '> ' VAR_WASP_NANO_MSG_PORT
+		echo ''
+		echo "Set the ledger-connection/txstream (example: $ca""127.0.0.1:5000""$xx):"
+		read -p '> ' VAR_WASP_LEDGER_CONNECTION
+		echo ''
+		echo "Set the dashboard username (example: $ca""vrom""$xx):"
+		read -p '> ' VAR_USERNAME
+		echo ''
+		echo "Set the dashboard password:"
+		echo "(information: $ca""will be saved as text / don't leave it empty""$xx):"
+		read -p '> ' VAR_PASSWORD
+		echo ''
 		
-		read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
-		read -p 'Set password (blank): ' VAR_PASSWORD
-	
 		CheckCertificate
 	
 		echo ""
@@ -858,12 +883,12 @@ IotaWasp() {
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo " Wasp Dashboard: https://$VAR_HOST:$VAR_WASP_HTTPS_PORT/dashboard"
-		echo " Wasp Username: $VAR_USERNAME"
-		echo " Wasp Password: <set during install>"
-		echo " API: https://$VAR_HOST:$VAR_WASP_API_PORT/info"
-		echo " PEERING: $VAR_HOST:$VAR_WASP_PEERING_PORT"
-		echo " NANO-MSG: $VAR_HOST:$VAR_WASP_NANO_MSG_PORT"
-		echo " LEDGER-CONNECTION: $VAR_WASP_LEDGER_CONNECTION"
+		echo " Wasp Dashboard Username: $VAR_USERNAME"
+		echo " Wasp Dashboard Password: <set during install>"
+		echo " Wasp API: https://$VAR_HOST:$VAR_WASP_API_PORT/info"
+		echo " Wasp peering: $VAR_HOST:$VAR_WASP_PEERING_PORT"
+		echo " Wasp nano-msg: $VAR_HOST:$VAR_WASP_NANO_MSG_PORT"
+		echo " Wasp ledger-connection/txstream: $VAR_WASP_LEDGER_CONNECTION"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
@@ -923,8 +948,12 @@ IotaGoshimmer() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		read -p 'Set domain-name (e.g. vrom.dlt.green): ' VAR_HOST
-		read -p 'Set domain-port (e.g. 446): ' VAR_GOSHIMMER_HTTPS_PORT	
+		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
+		read -p '> ' VAR_HOST
+		echo ''
+		echo "Set the dashboard port (example: $ca""446""$xx):"
+		read -p '> ' VAR_GOSHIMMER_HTTPS_PORT
+		echo ''
 	
 		CheckCertificate
 
@@ -1032,7 +1061,7 @@ IotaGoshimmer() {
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo " Goshimmer Dashboard: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/dashboard"
-		echo " API: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/info"
+		echo " Goshimmer API: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/info"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
@@ -1093,10 +1122,19 @@ ShimmerHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		read -p 'Set domain-name (e.g. vrom.dlt.builders): ' VAR_HOST
-		read -p 'Set dashboard username (e.g. vrom): ' VAR_USERNAME
-		read -p 'Set password (blank): ' VAR_PASSWORD
-		read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+		echo "Set the domain name (example: $ca""vrom.dlt.builders""$xx):"
+		read -p '> ' VAR_HOST
+		echo ''
+		echo "Set the dashboard username (example: $ca""vrom""$xx):"
+		read -p '> ' VAR_USERNAME
+		echo ''
+		echo "Set the dashboard password:"
+		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
+		read -p '> ' VAR_PASSWORD
+		echo ''
+		echo "Set the mail for letz encrypt certificat renewal (example: $ca""info@dlt.green""$xx):"
+		read -p '> ' VAR_ACME_EMAIL
+		echo ''
 
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1194,12 +1232,12 @@ ShimmerHornet() {
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo " Hornet Dashboard: https://$VAR_HOST/dashboard"
-		echo " Hornet Username: $VAR_USERNAME"
-		echo " Hornet Password: <set during install>"
+		echo " Hornet Dashboard Username: $VAR_USERNAME"
+		echo " Hornet Dashboard Password: <set during install>"
+		echo " Hornet API: https://$VAR_HOST/api/core/v2/info"
 		echo " Grafana Dashboard: https://$VAR_HOST/grafana"
 		echo " Grafana Username: admin"
 		echo " Grafana Password: <same as hornet password>"
-		echo " API: https://$VAR_HOST/api/core/v2/info"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
