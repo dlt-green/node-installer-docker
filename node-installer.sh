@@ -16,6 +16,7 @@ VAR_SHIMMER_VERSION='2.0.0-beta.3'
 
 ca='\033[36m'
 rd='\033[91m'
+fl='\033[5m'
 xx='\033[0m'
 
 echo $xx
@@ -317,6 +318,7 @@ SubMenuMaintenance() {
 	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_GOSHIMMER_VERSION""$xx"; fi
 	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_WASP_VERSION""$xx"; fi	
 	if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_VERSION""$xx"; fi	
+	echo ""
 	echo "select menu item: "
 	echo ""
 
@@ -329,48 +331,69 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then ShimmerHornet; fi
 	   ;;
 	2) echo '(re)starting...'; sleep 3
+	   clear
+	   echo $ca
+	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo $xx
+	   
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then docker stop shimmer-hornet; fi
 	   
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose up -d; fi
-	   RenameContainer; sleep 3; SubMenuMaintenance
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose up -d; fi
+
+	   RenameContainer; sleep 3
+	   
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	   SubMenuMaintenance
 	   ;;
 	3) echo 'stopping...'; sleep 3
+	   clear
+	   echo $ca
+	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo $xx
+	   
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then docker stop shimmer-hornet; fi
 	   
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; fi
-	   sleep 3; SubMenuMaintenance
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
+	   sleep 3;
+	   
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	   SubMenuMaintenance
 	   ;;
 	4) echo 'resetting...'; sleep 3
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down; fi
+	   clear
+	   echo $ca
+	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo $xx
+
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
 	   if [ -d /var/lib/$VAR_DIR/data/database ]; then rm -r /var/lib/$VAR_DIR/data/database/*; fi
 	   if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
 	   if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
 	   if [ -d /var/lib/$VAR_DIR/data/peerdb ]; then rm -r /var/lib/$VAR_DIR/data/peerdb/*; fi
 	   if [ -d /var/lib/$VAR_DIR/data/waspdb ]; then rm -r /var/lib/$VAR_DIR/data/waspdb/*; fi
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
-	   RenameContainer; sleep 3; SubMenuMaintenance
-	   ;;
-	6) docker logs -f --tail 300 $VAR_DIR
-	   read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W	
-	   SubMenuMaintenance
-	   ;;
-	7) echo 'deinstall/remove...'; sleep 3
-	   read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W	
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down >/dev/null 2>&1; fi
-	   if [ -d /var/lib/$VAR_DIR ]; then rm -r /var/lib/$VAR_DIR; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose up -d; fi
+
+	   RenameContainer; sleep 3
+
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	   
 	   SubMenuMaintenance
 	   ;;
 	5) echo 'loading...'; sleep 3
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down; fi
+	   clear
+	   echo $ca
+	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo $xx
+
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
 	   
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then
 	      if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
@@ -384,12 +407,34 @@ SubMenuMaintenance() {
 	   then
 	      if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
 	      if [ -d /var/lib/$VAR_DIR/data/peerdb ]; then rm -r /var/lib/$VAR_DIR/data/peerdb/*; fi
-	      if [ -f /var/lib/$VAR_DIR/data/snapshots/snapshot.bin ]; then cd /var/lib/$VAR_DIR/data/snapshots || MainMenu; wget $SnapshotIotaGoshimmer; mv snapshot-latest.bin snapshot.bin; fi
+	      if [ -f /var/lib/$VAR_DIR/data/snapshots/snapshot.bin ]; then cd /var/lib/$VAR_DIR/data/snapshots || SubMenuMaintenance; wget $SnapshotIotaGoshimmer; mv snapshot-latest.bin snapshot.bin; fi
 	   fi
-	   cd /var/lib/$VAR_DIR || MainMenu;
+	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose up -d; fi
-	   RenameContainer; SubMenuMaintenance
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose up -d; fi
+	   
+	   RenameContainer
+
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	  	   
+	   SubMenuMaintenance
+	   ;;
+	6) docker logs -f --tail 300 $VAR_DIR
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
+	   SubMenuMaintenance
+	   ;;
+	7) echo 'deinstall/remove...'; sleep 3
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
+	   clear
+	   echo $ca
+	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo $xx
+
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down >/dev/null 2>&1; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then rm -r /var/lib/$VAR_DIR; fi
+
+	   echo $rd""$VAR_DIR" removed from your system!"$xx
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
+	   SubMenuMaintenance
 	   ;;
 	*) MainMenu ;;
 	esac
@@ -403,7 +448,7 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	clear
 	sudo apt-get update && apt-get upgrade -y
@@ -411,7 +456,7 @@ SystemMaintenance() {
 	sudo apt upgrade -y
 	sudo apt-get autoremove -y
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -421,7 +466,7 @@ SystemMaintenance() {
 
 	docker system prune
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	
 	clear
 	echo ""
@@ -457,7 +502,7 @@ Docker() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	sudo docker ps -a -q
 	sudo apt-get install jq -y
@@ -505,7 +550,7 @@ Docker() {
 	sudo apt-get update
 	sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	MainMenu
 }
@@ -518,7 +563,7 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
 
@@ -545,7 +590,7 @@ IotaBee() {
 	echo "remove tar.gz:"
 	rm -r install.tar.gz
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	CheckConfiguration
 	
@@ -608,7 +653,7 @@ IotaBee() {
 		if [ -f .env ]; then sed -i "s/BEE_VERSION=.*/BEE_VERSION=$VAR_BEE_VERSION/g" .env; fi
 	fi
 	
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	clear
 	echo ""
@@ -676,7 +721,7 @@ IotaBee() {
 	RenameContainer
 
 	echo ""
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi	
 
@@ -698,7 +743,7 @@ IotaBee() {
 	fi
 	echo ""
 	
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	SubMenuMaintenance
 }
@@ -711,7 +756,7 @@ IotaWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
 
@@ -738,7 +783,7 @@ IotaWasp() {
 	echo "remove tar.gz:"
 	rm -r install.tar.gz
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	sed -i -e 's/v${WASP_VERSION/${WASP_VERSION/g' ./docker-compose.yml
 	sed -i -e 's/v$WASP_VERSION/$WASP_VERSION/g' ./prepare_docker.sh
@@ -817,7 +862,7 @@ IotaWasp() {
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_WASP_VERSION/g" .env; fi
 	fi
 	
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	clear
 	echo ""
@@ -884,7 +929,7 @@ IotaWasp() {
 	RenameContainer
 
 	echo ""
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi	
 
@@ -909,7 +954,7 @@ IotaWasp() {
 	fi
 	echo ""
 	
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	SubMenuMaintenance
 }
@@ -922,7 +967,7 @@ IotaGoshimmer() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
 
@@ -949,7 +994,7 @@ IotaGoshimmer() {
 	echo "remove tar.gz:"
 	rm -r install.tar.gz
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	CheckConfiguration
 
@@ -1002,7 +1047,7 @@ IotaGoshimmer() {
 		if [ -f .env ]; then sed -i "s/GOSHIMMER_VERSION=.*/GOSHIMMER_VERSION=$VAR_GOSHIMMER_VERSION/g" .env; fi
 	fi
 	
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	clear
 	echo ""
@@ -1062,7 +1107,7 @@ IotaGoshimmer() {
 	RenameContainer
 
 	echo ""
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi	
 
@@ -1083,7 +1128,7 @@ IotaGoshimmer() {
 	fi
 	echo ""	
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	SubMenuMaintenance
 }
@@ -1096,7 +1141,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
 
@@ -1123,7 +1168,7 @@ ShimmerHornet() {
 	echo "remove tar.gz:"
 	rm -r install.tar.gz
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	CheckConfiguration
 
@@ -1163,7 +1208,7 @@ ShimmerHornet() {
 		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 	fi
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	clear
 	echo ""
@@ -1233,7 +1278,7 @@ ShimmerHornet() {
 	if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 
 	echo ""
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi
 	
@@ -1259,7 +1304,7 @@ ShimmerHornet() {
 	fi
 	echo ""		
 
-	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	SubMenuMaintenance
 }
