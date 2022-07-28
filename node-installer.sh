@@ -54,7 +54,7 @@ CheckCertificate() {
 		echo "select menu item: "
 		echo ""
 
-		read n
+		read  -p '> ' n
 		case $n in
 		1) VAR_CERT=1 ;;
 		*) echo "No existing Let's Encrypt Certificate found, generate a new one... " ;;
@@ -88,7 +88,7 @@ CheckConfiguration() {
 		echo "select menu item: "
 		echo ""
 
-		read n
+		read  -p '> ' n
 		case $n in
 		1) echo "Reset Configuration... "
 		   VAR_CONF_RESET=1 ;;
@@ -116,7 +116,7 @@ SetCertificateGlobal() {
 		echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
 	   cd "/var/lib/$VAR_DIR/data/letsencrypt" || exit
@@ -153,7 +153,7 @@ MainMenu() {
 	echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) VAR_NETWORK=0
 	   SystemUpdates ;;
@@ -189,7 +189,7 @@ SubMenuLicense() {
 	echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) VAR_NODE=1
 	   VAR_DIR='iota-hornet'
@@ -217,7 +217,7 @@ SubMenuIotaMainnet() {
 	echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) VAR_NODE=1
 	   VAR_DIR='iota-hornet'
@@ -247,7 +247,7 @@ SubMenuIotaDevnet() {
 	echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) VAR_NODE=1
 	   VAR_DIR='iota-hornet'
@@ -281,7 +281,7 @@ SubMenuShimmerMainnet() {
 	echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) VAR_NODE=1
 	   VAR_DIR='shimmer-hornet'
@@ -319,7 +319,7 @@ SubMenuMaintenance() {
 	echo "select menu item: "
 	echo ""
 
-	read n
+	read  -p '> ' n
 	case $n in
 	1) if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
@@ -423,7 +423,7 @@ SystemUpdates() {
 	echo "select menu item: "
 	echo ""
 	
-	read n
+	read  -p '> ' n
 	case $n in
 	1) 	echo 'rebooting...'; sleep 3
 	    docker stop $(docker ps -a -q)
