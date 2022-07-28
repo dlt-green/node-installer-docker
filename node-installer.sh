@@ -307,6 +307,7 @@ SubMenuMaintenance() {
 	echo "║                              4. Reset Database                              ║"	
 	echo "║                              5. Loading Snaphot                             ║"	
 	echo "║                              6. Show Logs                                   ║"	
+	echo "║                              7. Deinstall/Remove                            ║"	
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -389,11 +390,11 @@ SubMenuMaintenance() {
 	esac
 }
 
-SystemUpdates() {
+SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                     DLT.GREEN AUTOMATIC SYSTEM UPDATES                      ║"
+	echo "║                   DLT.GREEN AUTOMATIC SYSTEM MAINTENANCE                    ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -407,7 +408,15 @@ SystemUpdates() {
 
 	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 
-	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                  Delete unused old docker containers/images                 ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	docker system prune
+
+	read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W
 	
 	clear
 	echo ""
