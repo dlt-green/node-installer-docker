@@ -167,7 +167,7 @@ MainMenu() {
 	   SubMenuShimmerMainnet ;;
 	6) VAR_NETWORK=6
 	   SubMenuLicense ;;
-	*) exit ;;
+	*) clear; exit ;;
 	esac
 }
 
