@@ -56,3 +56,9 @@ Bitte beachten, dass die Verwendung dieses Skripts auf eigenes Risiko erfolgt un
 # Disclosure
 IT'S NO OFFICIAL INSTALLER FROM IF - YOU WILL GET NO SUPPORT BY IF WHEN YOU USE IT  
 BUT YOU WILL GET SUPPORT BY DLT.GREEN IN OUR DISCORD
+
+# Donations
+THIS PROJECT IS DEVELOPED BY DLT.GREEN WITH ITS COMMUNITY.  
+YOU CAN SUPPORT THIS PROJECT WITH DONATIONS TO THE DLT.GREEN TREASURY:  
+https://explorer.iota.org/mainnet/addr/iota1qznzkq2n6kakps36s7w0z0gmuf0p70x647ghqshlfjlumqrld49l7zemavy
+https://soonaverse.com/member/0x422bed2759f72e7d6ae1e100707ca45e26e9a12c
