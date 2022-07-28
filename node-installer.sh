@@ -140,7 +140,7 @@ MainMenu() {
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
-	echo "║                              1. System Updates                              ║"
+	echo "║                              1. System Maintenance                          ║"
 	echo "║                              2. Docker Installation                         ║"
 	echo "║                              3. IOTA Mainnet                                ║"
 	echo "║                              4. IOTA Devnet                                 ║"
@@ -156,7 +156,7 @@ MainMenu() {
 	read  -p '> ' n
 	case $n in
 	1) VAR_NETWORK=0
-	   SystemUpdates ;;
+	   SystemMaintenance ;;
 	2) VAR_NETWORK=0 
 	   Docker ;;
 	3) VAR_NETWORK=3 
