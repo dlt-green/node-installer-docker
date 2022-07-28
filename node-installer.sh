@@ -363,7 +363,12 @@ SubMenuMaintenance() {
 	   read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W	
 	   SubMenuMaintenance
 	   ;;
-
+	7) echo 'deinstall/remove...'; sleep 3
+	   read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W	
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down >/dev/null 2>&1; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then rm -r /var/lib/$VAR_DIR; fi
+	   SubMenuMaintenance
+	   ;;
 	5) echo 'loading...'; sleep 3
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || MainMenu; docker-compose down; fi
 	   
