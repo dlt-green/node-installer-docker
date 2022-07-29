@@ -16,6 +16,7 @@ VAR_SHIMMER_VERSION='2.0.0-beta.3'
 
 ca='\033[36m'
 rd='\033[91m'
+gn='\033[32m'
 fl='\033[5m'
 xx='\033[0m'
 
@@ -478,6 +479,12 @@ SystemMaintenance() {
 	echo "║                            X. Main Menu                                     ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	echo "$rd""Attention! If you choose a System Reboot then you must stop Nodes,"
+	echo "which are additionally installed with a foreign Installer (e.g. SWARM)""$xx"
+	echo ""
+	echo "$gn""You don't have to stop Nodes installed with the DLT.GREEN Installer,"
+	echo "but you must restart them after reastarting your System with our Installer""$xx"
 	echo ""
 	echo "select menu item: "
 	echo ""
