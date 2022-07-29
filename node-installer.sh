@@ -484,7 +484,7 @@ SystemMaintenance() {
 	echo "which are additionally installed with a foreign Installer (e.g. SWARM)""$xx"
 	echo ""
 	echo "$gn""You don't have to stop Nodes installed with the DLT.GREEN Installer,"
-	echo "but you must restart them after reastarting your System with our Installer""$xx"
+	echo "but you must restart them with our Installer after reastarting your System""$xx"
 	echo ""
 	echo "select menu item: "
 	echo ""
