@@ -585,7 +585,7 @@ IotaBee() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                   Pull installer from dlt.green/iota-bee                    ║"
+	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -778,7 +778,7 @@ IotaWasp() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                    Pull installer from dlt.green/iota-wasp                  ║"
+	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -989,7 +989,7 @@ IotaGoshimmer() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                Pull installer from dlt.green/iota-goshimmer                 ║"
+	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -1163,7 +1163,7 @@ ShimmerHornet() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                   Pull repo from iotaledger/hornet:develop                  ║"
+	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
