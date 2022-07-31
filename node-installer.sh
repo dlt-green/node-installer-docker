@@ -572,7 +572,7 @@ IotaBee() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down; fi; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -590,6 +590,8 @@ IotaBee() {
 	echo ""
 
 	wget -cO - "$DockerIotaBee" > install.tar.gz
+	
+	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
@@ -765,7 +767,7 @@ IotaWasp() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down; fi; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -783,6 +785,8 @@ IotaWasp() {
 	echo ""
 
 	wget -cO - "$DockerIotaWasp" > install.tar.gz
+
+	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
@@ -976,7 +980,7 @@ IotaGoshimmer() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down; fi; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -994,6 +998,8 @@ IotaGoshimmer() {
 	echo ""
 
 	wget -cO - "$DockerIotaGoshimmer" > install.tar.gz
+
+	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
@@ -1150,7 +1156,7 @@ ShimmerHornet() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down; fi; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1168,6 +1174,8 @@ ShimmerHornet() {
 	echo ""
 
 	wget -cO - "$DockerShimmerMainnet" > install.tar.gz
+	
+	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
