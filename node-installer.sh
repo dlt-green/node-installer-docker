@@ -110,7 +110,7 @@ SetCertificateGlobal() {
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
-	echo "║                            1. Set Certificate as Global (recommend)         ║"
+	echo "║                            1. Update global Certificate (recommend)         ║"
 	echo "║                            X. Use Certificate only for this Node            ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -572,7 +572,7 @@ IotaBee() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down; fi; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -585,11 +585,13 @@ IotaBee() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                   Pull installer from dlt.green/iota-bee                    ║"
+	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
 	wget -cO - "$DockerIotaBee" > install.tar.gz
+	
+	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
@@ -730,7 +732,7 @@ IotaBee() {
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi	
+	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -765,7 +767,7 @@ IotaWasp() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down; fi; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -778,11 +780,13 @@ IotaWasp() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                    Pull installer from dlt.green/iota-wasp                  ║"
+	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
 	wget -cO - "$DockerIotaWasp" > install.tar.gz
+
+	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
@@ -938,7 +942,7 @@ IotaWasp() {
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi	
+	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -976,7 +980,7 @@ IotaGoshimmer() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down; fi; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -989,11 +993,13 @@ IotaGoshimmer() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                Pull installer from dlt.green/iota-goshimmer                 ║"
+	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
 	wget -cO - "$DockerIotaGoshimmer" > install.tar.gz
+
+	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
@@ -1116,7 +1122,7 @@ IotaGoshimmer() {
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi	
+	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -1150,7 +1156,7 @@ ShimmerHornet() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; docker-compose down; rm docker-compose.yml; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down; fi; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1163,11 +1169,13 @@ ShimmerHornet() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                   Pull repo from iotaledger/hornet:develop                  ║"
+	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
 	wget -cO - "$DockerShimmerMainnet" > install.tar.gz
+	
+	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
@@ -1287,7 +1295,7 @@ ShimmerHornet() {
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi
+	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 	
 	clear
 	echo ""	
