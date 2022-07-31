@@ -730,7 +730,7 @@ IotaBee() {
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi	
+	if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -938,7 +938,7 @@ IotaWasp() {
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi	
+	if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -1116,7 +1116,7 @@ IotaGoshimmer() {
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi	
+	if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi	
 
 	clear
 	echo ""
@@ -1287,7 +1287,7 @@ ShimmerHornet() {
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if ([ $VAR_CERT = 0 ] && [ $VAR_CONF_RESET = 1 ]); then SetCertificateGlobal; fi
+	if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 	
 	clear
 	echo ""	
