@@ -225,7 +225,7 @@ SubMenuIotaMainnet() {
 	case $n in
 	1) VAR_NODE=1
 	   VAR_DIR='iota-hornet'
-	   MainMenu ;;
+	   SubMenuMaintenance ;;
 	2) VAR_NODE=2
 	   VAR_DIR='iota-bee'
 	   SubMenuMaintenance ;;
@@ -255,7 +255,7 @@ SubMenuIotaDevnet() {
 	case $n in
 	1) VAR_NODE=1
 	   VAR_DIR='iota-hornet'
-	   MainMenu ;;
+	   SubMenuMaintenance ;;
 	2) VAR_NODE=2
 	   VAR_DIR='iota-bee'
 	   SubMenuMaintenance ;;
@@ -316,6 +316,8 @@ SubMenuMaintenance() {
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
+	if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_HORNET_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_HORNET_VERSION""$xx"; fi
 	if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_BEE_VERSION""$xx"; fi
 	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_BEE_VERSION""$xx"; fi
 	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_GOSHIMMER_VERSION""$xx"; fi
@@ -327,7 +329,9 @@ SubMenuMaintenance() {
 
 	read  -p '> ' n
 	case $n in
-	1) if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
+	1) if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 1 ]; then IotaHornet; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 1 ]; then IotaHornet; fi
+	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then IotaGoshimmer; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then IotaWasp; fi
@@ -339,6 +343,8 @@ SubMenuMaintenance() {
 	   echo 'Please wait, this process can take up to 5 minutes...'
 	   echo $xx
 	   
+	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
@@ -360,6 +366,8 @@ SubMenuMaintenance() {
 	   echo 'Please wait, this process can take up to 5 minutes...'
 	   echo $xx
 	   
+	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
@@ -399,6 +407,14 @@ SubMenuMaintenance() {
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
 	   
+	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 1 ]; then
+	      if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
+	      if [ -d /var/lib/$VAR_DIR/data/snapshots/mainnet ]; then rm -r /var/lib/$VAR_DIR/data/snapshots/mainnet/*; fi
+	   fi
+	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 1 ]; then
+	      if [ -d /var/lib/$VAR_DIR/data/storage/devnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/devnet/tangle/*; fi
+	      if [ -d /var/lib/$VAR_DIR/data/snapshots/devnet ]; then rm -r /var/lib/$VAR_DIR/data/snapshots/devnet/*; fi
+	   fi
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then
 	      if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
 	      if [ -d /var/lib/$VAR_DIR/data/snapshots/mainnet ]; then rm -r /var/lib/$VAR_DIR/data/snapshots/mainnet/*; fi
