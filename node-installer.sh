@@ -1010,11 +1010,6 @@ IotaWasp() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	sed -i -e 's/v${WASP_VERSION/${WASP_VERSION/g' ./docker-compose.yml
-	sed -i -e 's/v$WASP_VERSION/$WASP_VERSION/g' ./prepare_docker.sh
-	sed -i -e 's/dlt.green/dltgreen/g' ./docker-compose.yml
-	sed -i -e 's/dlt.green/dltgreen/g' ./prepare_docker.sh
-
 	CheckConfiguration
 	
 	if [ $VAR_CONF_RESET = 1 ]; then
