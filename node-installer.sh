@@ -764,7 +764,7 @@ IotaBee() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║              DLT.GREEN AUTOMATIC BEE INSTALLATION WITH DOCKER               ║"
+	echo "║            DLT.GREEN AUTOMATIC IOTA-BEE INSTALLATION WITH DOCKER            ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -915,7 +915,7 @@ IotaBee() {
 	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                                 Start Bee                                   ║"
+	echo "║                                Start IOTA-Bee                               ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -940,10 +940,10 @@ IotaBee() {
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " Bee Dashboard: https://$VAR_HOST:$VAR_IOTA_BEE_HTTPS_PORT/dashboard"
-		echo " Bee Dashboard Username: $VAR_USERNAME"
-		echo " Bee Dashboard Password: <set during install>"
-		echo " Bee API: https://$VAR_HOST:$VAR_IOTA_BEE_HTTPS_PORT/api/v1/info"
+		echo " IOTA-Bee Dashboard: https://$VAR_HOST:$VAR_IOTA_BEE_HTTPS_PORT/dashboard"
+		echo " IOTA-Bee Dashboard Username: $VAR_USERNAME"
+		echo " IOTA-Bee Dashboard Password: <set during install>"
+		echo " IOTA-Bee API: https://$VAR_HOST:$VAR_IOTA_BEE_HTTPS_PORT/api/v1/info"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
@@ -959,7 +959,7 @@ IotaWasp() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║             DLT.GREEN AUTOMATIC WASP INSTALLATION WITH DOCKER               ║"
+	echo "║            DLT.GREEN AUTOMATIC IOTA-WASP INSTALLATION WITH DOCKER           ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -1125,7 +1125,7 @@ IotaWasp() {
 	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                                Start Wasp                                   ║"
+	echo "║                               Start IOTA-Wasp                               ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -1150,13 +1150,13 @@ IotaWasp() {
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " Wasp Dashboard: https://$VAR_HOST:$VAR_IOTA_WASP_HTTPS_PORT/dashboard"
-		echo " Wasp Dashboard Username: $VAR_USERNAME"
-		echo " Wasp Dashboard Password: <set during install>"
-		echo " Wasp API: https://$VAR_HOST:$VAR_IOTA_WASP_API_PORT/info"
-		echo " Wasp peering: $VAR_HOST:$VAR_IOTA_WASP_PEERING_PORT"
-		echo " Wasp nano-msg: $VAR_HOST:$VAR_IOTA_WASP_NANO_MSG_PORT"
-		echo " Wasp ledger-connection/txstream: $VAR_IOTA_WASP_LEDGER_CONNECTION"
+		echo " IOTA-Wasp Dashboard: https://$VAR_HOST:$VAR_IOTA_WASP_HTTPS_PORT/dashboard"
+		echo " IOTA-Wasp Dashboard Username: $VAR_USERNAME"
+		echo " IOTA-Wasp Dashboard Password: <set during install>"
+		echo " IOTA-Wasp API: https://$VAR_HOST:$VAR_IOTA_WASP_API_PORT/info"
+		echo " IOTA-Wasp peering: $VAR_HOST:$VAR_IOTA_WASP_PEERING_PORT"
+		echo " IOTA-Wasp nano-msg: $VAR_HOST:$VAR_IOTA_WASP_NANO_MSG_PORT"
+		echo " IOTA-Wasp ledger-connection/txstream: $VAR_IOTA_WASP_LEDGER_CONNECTION"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
@@ -1172,7 +1172,7 @@ IotaGoshimmer() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║           DLT.GREEN AUTOMATIC GOSHIMMER INSTALLATION WITH DOCKER            ║"
+	echo "║         DLT.GREEN AUTOMATIC IOTA-GOSHIMMER INSTALLATION WITH DOCKER         ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -1330,8 +1330,8 @@ IotaGoshimmer() {
 		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " Goshimmer Dashboard: https://$VAR_HOST:$VAR_IOTA_GOSHIMMER_HTTPS_PORT/dashboard"
-		echo " Goshimmer API: https://$VAR_HOST:$VAR_IOTA_GOSHIMMER_HTTPS_PORT/info"
+		echo " IOTA-Goshimmer Dashboard: https://$VAR_HOST:$VAR_IOTA_GOSHIMMER_HTTPS_PORT/dashboard"
+		echo " IOTA-Goshimmer API: https://$VAR_HOST:$VAR_IOTA_GOSHIMMER_HTTPS_PORT/info"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
@@ -1348,7 +1348,7 @@ ShimmerHornet() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║            DLT.GREEN AUTOMATIC SHIMMER INSTALLATION WITH DOCKER             ║"
+	echo "║         DLT.GREEN AUTOMATIC SHIMMER-HORNET INSTALLATION WITH DOCKER         ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -1503,10 +1503,10 @@ ShimmerHornet() {
 		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " Hornet Dashboard: https://$VAR_HOST/dashboard"
-		echo " Hornet Dashboard Username: $VAR_USERNAME"
-		echo " Hornet Dashboard Password: <set during install>"
-		echo " Hornet API: https://$VAR_HOST/api/core/v2/info"
+		echo " SHIMMER-Hornet Dashboard: https://$VAR_HOST/dashboard"
+		echo " SHIMMER-Hornet Dashboard Username: $VAR_USERNAME"
+		echo " SHIMMER-Hornet Dashboard Password: <set during install>"
+		echo " SHIMMER-Hornet API: https://$VAR_HOST/api/core/v2/info"
 		echo " Grafana Dashboard: https://$VAR_HOST/grafana"
 		echo " Grafana Username: admin"
 		echo " Grafana Password: <same as hornet password>"
