@@ -9,10 +9,11 @@ VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
 
-VAR_BEE_VERSION='0.3.1'
-VAR_GOSHIMMER_VERSION='0.9.3'
-VAR_WASP_VERSION='0.2.5'
-VAR_SHIMMER_VERSION='2.0.0-beta.3'
+VAR_IOTA_HORNET_VERSION='1.2.1'
+VAR_IOTA_BEE_VERSION='0.3.1'
+VAR_IOTA_GOSHIMMER_VERSION='0.9.3'
+VAR_IOTA_WASP_VERSION='0.2.5'
+VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.3'
 
 ca='\033[36m'
 rd='\033[91m'
@@ -22,7 +23,8 @@ xx='\033[0m'
 
 echo $xx
 
-DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-$VAR_SHIMMER_VERSION-docker.tar.gz"
+DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-$VAR_SHIMMER_HORNET_VERSION-docker.tar.gz"
+DockerIotaHornet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
 DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
 DockerIotaWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-wasp.tar.gz"
@@ -314,11 +316,11 @@ SubMenuMaintenance() {
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_BEE_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_BEE_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_GOSHIMMER_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_WASP_VERSION""$xx"; fi	
-	if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_VERSION""$xx"; fi	
+	if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_BEE_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_BEE_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_GOSHIMMER_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_WASP_VERSION""$xx"; fi	
+	if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_HORNET_VERSION""$xx"; fi	
 	echo ""
 	echo "select menu item: "
 	echo ""
@@ -617,7 +619,7 @@ IotaBee() {
 		read -p '> ' VAR_HOST
 		echo ''
 		echo "Set the dashboard port (example: $ca""440""$xx):"
-		read -p '> ' VAR_BEE_HTTPS_PORT
+		read -p '> ' VAR_IOTA_BEE_HTTPS_PORT
 		echo ''
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"
 		read -p '> ' VAR_USERNAME
@@ -638,13 +640,13 @@ IotaBee() {
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
-		echo "BEE_VERSION=$VAR_BEE_VERSION" >> .env
+		echo "BEE_VERSION=$VAR_IOTA_BEE_VERSION" >> .env
 
 		if [ $VAR_NETWORK = 3 ]; then echo "BEE_NETWORK=mainnet" >> .env; fi
 		if [ $VAR_NETWORK = 4 ]; then echo "BEE_NETWORK=devnet" >> .env; fi
 	
 		echo "BEE_HOST=$VAR_HOST" >> .env
-		echo "BEE_HTTPS_PORT=$VAR_BEE_HTTPS_PORT" >> .env
+		echo "BEE_HTTPS_PORT=$VAR_IOTA_BEE_HTTPS_PORT" >> .env
 		echo "BEE_GOSSIP_PORT=15601" >> .env
 		echo "BEE_AUTOPEERING_PORT=14636" >> .env
 	
@@ -660,7 +662,7 @@ IotaBee() {
 			echo "BEE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 	else
-		if [ -f .env ]; then sed -i "s/BEE_VERSION=.*/BEE_VERSION=$VAR_BEE_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/BEE_VERSION=.*/BEE_VERSION=$VAR_IOTA_BEE_VERSION/g" .env; fi
 	fi
 	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
@@ -711,7 +713,7 @@ IotaBee() {
 
 		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi	
 	
-		echo ufw allow "$VAR_BEE_HTTPS_PORT/tcp" && ufw allow "$VAR_BEE_HTTPS_PORT/tcp"
+		echo ufw allow "$VAR_IOTA_BEE_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_BEE_HTTPS_PORT/tcp"
 		echo ufw allow '15601/tcp' && ufw allow '15601/tcp'
 		echo ufw allow '14636/udp' && ufw allow '14636/udp'
 	fi
@@ -743,10 +745,10 @@ IotaBee() {
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " Bee Dashboard: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/dashboard"
+		echo " Bee Dashboard: https://$VAR_HOST:$VAR_IOTA_BEE_HTTPS_PORT/dashboard"
 		echo " Bee Dashboard Username: $VAR_USERNAME"
 		echo " Bee Dashboard Password: <set during install>"
-		echo " Bee API: https://$VAR_HOST:$VAR_BEE_HTTPS_PORT/api/v1/info"
+		echo " Bee API: https://$VAR_HOST:$VAR_IOTA_BEE_HTTPS_PORT/api/v1/info"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
@@ -817,19 +819,19 @@ IotaWasp() {
 		read -p '> ' VAR_HOST
 		echo ''
 		echo "Set the dashboard port (example: $ca""447""$xx):"
-		read -p '> ' VAR_WASP_HTTPS_PORT
+		read -p '> ' VAR_IOTA_WASP_HTTPS_PORT
 		echo ''
 		echo "Set the api port (example: $ca""448""$xx):"
-		read -p '> ' VAR_WASP_API_PORT
+		read -p '> ' VAR_IOTA_WASP_API_PORT
 		echo ''
 		echo "Set the peering port (example: $ca""4000""$xx):"
-		read -p '> ' VAR_WASP_PEERING_PORT
+		read -p '> ' VAR_IOTA_WASP_PEERING_PORT
 		echo ''
 		echo "Set the nano-msg-port (example: $ca""5550""$xx):"
-		read -p '> ' VAR_WASP_NANO_MSG_PORT
+		read -p '> ' VAR_IOTA_WASP_NANO_MSG_PORT
 		echo ''
 		echo "Set the ledger-connection/txstream (example: $ca""127.0.0.1:5000""$xx):"
-		read -p '> ' VAR_WASP_LEDGER_CONNECTION
+		read -p '> ' VAR_IOTA_WASP_LEDGER_CONNECTION
 		echo ''
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"
 		read -p '> ' VAR_USERNAME
@@ -850,14 +852,14 @@ IotaWasp() {
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
-		echo "WASP_VERSION=$VAR_WASP_VERSION" >> .env
+		echo "WASP_VERSION=$VAR_IOTA_WASP_VERSION" >> .env
 
 		echo "WASP_HOST=$VAR_HOST" >> .env
-		echo "WASP_HTTPS_PORT=$VAR_WASP_HTTPS_PORT" >> .env
-		echo "WASP_API_PORT=$VAR_WASP_API_PORT" >> .env
-		echo "WASP_PEERING_PORT=$VAR_WASP_PEERING_PORT" >> .env
-		echo "WASP_NANO_MSG_PORT=$VAR_WASP_NANO_MSG_PORT" >> .env
-		echo "WASP_LEDGER_CONNECTION=$VAR_WASP_LEDGER_CONNECTION" >> .env
+		echo "WASP_HTTPS_PORT=$VAR_IOTA_WASP_HTTPS_PORT" >> .env
+		echo "WASP_API_PORT=$VAR_IOTA_WASP_API_PORT" >> .env
+		echo "WASP_PEERING_PORT=$VAR_IOTA_WASP_PEERING_PORT" >> .env
+		echo "WASP_NANO_MSG_PORT=$VAR_IOTA_WASP_NANO_MSG_PORT" >> .env
+		echo "WASP_LEDGER_CONNECTION=$VAR_IOTA_WASP_LEDGER_CONNECTION" >> .env
 	
 		if [ $VAR_CERT = 0 ]
 		then
@@ -871,7 +873,7 @@ IotaWasp() {
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 	else
-		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_WASP_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_IOTA_WASP_VERSION/g" .env; fi
 	fi
 	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
@@ -918,12 +920,12 @@ IotaWasp() {
 
 		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi	
 	
-		echo ufw allow "$VAR_WASP_HTTPS_PORT/tcp" && ufw allow "$VAR_WASP_HTTPS_PORT/tcp"
-		echo ufw allow "$VAR_WASP_API_PORT/tcp" && ufw allow "$VAR_WASP_API_PORT/tcp"
-		echo ufw allow "$VAR_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_WASP_PEERING_PORT/tcp"
-		echo ufw allow "$VAR_WASP_NANO_MSG_PORT/tcp" && ufw allow "$VAR_WASP_NANO_MSG_PORT/tcp"		
-		VAR_WASP_LEDGER_CONNECTION_PORT=$(echo $VAR_WASP_LEDGER_CONNECTION | sed -e 's/^.*://')
-		echo ufw allow "$VAR_WASP_LEDGER_CONNECTION_PORT/tcp" && ufw allow "$VAR_WASP_LEDGER_CONNECTION_PORT/tcp"
+		echo ufw allow "$VAR_IOTA_WASP_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_HTTPS_PORT/tcp"
+		echo ufw allow "$VAR_IOTA_WASP_API_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_API_PORT/tcp"
+		echo ufw allow "$VAR_IOTA_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_PEERING_PORT/tcp"
+		echo ufw allow "$VAR_IOTA_WASP_NANO_MSG_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_NANO_MSG_PORT/tcp"		
+		VAR_IOTA_WASP_LEDGER_CONNECTION_PORT=$(echo $VAR_IOTA_WASP_LEDGER_CONNECTION | sed -e 's/^.*://')
+		echo ufw allow "$VAR_IOTA_WASP_LEDGER_CONNECTION_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_LEDGER_CONNECTION_PORT/tcp"
 	fi
 	
 	echo ""
@@ -953,13 +955,13 @@ IotaWasp() {
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " Wasp Dashboard: https://$VAR_HOST:$VAR_WASP_HTTPS_PORT/dashboard"
+		echo " Wasp Dashboard: https://$VAR_HOST:$VAR_IOTA_WASP_HTTPS_PORT/dashboard"
 		echo " Wasp Dashboard Username: $VAR_USERNAME"
 		echo " Wasp Dashboard Password: <set during install>"
-		echo " Wasp API: https://$VAR_HOST:$VAR_WASP_API_PORT/info"
-		echo " Wasp peering: $VAR_HOST:$VAR_WASP_PEERING_PORT"
-		echo " Wasp nano-msg: $VAR_HOST:$VAR_WASP_NANO_MSG_PORT"
-		echo " Wasp ledger-connection/txstream: $VAR_WASP_LEDGER_CONNECTION"
+		echo " Wasp API: https://$VAR_HOST:$VAR_IOTA_WASP_API_PORT/info"
+		echo " Wasp peering: $VAR_HOST:$VAR_IOTA_WASP_PEERING_PORT"
+		echo " Wasp nano-msg: $VAR_HOST:$VAR_IOTA_WASP_NANO_MSG_PORT"
+		echo " Wasp ledger-connection/txstream: $VAR_IOTA_WASP_LEDGER_CONNECTION"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
@@ -1025,7 +1027,7 @@ IotaGoshimmer() {
 		read -p '> ' VAR_HOST
 		echo ''
 		echo "Set the dashboard port (example: $ca""446""$xx):"
-		read -p '> ' VAR_GOSHIMMER_HTTPS_PORT
+		read -p '> ' VAR_IOTA_GOSHIMMER_HTTPS_PORT
 		echo ''
 	
 		CheckCertificate
@@ -1039,10 +1041,10 @@ IotaGoshimmer() {
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
-		echo "GOSHIMMER_VERSION=$VAR_GOSHIMMER_VERSION" >> .env
+		echo "GOSHIMMER_VERSION=$VAR_IOTA_GOSHIMMER_VERSION" >> .env
 
 		echo "GOSHIMMER_HOST=$VAR_HOST" >> .env
-		echo "GOSHIMMER_HTTPS_PORT=$VAR_GOSHIMMER_HTTPS_PORT" >> .env
+		echo "GOSHIMMER_HTTPS_PORT=$VAR_IOTA_GOSHIMMER_HTTPS_PORT" >> .env
 		echo "GOSHIMMER_GOSSIP_PORT=14666" >> .env
 		echo "GOSHIMMER_AUTOPEERING_PORT=14646" >> .env
 	
@@ -1058,7 +1060,7 @@ IotaGoshimmer() {
 			echo "GOSHIMMER_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 	else
-		if [ -f .env ]; then sed -i "s/GOSHIMMER_VERSION=.*/GOSHIMMER_VERSION=$VAR_GOSHIMMER_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/GOSHIMMER_VERSION=.*/GOSHIMMER_VERSION=$VAR_IOTA_GOSHIMMER_VERSION/g" .env; fi
 	fi
 	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
@@ -1100,7 +1102,7 @@ IotaGoshimmer() {
 
 		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi	
 	
-		echo ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp" && ufw allow "$VAR_GOSHIMMER_HTTPS_PORT/tcp"
+		echo ufw allow "$VAR_IOTA_GOSHIMMER_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_GOSHIMMER_HTTPS_PORT/tcp"
 		echo ufw allow '14666/tcp' && ufw allow '14666/tcp'
 		echo ufw allow '14646/udp' && ufw allow '14646/udp'
 		echo ufw allow '5000/tcp' && ufw allow '5000/tcp'
@@ -1133,8 +1135,8 @@ IotaGoshimmer() {
 		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " Goshimmer Dashboard: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/dashboard"
-		echo " Goshimmer API: https://$VAR_HOST:$VAR_GOSHIMMER_HTTPS_PORT/info"
+		echo " Goshimmer Dashboard: https://$VAR_HOST:$VAR_IOTA_GOSHIMMER_HTTPS_PORT/dashboard"
+		echo " Goshimmer API: https://$VAR_HOST:$VAR_IOTA_GOSHIMMER_HTTPS_PORT/info"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
