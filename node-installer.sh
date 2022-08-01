@@ -212,7 +212,7 @@ SubMenuIotaMainnet() {
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
-	echo "║                              1. IOTA Hornet Mainnet (soon)                  ║"
+	echo "║                              1. IOTA Hornet Mainnet                         ║"
 	echo "║                              2. IOTA Bee Mainnet                            ║"
 	echo "║                              X. Main Menu                                   ║"
 	echo "║                                                                             ║"
@@ -240,7 +240,7 @@ SubMenuIotaDevnet() {
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
-	echo "║                              1. IOTA Hornet Devnet (soon)                   ║"
+	echo "║                              1. IOTA Hornet Devnet                          ║"
 	echo "║                              2. IOTA Bee Devnet                             ║"
 	echo "║                              3. IOTA Goshimmer                              ║"
 	echo "║                              4. IOTA Wasp                                   ║"	
@@ -1009,11 +1009,6 @@ IotaWasp() {
 	rm -r install.tar.gz
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
-
-	sed -i -e 's/v${WASP_VERSION/${WASP_VERSION/g' ./docker-compose.yml
-	sed -i -e 's/v$WASP_VERSION/$WASP_VERSION/g' ./prepare_docker.sh
-	sed -i -e 's/dlt.green/dltgreen/g' ./docker-compose.yml
-	sed -i -e 's/dlt.green/dltgreen/g' ./prepare_docker.sh
 
 	CheckConfiguration
 	
