@@ -59,6 +59,7 @@ if [ -z "$(docker images | grep $imageWithoutTag | grep $GOSHIMMER_VERSION)" ]; 
 fi
 
 rm -Rf $(dirname "$configPath")/$configFilename
+docker rm -f iota-goshimmer-tmp >/dev/null 2>&1
 docker create --name iota-goshimmer-tmp $image >/dev/null 2>&1
 echo "Extracting default config from docker image..."
 docker cp iota-goshimmer-tmp:/app/$configFilename "$configPath"
@@ -66,7 +67,7 @@ if [ ! -e "$dataDir/snapshots/snapshot.bin" ]; then
   echo "Extracting default snapshot from docker image..."
   docker cp iota-goshimmer-tmp:/app/snapshot.bin "$dataDir/snapshots/snapshot.bin"
 fi
-docker rm iota-goshimmer-tmp >/dev/null 2>&1
+docker rm -f iota-goshimmer-tmp >/dev/null 2>&1
 
 if [[ "$OSTYPE" != "darwin"* ]]; then
   chown -R 65532:65532 "${dataDir}"
