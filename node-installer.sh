@@ -637,7 +637,11 @@ IotaHornet() {
 		echo "Set the dashboard port (example: $ca""443""$xx):"
 		read -p '> ' VAR_IOTA_HORNET_HTTPS_PORT
 		echo ''
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"
+		echo "Set the pruning size / max. database size (example: $ca""200GB""$xx):"
+		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		read -p '> ' VAR_IOTA_HORNET_PRUNING_SIZE
+		echo ''
+		echo "Set the dashboard username (example: $ca""vrom""$xx):"		
 		read -p '> ' VAR_USERNAME
 		echo ''
 		echo "Set the dashboard password:"
@@ -662,6 +666,7 @@ IotaHornet() {
 		if [ $VAR_NETWORK = 4 ]; then echo "HORNET_NETWORK=devnet" >> .env; fi
 	
 		echo "HORNET_HOST=$VAR_HOST" >> .env
+		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_IOTA_HORNET_PRUNING_SIZE" >> .env
 		echo "HORNET_HTTPS_PORT=$VAR_IOTA_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
