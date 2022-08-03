@@ -387,11 +387,14 @@ SubMenuMaintenance() {
 	   echo $xx
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
-	   if [ -d /var/lib/$VAR_DIR/data/database ]; then rm -r /var/lib/$VAR_DIR/data/database/*; fi
-	   if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
-	   if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
-	   if [ -d /var/lib/$VAR_DIR/data/peerdb ]; then rm -r /var/lib/$VAR_DIR/data/peerdb/*; fi
-	   if [ -d /var/lib/$VAR_DIR/data/waspdb ]; then rm -r /var/lib/$VAR_DIR/data/waspdb/*; fi
+	   
+	   rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
+	   rm -rf /var/lib/$VAR_DIR/data/storage/devnet/*
+	   rm -rf /var/lib/$VAR_DIR/data/database/*
+	   rm -rf /var/lib/$VAR_DIR/data/mainnetdb/*
+	   rm -rf /var/lib/$VAR_DIR/data/peerdb/*
+	   rm -rf /var/lib/$VAR_DIR/data/waspdb/*
+	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose up -d; fi
 
 	   RenameContainer; sleep 3
@@ -408,25 +411,26 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
 	   
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 1 ]; then
-	      if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
-	      if [ -d /var/lib/$VAR_DIR/data/snapshots/mainnet ]; then rm -r /var/lib/$VAR_DIR/data/snapshots/mainnet/*; fi
+	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
 	   fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 1 ]; then
-	      if [ -d /var/lib/$VAR_DIR/data/storage/devnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/devnet/tangle/*; fi
-	      if [ -d /var/lib/$VAR_DIR/data/snapshots/devnet ]; then rm -r /var/lib/$VAR_DIR/data/snapshots/devnet/*; fi
+	      rm -rf /var/lib/$VAR_DIR/data/storage/devnet/tangle/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/devnet/participation/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/devnet/*
 	   fi
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then
-	      if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
-	      if [ -d /var/lib/$VAR_DIR/data/snapshots/mainnet ]; then rm -r /var/lib/$VAR_DIR/data/snapshots/mainnet/*; fi
+	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
 	   fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then
-	      if [ -d /var/lib/$VAR_DIR/data/storage/devnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/devnet/tangle/*; fi
-	      if [ -d /var/lib/$VAR_DIR/data/snapshots/devnet ]; then rm -r /var/lib/$VAR_DIR/data/snapshots/devnet/*; fi
+	      rm -rf /var/lib/$VAR_DIR/data/storage/devnet/tangle/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/devnet/*
 	   fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]
 	   then
-	      if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
-	      if [ -d /var/lib/$VAR_DIR/data/peerdb ]; then rm -r /var/lib/$VAR_DIR/data/peerdb/*; fi
+	      rm -rf /var/lib/$VAR_DIR/data/mainnetdb/*
+	      rm -rf /var/lib/$VAR_DIR/data/peerdb/*
 	      if [ -f /var/lib/$VAR_DIR/data/snapshots/snapshot.bin ]; then cd /var/lib/$VAR_DIR/data/snapshots || SubMenuMaintenance; wget $SnapshotIotaGoshimmer; mv snapshot-latest.bin snapshot.bin; fi
 	   fi
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
