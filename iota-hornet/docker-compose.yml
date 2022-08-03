@@ -43,13 +43,13 @@ services:
       - "traefik.http.routers.webapi.tls.certresolver=myresolver"
     cap_drop:
       - ALL
-    command: [ "--config", "/app/config.json" ]
+    command: [ "--config", "/app/config/config.json" ]
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "${HORNET_DATA_DIR:-./data}/storage/${HORNET_NETWORK:-mainnet}:/app/storage"
       - "${HORNET_DATA_DIR:-./data}/snapshots/${HORNET_NETWORK:-mainnet}:/app/snapshots"
       - "${HORNET_DATA_DIR:-./data}/p2pstore/${HORNET_NETWORK:-mainnet}:/app/p2pstore"
-      - "${HORNET_DATA_DIR:-./data}/config/config-${HORNET_NETWORK:-mainnet}.json:/app/config.json:ro"
+      - "${HORNET_DATA_DIR:-./data}/config/config-${HORNET_NETWORK:-mainnet}.json:/app/config/config.json:ro"
     logging:
       driver: "json-file"
       options:
