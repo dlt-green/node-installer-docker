@@ -62,9 +62,10 @@ fi
 
 echo "Generating config..."
 rm -Rf $(dirname "$configPath")/$configFilename
+docker rm -f iota-wasp-tmp >/dev/null 2>&1
 docker create --name iota-wasp-tmp $image >/dev/null 2>&1
 docker cp iota-wasp-tmp:/etc/wasp_config.json "$configPath"
-docker rm iota-wasp-tmp >/dev/null 2>&1
+docker rm -f iota-wasp-tmp >/dev/null 2>&1
 
 
 # Update extracted config with values from .env

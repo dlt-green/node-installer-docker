@@ -67,9 +67,10 @@ fi
 
 echo "Generating config..."
 rm -Rf $(dirname "$configPath")/$configFilename
+docker rm -f iota-bee-tmp >/dev/null 2>&1
 docker create --name iota-bee-tmp $beeImage >/dev/null 2>&1
 docker cp iota-bee-tmp:/app/$configFilename "$configPath"
-docker rm iota-bee-tmp >/dev/null 2>&1
+docker rm -f iota-bee-tmp >/dev/null 2>&1
 
 
 # Update extracted config with values from .env
