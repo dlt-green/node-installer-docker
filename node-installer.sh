@@ -1605,19 +1605,19 @@ ShimmerWasp() {
 		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
 		read -p '> ' VAR_HOST
 		echo ''
-		echo "Set the dashboard port (example: $ca""447""$xx):"
+		echo "Set the dashboard port (example: $ca""441""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_HTTPS_PORT
 		echo ''
-		echo "Set the api port (example: $ca""448""$xx):"
+		echo "Set the api port (example: $ca""442""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_API_PORT
 		echo ''
-		echo "Set the peering port (example: $ca""4000""$xx):"
+		echo "Set the peering port (example: $ca""4001""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_PEERING_PORT
 		echo ''
-		echo "Set the nano-msg-port (example: $ca""5550""$xx):"
+		echo "Set the nano-msg-port (example: $ca""5551""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_NANO_MSG_PORT
 		echo ''
-		echo "Set the ledger-connection/txstream (example: $ca""127.0.0.1:5000""$xx):"
+		echo "Set the ledger-connection/txstream (example: $ca""127.0.0.1:5001""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_LEDGER_CONNECTION
 		echo ''
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"
@@ -1640,7 +1640,6 @@ ShimmerWasp() {
 		if [ -f .env ]; then rm .env; fi
 
 		echo "WASP_VERSION=$VAR_SHIMMER_WASP_VERSION" >> .env
-
 		echo "WASP_HOST=$VAR_HOST" >> .env
 		echo "WASP_HTTPS_PORT=$VAR_SHIMMER_WASP_HTTPS_PORT" >> .env
 		echo "WASP_API_PORT=$VAR_SHIMMER_WASP_API_PORT" >> .env
@@ -1654,7 +1653,7 @@ ShimmerWasp() {
 				read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "WASP_HTTP_PORT=8084" >> .env
+			echo "WASP_HTTP_PORT=8087" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "WASP_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
