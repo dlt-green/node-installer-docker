@@ -34,10 +34,10 @@ build_hornet_image () {
   (cd $BUILD_DIR; git clone https://github.com/iotaledger/hornet.git tmp_hornet; cd tmp_hornet; git checkout v${HORNET_VERSION})
 
   if [ -f $buildDirHornet/docker/Dockerfile ]; then
-    (cd $buildDirHornet; docker build -f docker/Dockerfile -t $imageName .)
+    (cd $buildDirHornet; docker build --no-cache -f docker/Dockerfile -t $imageName .)
   fi
 
-  docker save $imageName > $BUILD_DIR/iota-hornet-v$HORNET_VERSION.tar
+  docker save $imageName > $BUILD_DIR/iota-hornet-$HORNET_VERSION.tar
   rm -Rf $buildDirHornet
 
   push_docker_image $imageName
@@ -55,10 +55,12 @@ build_wasp_image () {
   (cd $BUILD_DIR; git clone https://github.com/iotaledger/wasp.git tmp_wasp; cd tmp_wasp; git checkout $repoTag)
 
   if [ -f $buildDirWasp/Dockerfile ]; then
-    (cd $buildDirWasp; docker build -t $imageName .)
+    # temporary fix to display correct version on wasp ui (because we also build an image from master branch)
+    if [ "$repoTag" == "master" ]; then sed -i "s/Version.*=.*/Version = \"${imageTag}\"/g" $buildDirWasp/packages/wasp/constants.go; fi
+    (cd $buildDirWasp; docker build --no-cache -t $imageName .)
   fi
 
-  docker save $imageName > $BUILD_DIR/iota-wasp-$repoTag.tar
+  docker save $imageName > $BUILD_DIR/wasp-$imageTag.tar
   rm -Rf $buildDirWasp
 
   push_docker_image $imageName
@@ -153,7 +155,7 @@ MainMenu() {
 }
 
 DockerImagesMenu() {
-  print_menu "iota-hornet ($HORNET_VERSION)" "iota-wasp ($WASP_VERSION)" "shimmer-wasp (master)" "Back"
+  print_menu "iota-hornet ($HORNET_VERSION)" "wasp ($WASP_VERSION)" "wasp (master)" "Back"
 	read  -p '> ' n
 	case $n in
 	1) print_line
@@ -162,12 +164,12 @@ DockerImagesMenu() {
      DockerImagesMenu
      ;;
 	2) print_line
-     build_wasp_image "v$WASP_VERSION" "iota-wasp" "$WASP_VERSION"
+     build_wasp_image "v$WASP_VERSION" "wasp" "$WASP_VERSION"
      enter_to_continue
      DockerImagesMenu
      ;;
 	3) print_line
-     build_wasp_image "master" "shimmer-wasp" "dev"
+     build_wasp_image "master" "wasp" "dev"
      enter_to_continue
      DockerImagesMenu
      ;;
@@ -176,26 +178,34 @@ DockerImagesMenu() {
 }
 
 NodePackagesMenu() {
-  print_menu "iota-hornet" "iota-bee" "iota-goshimmer" "iota-wasp" "Back"
+  print_menu "all" "iota-hornet" "iota-bee" "iota-goshimmer" "wasp" "Back"
 	read  -p '> ' n
 	case $n in
-	1) print_line
-     build_node "iota-hornet"
+  1) print_line
+     for node in "iota-hornet" "iota-bee" "iota-goshimmer" "wasp"; do
+       build_node $node
+       print_line
+     done
      enter_to_continue
 	   NodePackagesMenu
      ;;
 	2) print_line
+     build_node "iota-hornet"
+     enter_to_continue
+	   NodePackagesMenu
+     ;;
+	3) print_line
      build_node "iota-bee"
      enter_to_continue
 	   NodePackagesMenu
      ;;
-  3) print_line
+  4) print_line
      build_node "iota-goshimmer"
      enter_to_continue
 	   NodePackagesMenu
      ;;
-  4) print_line
-     build_node "iota-wasp"
+  5) print_line
+     build_node "wasp"
      enter_to_continue
 	   NodePackagesMenu
      ;;

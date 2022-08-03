@@ -34,7 +34,7 @@ WASP_LEDGER_CONNECTION=node.your-domain.com:5000
 
 | Parameter              | Mandatory |   Default   | Description                                                                                                                                                           |
 | ---------------------- | :-------: | :---------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| WASP_VERSION           |     x     |             | Version of `dlt.green/iota-wasp` docker image to use                                                                                                                  |
+| WASP_VERSION           |     x     |             | Version of `dltgreen/wasp` docker image to use                                                                                                                  |
 | WASP_HOST              |     x     |             | Host domain name e.g. `wasp.dlt.green`                                                                                                                                |
 | WASP_HTTP_PORT         |           |     80      | HTTP port to access dashboard. Must be 80 if letsencrypt is used.                                                                                                     |
 | WASP_HTTPS_PORT        |           |     443     | HTTPS port to access dashboard                                                                                                                                        |
