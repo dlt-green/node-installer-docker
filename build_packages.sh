@@ -22,7 +22,7 @@ build_node () {
   rsync -a $sourceDir $BUILD_DIR $rsyncExclusions
   find $BUILD_DIR/$node -type f -exec sed -i 's/\r//' {} \;
   (cd $BUILD_DIR/$node; tar -pcz -f ../$node.tar.gz *)
-  #rm -Rf $BUILD_DIR/$node
+  rm -Rf $BUILD_DIR/$node
   echo "$node.tar.gz built successfully"
 }
 
