@@ -411,13 +411,12 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
 	   
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 1 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/*
 	   fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 1 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/devnet/tangle/*
-	      rm -rf /var/lib/$VAR_DIR/data/storage/devnet/participation/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/devnet/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/*
 	   fi
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*
