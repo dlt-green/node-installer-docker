@@ -1534,6 +1534,8 @@ ShimmerHornet() {
 }
 
 RenameContainer() {
+	docker container rename iota-hornet_hornet_1 iota-hornet >/dev/null 2>&1
+	docker container rename iota-hornet_traefik_1 iota-hornet.traefik >/dev/null 2>&1
 	docker container rename iota-bee_bee_1 iota-bee >/dev/null 2>&1
 	docker container rename iota-bee_traefik_1 iota-bee.traefik >/dev/null 2>&1
 	docker container rename iota-goshimmer_goshimmer_1 iota-goshimmer >/dev/null 2>&1
