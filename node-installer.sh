@@ -780,7 +780,7 @@ IotaHornet() {
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " IOTA-Hornet Dashboard: https://$VAR_HOST:$VAR_IOTA_BEE_HTTPS_PORT/dashboard"
+		echo " IOTA-Hornet Dashboard: https://$VAR_HOST:$VAR_IOTA_HTTPS_PORT/dashboard"
 		echo " IOTA-Hornet Dashboard Username: $VAR_USERNAME"
 		echo " IOTA-Hornet Dashboard Password: <set during install>"
 		echo " IOTA-Hornet API: https://$VAR_HOST:$VAR_IOTA_BEE_HTTPS_PORT/api/v1/info"
