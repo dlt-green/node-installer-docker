@@ -27,7 +27,7 @@ DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/release
 DockerIotaHornet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
 DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
-DockerIotaWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-wasp.tar.gz"
+DockerIotaWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 
 clear
@@ -387,11 +387,14 @@ SubMenuMaintenance() {
 	   echo $xx
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
-	   if [ -d /var/lib/$VAR_DIR/data/database ]; then rm -r /var/lib/$VAR_DIR/data/database/*; fi
-	   if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
-	   if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
-	   if [ -d /var/lib/$VAR_DIR/data/peerdb ]; then rm -r /var/lib/$VAR_DIR/data/peerdb/*; fi
-	   if [ -d /var/lib/$VAR_DIR/data/waspdb ]; then rm -r /var/lib/$VAR_DIR/data/waspdb/*; fi
+	   
+	   rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
+	   rm -rf /var/lib/$VAR_DIR/data/storage/devnet/*
+	   rm -rf /var/lib/$VAR_DIR/data/database/*
+	   rm -rf /var/lib/$VAR_DIR/data/mainnetdb/*
+	   rm -rf /var/lib/$VAR_DIR/data/peerdb/*
+	   rm -rf /var/lib/$VAR_DIR/data/waspdb/*
+	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose up -d; fi
 
 	   RenameContainer; sleep 3
@@ -408,25 +411,26 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
 	   
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 1 ]; then
-	      if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
-	      if [ -d /var/lib/$VAR_DIR/data/snapshots/mainnet ]; then rm -r /var/lib/$VAR_DIR/data/snapshots/mainnet/*; fi
+	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
 	   fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 1 ]; then
-	      if [ -d /var/lib/$VAR_DIR/data/storage/devnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/devnet/tangle/*; fi
-	      if [ -d /var/lib/$VAR_DIR/data/snapshots/devnet ]; then rm -r /var/lib/$VAR_DIR/data/snapshots/devnet/*; fi
+	      rm -rf /var/lib/$VAR_DIR/data/storage/devnet/tangle/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/devnet/participation/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/devnet/*
 	   fi
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then
-	      if [ -d /var/lib/$VAR_DIR/data/storage/mainnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*; fi
-	      if [ -d /var/lib/$VAR_DIR/data/snapshots/mainnet ]; then rm -r /var/lib/$VAR_DIR/data/snapshots/mainnet/*; fi
+	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
 	   fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then
-	      if [ -d /var/lib/$VAR_DIR/data/storage/devnet/tangle ]; then rm -r /var/lib/$VAR_DIR/data/storage/devnet/tangle/*; fi
-	      if [ -d /var/lib/$VAR_DIR/data/snapshots/devnet ]; then rm -r /var/lib/$VAR_DIR/data/snapshots/devnet/*; fi
+	      rm -rf /var/lib/$VAR_DIR/data/storage/devnet/tangle/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/devnet/*
 	   fi
 	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]
 	   then
-	      if [ -d /var/lib/$VAR_DIR/data/mainnetdb ]; then rm -r /var/lib/$VAR_DIR/data/mainnetdb/*; fi
-	      if [ -d /var/lib/$VAR_DIR/data/peerdb ]; then rm -r /var/lib/$VAR_DIR/data/peerdb/*; fi
+	      rm -rf /var/lib/$VAR_DIR/data/mainnetdb/*
+	      rm -rf /var/lib/$VAR_DIR/data/peerdb/*
 	      if [ -f /var/lib/$VAR_DIR/data/snapshots/snapshot.bin ]; then cd /var/lib/$VAR_DIR/data/snapshots || SubMenuMaintenance; wget $SnapshotIotaGoshimmer; mv snapshot-latest.bin snapshot.bin; fi
 	   fi
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
@@ -637,7 +641,11 @@ IotaHornet() {
 		echo "Set the dashboard port (example: $ca""443""$xx):"
 		read -p '> ' VAR_IOTA_HORNET_HTTPS_PORT
 		echo ''
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"
+		echo "Set the pruning size / max. database size (example: $ca""200GB""$xx):"
+		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		read -p '> ' VAR_IOTA_HORNET_PRUNING_SIZE
+		echo ''
+		echo "Set the dashboard username (example: $ca""vrom""$xx):"		
 		read -p '> ' VAR_USERNAME
 		echo ''
 		echo "Set the dashboard password:"
@@ -662,6 +670,7 @@ IotaHornet() {
 		if [ $VAR_NETWORK = 4 ]; then echo "HORNET_NETWORK=devnet" >> .env; fi
 	
 		echo "HORNET_HOST=$VAR_HOST" >> .env
+		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_IOTA_HORNET_PRUNING_SIZE" >> .env
 		echo "HORNET_HTTPS_PORT=$VAR_IOTA_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env

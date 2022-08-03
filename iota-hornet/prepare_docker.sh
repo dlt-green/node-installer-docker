@@ -114,7 +114,7 @@ set_config ".pruning.size.targetSize"                "\"${HORNET_PRUNING_TARGET_
 set_config ".p2p.db.path"                            "\"/app/p2pstore\""
 
 set_config_conditionally "HORNET_PRUNING_MAX_MILESTONES_TO_KEEP" ".pruning.milestones.maxMilestonesToKeep"
-if [ ! -z "HORNET_PRUNING_MAX_MILESTONES_TO_KEEP" ]; then
+if [ ! -z "$HORNET_PRUNING_MAX_MILESTONES_TO_KEEP" ]; then
   set_config ".pruning.milestones.enabled" "true"
 fi
 rm -f $tmp
