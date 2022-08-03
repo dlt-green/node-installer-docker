@@ -27,7 +27,7 @@ DockerShimmerMainnet="https://github.com/dlt-green/node-installer-docker/release
 DockerIotaHornet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
 DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
-DockerIotaWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-wasp.tar.gz"
+DockerIotaWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 
 clear
