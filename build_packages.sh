@@ -45,9 +45,10 @@ build_hornet_image () {
 
 build_wasp_image () {
   local repoTag=$1
-  local imageTag=$2
+  local name=$2
+  local imageTag=$3
 
-  local imageName=dltgreen/iota-wasp:$imageTag
+  local imageName=dltgreen/$name:$imageTag
   local buildDirWasp=$BUILD_DIR/tmp_wasp
 
   rm -Rf $buildDirWasp && mkdir -p $buildDirWasp
@@ -152,7 +153,7 @@ MainMenu() {
 }
 
 DockerImagesMenu() {
-  print_menu "iota-hornet ($HORNET_VERSION)" "iota-wasp ($WASP_VERSION)" "iota-wasp (beta)" "Back"
+  print_menu "iota-hornet ($HORNET_VERSION)" "iota-wasp ($WASP_VERSION)" "shimmer-wasp (master)" "Back"
 	read  -p '> ' n
 	case $n in
 	1) print_line
@@ -161,12 +162,12 @@ DockerImagesMenu() {
      DockerImagesMenu
      ;;
 	2) print_line
-     build_wasp_image "v$WASP_VERSION" "$WASP_VERSION"
+     build_wasp_image "v$WASP_VERSION" "iota-wasp" "$WASP_VERSION"
      enter_to_continue
      DockerImagesMenu
      ;;
 	3) print_line
-     build_wasp_image "master" "beta"
+     build_wasp_image "master" "shimmer-wasp" "dev"
      enter_to_continue
      DockerImagesMenu
      ;;
