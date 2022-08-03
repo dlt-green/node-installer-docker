@@ -14,6 +14,7 @@ VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.3'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.3'
+VAR_SHIMMER_WASP_VERSION='dev'
 
 ca='\033[36m'
 rd='\033[91m'
@@ -24,10 +25,13 @@ xx='\033[0m'
 echo $xx
 
 DockerShimmerHornet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-$VAR_SHIMMER_HORNET_VERSION-docker.tar.gz"
+DockerShimmerWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
+
 DockerIotaHornet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
 DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
 DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
 DockerIotaWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
+
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 
 clear
