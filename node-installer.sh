@@ -1390,7 +1390,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerShimmerMainnet" > install.tar.gz
+	wget -cO - "$DockerShimmerHornet" > install.tar.gz
 	
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
