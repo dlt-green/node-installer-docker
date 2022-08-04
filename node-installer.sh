@@ -175,6 +175,8 @@ MainMenu() {
 	   SubMenuShimmerMainnet ;;
 	6) VAR_NETWORK=6
 	   SubMenuLicense ;;
+	0) VAR_NETWORK=0
+	   S2DLT ;;
 	*) clear; exit ;;
 	esac
 }
@@ -592,6 +594,42 @@ Docker() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
+	MainMenu
+}
+
+S2DLT() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                  DLT.GREEN AUTOMATIC IOTA-HORNET DB TRANSFER                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	echo $rd; read -p '!!! Make sure you have stopped IOTA-Hornet in SWARM and Watchdog is disabled !!!' W; echo $xx
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	clear
+	echo $rd; read -p 'Benenne Verzeichnins in iota-hornet_tmp um...' W; echo $xx
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
+	sudo mv /var/lib/iota-hornet /var/lib/iota-hornet_tmp
+	clear
+	echo $rd; read -p 'Installiere IOTA-Hornet...' W; echo $xx
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
+	IotaHornet
+	clear
+	echo $rd; read -p 'Stoppe Container IOTA-Hornet...' W; echo $xx
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	docker stop iota-hornet; fi
+	echo $rd; read -p 'Beende mit DockerSkript...' W; echo $xx
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || exit; docker-compose down; fi
+	echo $rd; read -p 'Verschiebe Datenbank...' W; echo $xx
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	rm -r /var/lib/iota-hornet_tmp/mainnetdb/mainnetdb
+	mv -r /var/lib/iota-hornet_tmp/mainnetdb/* /var/lib/iota-hornet/data/storage/mainnet
+	echo $rd; read -p 'Starte Hornet mit DockerSkript...' W; echo $xx
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	clear
+	echo "---------------------------- TRANSFER IS FINISH - -----------------------------"
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	MainMenu
 }
 
