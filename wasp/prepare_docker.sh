@@ -70,12 +70,6 @@ docker rm -f iota-wasp-tmp >/dev/null 2>&1
 
 # Update extracted config with values from .env
 tmp=/tmp/config.tmp
-read_config () {
-  # param1:  jsonpath to read value from configuration
-  local value=$(jq "$1" "$configPath")
-  echo "$value"
-}
-
 set_config () {
   # param1: jsonpath to set value in configuration
   # param2: configuration value
@@ -83,11 +77,12 @@ set_config () {
   jq "$1=$2" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
 }
 
-set_config_conditionally () {
-  # param1: name of env variable containing value
-  # param2: jsonpath to set value in configuration
-  DEFAULT_VALUE=$(read_config "$2")
-  if [ ! -z "${!1}" ]; then set_config "$2" "${!1:-$DEFAULT_VALUE}"; else echo "  $2: $DEFAULT_VALUE (default)"; fi
+set_config_if_exists () {
+  # param1: jsonpath to set value in configuration
+  # param2: configuration value
+  if [ $(jq "$1" "$configPath") != "null" ]; then
+    set_config "$1" "$2"
+  fi
 }
 
 set_config ".database.directory"      "\"/app/waspdb\""
@@ -95,8 +90,10 @@ set_config ".nanomsg.port"            "${WASP_NANO_MSG_PORT:-5550}"
 set_config ".peering.port"            "${WASP_PEERING_PORT:-4000}"
 set_config ".dashboard.auth.username" "\"${DASHBOARD_USERNAME:-wasp}\""
 set_config ".dashboard.auth.password" "\"${DASHBOARD_PASSWORD:-wasp}\""
-set_config ".nodeconn.address"        "\"${WASP_LEDGER_CONNECTION:?WASP_LEDGER_CONNECTION is mandatory}\""
 set_config ".logger.outputPaths"      "[\"stdout\"]"
+set_config_if_exists ".nodeconn.address" "\"${WASP_LEDGER_CONNECTION:?WASP_LEDGER_CONNECTION is mandatory}\""
+set_config_if_exists ".l1.apiAddress"    "\"${WASP_LEDGER_CONNECTION:?WASP_LEDGER_CONNECTION is mandatory}\""
+set_config_if_exists ".l1.faucetAddress" "\"${WASP_LEDGER_CONNECTION:?WASP_LEDGER_CONNECTION is mandatory}\""
 rm -f $tmp
 
 echo "Finished"
