@@ -5,6 +5,7 @@ BUILD_DIR=./build
 EXCLUSIONS="build, data, .env, build.sh, .gitignore"
 HORNET_VERSION=1.2.1
 WASP_VERSION=0.2.5
+WASP_DEV_BRANCH="update_devnet"
 
 build_node () {
   node=$1
@@ -55,8 +56,6 @@ build_wasp_image () {
   (cd $BUILD_DIR; git clone https://github.com/iotaledger/wasp.git tmp_wasp; cd tmp_wasp; git checkout $repoTag)
 
   if [ -f $buildDirWasp/Dockerfile ]; then
-    # temporary fix to display correct version on wasp ui (because we also build an image from master branch)
-    if [ "$repoTag" == "master" ]; then sed -i "s/Version.*=.*/Version = \"${imageTag}\"/g" $buildDirWasp/packages/wasp/constants.go; fi
     (cd $buildDirWasp; docker build --no-cache -t $imageName .)
   fi
 
@@ -155,7 +154,7 @@ MainMenu() {
 }
 
 DockerImagesMenu() {
-  print_menu "iota-hornet ($HORNET_VERSION)" "wasp ($WASP_VERSION)" "wasp (master)" "Back"
+  print_menu "iota-hornet ($HORNET_VERSION)" "wasp ($WASP_VERSION)" "wasp (dev)" "Back"
 	read  -p '> ' n
 	case $n in
 	1) print_line
@@ -169,7 +168,7 @@ DockerImagesMenu() {
      DockerImagesMenu
      ;;
 	3) print_line
-     build_wasp_image "master" "wasp" "dev"
+     build_wasp_image "$WASP_DEV_BRANCH" "wasp" "dev"
      enter_to_continue
      DockerImagesMenu
      ;;
