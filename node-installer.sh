@@ -609,8 +609,8 @@ S2DLT() {
 	echo "$rd""!!! Make sure you have stopped IOTA-Hornet in SWARM and Watchdog is disabled !!!""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	systemctl stop nginx.service
-	sudo apt-get purge nginx nginx-common
-	sudo apt-get autoremove
+	sudo apt-get purge nginx nginx-common -y
+	sudo apt-get autoremove -y
 	rm -rf /etc/nginx
 	clear
 	echo "$rd""Benenne Verzeichnins in iota-hornet_tmp um...""$xx"
