@@ -613,9 +613,9 @@ S2DLT() {
 	clear
 	echo "$rd""Installiere IOTA-Hornet...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
-	VAR_NETWORK = 3
-	VAR_NODE = 1
-	VAR_DIR = 'iota-hornet'
+	VAR_NETWORK=3
+	VAR_NODE=1
+	VAR_DIR='iota-hornet'
 	IotaHornet
 	clear
 	echo "$rd""Stoppe Container IOTA-Hornet...""$xx"
@@ -650,7 +650,7 @@ IotaHornet() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                   Create bee directory /var/lib/iota-hornet                 ║"
+	echo "║                 Create hornet directory /var/lib/iota-hornet                ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
