@@ -9,6 +9,8 @@ VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
 
+VAR_S2DLT=0
+
 VAR_IOTA_HORNET_VERSION='1.2.1'
 VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.3'
@@ -606,6 +608,10 @@ S2DLT() {
 	echo ""
 	echo "$rd""!!! Make sure you have stopped IOTA-Hornet in SWARM and Watchdog is disabled !!!""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	systemctl stop nginx.service
+	sudo apt-get purge nginx nginx-common
+	sudo apt-get autoremove
+	rm -rf /etc/nginx
 	clear
 	echo "$rd""Benenne Verzeichnins in iota-hornet_tmp um...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
@@ -616,7 +622,9 @@ S2DLT() {
 	VAR_NETWORK=3
 	VAR_NODE=1
 	VAR_DIR='iota-hornet'
+	VAR_S2DLT=1
 	IotaHornet
+	VAR_S2DLT=0
 	clear
 	echo "$rd""Stoppe Container IOTA-Hornet...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
@@ -626,10 +634,14 @@ S2DLT() {
 	if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || exit; docker-compose down; fi
 	echo "$rd""Verschiebe Datenbank...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
-	rm -r /var/lib/iota-hornet_tmp/mainnetdb/mainnetdb
-	mv -r /var/lib/iota-hornet_tmp/mainnetdb/* /var/lib/iota-hornet/data/storage/mainnet
+	rm -r /var/lib/iota-hornet/data/storage/mainnet/*
+	rm -r /var/lib/iota-hornet_tmp/mainnetdb/mainnetdb >/dev/null 2>&1
+	mv /var/lib/iota-hornet_tmp/mainnetdb/* /var/lib/iota-hornet/data/storage/mainnet
+	rm -r /var/lib/iota-hornet_tmp
+	chown -R 65532:65532 /var/lib/iota-hornet/data
 	echo "$rd""Starte Hornet mit DockerSkript...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	cd /var/lib/iota-hornet || SubMenuMaintenance; docker-compose up -d
 	clear
 	echo "---------------------------- TRANSFER IS FINISH - -----------------------------"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
@@ -833,7 +845,7 @@ IotaHornet() {
 	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	SubMenuMaintenance
+	if [ $VAR_S2DLT != 1 ]; then SubMenuMaintenance; fi
 }
 
 IotaBee() {
