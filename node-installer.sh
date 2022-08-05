@@ -608,16 +608,21 @@ S2DLT() {
 	echo ""
 	echo "$rd""!!! Make sure you have stopped IOTA-Hornet in SWARM and Watchdog is disabled !!!""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	echo "$rd""!!! Make sure you have SWARM deinstalled !!!""$xx"
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	systemctl stop nginx.service
 	sudo apt-get purge nginx nginx-common -y
 	sudo apt-get autoremove -y
 	rm -rf /etc/nginx
 	clear
-	echo "$rd""Benenne Verzeichnins in iota-hornet_tmp um...""$xx"
+	echo ""
+	echo "$rd""Change Dir to iota-hornet_tmp...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
 	sudo mv /var/lib/iota-hornet /var/lib/iota-hornet_tmp
 	clear
-	echo "$rd""Installiere IOTA-Hornet...""$xx"
+	echo ""
+	echo "$rd""Install IOTA-Hornet...""$xx"
+	echo "$rd""Use following Parameters: Generate new certificate + Set Certificate Global...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
 	VAR_NETWORK=3
 	VAR_NODE=1
@@ -626,20 +631,24 @@ S2DLT() {
 	IotaHornet
 	VAR_S2DLT=0
 	clear
-	echo "$rd""Stoppe Container IOTA-Hornet...""$xx"
+	echo ""
+	echo "$rd""Stopp Container IOTA-Hornet...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	docker stop iota-hornet
-	echo "$rd""Beende mit DockerSkript...""$xx"
+	echo ""
+	echo "$rd""Quit with DockerScript...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || exit; docker-compose down; fi
-	echo "$rd""Verschiebe Datenbank...""$xx"
+	echo ""
+	echo "$rd""Move Datenbank...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	rm -r /var/lib/iota-hornet/data/storage/mainnet/*
 	rm -r /var/lib/iota-hornet_tmp/mainnetdb/mainnetdb >/dev/null 2>&1
 	mv /var/lib/iota-hornet_tmp/mainnetdb/* /var/lib/iota-hornet/data/storage/mainnet
 	rm -r /var/lib/iota-hornet_tmp
 	chown -R 65532:65532 /var/lib/iota-hornet/data
-	echo "$rd""Starte Hornet mit DockerSkript...""$xx"
+	echo ""
+	echo "$rd""Start Hornet with DockerScript...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	cd /var/lib/iota-hornet || SubMenuMaintenance; docker-compose up -d
 	clear
