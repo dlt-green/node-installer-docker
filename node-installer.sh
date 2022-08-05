@@ -9,6 +9,8 @@ VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
 
+VAR_S2DLT=0
+
 VAR_IOTA_HORNET_VERSION='1.2.1'
 VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.3'
@@ -175,6 +177,8 @@ MainMenu() {
 	   SubMenuShimmerMainnet ;;
 	6) VAR_NETWORK=6
 	   SubMenuLicense ;;
+	0) VAR_NETWORK=0
+	   S2DLT ;;
 	*) clear; exit ;;
 	esac
 }
@@ -595,6 +599,65 @@ Docker() {
 	MainMenu
 }
 
+S2DLT() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                  DLT.GREEN AUTOMATIC IOTA-HORNET DB TRANSFER                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	echo "$rd""!!! Make sure you have stopped IOTA-Hornet in SWARM and Watchdog is disabled !!!""$xx"
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	echo "$rd""!!! Make sure you have SWARM deinstalled !!!""$xx"
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	systemctl stop nginx.service
+	sudo apt-get purge nginx nginx-common -y
+	sudo apt-get autoremove -y
+	rm -rf /etc/nginx
+	clear
+	echo ""
+	echo "$rd""Change Dir to iota-hornet_tmp...""$xx"
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
+	sudo mv /var/lib/iota-hornet /var/lib/iota-hornet_tmp
+	clear
+	echo ""
+	echo "$rd""Install IOTA-Hornet...""$xx"
+	echo "$rd""Use following Parameters: Get new Certificate + Use global Certificate...""$xx"
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
+	VAR_NETWORK=3
+	VAR_NODE=1
+	VAR_DIR='iota-hornet'
+	VAR_S2DLT=1
+	IotaHornet
+	VAR_S2DLT=0
+	clear
+	echo ""
+	echo "$rd""Stopp Container IOTA-Hornet...""$xx"
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	docker stop iota-hornet
+	echo ""
+	echo "$rd""Quit with DockerScript...""$xx"
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || exit; docker-compose down; fi
+	echo ""
+	echo "$rd""Move Database...""$xx"
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	rm -r /var/lib/iota-hornet/data/storage/mainnet/*
+	rm -r /var/lib/iota-hornet_tmp/mainnetdb/mainnetdb >/dev/null 2>&1
+	mv /var/lib/iota-hornet_tmp/mainnetdb/* /var/lib/iota-hornet/data/storage/mainnet
+	rm -r /var/lib/iota-hornet_tmp
+	chown -R 65532:65532 /var/lib/iota-hornet/data
+	echo ""
+	echo "$rd""Start Hornet with DockerScript...""$xx"
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	cd /var/lib/iota-hornet || SubMenuMaintenance; docker-compose up -d
+	RenameContainer
+	clear
+	echo "---------------------------- TRANSFER IS FINISH - -----------------------------"
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	MainMenu
+}
+
 IotaHornet() {
 	clear
 	echo ""
@@ -609,7 +672,7 @@ IotaHornet() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                   Create bee directory /var/lib/iota-hornet                 ║"
+	echo "║                 Create hornet directory /var/lib/iota-hornet                ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -792,7 +855,7 @@ IotaHornet() {
 	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	SubMenuMaintenance
+	if [ $VAR_S2DLT != 1 ]; then SubMenuMaintenance; fi
 }
 
 IotaBee() {
