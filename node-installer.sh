@@ -622,7 +622,7 @@ S2DLT() {
 	clear
 	echo ""
 	echo "$rd""Install IOTA-Hornet...""$xx"
-	echo "$rd""Use following Parameters: Generate new certificate + Set Certificate Global...""$xx"
+	echo "$rd""Use following Parameters: Get new Certificate + Use global Certificate...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
 	VAR_NETWORK=3
 	VAR_NODE=1
@@ -640,7 +640,7 @@ S2DLT() {
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || exit; docker-compose down; fi
 	echo ""
-	echo "$rd""Move Datenbank...""$xx"
+	echo "$rd""Move Database...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	rm -r /var/lib/iota-hornet/data/storage/mainnet/*
 	rm -r /var/lib/iota-hornet_tmp/mainnetdb/mainnetdb >/dev/null 2>&1
@@ -651,6 +651,7 @@ S2DLT() {
 	echo "$rd""Start Hornet with DockerScript...""$xx"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	cd /var/lib/iota-hornet || SubMenuMaintenance; docker-compose up -d
+	RenameContainer
 	clear
 	echo "---------------------------- TRANSFER IS FINISH - -----------------------------"
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
