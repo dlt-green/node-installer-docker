@@ -1,9 +1,10 @@
 # DLT.GREEN AUTOMATIC BEE-INSTALLER DOCKER
 
 1. Create a file named `.env` (see parameter documentation below)
-2. Run `./prepare_docker.sh`
-3. Run `docker-compose up -d`
-4. Check the logs using `docker-compose -f logs`
+2. Run `./prepare_docker.sh` to conly create node config from values in .env
+3. Run `./start.sh` to start the node
+4. Check the logs using `./show_logs.sh`
+5. Run `./stop.sh` to stop node
 
 You will be able to access your node under  (mind eventually configured port):
 https://node.your-domain.com/api/v1/info
@@ -48,8 +49,8 @@ DASHBOARD_SALT=0000000000000000000000000000000000000000000000000000000000000000
 | BEE_DATA_DIR         |           |    .data    | Directory containing configuration, database, snapshots etc.                                                                                                        |
 | BEE_PRUNING_DELAY    |           |    60480    | Number of milestones to keep in the database                                                                                                                        |
 | DASHBOARD_USERNAME   |           |    admin    | Username to access dashboard                                                                                                                                        |
-| DASHBOARD_PASSWORD   |     x     |             | Password hash (can be generated with `docker-compose run --rm bee password` or non-interactively with `tools/password_scriptable.sh`)                               |
-| DASHBOARD_SALT       |     x     |             | Password salt (can be generated with `docker-compose run --rm bee password` or non-interactively with `tools/password_scriptable.sh`)                               |
+| DASHBOARD_PASSWORD   |     x     |             | Password hash (can be generated with `docker-compose run --rm bee password` or non-interactively with `./password.sh`)                                              |
+| DASHBOARD_SALT       |     x     |             | Password salt (can be generated with `docker-compose run --rm bee password` or non-interactively with `./password.sh`)                                              |
 | SSL_CONFIG           |           | letsencrypt | Allowed values: `certs`, `letsencrypt`. Default: `letsencrypt`. If set to certs `BEE_SSL_CERT` and `BEE_SSL_KEY` are used otherwise letsencrypt is used by default. |
 | BEE_SSL_CERT         |    (x)    |             | Absolute path to SSL certificate (mandatory if `SSL_CONFIG=certs`)                                                                                                  |
 | BEE_SSL_KEY          |    (x)    |             | Absolute path to SSL private key (mandatory if `SSL_CONFIG=certs`)                                                                                                  |

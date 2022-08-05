@@ -2,7 +2,7 @@
 set -e
 
 BUILD_DIR=./build
-EXCLUSIONS="build, data, .env, build.sh, .gitignore"
+EXCLUSIONS="assets, build, data, .env, build.sh, .gitignore"
 HORNET_VERSION=1.2.1
 WASP_VERSION=0.2.5
 WASP_DEV_BRANCH="update_devnet"
@@ -12,7 +12,7 @@ build_node () {
   sourceDir=./$node
 
   if [ ! -d $sourceDir ]; then
-    echo "Please cd to tools dir to run build.sh"
+    echo "Please cd to root dir to run $(basename $0)"
     exit -1
   fi
 
@@ -20,6 +20,9 @@ build_node () {
 
   mkdir -p $BUILD_DIR
   rsync -a $sourceDir $BUILD_DIR $rsyncExclusions
+  mkdir -p $BUILD_DIR/$node/scripts
+  cp ./common/prepare_docker_functions.sh $BUILD_DIR/$node/scripts/prepare_docker_functions.sh
+  find $BUILD_DIR/$node -type f -name '*.sh' -exec sed -i 's/..\/common\/prepare_docker_functions.sh/.\/scripts\/prepare_docker_functions.sh/g' {} \;
   find $BUILD_DIR/$node -type f -exec sed -i 's/\r//' {} \;
   (cd $BUILD_DIR/$node; tar -pcz -f ../$node.tar.gz *)
   rm -Rf $BUILD_DIR/$node
@@ -185,6 +188,7 @@ NodePackagesMenu() {
        build_node $node
        print_line
      done
+     echo "Finished"
      enter_to_continue
 	   NodePackagesMenu
      ;;

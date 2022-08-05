@@ -1,9 +1,10 @@
 # DLT.GREEN AUTOMATIC WASP-INSTALLER DOCKER
 
 1. Create a file named `.env` (see parameter documentation below)
-2. Run `./prepare_docker.sh`
-3. Run `docker-compose up -d`
-4. Check the logs using `docker-compose -f logs`
+2. Run `./prepare_docker.sh` to conly create node config from values in .env
+3. Run `./start.sh` to start the node
+4. Check the logs using `./show_logs.sh`
+5. Run `./stop.sh` to stop node
 
 Your dashboard under (mind eventually configured port):
 https://node.your-domain.com/
@@ -34,7 +35,7 @@ WASP_LEDGER_CONNECTION=node.your-domain.com:5000
 
 | Parameter              | Mandatory |   Default   | Description                                                                                                                                                           |
 | ---------------------- | :-------: | :---------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| WASP_VERSION           |     x     |             | Version of `dltgreen/wasp` docker image to use                                                                                                                  |
+| WASP_VERSION           |     x     |             | Version of `dltgreen/wasp` docker image to use                                                                                                                        |
 | WASP_HOST              |     x     |             | Host domain name e.g. `wasp.dlt.green`                                                                                                                                |
 | WASP_HTTP_PORT         |           |     80      | HTTP port to access dashboard. Must be 80 if letsencrypt is used.                                                                                                     |
 | WASP_HTTPS_PORT        |           |     443     | HTTPS port to access dashboard                                                                                                                                        |

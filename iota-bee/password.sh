@@ -6,7 +6,7 @@ if [ -z $1 ]; then
   exit 0
 fi
 
-output=$(cd tools; ./password_scriptable.sh $1)
+output=$(cd scripts; ./password_scriptable.sh $1)
 passwordHash=$(echo -e "$output" | grep 'Password hash' | cut -d ' ' -f 3 | tr -d '\r')
 passwordSalt=$(echo -e "$output" | grep 'Password salt' | cut -d ' ' -f 3 | tr -d '\r')
 
