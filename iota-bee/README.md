@@ -1,9 +1,10 @@
 # DLT.GREEN AUTOMATIC BEE-INSTALLER DOCKER
 
 1. Create a file named `.env` (see parameter documentation below)
-2. Run `./prepare_docker.sh`
-3. Run `docker-compose up -d`
-4. Check the logs using `docker-compose -f logs`
+2. Run `./prepare_docker.sh` to conly create node config from values in .env
+3. Run `./start.sh` to start the node
+4. Check the logs using `./show_logs.sh`
+5. Run `./stop.sh` to stop node
 
 You will be able to access your node under  (mind eventually configured port):
 https://node.your-domain.com/api/v1/info

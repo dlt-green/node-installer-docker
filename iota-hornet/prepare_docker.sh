@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-if [ -f ./scripts/prepare_docker_functions.sh ]; then source ./scripts/prepare_docker_functions.sh; else source ../common/prepare_docker_functions.sh; fi
+source ../common/prepare_docker_functions.sh
 
 check_env
 elevate_to_root
