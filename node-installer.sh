@@ -67,10 +67,12 @@ CheckCertificate() {
 		read  -p '> ' n
 		case $n in
 		1) VAR_CERT=1 ;;
-		*) echo "No existing Let's Encrypt Certificate found, generate a new one... " ;;
+		*) echo "No existing Let's Encrypt Certificate found, generate a new one... "
+		   VAR_CERT=0 ;;
 		esac
 	else 
 		echo "No existing Let's Encrypt Certificate found, generate a new one... "
+		VAR_CERT=0
 	fi 
 }
 
