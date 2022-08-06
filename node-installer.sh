@@ -322,7 +322,7 @@ SubMenuMaintenance() {
 	echo "║                              2. Start/Restart                               ║"
 	echo "║                              3. Stop                                        ║"
 	echo "║                              4. Reset Database                              ║"	
-	echo "║                              5. Loading Snaphot                             ║"	
+	echo "║                              5. Loading Snapshot                            ║"	
 	echo "║                              6. Show Logs                                   ║"	
 	echo "║                              7. Deinstall/Remove                            ║"	
 	echo "║                              X. Main Menu                                   ║"
