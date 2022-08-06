@@ -67,10 +67,12 @@ CheckCertificate() {
 		read  -p '> ' n
 		case $n in
 		1) VAR_CERT=1 ;;
-		*) echo "No existing Let's Encrypt Certificate found, generate a new one... " ;;
+		*) echo "No existing Let's Encrypt Certificate found, generate a new one... "
+		   VAR_CERT=0 ;;
 		esac
 	else 
 		echo "No existing Let's Encrypt Certificate found, generate a new one... "
+		VAR_CERT=0
 	fi 
 }
 
@@ -320,7 +322,7 @@ SubMenuMaintenance() {
 	echo "║                              2. Start/Restart                               ║"
 	echo "║                              3. Stop                                        ║"
 	echo "║                              4. Reset Database                              ║"	
-	echo "║                              5. Loading Snaphot                             ║"	
+	echo "║                              5. Loading Snapshot                            ║"	
 	echo "║                              6. Show Logs                                   ║"	
 	echo "║                              7. Deinstall/Remove                            ║"	
 	echo "║                              X. Main Menu                                   ║"
@@ -622,7 +624,10 @@ S2DLT() {
 	clear
 	echo ""
 	echo "$rd""Install IOTA-Hornet...""$xx"
-	echo "$rd""Use following Parameters: Get new Certificate + Use global Certificate...""$xx"
+	echo ""
+	echo "$rd""Set following Parameters during Installation:""$xx"
+	echo "$ca""Get new Certificate + Use global Certificate""$xx"
+	echo ""	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
 	VAR_NETWORK=3
 	VAR_NODE=1
@@ -1668,19 +1673,19 @@ ShimmerWasp() {
 		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
 		read -p '> ' VAR_HOST
 		echo ''
-		echo "Set the dashboard port (example: $ca""441""$xx):"
+		echo "Set the dashboard port (example: $ca""447""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_HTTPS_PORT
 		echo ''
-		echo "Set the api port (example: $ca""442""$xx):"
+		echo "Set the api port (example: $ca""448""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_API_PORT
 		echo ''
-		echo "Set the peering port (example: $ca""4001""$xx):"
+		echo "Set the peering port (example: $ca""4000""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_PEERING_PORT
 		echo ''
-		echo "Set the nano-msg-port (example: $ca""5551""$xx):"
+		echo "Set the nano-msg-port (example: $ca""5550""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_NANO_MSG_PORT
 		echo ''
-		echo "Set the ledger-connection/txstream (example: $ca""127.0.0.1:5001""$xx):"
+		echo "Set the ledger-connection/txstream (example: $ca""vrom.dlt.green:15600""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_LEDGER_CONNECTION
 		echo ''
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"
