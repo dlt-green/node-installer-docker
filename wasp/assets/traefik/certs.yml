@@ -1,4 +1,0 @@
-tls:
-  certificates:
-    - certFile: /certs/domain.cert
-      keyFile: /certs/domain.key

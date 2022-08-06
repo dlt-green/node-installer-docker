@@ -1,2 +1,0 @@
-# no config necessary here to use letsencrypt
-# actual tls configuration can be found in docker-compose.yml

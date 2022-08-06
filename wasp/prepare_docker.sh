@@ -1,99 +1,38 @@
 #!/bin/bash
 set -e
+source ../common/prepare_docker_functions.sh
 
-if [[ ! -f .env ]] || [[ "$1" == "--help" ]]; then
-  cat README.md
-  exit 0
-fi
-
-if [[ "$OSTYPE" != "darwin"* && "$EUID" -ne 0 ]]; then
-  echo "Elevating to root privileges..."
-  sudo "$0" "$@"
-  exit $?
-fi
+check_env
+elevate_to_root
 
 source $(dirname "$0")/.env
 
 scriptDir=$(dirname "$0")
 dataDir="${WASP_DATA_DIR:-$scriptDir/data}"
-image="dltgreen/wasp:$WASP_VERSION"
 configFilename="config.json"
 configPath="${dataDir}/config/$configFilename"
 
+# image="dltgreen/wasp:$WASP_VERSION"
 
-# Prepare for SSL
-if [[ ! -z $SSL_CONFIG ]] && [[ "$SSL_CONFIG" != "certs" && "$SSL_CONFIG" != "letsencrypt" ]]; then
-  echo "Invalid SSL_CONFIG: $SSL_CONFIG"
-  exit -1
-fi
+validate_ssl_config "WASP_SSL_CERT" "WASP_SSL_KEY"
+create_common_assets
 
-if [[ -z $SSL_CONFIG ]] || [[ "$SSL_CONFIG" == "letsencrypt" ]]; then
- if [[ -z $ACME_EMAIL ]]; then
-   echo "ACME_EMAIL must be set to use letsencrypt"
-   exit -1
- fi
-fi
+prepare_data_dir "$dataDir" "config" "waspdb"
 
-if [[ "$SSL_CONFIG" == "certs" ]]; then
- if [[ -z $WASP_SSL_CERT || -z $WASP_SSL_KEY ]]; then
-   echo "WASP_SSL_CERT and WASP_SSL_KEY must be set"
-   exit -1
- fi
-fi
+# Generate config
+extract_file_from_image "dltgreen/wasp" "$WASP_VERSION" "/etc/wasp_config.json" "$configPath"
 
+echo "Adapting config with values from .env..."
+set_config $configPath ".database.directory"      "\"/app/waspdb\""
+set_config $configPath ".nanomsg.port"            "${WASP_NANO_MSG_PORT:-5550}"
+set_config $configPath ".peering.port"            "${WASP_PEERING_PORT:-4000}"
+set_config $configPath ".dashboard.auth.username" "\"${DASHBOARD_USERNAME:-wasp}\""
+set_config $configPath ".dashboard.auth.password" "\"${DASHBOARD_PASSWORD:-wasp}\""
+set_config $configPath ".logger.outputPaths"      "[\"stdout\"]"
 
-# Prepare data directory
-mkdir -p "${dataDir}"
-mkdir -p "${dataDir}/config"
-mkdir -p "${dataDir}/waspdb"
-
-if [[ "$OSTYPE" != "darwin"* ]]; then
-  chown -R 65532:65532 "${dataDir}"
-fi
-
-
-# Extract default config from image
-imageWithoutTag=$(echo $image | cut -d ':' -f 1)
-echo $imageWithoutTag
-if [ -z "$(docker images | grep $imageWithoutTag | grep $WASP_VERSION)" ]; then
-  echo "Pulling docker image $image..."
-  docker pull $image >/dev/null 2>&1
-fi
-
-echo "Generating config..."
-rm -Rf $(dirname "$configPath")/$configFilename
-docker rm -f iota-wasp-tmp >/dev/null 2>&1
-docker create --name iota-wasp-tmp $image >/dev/null 2>&1
-docker cp iota-wasp-tmp:/etc/wasp_config.json "$configPath"
-docker rm -f iota-wasp-tmp >/dev/null 2>&1
-
-
-# Update extracted config with values from .env
-tmp=/tmp/config.tmp
-set_config () {
-  # param1: jsonpath to set value in configuration
-  # param2: configuration value
-  if [[ ! "$1" =~ .*"password".* ]]; then echo "  $1: $2"; else echo "  $1: *****"; fi
-  jq "$1=$2" "$configPath" > "$tmp" && mv "$tmp" "$configPath"
-}
-
-set_config_if_exists () {
-  # param1: jsonpath to set value in configuration
-  # param2: configuration value
-  if [ $(jq "$1" "$configPath") != "null" ]; then
-    set_config "$1" "$2"
-  fi
-}
-
-set_config ".database.directory"      "\"/app/waspdb\""
-set_config ".nanomsg.port"            "${WASP_NANO_MSG_PORT:-5550}"
-set_config ".peering.port"            "${WASP_PEERING_PORT:-4000}"
-set_config ".dashboard.auth.username" "\"${DASHBOARD_USERNAME:-wasp}\""
-set_config ".dashboard.auth.password" "\"${DASHBOARD_PASSWORD:-wasp}\""
-set_config ".logger.outputPaths"      "[\"stdout\"]"
-set_config_if_exists ".nodeconn.address" "\"${WASP_LEDGER_CONNECTION:?WASP_LEDGER_CONNECTION is mandatory}\""
-set_config_if_exists ".l1.apiAddress"    "\"${WASP_LEDGER_CONNECTION:?WASP_LEDGER_CONNECTION is mandatory}\""
-set_config_if_exists ".l1.faucetAddress" "\"${WASP_LEDGER_CONNECTION:?WASP_LEDGER_CONNECTION is mandatory}\""
+set_config_if_field_exists $configPath ".nodeconn.address" "\"${WASP_LEDGER_CONNECTION:?WASP_LEDGER_CONNECTION is mandatory}\""
+set_config_if_field_exists $configPath ".l1.apiAddress"    "\"${WASP_LEDGER_CONNECTION:?WASP_LEDGER_CONNECTION is mandatory}\""
+set_config_if_field_exists $configPath ".l1.faucetAddress" "\"${WASP_LEDGER_CONNECTION:?WASP_LEDGER_CONNECTION is mandatory}\""
 rm -f $tmp
 
 echo "Finished"

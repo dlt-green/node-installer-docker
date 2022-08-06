@@ -2,17 +2,21 @@
 set -e
 
 BUILD_DIR=./build
-EXCLUSIONS="build, data, .env, build.sh, .gitignore"
+EXCLUSIONS="assets, build, data, .env, build.sh, .gitignore"
+
+NODES="iota-hornet iota-bee iota-goshimmer wasp"
 HORNET_VERSION=1.2.1
 WASP_VERSION=0.2.5
 WASP_DEV_BRANCH="update_devnet"
+
+DEVSERVER_PORTDEVSERVER_PORT=8040
 
 build_node () {
   node=$1
   sourceDir=./$node
 
   if [ ! -d $sourceDir ]; then
-    echo "Please cd to tools dir to run build.sh"
+    echo "Please cd to root dir to run $(basename $0)"
     exit -1
   fi
 
@@ -20,6 +24,9 @@ build_node () {
 
   mkdir -p $BUILD_DIR
   rsync -a $sourceDir $BUILD_DIR $rsyncExclusions
+  mkdir -p $BUILD_DIR/$node/scripts
+  cp ./common/prepare_docker_functions.sh $BUILD_DIR/$node/scripts/prepare_docker_functions.sh
+  find $BUILD_DIR/$node -type f -name '*.sh' -exec sed -i 's/..\/common\/prepare_docker_functions.sh/.\/scripts\/prepare_docker_functions.sh/g' {} \;
   find $BUILD_DIR/$node -type f -exec sed -i 's/\r//' {} \;
   (cd $BUILD_DIR/$node; tar -pcz -f ../$node.tar.gz *)
   rm -Rf $BUILD_DIR/$node
@@ -89,6 +96,42 @@ upload_build_artefacts () {
     echo "Uploading files in $BUILD_DIR to $UPLOAD_HOST:$UPLOAD_PATH"
     rsync -rzP --include="*.tar.gz" --include="*.tar" $BUILD_DIR/* $UPLOAD_USER@$UPLOAD_HOST:$UPLOAD_PATH
   fi
+}
+
+clean_build_dir () {
+  rm -Rf $BUILD_DIR && mkdir -p $BUILD_DIR
+  echo "$BUILD_DIR cleaned"
+}
+
+build_all_nodes () {
+  echo "Building all nodes..."
+  print_line
+  for node in $NODES; do
+    build_node $node
+    print_line
+  done
+  echo "Finished"
+}
+
+start_devserver () {
+  echo "Starting devserver..."
+  docker rm -f devserver >/dev/null 2>&1
+  docker run \
+    -d \
+    --name devserver \
+    -p ${DEVSERVER_PORT}:80 \
+    -v $PWD/build/:/usr/share/caddy/ \
+    caddy:alpine >/dev/null 2>&1
+
+  echo "Listening for changes to rebuild packages..."
+  trap 'echo "" && echo "Stopping devserver..." && docker rm -f devserver >/dev/null 2>&1 && echo "Finished"' SIGINT
+  sudo iwatch \
+    -r \
+    -e create,delete,modify,move \
+    -t ".*\.(sh|yml|md|env)" \
+    -X ".*(assets|data|\.git|build.sh).*" \
+    -c "./build.sh --onmodification '%f'" \
+    .
 }
 
 print_line () {
@@ -181,10 +224,7 @@ NodePackagesMenu() {
 	read  -p '> ' n
 	case $n in
   1) print_line
-     for node in "iota-hornet" "iota-bee" "iota-goshimmer" "wasp"; do
-       build_node $node
-       print_line
-     done
+     build_all_nodes
      enter_to_continue
 	   NodePackagesMenu
      ;;
@@ -217,8 +257,7 @@ BuildManagementMenu() {
 	read  -p '> ' n
 	case $n in
 	1) print_line
-     rm -Rf $BUILD_DIR && mkdir -p $BUILD_DIR
-     echo "$BUILD_DIR cleaned"
+     clean_build_dir
      enter_to_continue
      BuildManagementMenu
      ;;
@@ -231,4 +270,73 @@ BuildManagementMenu() {
 	esac
 }
 
-MainMenu
+# Show menu if no argument is given
+if [ ! $# -eq 0 ]; then
+  POSITIONAL_ARGS=()
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --clean)
+        clean=true
+        shift
+        ;;
+      --nodes)
+        nodes="$2"
+        shift
+        shift
+        ;;
+      --all)
+        nodes="all"
+        shift
+        ;;
+      --devserver)
+        devserver="true"
+        shift
+        ;;
+      --onmodification)
+        modifiedFile="$2"
+        shift
+        shift
+        ;;
+      --help)
+        shift
+        ;;
+      -*|--*)
+        echo "Unknown option $1"
+        exit 1
+        ;;
+      *)
+        POSITIONAL_ARGS+=("$1")
+        shift
+        ;;
+    esac
+  done
+
+  set -- "${POSITIONAL_ARGS[@]}"
+ 
+  if [ ! -z "$modifiedFile" ]; then
+    nodes=$(echo $modifiedFile | cut -d '/' -f 2)
+    if [ $nodes == "common" ]; then
+      nodes="all"
+    elif [[ ! $NODES =~ $nodes ]]; then
+      echo "Nothing to build for modified file: $modifiedFile"
+      exit 0
+    fi
+  fi
+
+  if [ "$devserver" == "true" ]; then start_devserver; fi
+  if [ "$clean" == "true" ]; then clean_build_dir; fi
+  if [ "$nodes" == "all" ]; then
+    build_all_nodes
+  else
+    for node in ${nodes//,/ }; do
+      if [ -f "$BUILD_DIR/$node.tar.gz" ] && [ "$(date -r $BUILD_DIR/$node.tar.gz)" == "$(date)" ]; then
+        echo "Skipped build of $node.tar.gz (has already been built less than a second ago)"
+        continue
+      fi
+
+      build_node $node;
+    done
+  fi
+else
+  MainMenu
+fi
