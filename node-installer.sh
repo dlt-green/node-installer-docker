@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.5.3"
+VRSN="0.6.0"
 
 VAR_HOST=''
 VAR_DIR=''
@@ -57,7 +57,7 @@ CheckCertificate() {
 		echo "║                                    $VRSN                                    ║"
 		echo "║                                                                             ║"
 		echo "║                            1. Use existing Certificate (recommend)          ║"
-		echo "║                            X. Get new Certificate (don't use with SWARM)    ║"
+		echo "║                            X. Generate new Let's Encrypt Certificate        ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
@@ -120,7 +120,7 @@ SetCertificateGlobal() {
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
-	echo "║                            1. Update global Certificate (recommend)         ║"
+	echo "║                            1. Update Certificate for all Nodes (recommend)  ║"
 	echo "║                            X. Use Certificate only for this Node            ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -150,7 +150,7 @@ MainMenu() {
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
-	echo "║                                    $rd""TEST""$xx                                     ║"
+	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
 	echo "║                              1. System Maintenance                          ║"
 	echo "║                              2. Docker Installation                         ║"
@@ -310,7 +310,6 @@ SubMenuShimmerMainnet() {
 	esac
 }
 
-
 SubMenuMaintenance() {
 	clear
 	echo ""
@@ -336,7 +335,8 @@ SubMenuMaintenance() {
 	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_GOSHIMMER_VERSION""$xx"; fi
 	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_WASP_VERSION""$xx"; fi	
 	if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_HORNET_VERSION""$xx"; fi	
-	if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_WASP_VERSION""$xx"; fi	
+	if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_WASP_VERSION""$xx"; fi
+	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"	
 	echo ""
 	echo "select menu item: "
 	echo ""
@@ -368,7 +368,7 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 3 ]; then docker stop shimmer-wasp; fi
 	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
-	   if [ -d /var/lib/$VAR_DIR/data/peerdb ]; then rm -r /var/lib/$VAR_DIR/data/peerdb/*; fi
+	   rm -rf /var/lib/$VAR_DIR/data/peerdb/*
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose up -d; fi
 
 	   RenameContainer; sleep 3
@@ -625,8 +625,8 @@ S2DLT() {
 	echo ""
 	echo "$rd""Install IOTA-Hornet...""$xx"
 	echo ""
-	echo "$rd""Set following Parameters during Installation:""$xx"
-	echo "$ca""Get new Certificate + Use global Certificate""$xx"
+	echo "$rd""Set yourself following Parameters during coming Installation:""$xx"
+	echo "$ca""(X) Generate new Let's Encrypt Certificate + ^(1) Update Certificate for all Nodes""$xx"
 	echo ""	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
 	VAR_NETWORK=3
@@ -1685,7 +1685,7 @@ ShimmerWasp() {
 		echo "Set the nano-msg-port (example: $ca""5550""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_NANO_MSG_PORT
 		echo ''
-		echo "Set the ledger-connection/txstream (example: $ca""vrom.dlt.green:15600""$xx):"
+		echo "Set the ledger-connection/txstream (example: $ca""https://vrom.dlt.builders:443""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_LEDGER_CONNECTION
 		echo ''
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"
