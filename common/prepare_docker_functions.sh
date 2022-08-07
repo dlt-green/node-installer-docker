@@ -107,6 +107,24 @@ read_config () {
   echo "$value"
 }
 
+delete_config () {
+  local configPath="$1"
+  local jsonPath="$2"
+
+  jq "del($jsonPath)" "$configPath"
+}
+
+move_rename_config () {
+  local configPath="$1"
+  local jsonPathFrom="$2"
+  local jsonPathTo="$3"
+
+  if [ "$(jq $jsonPathFrom $configPath)" != "null" ]; then
+    echo "  $jsonPathFrom -> $jsonPathTo (moved/renamed)"
+    jq "$jsonPathTo = $jsonPathFrom | del($jsonPathFrom)" "$configPath" > "$configPath.tmp" && mv "$configPath.tmp" "$configPath"
+  fi
+}
+
 set_config () {
   local configPath="$1"
   local jsonPath="$2"
@@ -121,7 +139,7 @@ set_config_if_field_exists () {
   local jsonPath="$2"
   local value="$3"
 
-  if [ $(jq "$jsonPath" "$configPath") != "null" ]; then
+  if [ "$(jq $jsonPath $configPath)" != "null" ]; then
     set_config "$configPath" "$jsonPath" "$value"
   fi
 }
