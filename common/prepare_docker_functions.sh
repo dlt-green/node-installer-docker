@@ -149,7 +149,7 @@ set_config_if_present_in_env () {
   local envVariableName="$2" # name of env variable containing value
   local jsonPath="$3"        # jsonpath to set value in configuration
   
-  local defaultValue=$(read_config "$jsonPath")
+  local defaultValue=$(read_config "$configPath" "$jsonPath")
   if [ ! -z "${!envVariableName}" ]; then set_config "$configPath" "$jsonPath" "${!envVariableName:-$defaultValue}"; else echo "  $jsonPath: $defaultValue (default)"; fi
 }
 
