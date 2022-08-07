@@ -44,7 +44,7 @@ set_config $configPath ".dashboard.auth.passwordSalt" "\"$DASHBOARD_SALT\""
 set_config $configPath ".pruning.size.targetSize"     "\"${HORNET_PRUNING_TARGET_SIZE:-64GB}\""
 set_config $configPath ".p2p.db.path"                 "\"/app/p2pstore\""
 
-set_config_conditionally $configPath "HORNET_PRUNING_MAX_MILESTONES_TO_KEEP" ".pruning.milestones.maxMilestonesToKeep"
+set_config_if_present_in_env $configPath "HORNET_PRUNING_MAX_MILESTONES_TO_KEEP" ".pruning.milestones.maxMilestonesToKeep"
 if [ ! -z "$HORNET_PRUNING_MAX_MILESTONES_TO_KEEP" ]; then
   set_config $configPath ".pruning.milestones.enabled" "true"
 fi
