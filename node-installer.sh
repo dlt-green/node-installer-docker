@@ -150,7 +150,7 @@ MainMenu() {
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
-	echo "║                                    $rd""TEST""$xx                                     ║"
+	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
 	echo "║                              1. System Maintenance                          ║"
 	echo "║                              2. Docker Installation                         ║"
