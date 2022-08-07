@@ -310,7 +310,6 @@ SubMenuShimmerMainnet() {
 	esac
 }
 
-
 SubMenuMaintenance() {
 	clear
 	echo ""
@@ -1686,7 +1685,7 @@ ShimmerWasp() {
 		echo "Set the nano-msg-port (example: $ca""5550""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_NANO_MSG_PORT
 		echo ''
-		echo "Set the ledger-connection/txstream (example: $ca""vrom.dlt.green:15600""$xx):"
+		echo "Set the ledger-connection/txstream (example: $ca""https://vrom.dlt.builders:443""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_LEDGER_CONNECTION
 		echo ''
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"
