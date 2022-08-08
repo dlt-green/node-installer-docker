@@ -626,7 +626,8 @@ S2DLT() {
 	echo "$rd""Install IOTA-Hornet...""$xx"
 	echo ""
 	echo "$rd""Set yourself following Parameters during coming Installation:""$xx"
-	echo "$ca""(X) Generate new Let's Encrypt Certificate + ^(1) Update Certificate for all Nodes""$xx"
+	echo "$ca""(X) Generate new Let's Encrypt Certificate""$xx"
+	echo "$ca""(1) Update Certificate for all Nodes""$xx"
 	echo ""	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
 	VAR_NETWORK=3
