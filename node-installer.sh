@@ -66,7 +66,8 @@ CheckCertificate() {
 
 		read  -p '> ' n
 		case $n in
-		1) VAR_CERT=1 ;;
+		1) VAR_CERT=1
+		   rm -rf /var/lib/$VAR_DIR/data/letsencrypt/* ;;
 		*) echo "No existing Let's Encrypt Certificate found, generate a new one... "
 		   VAR_CERT=0 ;;
 		esac
@@ -767,6 +768,7 @@ IotaHornet() {
 		fi
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_IOTA_HORNET_VERSION/g" .env; fi
+		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
@@ -962,6 +964,7 @@ IotaBee() {
 		fi
 	else
 		if [ -f .env ]; then sed -i "s/BEE_VERSION=.*/BEE_VERSION=$VAR_IOTA_BEE_VERSION/g" .env; fi
+		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
@@ -1168,6 +1171,7 @@ IotaWasp() {
 		fi
 	else
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_IOTA_WASP_VERSION/g" .env; fi
+		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
@@ -1355,6 +1359,7 @@ IotaGoshimmer() {
 		fi
 	else
 		if [ -f .env ]; then sed -i "s/GOSHIMMER_VERSION=.*/GOSHIMMER_VERSION=$VAR_IOTA_GOSHIMMER_VERSION/g" .env; fi
+		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
@@ -1518,6 +1523,8 @@ ShimmerHornet() {
 
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+	else
+		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
@@ -1729,6 +1736,7 @@ ShimmerWasp() {
 		fi
 	else
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
+		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
