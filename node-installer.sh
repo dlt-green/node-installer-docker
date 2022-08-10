@@ -21,9 +21,9 @@ VAR_SHIMMER_WASP_VERSION='dev'
 ca='\e[1;96m'
 rd='\e[1;91m'
 gn='\e[1;92m'
-wh='\e[1;97m'
+wh='\033[0m'
 gr='\e[1;90m'
-fl='\e[1;97m'
+fl='\033[1m'
 
 xx='\033[0m'
 
