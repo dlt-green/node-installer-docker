@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.6.0"
+VRSN="0.6.1"
 
 VAR_HOST=''
 VAR_DIR=''
@@ -13,9 +13,9 @@ VAR_S2DLT=0
 
 VAR_IOTA_HORNET_VERSION='1.2.1'
 VAR_IOTA_BEE_VERSION='0.3.1'
-VAR_IOTA_GOSHIMMER_VERSION='0.9.3'
+VAR_IOTA_GOSHIMMER_VERSION='0.9.4'
 VAR_IOTA_WASP_VERSION='0.2.5'
-VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.4'
+VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.5'
 VAR_SHIMMER_WASP_VERSION='dev'
 
 ca='\033[36m'
@@ -626,7 +626,8 @@ S2DLT() {
 	echo "$rd""Install IOTA-Hornet...""$xx"
 	echo ""
 	echo "$rd""Set yourself following Parameters during coming Installation:""$xx"
-	echo "$ca""(X) Generate new Let's Encrypt Certificate + ^(1) Update Certificate for all Nodes""$xx"
+	echo "$ca""(X) Generate new Let's Encrypt Certificate""$xx"
+	echo "$ca""(1) Update Certificate for all Nodes""$xx"
 	echo ""	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
 	VAR_NETWORK=3
