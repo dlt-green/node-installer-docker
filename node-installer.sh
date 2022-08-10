@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.6.1"
+VRSN="0.7.0"
 
 VAR_HOST=''
 VAR_DIR=''
@@ -18,10 +18,13 @@ VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.5'
 VAR_SHIMMER_WASP_VERSION='dev'
 
-ca='\033[36m'
-rd='\033[91m'
-gn='\033[32m'
-fl='\033[5m'
+ca='\e[1;96m'
+rd='\e[1;91m'
+gn='\e[1;92m'
+wh='\e[1;97m'
+gr='\e[1;90m'
+fl='\e[1;97m'
+
 xx='\033[0m'
 
 echo $xx
@@ -146,6 +149,66 @@ SetCertificateGlobal() {
 	esac	   
 }
 
+Dashboard() {
+
+	if docker container inspect iota-hornet     >/dev/null 2>&1; then ih=$gn; else if [ -d /var/lib/iota-hornet ];    then ih=$rd; else ih=$gr; fi; fi
+	if docker container inspect iota-bee        >/dev/null 2>&1; then ib=$gn; else if [ -d /var/lib/iota-bee ];       then ib=$rd; else ib=$gr; fi; fi
+	if docker container inspect iota-goshimmer  >/dev/null 2>&1; then ig=$gn; else if [ -d /var/lib/iota-goshimmer ]; then ig=$rd; else ig=$gr; fi; fi
+	if docker container inspect iota-wasp       >/dev/null 2>&1; then iw=$gn; else if [ -d /var/lib/iota-wasp ];      then iw=$rd; else iw=$gr; fi; fi
+	if docker container inspect shimmer-hornet  >/dev/null 2>&1; then sh=$gn; else if [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi; fi
+	if docker container inspect shimmer-bee     >/dev/null 2>&1; then sb=$gn; else if [ -d /var/lib/shimmer-bee ];    then sb=$rd; else sb=$gr; fi; fi
+	if docker container inspect shimmer-wasp    >/dev/null 2>&1; then sw=$gn; else if [ -d /var/lib/shimmer-wasp ];   then sw=$rd; else sw=$gr; fi; fi
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
+	echo "║                                    $VRSN                                    ║"
+	echo "║                                                                             ║"
+	echo "║                             "$wh"IOTA Mainnet/Devnet"$xx"                             ║"
+	echo "╟─────────────────────┬─────────────────┬──────────────────┬──────────────────╢"
+	echo "║       "$ih"HORNET"$xx"        │       "$ib"BEE"$xx"       │    "$ig"GOSHIMMER"$xx"     │       "$iw"WASP"$xx"       ║"
+	echo "╟─────────────────────┴─────────────────┴──────────────────┴──────────────────╢"
+	echo "║                                                                             ║"
+	echo "║                               "$wh"SHIMMER Testnet"$xx"                               ║"
+	echo "╟─────────────────────┬─────────────────┬──────────────────┬──────────────────╢"
+	echo "║       "$sh"HORNET"$xx"        │       "$sb"BEE"$xx"       │        "$gr"-"$xx"         │       "$sw"WASP"$xx"       ║"
+	echo "╟─────────────────────┴─────────────────┴──────────────────┴──────────────────╢"
+	echo "║                                                                             ║"
+	echo "║   Status from Docker Container (Node): "$gn"running"$xx" / "$rd"stopped"$xx" / "$gr"not installed"$xx"    ║"
+	echo "║                                                                             ║"
+	echo "║     "$wh"press [1] to start all Nodes, any Key for Maintenance, [Q] to quit"$xx"      ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	echo "select menu item: "
+	echo ""
+
+	read  -p '> ' n
+	case $n in
+	1)
+	   clear
+	   echo $ca
+	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo $xx
+	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/iota-bee ]; then cd /var/lib/iota-bee || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/shimmer-bee ]; then cd /var/lib/shimmer-bee || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker-compose up -d; fi
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+	   DashboardHelper ;;
+	q) clear; exit ;;    
+	Q) clear; exit ;; 
+	*) MainMenu ;;
+	esac
+}
+
+DashboardHelper() {
+Dashboard
+}
+
 MainMenu() {
 	clear
 	echo ""
@@ -159,7 +222,7 @@ MainMenu() {
 	echo "║                              4. IOTA Devnet                                 ║"
 	echo "║                              5. Shimmer Testnet Beta                        ║"
 	echo "║                              6. License Information                         ║"
-	echo "║                              X. Abort Installer                             ║"
+	echo "║                              X. Status Overview                             ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
@@ -182,7 +245,7 @@ MainMenu() {
 	   SubMenuLicense ;;
 	0) VAR_NETWORK=0
 	   S2DLT ;;
-	*) clear; exit ;;
+	*) Dashboard ;;
 	esac
 }
 
@@ -1857,4 +1920,4 @@ RenameContainer() {
 	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
 }
 
-MainMenu
+Dashboard
