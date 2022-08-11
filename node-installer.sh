@@ -21,7 +21,6 @@ VAR_SHIMMER_WASP_VERSION='dev'
 ca='\e[1;96m'
 rd='\e[1;91m'
 gn='\e[1;92m'
-wh='\033[0m'
 gr='\e[1;90m'
 fl='\033[1m'
 
@@ -165,12 +164,12 @@ Dashboard() {
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
-	echo "║                             "$wh"IOTA Mainnet/Devnet"$xx"                             ║"
+	echo "║                             IOTA Mainnet/Devnet                             ║"
 	echo "╟─────────────────────┬─────────────────┬──────────────────┬──────────────────╢"
 	echo "║       "$ih"HORNET"$xx"        │       "$ib"BEE"$xx"       │    "$ig"GOSHIMMER"$xx"     │       "$iw"WASP"$xx"       ║"
 	echo "╟─────────────────────┴─────────────────┴──────────────────┴──────────────────╢"
 	echo "║                                                                             ║"
-	echo "║                               "$wh"SHIMMER Testnet"$xx"                               ║"
+	echo "║                               SHIMMER Testnet                               ║"
 	echo "╟─────────────────────┬─────────────────┬──────────────────┬──────────────────╢"
 	echo "║       "$sh"HORNET"$xx"        │       "$sb"BEE"$xx"       │        "$gr"-"$xx"         │       "$sw"WASP"$xx"       ║"
 	echo "╟─────────────────────┴─────────────────┴──────────────────┴──────────────────╢"
