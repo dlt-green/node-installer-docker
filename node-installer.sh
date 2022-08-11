@@ -223,6 +223,8 @@ Dashboard() {
 	   SubMenuMaintenance ;;
 	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-bee'   
 	   DashboardHelper ;;
+	7) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-bee'   
+	   DashboardHelper ;;
 	8) VAR_NETWORK=2; VAR_NODE=8; VAR_DIR='shimmer-wasp'   
 	   SubMenuMaintenance ;;
 
