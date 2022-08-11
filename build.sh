@@ -7,7 +7,7 @@ EXCLUSIONS="assets, build, data, .env, build.sh, .gitignore"
 NODES="iota-hornet iota-bee iota-goshimmer wasp"
 HORNET_VERSION=1.2.1
 WASP_VERSION=0.2.5
-WASP_DEV_BRANCH="update_devnet"
+WASP_DEV_BRANCH="develop"
 
 DEVSERVER_PORTDEVSERVER_PORT=8040
 
