@@ -21,7 +21,6 @@ VAR_SHIMMER_WASP_VERSION='dev'
 ca='\e[1;96m'
 rd='\e[1;91m'
 gn='\e[1;92m'
-wh='\033[0m'
 gr='\e[1;90m'
 fl='\033[1m'
 
@@ -72,11 +71,13 @@ CheckCertificate() {
 		1) VAR_CERT=1
 		   rm -rf /var/lib/$VAR_DIR/data/letsencrypt/* ;;
 		*) echo "No existing Let's Encrypt Certificate found, generate a new one... "
-		   VAR_CERT=0 ;;
+		   VAR_CERT=0
+		   rm -rf /var/lib/$VAR_DIR/data/letsencrypt/* ;;
 		esac
 	else 
 		echo "No existing Let's Encrypt Certificate found, generate a new one... "
 		VAR_CERT=0
+		rm -rf /var/lib/$VAR_DIR/data/letsencrypt/*
 	fi 
 }
 
@@ -165,19 +166,19 @@ Dashboard() {
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
-	echo "║                             "$wh"IOTA Mainnet/Devnet"$xx"                             ║"
-	echo "╟─────────────────────┬─────────────────┬──────────────────┬──────────────────╢"
-	echo "║       "$ih"HORNET"$xx"        │       "$ib"BEE"$xx"       │    "$ig"GOSHIMMER"$xx"     │       "$iw"WASP"$xx"       ║"
-	echo "╟─────────────────────┴─────────────────┴──────────────────┴──────────────────╢"
+	echo "║                             IOTA Mainnet/Devnet                             ║"
+	echo "╟─┬───────────────────┬─┬───────────────┬─┬────────────────┬─┬────────────────╢"
+	echo "║1│       "$ih"HORNET"$xx"      │2│      "$ib"BEE"$xx"      │3│   "$ig"GOSHIMMER"$xx"    │4│      "$iw"WASP"$xx"      ║"
+	echo "╟─┴───────────────────┴─┴───────────────┴─┴────────────────┴─┴────────────────╢"
 	echo "║                                                                             ║"
-	echo "║                               "$wh"SHIMMER Testnet"$xx"                               ║"
-	echo "╟─────────────────────┬─────────────────┬──────────────────┬──────────────────╢"
-	echo "║       "$sh"HORNET"$xx"        │       "$sb"BEE"$xx"       │        "$gr"-"$xx"         │       "$sw"WASP"$xx"       ║"
-	echo "╟─────────────────────┴─────────────────┴──────────────────┴──────────────────╢"
+	echo "║                               SHIMMER Testnet                               ║"
+	echo "╟─┬───────────────────┬─┬───────────────┬─┬────────────────┬─┬────────────────╢"
+	echo "║5│       "$sh"HORNET"$xx"      │6│      "$sb"BEE"$xx"      │-│       "$gr"-"$xx"        │8│      "$sw"WASP"$xx"      ║"
+	echo "╟─┴───────────────────┴─┴───────────────┴─┴────────────────┴─┴────────────────╢"
 	echo "║                                                                             ║"
-	echo "║   Status from Docker Container (Node): "$gn"running"$xx" / "$rd"stopped"$xx" / "$gr"not installed"$xx"    ║"
+	echo "║   Status from Docker Container (Nodes): "$gn"running"$xx" / "$rd"stopped"$xx" / "$gr"not installed"$xx"   ║"
 	echo "║                                                                             ║"
-	echo "║     "$wh"press [1] to start all Nodes, any Key for Maintenance, [Q] to quit"$xx"      ║"
+	echo "║       press [S] to start all Nodes, any Key for Settings, [Q] to quit       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item: "
@@ -185,7 +186,8 @@ Dashboard() {
 
 	read  -p '> ' n
 	case $n in
-	1)
+
+	s|S)
 	   clear
 	   echo $ca
 	   echo 'Please wait, this process can take up to 5 minutes...'
@@ -200,8 +202,25 @@ Dashboard() {
 	   RenameContainer
 	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   DashboardHelper ;;
-	q) clear; exit ;;    
-	Q) clear; exit ;; 
+	   
+	0) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'   
+	   S2DLT ;;
+	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'   
+	   SubMenuMaintenance ;;
+	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-bee'   
+	   SubMenuMaintenance ;;
+	3) VAR_NETWORK=1; VAR_NODE=3; VAR_DIR='iota-goshimmer'   
+	   SubMenuMaintenance ;;
+	4) VAR_NETWORK=1; VAR_NODE=4; VAR_DIR='iota-wasp'   
+	   SubMenuMaintenance ;;
+	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-hornet'   
+	   SubMenuMaintenance ;;
+	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-bee'   
+	   DashboardHelper ;;
+	8) VAR_NETWORK=2; VAR_NODE=8; VAR_DIR='shimmer-wasp'   
+	   SubMenuMaintenance ;;
+
+	q|Q) clear; exit ;; 
 	*) MainMenu ;;
 	esac
 }
@@ -219,11 +238,8 @@ MainMenu() {
 	echo "║                                                                             ║"
 	echo "║                              1. System Maintenance                          ║"
 	echo "║                              2. Docker Installation                         ║"
-	echo "║                              3. IOTA Mainnet                                ║"
-	echo "║                              4. IOTA Devnet                                 ║"
-	echo "║                              5. Shimmer Testnet Beta                        ║"
-	echo "║                              6. License Information                         ║"
-	echo "║                              X. Status Overview                             ║"
+	echo "║                              3. License Information                         ║"
+	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
@@ -236,16 +252,8 @@ MainMenu() {
 	   SystemMaintenance ;;
 	2) VAR_NETWORK=0 
 	   Docker ;;
-	3) VAR_NETWORK=3 
-	   SubMenuIotaMainnet;;
-	4) VAR_NETWORK=4
-	   SubMenuIotaDevnet ;;
-	5) VAR_NETWORK=5
-	   SubMenuShimmerMainnet ;;
-	6) VAR_NETWORK=6
+	3) VAR_NETWORK=0
 	   SubMenuLicense ;;
-	0) VAR_NETWORK=0
-	   S2DLT ;;
 	*) Dashboard ;;
 	esac
 }
@@ -261,7 +269,7 @@ SubMenuLicense() {
 	echo "║                                                                             ║"
 	echo "║    https://github.com/dlt-green/node-installer-docker/blob/main/license     ║"
 	echo "║                                                                             ║"	
-	echo "║                              X. Main Menu                                   ║"
+	echo "║                              X. Settings Menu                               ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
@@ -275,101 +283,6 @@ SubMenuLicense() {
 	   MainMenu ;;
 	2) VAR_NODE=2
 	   VAR_DIR='iota-bee'
-	   SubMenuMaintenance ;;
-	*) MainMenu ;;
-	esac
-}
-
-SubMenuIotaMainnet() {
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
-	echo "║                                    $VRSN                                    ║"
-	echo "║                                                                             ║"
-	echo "║                              1. IOTA Hornet Mainnet                         ║"
-	echo "║                              2. IOTA Bee Mainnet                            ║"
-	echo "║                              X. Main Menu                                   ║"
-	echo "║                                                                             ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-	echo "select menu item: "
-	echo ""
-
-	read  -p '> ' n
-	case $n in
-	1) VAR_NODE=1
-	   VAR_DIR='iota-hornet'
-	   SubMenuMaintenance ;;
-	2) VAR_NODE=2
-	   VAR_DIR='iota-bee'
-	   SubMenuMaintenance ;;
-	*) MainMenu ;;
-	esac
-}
-
-SubMenuIotaDevnet() {
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
-	echo "║                                    $VRSN                                    ║"
-	echo "║                                                                             ║"
-	echo "║                              1. IOTA Hornet Devnet                          ║"
-	echo "║                              2. IOTA Bee Devnet                             ║"
-	echo "║                              3. IOTA Goshimmer                              ║"
-	echo "║                              4. IOTA Wasp                                   ║"	
-	echo "║                              X. Main Menu                                   ║"
-	echo "║                                                                             ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-	echo "select menu item: "
-	echo ""
-
-	read  -p '> ' n
-	case $n in
-	1) VAR_NODE=1
-	   VAR_DIR='iota-hornet'
-	   SubMenuMaintenance ;;
-	2) VAR_NODE=2
-	   VAR_DIR='iota-bee'
-	   SubMenuMaintenance ;;
-	3) VAR_NODE=3
-	   VAR_DIR='iota-goshimmer'
-	   SubMenuMaintenance ;;
-	4) VAR_NODE=4
-	   VAR_DIR='iota-wasp'
-	   SubMenuMaintenance ;;
-	*) MainMenu ;;
-	esac
-}
-
-SubMenuShimmerMainnet() {
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
-	echo "║                                    $VRSN                                    ║"
-	echo "║                                                                             ║"
-	echo "║                              1. Shimmer Hornet Mainnet                      ║"
-	echo "║                              2. Shimmer Bee Mainnet (soon)                  ║"
-	echo "║                              X. Main Menu                                   ║"
-	echo "║                                                                             ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-	echo "select menu item: "
-	echo ""
-
-	read  -p '> ' n
-	case $n in
-	1) VAR_NODE=1
-	   VAR_DIR='shimmer-hornet'
-	   SubMenuMaintenance ;;
-	2) VAR_NODE=2
-	   VAR_DIR='shimmer-bee'
-	   MainMenu ;;
-	8) VAR_NODE=3
-	   VAR_DIR='shimmer-wasp'
 	   SubMenuMaintenance ;;
 	*) MainMenu ;;
 	esac
@@ -389,18 +302,16 @@ SubMenuMaintenance() {
 	echo "║                              5. Loading Snapshot                            ║"	
 	echo "║                              6. Show Logs                                   ║"	
 	echo "║                              7. Deinstall/Remove                            ║"	
-	echo "║                              X. Main Menu                                   ║"
+	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_HORNET_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_HORNET_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_BEE_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_BEE_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_GOSHIMMER_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_WASP_VERSION""$xx"; fi	
-	if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_HORNET_VERSION""$xx"; fi	
-	if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_WASP_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_HORNET_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_BEE_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_GOSHIMMER_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_WASP_VERSION""$xx"; fi	
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_HORNET_VERSION""$xx"; fi	
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_WASP_VERSION""$xx"; fi
 	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"	
 	echo ""
 	echo "select menu item: "
@@ -408,14 +319,12 @@ SubMenuMaintenance() {
 
 	read  -p '> ' n
 	case $n in
-	1) if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 1 ]; then IotaHornet; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 1 ]; then IotaHornet; fi
-	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then IotaGoshimmer; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then IotaWasp; fi
-	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then ShimmerHornet; fi
-	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 3 ]; then ShimmerWasp; fi
+	1) if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then IotaHornet; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then IotaGoshimmer; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then IotaWasp; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then ShimmerHornet; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then ShimmerWasp; fi
 	   ;;
 	2) echo '(re)starting...'; sleep 3
 	   clear
@@ -423,14 +332,12 @@ SubMenuMaintenance() {
 	   echo 'Please wait, this process can take up to 5 minutes...'
 	   echo $xx
 	   
-	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
-	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
-	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then docker stop shimmer-hornet; fi
-	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 3 ]; then docker stop shimmer-wasp; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then docker stop shimmer-wasp; fi
 	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
 	   rm -rf /var/lib/$VAR_DIR/data/peerdb/*
@@ -447,14 +354,12 @@ SubMenuMaintenance() {
 	   echo 'Please wait, this process can take up to 5 minutes...'
 	   echo $xx
 	   
-	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
-	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
-	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 1 ]; then docker stop shimmer-hornet; fi
-	   if [ "$VAR_NETWORK" = 5 ] && [ "$VAR_NODE" = 3 ]; then docker stop shimmer-wasp; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then docker stop shimmer-wasp; fi
 	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
 	   sleep 3;
@@ -492,23 +397,15 @@ SubMenuMaintenance() {
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
 	   
-	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 1 ]; then
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/storage/*
 	      rm -rf /var/lib/$VAR_DIR/data/snapshots/*
 	   fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 1 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/*
-	   fi
-	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 2 ]; then
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*
 	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
 	   fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 2 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/devnet/tangle/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/devnet/*
-	   fi
-	   if [ "$VAR_NETWORK" = 4 ] && [ "$VAR_NODE" = 3 ]
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]
 	   then
 	      rm -rf /var/lib/$VAR_DIR/data/mainnetdb/*
 	      rm -rf /var/lib/$VAR_DIR/data/peerdb/*
@@ -541,7 +438,7 @@ SubMenuMaintenance() {
 	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
 	   SubMenuMaintenance
 	   ;;
-	*) MainMenu ;;
+	*) Dashboard ;;
 	esac
 }
 
@@ -596,7 +493,10 @@ SystemMaintenance() {
 	read  -p '> ' n
 	case $n in
 	1) 	echo 'rebooting...'; sleep 3
-	    docker stop $(docker ps -a -q)
+	    echo $ca
+	    echo 'Please wait, this process can take up to 5 minutes...'
+	    echo $xx   
+		docker stop $(docker ps -a -q)
 		docker ps -a -q
 	    sleep 3
 		sudo reboot
@@ -695,7 +595,7 @@ S2DLT() {
 	echo "$ca""(1) Update Certificate for all Nodes""$xx"
 	echo ""	
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
-	VAR_NETWORK=3
+	VAR_NETWORK=1
 	VAR_NODE=1
 	VAR_DIR='iota-hornet'
 	VAR_S2DLT=1
@@ -810,8 +710,7 @@ IotaHornet() {
 
 		echo "HORNET_VERSION=$VAR_IOTA_HORNET_VERSION" >> .env
 
-		if [ $VAR_NETWORK = 3 ]; then echo "HORNET_NETWORK=mainnet" >> .env; fi
-		if [ $VAR_NETWORK = 4 ]; then echo "HORNET_NETWORK=devnet" >> .env; fi
+		if [ $VAR_NETWORK = 1 ]; then echo "HORNET_NETWORK=mainnet" >> .env; fi
 	
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_IOTA_HORNET_PRUNING_SIZE" >> .env
@@ -940,7 +839,7 @@ IotaBee() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down; fi; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1007,8 +906,7 @@ IotaBee() {
 
 		echo "BEE_VERSION=$VAR_IOTA_BEE_VERSION" >> .env
 
-		if [ $VAR_NETWORK = 3 ]; then echo "BEE_NETWORK=mainnet" >> .env; fi
-		if [ $VAR_NETWORK = 4 ]; then echo "BEE_NETWORK=devnet" >> .env; fi
+		if [ $VAR_NETWORK = 1 ]; then echo "BEE_NETWORK=mainnet" >> .env; fi
 	
 		echo "BEE_HOST=$VAR_HOST" >> .env
 		echo "BEE_HTTPS_PORT=$VAR_IOTA_BEE_HTTPS_PORT" >> .env
@@ -1136,7 +1034,7 @@ IotaWasp() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down; fi; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1345,7 +1243,7 @@ IotaGoshimmer() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down; fi; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1522,7 +1420,7 @@ ShimmerHornet() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down; fi; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1702,7 +1600,7 @@ ShimmerWasp() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down; fi; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
