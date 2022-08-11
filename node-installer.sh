@@ -595,7 +595,10 @@ SystemMaintenance() {
 	read  -p '> ' n
 	case $n in
 	1) 	echo 'rebooting...'; sleep 3
-	    docker stop $(docker ps -a -q)
+	    echo $ca
+	    echo 'Please wait, this process can take up to 5 minutes...'
+	    echo $xx   
+		docker stop $(docker ps -a -q)
 		docker ps -a -q
 	    sleep 3
 		sudo reboot
