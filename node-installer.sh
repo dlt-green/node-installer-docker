@@ -176,7 +176,7 @@ Dashboard() {
 	echo "║                                                                             ║"
 	echo "║   Status from Docker Container (Node): "$gn"running"$xx" / "$rd"stopped"$xx" / "$gr"not installed"$xx"    ║"
 	echo "║                                                                             ║"
-	echo "║     "$wh"press [1] to start all Nodes, any Key for Maintenance, [Q] to quit"$xx"      ║"
+	echo "║       press [1] to start all Nodes, any Key for Setting, [Q] to quit        ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item: "
