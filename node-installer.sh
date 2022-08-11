@@ -65,7 +65,7 @@ CheckCertificate() {
 		echo ""
 		echo "select menu item: "
 		echo ""
-
+		echo $VAR_DIR
 		read  -p '> ' n
 		case $n in
 		1) VAR_CERT=1
@@ -135,16 +135,22 @@ SetCertificateGlobal() {
 
 	read  -p '> ' n
 	case $n in
-	1) mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
+	1) 
+	   clear
+	   echo $ca
+	   echo 'Update Certificate for all Nodes...'
+	   echo $xx
+	   mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
 	   cd "/var/lib/$VAR_DIR/data/letsencrypt" || exit
 	   cat acme.json | jq -r '.myresolver .Certificates[] | select(.domain.main=="'$VAR_HOST'") | .certificate' | base64 -d > "$VAR_HOST.crt"
 	   cat acme.json | jq -r '.myresolver .Certificates[] | select(.domain.main=="'$VAR_HOST'") | .key' | base64 -d > "$VAR_HOST.key"
-	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" ]; then
+	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" ]; then
 	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
 	   fi
-	   if [ -f "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" ]; then
+	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" ]; then
 	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" "/etc/letsencrypt/live/$VAR_HOST/privkey.pem"
 	   fi
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   ;;
 	X) ;;
 	esac	   
