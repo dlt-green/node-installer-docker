@@ -485,7 +485,7 @@ SystemMaintenance() {
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
 	echo "║                            1. System Reboot (recommend)                     ║"
-	echo "║                            X. Main Menu                                     ║"
+	echo "║                            X. Settings Menu                                 ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
