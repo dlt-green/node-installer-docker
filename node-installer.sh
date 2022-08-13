@@ -158,13 +158,13 @@ SetCertificateGlobal() {
 
 Dashboard() {
 
-	if docker container inspect iota-hornet     >/dev/null 2>&1; then ih=$gn; else if [ -d /var/lib/iota-hornet ];    then ih=$rd; else ih=$gr; fi; fi
-	if docker container inspect iota-bee        >/dev/null 2>&1; then ib=$gn; else if [ -d /var/lib/iota-bee ];       then ib=$rd; else ib=$gr; fi; fi
-	if docker container inspect iota-goshimmer  >/dev/null 2>&1; then ig=$gn; else if [ -d /var/lib/iota-goshimmer ]; then ig=$rd; else ig=$gr; fi; fi
-	if docker container inspect iota-wasp       >/dev/null 2>&1; then iw=$gn; else if [ -d /var/lib/iota-wasp ];      then iw=$rd; else iw=$gr; fi; fi
-	if docker container inspect shimmer-hornet  >/dev/null 2>&1; then sh=$gn; else if [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi; fi
-	if docker container inspect shimmer-bee     >/dev/null 2>&1; then sb=$gn; else if [ -d /var/lib/shimmer-bee ];    then sb=$rd; else sb=$gr; fi; fi
-	if docker container inspect shimmer-wasp    >/dev/null 2>&1; then sw=$gn; else if [ -d /var/lib/shimmer-wasp ];   then sw=$rd; else sw=$gr; fi; fi
+	if [ "$(docker container inspect -f '{{.State.Running}}' 'iota-hornet'    2>/dev/null)" = 'true' ]; then ih=$gn; else if [ -d /var/lib/iota-hornet ];    then ih=$rd; else ih=$gr; fi; fi
+	if [ "$(docker container inspect -f '{{.State.Running}}' 'iota-bee'       2>/dev/null)" = 'true' ]; then ib=$gn; else if [ -d /var/lib/iota-bee ];       then ib=$rd; else ib=$gr; fi; fi
+	if [ "$(docker container inspect -f '{{.State.Running}}' 'iota-goshimmer' 2>/dev/null)" = 'true' ]; then ig=$gn; else if [ -d /var/lib/iota-goshimmer ]; then ig=$rd; else ig=$gr; fi; fi
+	if [ "$(docker container inspect -f '{{.State.Running}}' 'iota-wasp'      2>/dev/null)" = 'true' ]; then iw=$gn; else if [ -d /var/lib/iota-wasp ];      then iw=$rd; else iw=$gr; fi; fi
+	if [ "$(docker container inspect -f '{{.State.Running}}' 'shimmer-hornet' 2>/dev/null)" = 'true' ]; then sh=$gn; else if [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi; fi
+	if [ "$(docker container inspect -f '{{.State.Running}}' 'shimmer-bee'    2>/dev/null)" = 'true' ]; then sb=$gn; else if [ -d /var/lib/shimmer-bee ];    then sb=$rd; else sb=$gr; fi; fi
+	if [ "$(docker container inspect -f '{{.State.Running}}' 'shimmer-wasp'   2>/dev/null)" = 'true' ]; then sw=$gn; else if [ -d /var/lib/shimmer-wasp ];   then sw=$rd; else sw=$gr; fi; fi
 
 	clear
 	echo ""
@@ -184,7 +184,7 @@ Dashboard() {
 	echo "║                                                                             ║"
 	echo "║   Status from Docker Container (Nodes): "$gn"running"$xx" / "$rd"stopped"$xx" / "$gr"not installed"$xx"   ║"
 	echo "║                                                                             ║"
-	echo "║       press [S] to start all Nodes, any Key for Settings, [Q] to quit       ║"
+	echo "║       press [S] to start all Nodes, [M] for Maintenance, [Q] to quit        ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item: "
@@ -244,7 +244,7 @@ MainMenu() {
 	echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
-	echo "║                              1. System Maintenance                          ║"
+	echo "║                              1. System Updates/Docker Cleanup               ║"
 	echo "║                              2. Docker Installation                         ║"
 	echo "║                              3. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
@@ -277,7 +277,7 @@ SubMenuLicense() {
 	echo "║                                                                             ║"
 	echo "║    https://github.com/dlt-green/node-installer-docker/blob/main/license     ║"
 	echo "║                                                                             ║"	
-	echo "║                              X. Settings Menu                               ║"
+	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
@@ -485,7 +485,7 @@ SystemMaintenance() {
 	echo "║                                    $VRSN                                    ║"
 	echo "║                                                                             ║"
 	echo "║                            1. System Reboot (recommend)                     ║"
-	echo "║                            X. Main Menu                                     ║"
+	echo "║                            X. Maintenance Menu                              ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
@@ -1827,4 +1827,10 @@ RenameContainer() {
 	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
 }
 
-Dashboard
+docker --version | grep "Docker version" >/dev/null 2>&1
+if [ $? -eq 0 ]
+	then
+        Dashboard
+	else
+        MainMenu
+fi

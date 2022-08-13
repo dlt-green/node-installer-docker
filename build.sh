@@ -4,7 +4,7 @@ set -e
 BUILD_DIR=./build
 EXCLUSIONS="assets, build, data, .env, build.sh, .gitignore"
 
-NODES="iota-hornet iota-bee iota-goshimmer wasp"
+NODES="iota-hornet iota-bee iota-goshimmer wasp shimmer-hornet"
 HORNET_VERSION=1.2.1
 WASP_VERSION=0.2.5
 WASP_DEV_BRANCH="develop"
@@ -220,7 +220,7 @@ DockerImagesMenu() {
 }
 
 NodePackagesMenu() {
-  print_menu "all" "iota-hornet" "iota-bee" "iota-goshimmer" "wasp" "Back"
+  print_menu "all" "iota-hornet" "iota-bee" "iota-goshimmer" "wasp" "shimmer-hornet" "Back"
 	read  -p '> ' n
 	case $n in
   1) print_line
@@ -245,6 +245,11 @@ NodePackagesMenu() {
      ;;
   5) print_line
      build_node "wasp"
+     enter_to_continue
+	   NodePackagesMenu
+     ;;
+  6) print_line
+     build_node "shimmer-hornet"
      enter_to_continue
 	   NodePackagesMenu
      ;;
