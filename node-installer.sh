@@ -1827,4 +1827,10 @@ RenameContainer() {
 	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
 }
 
-Dashboard
+docker --version | grep "Docker version" >/dev/null 2>&1
+if [ $? -eq 0 ]
+	then
+        Dashboard
+	else
+        MainMenu
+fi
