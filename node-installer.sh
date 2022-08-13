@@ -246,7 +246,8 @@ MainMenu() {
 	echo "║                                                                             ║"
 	echo "║                              1. System Updates/Docker Cleanup               ║"
 	echo "║                              2. Docker Installation                         ║"
-	echo "║                              3. License Information                         ║"
+	echo "║                              3. Docker Status                               ║"
+	echo "║                              4. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -256,12 +257,10 @@ MainMenu() {
 
 	read  -p '> ' n
 	case $n in
-	1) VAR_NETWORK=0
-	   SystemMaintenance ;;
-	2) VAR_NETWORK=0 
-	   Docker ;;
-	3) VAR_NETWORK=0
-	   SubMenuLicense ;;
+	1) SystemMaintenance ;;
+	2) Docker ;;
+	3) docker stats 2>/dev/null ;;
+	4) SubMenuLicense ;;
 	*) Dashboard ;;
 	esac
 }
