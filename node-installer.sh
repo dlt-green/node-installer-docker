@@ -1487,20 +1487,26 @@ ShimmerHornet() {
 		echo "Set the domain name (example: $ca""vrom.dlt.builders""$xx):"
 		read -p '> ' VAR_HOST
 		echo ''
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"
+		echo "Set the dashboard port (example: $ca""443""$xx):"
+		read -p '> ' VAR_SHIMMER_HORNET_HTTPS_PORT
+		echo ''
+		echo "Set the pruning size / max. database size (example: $ca""200GB""$xx):"
+		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		read -p '> ' VAR_SHIMMER_HORNET_PRUNING_SIZE
+		echo ''
 		echo "Set PoW / proof of work (example: $ca""false""$xx): "
 		read -p '> ' VAR_SHIMMER_HORNET_POW
 		echo ''
+		echo "Set the dashboard username (example: $ca""vrom""$xx):"		
 		read -p '> ' VAR_USERNAME
 		echo ''
 		echo "Set the dashboard password:"
 		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
 		read -p '> ' VAR_PASSWORD
 		echo ''
-		echo "Set the mail for letz encrypt certificat renewal (example: $ca""info@dlt.green""$xx):"
-		read -p '> ' VAR_ACME_EMAIL
-		echo ''
-
+		
+		CheckCertificate
+	
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                              Write Parameters                               ║"
@@ -1510,10 +1516,38 @@ ShimmerHornet() {
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
+		echo "HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION" >> .env
+
+		echo "HORNET_NETWORK=mainnet" >> .env
+	
 		echo "HORNET_HOST=$VAR_HOST" >> .env
-		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_SHIMMER_HORNET_PRUNING_SIZE" >> .env
 		echo "HORNET_POW_ENABLED=$VAR_SHIMMER_HORNET_POW" >> .env
+		echo "HORNET_HTTPS_PORT=$VAR_SHIMMER_HORNET_HTTPS_PORT" >> .env
+		echo "HORNET_GOSSIP_PORT=15600" >> .env
+		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
+	
+		if [ $VAR_CERT = 0 ]
+		then
+			echo "HORNET_HTTP_PORT=80" >> .env
+				read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+		else
+			echo "HORNET_HTTP_PORT=8081" >> .env
+			echo "SSL_CONFIG=certs" >> .env
+			echo "HORNET_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
+			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
+		fi
+		
+		echo "INX_INDEXER_VERSION=1.0.0-beta.5" >> .env
+		echo "INX_MQTT_VERSION=1.0.0-beta.5" >> .env
+		echo "INX_PARTICIPATION_VERSION=1.0.0-beta.5" >> .env
+		echo "INX_SPAMMER_VERSION=1.0.0-beta.5" >> .env
+		echo "INX_POI_VERSION=1.0.0-beta.5" >> .env
+		echo "INX_DASHBOARD_VERSION=1.0.0-beta.5" >> .env
+		
 	else
+		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 
@@ -1597,10 +1631,10 @@ ShimmerHornet() {
 		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " SHIMMER-Hornet Dashboard: https://$VAR_HOST/dashboard"
+		echo " SHIMMER-Hornet Dashboard: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/dashboard"
 		echo " SHIMMER-Hornet Dashboard Username: $VAR_USERNAME"
 		echo " SHIMMER-Hornet Dashboard Password: <set during install>"
-		echo " SHIMMER-Hornet API: https://$VAR_HOST/api/core/v2/info"
+		echo " SHIMMER-Hornet API: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/api/core/v2/info"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
