@@ -28,7 +28,7 @@ validate_ssl_config () {
 
   if [[ "$SSL_CONFIG" == "certs" ]]; then
     if [[ -z "${!sslCertConfigName}" || -z "${!sslKeyConfigName}" ]]; then
-      echo "BEE_SSL_CERT and BEE_SSL_KEY must be set"
+      echo "${sslCertConfigName} and ${sslKeyConfigName} must be set"
       exit -1
     fi
   fi
