@@ -44,6 +44,7 @@ set_config $configPath ".snapshots.fullPath"              "\"/app/snapshots/full
 set_config $configPath ".snapshots.deltaPath"             "\"/app/snapshots/delta_snapshot.bin\""
 set_config $configPath ".pruning.size.targetSize"         "\"${HORNET_PRUNING_TARGET_SIZE:-64GB}\""
 set_config $configPath ".p2p.autopeering.enabled"         "true"
+set_config $configPath ".restAPI.pow.enabled"             "${HORNET_POW_ENABLED:-true}"
 set_config $configPath ".prometheus.enabled"              "true"
 set_config $configPath ".prometheus.bindAddress"          "\"0.0.0.0:9312\""
 set_config $configPath ".inx.enabled"                     "true"

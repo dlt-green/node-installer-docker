@@ -34,6 +34,7 @@ set_config $configPath ".dashboard.auth.user"         "\"${DASHBOARD_USERNAME:-a
 set_config $configPath ".dashboard.auth.passwordHash" "\"$DASHBOARD_PASSWORD\""
 set_config $configPath ".dashboard.auth.passwordSalt" "\"$DASHBOARD_SALT\""
 set_config $configPath ".pruning.delay"               "${BEE_PRUNING_DELAY:-60480}"
+set_config $configPath ".restApi.featureProofOfWork"  "${BEE_POW_ENABLED:-false}"
 rm -f $tmp
 
 echo "Finished"
