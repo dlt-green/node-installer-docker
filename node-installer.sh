@@ -1584,8 +1584,6 @@ ShimmerHornet() {
 	
 	RenameContainer
 
-	if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
-
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
@@ -1603,9 +1601,6 @@ ShimmerHornet() {
 		echo " SHIMMER-Hornet Dashboard Username: $VAR_USERNAME"
 		echo " SHIMMER-Hornet Dashboard Password: <set during install>"
 		echo " SHIMMER-Hornet API: https://$VAR_HOST/api/core/v2/info"
-		echo " Grafana Dashboard: https://$VAR_HOST/grafana"
-		echo " Grafana Username: admin"
-		echo " Grafana Password: <same as hornet password>"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
