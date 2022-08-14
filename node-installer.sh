@@ -729,7 +729,7 @@ IotaHornet() {
 
 		echo "HORNET_VERSION=$VAR_IOTA_HORNET_VERSION" >> .env
 
-		if [ $VAR_NETWORK = 1 ]; then echo "HORNET_NETWORK=mainnet" >> .env; fi
+		echo "HORNET_NETWORK=mainnet" >> .env
 	
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_IOTA_HORNET_PRUNING_SIZE" >> .env
@@ -929,7 +929,7 @@ IotaBee() {
 
 		echo "BEE_VERSION=$VAR_IOTA_BEE_VERSION" >> .env
 
-		if [ $VAR_NETWORK = 1 ]; then echo "BEE_NETWORK=mainnet" >> .env; fi
+		echo "BEE_NETWORK=mainnet" >> .env
 	
 		echo "BEE_HOST=$VAR_HOST" >> .env
 		echo "BEE_POW_ENABLED=$VAR_IOTA_BEE_POW" >> .env
