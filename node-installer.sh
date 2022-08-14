@@ -705,6 +705,9 @@ IotaHornet() {
 		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 		read -p '> ' VAR_IOTA_HORNET_PRUNING_SIZE
 		echo ''
+		echo "Set PoW / proof of work (example: $ca""true""$xx): "
+		read -p '> ' VAR_IOTA_HORNET_POW
+		echo ''
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"		
 		read -p '> ' VAR_USERNAME
 		echo ''
@@ -730,6 +733,7 @@ IotaHornet() {
 	
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_IOTA_HORNET_PRUNING_SIZE" >> .env
+		echo "HORNET_POW_ENABLED=$VAR_IOTA_HORNET_POW" >> .env
 		echo "HORNET_HTTPS_PORT=$VAR_IOTA_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
@@ -901,6 +905,9 @@ IotaBee() {
 		echo "Set the dashboard port (example: $ca""440""$xx):"
 		read -p '> ' VAR_IOTA_BEE_HTTPS_PORT
 		echo ''
+		echo "Set PoW / proof of work (example: $ca""false""$xx): "
+		read -p '> ' VAR_IOTA_BEE_POW
+		echo ''
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"
 		read -p '> ' VAR_USERNAME
 		echo ''
@@ -925,6 +932,7 @@ IotaBee() {
 		if [ $VAR_NETWORK = 1 ]; then echo "BEE_NETWORK=mainnet" >> .env; fi
 	
 		echo "BEE_HOST=$VAR_HOST" >> .env
+		echo "BEE_POW_ENABLED=$VAR_IOTA_BEE_POW" >> .env
 		echo "BEE_HTTPS_PORT=$VAR_IOTA_BEE_HTTPS_PORT" >> .env
 		echo "BEE_GOSSIP_PORT=15601" >> .env
 		echo "BEE_AUTOPEERING_PORT=14636" >> .env
@@ -1480,6 +1488,9 @@ ShimmerHornet() {
 		read -p '> ' VAR_HOST
 		echo ''
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"
+		echo "Set PoW / proof of work (example: $ca""false""$xx): "
+		read -p '> ' VAR_SHIMMER_HORNET_POW
+		echo ''
 		read -p '> ' VAR_USERNAME
 		echo ''
 		echo "Set the dashboard password:"
@@ -1501,6 +1512,7 @@ ShimmerHornet() {
 
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+		echo "HORNET_POW_ENABLED=$VAR_SHIMMER_HORNET_POW" >> .env
 	else
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
