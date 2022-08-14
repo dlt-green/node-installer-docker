@@ -63,8 +63,10 @@ CheckCertificate() {
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
-		echo "$rd""Attention! For one Node on your Server (Master-Node, e.g. HORNET) you must use (X) for getting a Let's Encrypt Certificate,"
-		echo "for all additional installed Nodes use (1) existing Certificate, then the Node will use the Certificate from the Master-Node""$xx"
+		echo "$rd""Attention! For one Node on your Server (Master-Node, e.g. HORNET)"
+		echo "you must use (X) for getting a Let's Encrypt Certificate,"
+		echo "for all additional installed Nodes use (1) existing Certificate,"
+		echo "then the Node will use the Certificate from the Master-Node""$xx"
 		echo ""
 		echo "select menu item: "
 		echo ""
@@ -157,7 +159,7 @@ SetCertificateGlobal() {
 	     echo "$gn""Global Certificate is now updated for all Nodes""$xx"
 	   else
 	     echo "$rd""There was an Error on getting a Lets Encrypt Certificate!""$xx"
-	     echo "$gn""A default Certificate is now generated only for your Node""$xx"
+	     echo "$gn""A default Certificate is now generated only for this Node""$xx"
 	   fi
 	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   ;;
