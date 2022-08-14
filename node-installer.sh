@@ -58,14 +58,16 @@ CheckCertificate() {
 		echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 		echo "║                                    $VRSN                                    ║"
 		echo "║                                                                             ║"
-		echo "║                            1. Use existing Certificate (recommend)          ║"
+		echo "║                            1. Use existing Certificate                      ║"
 		echo "║                            X. Generate new Let's Encrypt Certificate        ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
+		echo "$rd""Attention! For one Node on your Server (Master-Node, e.g. HORNET) you must use (X) for getting a Let's Encrypt Certificate,"
+		echo "for all additional installed Nodes use (1) existing Certificate, then the Node will use the Certificate from the Master-Node""$xx"
+		echo ""
 		echo "select menu item: "
 		echo ""
-		echo $VAR_DIR
 		read  -p '> ' n
 		case $n in
 		1) VAR_CERT=1
@@ -130,6 +132,9 @@ SetCertificateGlobal() {
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
+	echo "$rd""Attention! If you (1) update the Certificate for all Nodes,"
+	echo "every Node on your Server will use this Certificate after restarting it""$xx"
+	echo ""
 		echo "select menu item: "
 	echo ""
 
@@ -142,13 +147,17 @@ SetCertificateGlobal() {
 	   echo $xx
 	   mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
 	   cd "/var/lib/$VAR_DIR/data/letsencrypt" || exit
-	   cat acme.json | jq -r '.myresolver .Certificates[] | select(.domain.main=="'$VAR_HOST'") | .certificate' | base64 -d > "$VAR_HOST.crt"
-	   cat acme.json | jq -r '.myresolver .Certificates[] | select(.domain.main=="'$VAR_HOST'") | .key' | base64 -d > "$VAR_HOST.key"
+	   cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'$VAR_HOST'") | .certificate' | base64 -d > "$VAR_HOST.crt"
+	   cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'$VAR_HOST'") | .key' | base64 -d > "$VAR_HOST.key"
 	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" ]; then
 	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
 	   fi
 	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" ]; then
 	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" "/etc/letsencrypt/live/$VAR_HOST/privkey.pem"
+	     echo "$gn""Global Certificate is now updated for all Nodes""$xx"
+	   else
+	     echo "$rd""There was an Error on getting a Lets Encrypt Certificate!""$xx"
+	     echo "$gn""A default Certificate is now generated only for your Node""$xx"
 	   fi
 	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   ;;
