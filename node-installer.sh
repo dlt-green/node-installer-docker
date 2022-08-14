@@ -907,7 +907,7 @@ IotaBee() {
 		echo "Set the dashboard port (example: $ca""440""$xx):"
 		read -p '> ' VAR_IOTA_BEE_HTTPS_PORT
 		echo ''
-		echo "Set PoW / proof of work (example: $ca""false""$xx): "
+		echo "Set PoW / proof of work (example: $ca""true""$xx): "
 		read -p '> ' VAR_IOTA_BEE_POW
 		echo ''
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"
