@@ -38,8 +38,7 @@ Wenn Sie auf das Bild klicken, sehen Sie ein Tutorial für das Hinzufügen der D
 
 <div align="center">
       <a href="https://www.youtube.com/embed/8QkvdLCL7K8">
-     <img 
-      src="![image](https://user-images.githubusercontent.com/89119285/184713986-54d98606-cb75-4ff2-a3d3-9a703d5d3178.png)" 
+      ![image](https://user-images.githubusercontent.com/89119285/184713986-54d98606-cb75-4ff2-a3d3-9a703d5d3178.png)
       alt="Installation IOTA Nodes Hornet/Bee/Goshimmer/Wasp">
       </a>
 </div>
