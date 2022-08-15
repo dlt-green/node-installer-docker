@@ -58,14 +58,18 @@ CheckCertificate() {
 		echo "║               DLT.GREEN AUTOMATIC NODE-INSTALLER WITH DOCKER                ║"
 		echo "║                                    $VRSN                                    ║"
 		echo "║                                                                             ║"
-		echo "║                            1. Use existing Certificate (recommend)          ║"
+		echo "║                            1. Use existing Certificate                      ║"
 		echo "║                            X. Generate new Let's Encrypt Certificate        ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
+		echo "$rd""Attention! For one Node on your Server (Master-Node, e.g. HORNET)"
+		echo "you must use (X) for getting a Let's Encrypt Certificate,"
+		echo "for all additional installed Nodes use (1) existing Certificate,"
+		echo "then the Node will use the Certificate from the Master-Node""$xx"
+		echo ""
 		echo "select menu item: "
 		echo ""
-		echo $VAR_DIR
 		read  -p '> ' n
 		case $n in
 		1) VAR_CERT=1
@@ -130,6 +134,9 @@ SetCertificateGlobal() {
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
+	echo "$rd""Attention! If you (1) update the Certificate for all Nodes,"
+	echo "every Node on your Server will use this Certificate after restarting it""$xx"
+	echo ""
 		echo "select menu item: "
 	echo ""
 
@@ -140,15 +147,21 @@ SetCertificateGlobal() {
 	   echo $ca
 	   echo 'Update Certificate for all Nodes...'
 	   echo $xx
+	   sleep 3
 	   mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
 	   cd "/var/lib/$VAR_DIR/data/letsencrypt" || exit
-	   cat acme.json | jq -r '.myresolver .Certificates[] | select(.domain.main=="'$VAR_HOST'") | .certificate' | base64 -d > "$VAR_HOST.crt"
-	   cat acme.json | jq -r '.myresolver .Certificates[] | select(.domain.main=="'$VAR_HOST'") | .key' | base64 -d > "$VAR_HOST.key"
+	   cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'$VAR_HOST'") | .certificate' | base64 -d > "$VAR_HOST.crt"
+	   cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'$VAR_HOST'") | .key' | base64 -d > "$VAR_HOST.key"
+	   sleep 3
 	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" ]; then
 	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
 	   fi
 	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" ]; then
 	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" "/etc/letsencrypt/live/$VAR_HOST/privkey.pem"
+	     echo "$gn""Global Certificate is now updated for all Nodes""$xx"
+	   else
+	     echo "$rd""There was an Error on getting a Lets Encrypt Certificate!""$xx"
+	     echo "$gn""A default Certificate is now generated only for this Node""$xx"
 	   fi
 	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   ;;
@@ -696,6 +709,9 @@ IotaHornet() {
 		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 		read -p '> ' VAR_IOTA_HORNET_PRUNING_SIZE
 		echo ''
+		echo "Set PoW / proof of work (example: $ca""true""$xx): "
+		read -p '> ' VAR_IOTA_HORNET_POW
+		echo ''
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"		
 		read -p '> ' VAR_USERNAME
 		echo ''
@@ -717,10 +733,11 @@ IotaHornet() {
 
 		echo "HORNET_VERSION=$VAR_IOTA_HORNET_VERSION" >> .env
 
-		if [ $VAR_NETWORK = 1 ]; then echo "HORNET_NETWORK=mainnet" >> .env; fi
+		echo "HORNET_NETWORK=mainnet" >> .env
 	
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_IOTA_HORNET_PRUNING_SIZE" >> .env
+		echo "HORNET_POW_ENABLED=$VAR_IOTA_HORNET_POW" >> .env
 		echo "HORNET_HTTPS_PORT=$VAR_IOTA_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
@@ -892,6 +909,9 @@ IotaBee() {
 		echo "Set the dashboard port (example: $ca""440""$xx):"
 		read -p '> ' VAR_IOTA_BEE_HTTPS_PORT
 		echo ''
+		echo "Set PoW / proof of work (example: $ca""true""$xx): "
+		read -p '> ' VAR_IOTA_BEE_POW
+		echo ''
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"
 		read -p '> ' VAR_USERNAME
 		echo ''
@@ -913,9 +933,10 @@ IotaBee() {
 
 		echo "BEE_VERSION=$VAR_IOTA_BEE_VERSION" >> .env
 
-		if [ $VAR_NETWORK = 1 ]; then echo "BEE_NETWORK=mainnet" >> .env; fi
+		echo "BEE_NETWORK=mainnet" >> .env
 	
 		echo "BEE_HOST=$VAR_HOST" >> .env
+		echo "BEE_POW_ENABLED=$VAR_IOTA_BEE_POW" >> .env
 		echo "BEE_HTTPS_PORT=$VAR_IOTA_BEE_HTTPS_PORT" >> .env
 		echo "BEE_GOSSIP_PORT=15601" >> .env
 		echo "BEE_AUTOPEERING_PORT=14636" >> .env
@@ -1470,17 +1491,26 @@ ShimmerHornet() {
 		echo "Set the domain name (example: $ca""vrom.dlt.builders""$xx):"
 		read -p '> ' VAR_HOST
 		echo ''
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"
+		echo "Set the dashboard port (example: $ca""443""$xx):"
+		read -p '> ' VAR_SHIMMER_HORNET_HTTPS_PORT
+		echo ''
+		echo "Set the pruning size / max. database size (example: $ca""200GB""$xx):"
+		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		read -p '> ' VAR_SHIMMER_HORNET_PRUNING_SIZE
+		echo ''
+		echo "Set PoW / proof of work (example: $ca""false""$xx): "
+		read -p '> ' VAR_SHIMMER_HORNET_POW
+		echo ''
+		echo "Set the dashboard username (example: $ca""vrom""$xx):"		
 		read -p '> ' VAR_USERNAME
 		echo ''
 		echo "Set the dashboard password:"
 		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
 		read -p '> ' VAR_PASSWORD
 		echo ''
-		echo "Set the mail for letz encrypt certificat renewal (example: $ca""info@dlt.green""$xx):"
-		read -p '> ' VAR_ACME_EMAIL
-		echo ''
-
+		
+		CheckCertificate
+	
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                              Write Parameters                               ║"
@@ -1490,9 +1520,38 @@ ShimmerHornet() {
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
+		echo "HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION" >> .env
+
+		echo "HORNET_NETWORK=mainnet" >> .env
+	
 		echo "HORNET_HOST=$VAR_HOST" >> .env
-		echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_SHIMMER_HORNET_PRUNING_SIZE" >> .env
+		echo "HORNET_POW_ENABLED=$VAR_SHIMMER_HORNET_POW" >> .env
+		echo "HORNET_HTTPS_PORT=$VAR_SHIMMER_HORNET_HTTPS_PORT" >> .env
+		echo "HORNET_GOSSIP_PORT=15600" >> .env
+		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
+	
+		if [ $VAR_CERT = 0 ]
+		then
+			echo "HORNET_HTTP_PORT=80" >> .env
+				read -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+		else
+			echo "HORNET_HTTP_PORT=8081" >> .env
+			echo "SSL_CONFIG=certs" >> .env
+			echo "HORNET_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
+			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
+		fi
+		
+		echo "INX_INDEXER_VERSION=1.0.0-beta.5" >> .env
+		echo "INX_MQTT_VERSION=1.0.0-beta.5" >> .env
+		echo "INX_PARTICIPATION_VERSION=1.0.0-beta.5" >> .env
+		echo "INX_SPAMMER_VERSION=1.0.0-beta.5" >> .env
+		echo "INX_POI_VERSION=1.0.0-beta.5" >> .env
+		echo "INX_DASHBOARD_VERSION=1.0.0-beta.5" >> .env
+		
 	else
+		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 
@@ -1563,8 +1622,6 @@ ShimmerHornet() {
 	
 	RenameContainer
 
-	if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
-
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
@@ -1578,13 +1635,10 @@ ShimmerHornet() {
 		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " SHIMMER-Hornet Dashboard: https://$VAR_HOST/dashboard"
+		echo " SHIMMER-Hornet Dashboard: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/dashboard"
 		echo " SHIMMER-Hornet Dashboard Username: $VAR_USERNAME"
 		echo " SHIMMER-Hornet Dashboard Password: <set during install>"
-		echo " SHIMMER-Hornet API: https://$VAR_HOST/api/core/v2/info"
-		echo " Grafana Dashboard: https://$VAR_HOST/grafana"
-		echo " Grafana Username: admin"
-		echo " Grafana Password: <same as hornet password>"
+		echo " SHIMMER-Hornet API: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/api/core/v2/info"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
