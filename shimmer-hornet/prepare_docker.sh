@@ -30,6 +30,8 @@ prepare_data_dir "$dataDir" \
                  "indexer/${HORNET_NETWORK:-mainnet}" \
                  "participation/${HORNET_NETWORK:-mainnet}" \
                  "dashboard/${HORNET_NETWORK:-mainnet}" \
+                 "prometheus" \
+                 "grafana" \
                  "letsencrypt"
 
 # Generate config

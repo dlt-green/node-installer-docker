@@ -80,6 +80,38 @@ services:
         max-size: "200m"
 
   ##################################################################
+  #  Monitoring                                                    #
+  ##################################################################
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    user: "65532"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./assets/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ${HORNET_DATA_DIR:-./data}/prometheus/:/prometheus
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    user: "65532"
+    labels:
+      - "proxy.constraint=hornet-${HORNET_NETWORK:-mainnet}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`${HORNET_HOST:?HORNET_HOST is missing}`) && PathPrefix(`/grafana`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+    environment:
+      - GF_SERVER_DOMAIN=${HORNET_HOST}
+      - GF_SERVER_ROOT_URL=/grafana
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+    volumes:
+      - ./assets/grafana/:/etc/grafana/provisioning/
+      - ${HORNET_DATA_DIR:-./data}/grafana:/var/lib/grafana
+
+  ##################################################################
   #  INX Extensions                                                #
   ##################################################################
 
