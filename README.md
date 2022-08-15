@@ -34,13 +34,12 @@ sudo wget https://github.com/dlt-green/node-installer-docker/releases/latest/dow
 
 ### Bedienung
 Die Bedienung des Skripts erfolgt über die Eingabe der Zahlen, welche im Menü angezeigt werden.
-Wenn Sie auf das Bild klicken, sehen Sie ein Tutorial für das Hinzufügen der Docker-Bee-Installation zu SWARM. Dauer 3min :-)
+Wenn Sie auf das Bild klicken, sehen Sie ein Video-Tutorial für die Installation der IOTA Nodes Hornet/Bee/Goshimmer/Wasp
 
 <div align="center">
-      <a href="https://github.com/dlt-green/node-installer-docker/releases/download/v.0.4.5/install-bee.mp4">
-     <img 
-      src="https://user-images.githubusercontent.com/89119285/178085632-2572a076-1117-49d6-970c-f4e454b5056e.png" 
-      alt="Installation Bee with Docker additional to SWARM">
+      <a href="https://www.youtube.com/embed/8QkvdLCL7K8">
+      <img src="https://user-images.githubusercontent.com/89119285/184715070-5f8b2f84-06ec-4cc2-af43-8a59cbcb760f.png"
+      alt="Installation IOTA Nodes Hornet/Bee/Goshimmer/Wasp">
       </a>
 </div>
 
