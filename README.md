@@ -38,7 +38,7 @@ Wenn Sie auf das Bild klicken, sehen Sie ein Tutorial für die Installation der 
 
 <div align="center">
       <a href="https://www.youtube.com/embed/8QkvdLCL7K8">
-      <img src="https://user-images.githubusercontent.com/89119285/184714929-40a3a210-21c2-49ca-9f42-dd2e14719b7e.png"
+      <img src="https://user-images.githubusercontent.com/89119285/184715070-5f8b2f84-06ec-4cc2-af43-8a59cbcb760f.png"
       alt="Installation IOTA Nodes Hornet/Bee/Goshimmer/Wasp">
       </a>
 </div>
