@@ -32,6 +32,7 @@ HORNET_HOST=node.your-domain.com
 # HORNET_DATA_DIR=<absolute path to data dir>
 # HORNET_PRUNING_TARGET_SIZE=64GB
 # HORNET_PRUNING_MAX_MILESTONES_TO_KEEP=60480
+# HORNET_POW_ENABLED=false
 
 # DASHBOARD_USERNAME=admin
 DASHBOARD_PASSWORD=0000000000000000000000000000000000000000000000000000000000000000
@@ -50,6 +51,7 @@ DASHBOARD_SALT=0000000000000000000000000000000000000000000000000000000000000000
 | HORNET_DATA_DIR                       |           |    .data    | Directory containing configuration, database, snapshots etc.                                                                                                                     |
 | HORNET_PRUNING_TARGET_SIZE            |           |    64GB     | Target size of database                                                                                                                                                          |
 | HORNET_PRUNING_MAX_MILESTONES_TO_KEEP |           |    60480    | Max umber of milestones to keep in database. Milestone pruning is disabled by default. It's activated if this parameter is set.                                                  |
+| HORNET_POW_ENABLED                    |           |    false    | Whether the node does PoW if messages are received via API                                                                                                                       |
 | DASHBOARD_USERNAME                    |           |    admin    | Username to access dashboard                                                                                                                                                     |
 | DASHBOARD_PASSWORD                    |     x     |             | Password hash (can be generated with `docker compose run hornet tool pwd-hash` or non-interactively with `docker compose run hornet tool pwd-hash --json --password <password>`) |
 | DASHBOARD_SALT                        |     x     |             | Password salt (can be generated with `docker compose run hornet tool pwd-hash` or non-interactively with `docker compose run hornet tool pwd-hash --json --password <password>`) |
