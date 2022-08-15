@@ -1883,6 +1883,8 @@ RenameContainer() {
 	docker container rename shimmer-hornet_inx-mqtt_1 shimmer-hornet.inx-mqtt >/dev/null 2>&1
 	docker container rename shimmer-wasp_traefik_1 shimmer-wasp.traefik >/dev/null 2>&1
 	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
+	docker container rename shimmer-hornet_grafana_1 shimmer-hornet.grafana >/dev/null 2>&1	
+	docker container rename shimmer-hornet_prometheus_1 shimmer-hornet.prometheus >/dev/null 2>&1
 }
 
 docker --version | grep "Docker version" >/dev/null 2>&1
