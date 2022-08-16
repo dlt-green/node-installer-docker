@@ -15,7 +15,7 @@ VAR_IOTA_HORNET_VERSION='1.2.1'
 VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.4'
 VAR_IOTA_WASP_VERSION='0.2.5'
-VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.5'
+VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.6'
 VAR_SHIMMER_WASP_VERSION='dev'
 
 ca='\e[1;96m'
@@ -1543,12 +1543,12 @@ ShimmerHornet() {
 			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 		
-		echo "INX_INDEXER_VERSION=1.0.0-beta.5" >> .env
-		echo "INX_MQTT_VERSION=1.0.0-beta.5" >> .env
-		echo "INX_PARTICIPATION_VERSION=1.0.0-beta.5" >> .env
-		echo "INX_SPAMMER_VERSION=1.0.0-beta.5" >> .env
-		echo "INX_POI_VERSION=1.0.0-beta.5" >> .env
-		echo "INX_DASHBOARD_VERSION=1.0.0-beta.5" >> .env
+		echo "INX_INDEXER_VERSION=1.0.0-beta.6" >> .env
+		echo "INX_MQTT_VERSION=1.0.0-beta.6" >> .env
+		echo "INX_PARTICIPATION_VERSION=1.0.0-beta.6" >> .env
+		echo "INX_SPAMMER_VERSION=1.0.0-beta.6" >> .env
+		echo "INX_POI_VERSION=1.0.0-beta.6" >> .env
+		echo "INX_DASHBOARD_VERSION=1.0.0-beta.6" >> .env
 		
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION/g" .env; fi
