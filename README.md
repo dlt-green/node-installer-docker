@@ -34,7 +34,7 @@ sudo wget https://github.com/dlt-green/node-installer-docker/releases/latest/dow
 
 ### Bedienung
 Die Bedienung des Skripts erfolgt über die Eingabe der Zahlen, welche im Menü angezeigt werden.  
-Wenn Sie auf das Bild klicken, sehen Sie ein <a href="https://www.youtube.com/embed/8QkvdLCL7K8">Video-Tutorial</a> für die Installation der IOTA Nodes Hornet/Bee/Goshimmer/Wasp:
+Wenn Sie auf das Bild klicken, sehen Sie ein <a href="https://www.youtube.com/embed/8QkvdLCL7K8">Video-Tutorial</a> für die Installation der IOTA Nodes:
 
 <div align="center">
       <a href="https://www.youtube.com/embed/8QkvdLCL7K8">
