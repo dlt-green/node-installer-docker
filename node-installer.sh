@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.7.1"
+VRSN="0.8.0"
 
 VAR_HOST=''
 VAR_DIR=''
@@ -28,7 +28,7 @@ xx='\033[0m'
 
 echo $xx
 
-DockerShimmerHornet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/HORNET-$VAR_SHIMMER_HORNET_VERSION-docker.tar.gz"
+DockerShimmerHornet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
 DockerShimmerWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
 DockerIotaHornet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
@@ -1619,8 +1619,10 @@ ShimmerHornet() {
 	docker-compose up -d
 	
 	sleep 3
-	
+
 	RenameContainer
+
+	if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
@@ -1639,6 +1641,9 @@ ShimmerHornet() {
 		echo " SHIMMER-Hornet Dashboard Username: $VAR_USERNAME"
 		echo " SHIMMER-Hornet Dashboard Password: <set during install>"
 		echo " SHIMMER-Hornet API: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/api/core/v2/info"
+		echo " Grafana Dashboard: https://$VAR_HOST/grafana"
+		echo " Grafana Username: admin"
+		echo " Grafana Password: <same as hornet password>"		
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
@@ -1878,6 +1883,8 @@ RenameContainer() {
 	docker container rename shimmer-hornet_inx-mqtt_1 shimmer-hornet.inx-mqtt >/dev/null 2>&1
 	docker container rename shimmer-wasp_traefik_1 shimmer-wasp.traefik >/dev/null 2>&1
 	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
+	docker container rename shimmer-hornet_grafana_1 grafana >/dev/null 2>&1	
+	docker container rename shimmer-hornet_prometheus_1 prometheus >/dev/null 2>&1
 }
 
 docker --version | grep "Docker version" >/dev/null 2>&1

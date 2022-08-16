@@ -4,7 +4,7 @@
 Wir sind ein Team von Leuten aus der IOTA Community, welches sich die Vision gesetzt hat, einen DNS Server für das IOTA Ecosystem zur Verbesserung des Nutzererlebnisses ins Leben zu rufen. Dabei steht „DNS“ für „Dynamic Node Selection“. Unser Ziel ist es, dass eine Wallet nicht mehr mit einem statischen Zugangspunkt arbeitet, sondern sich dieser je nach Situation ändern kann. Die Zeit von statischen Zugangspunkten in das IOTA Ecosystem ist vorbei. Stellen Sie sich vor, nie mehr darüber nachzudenken, ob der Zugangspunkt funktioniert oder nicht. Stellen Sie sich Geräte in der IOT vor, welche sich vollautomatisch die Node für ihren individuellen Einsatzzweck aussuchen, dies kann z.B. nach Proof of Work, Unterstützung verschiedener Events, nach Vertrauenswürdigkeit oder nach verfügbarer Zugangsgeschwindigkeit sein. Dabei ist uns wichtig, dass der eigentliche Datenverkehr dann zwischen der Wallet und der Node selbst und nicht über den NodePool geführt wird.
 
 # DLT.GREEN AUTOMATIC NODE-INSTALLER DOCKER
-DLT.GREEN Node-Installer ist ein Skript zur Installation von Iota Nodes (Bee, Hornet, GoShimmer und Wasp). Die Installation erfolgt mit Docker im Hintergrund und soll es jedem, auch Anfängern, ermöglichen in kurzer Zeit Iota Nodes auf einem Server oder einem Virtual Private Server (VPS) einrichten zu können.
+DLT.GREEN Node-Installer ist ein Skript zur Installation von IOTA/Shimmer Nodes (Hornet, Bee, Goshimmer und Wasp). Die Installation erfolgt mit Docker im Hintergrund und soll es jedem, auch Anfängern, ermöglichen in kurzer Zeit Iota Nodes auf einem Server oder einem Virtual Private Server (VPS) einrichten zu können.
 
 # Voraussetzungen
 ### Mindestanforderungen für eine Node
@@ -33,14 +33,13 @@ sudo wget https://github.com/dlt-green/node-installer-docker/releases/latest/dow
 ```
 
 ### Bedienung
-Die Bedienung des Skripts erfolgt über die Eingabe der Zahlen, welche im Menü angezeigt werden.
-Wenn Sie auf das Bild klicken, sehen Sie ein Tutorial für das Hinzufügen der Docker-Bee-Installation zu SWARM. Dauer 3min :-)
+Die Bedienung des Skripts erfolgt über die Eingabe der Zahlen, welche im Menü angezeigt werden.  
+Wenn Sie auf das Bild klicken, sehen Sie ein <a href="https://www.youtube.com/embed/8QkvdLCL7K8">Video-Tutorial</a> für die Installation der IOTA Nodes:
 
 <div align="center">
-      <a href="https://github.com/dlt-green/node-installer-docker/releases/download/v.0.4.5/install-bee.mp4">
-     <img 
-      src="https://user-images.githubusercontent.com/89119285/178085632-2572a076-1117-49d6-970c-f4e454b5056e.png" 
-      alt="Installation Bee with Docker additional to SWARM">
+      <a href="https://www.youtube.com/embed/8QkvdLCL7K8">
+      <img src="https://user-images.githubusercontent.com/89119285/184715070-5f8b2f84-06ec-4cc2-af43-8a59cbcb760f.png"
+      alt="Installation IOTA Nodes Hornet/Bee/Goshimmer/Wasp">
       </a>
 </div>
 
