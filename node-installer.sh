@@ -160,7 +160,7 @@ SetCertificateGlobal() {
 	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" "/etc/letsencrypt/live/$VAR_HOST/privkey.pem"
 	     echo "$gn""Global Certificate is now updated for all Nodes""$xx"
 	   else
-	     echo "$rd""There was an Error on getting a Lets Encrypt Certificate!""$xx"
+	     echo "$rd""There was an Error on getting a Let's Encrypt Certificate!""$xx"
 	     echo "$gn""A default Certificate is now generated only for this Node""$xx"
 	   fi
 	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
