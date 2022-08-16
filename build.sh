@@ -2,7 +2,7 @@
 set -e
 
 BUILD_DIR=./build
-EXCLUSIONS="assets, build, data, .env, build.sh, .gitignore"
+EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore"
 
 NODES="iota-hornet iota-bee iota-goshimmer wasp shimmer-hornet"
 HORNET_VERSION=1.2.1
@@ -99,7 +99,7 @@ upload_build_artefacts () {
 }
 
 clean_build_dir () {
-  rm -Rf $BUILD_DIR && mkdir -p $BUILD_DIR
+  sudo rm -Rf $BUILD_DIR && mkdir -p $BUILD_DIR
   echo "$BUILD_DIR cleaned"
 }
 
