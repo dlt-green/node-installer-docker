@@ -18,6 +18,13 @@ VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.6'
 VAR_SHIMMER_WASP_VERSION='dev'
 
+VAR_INX_INDEXER_VERSION='1.0.0-beta.5'
+VAR_INX_MQTT_VERSION='1.0.0-beta.5'
+VAR_INX_PARTICIPATION_VERSION='1.0.0-beta.5'
+VAR_INX_SPAMMER_VERSION='1.0.0-beta.5'
+VAR_INX_POI_VERSION='1.0.0-beta.5'
+VAR_INX_DASHBOARD_VERSION='1.0.0-beta.5'
+
 ca='\e[1;96m'
 rd='\e[1;91m'
 gn='\e[1;92m'
@@ -1543,15 +1550,22 @@ ShimmerHornet() {
 			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 		
-		echo "INX_INDEXER_VERSION=1.0.0-beta.6" >> .env
-		echo "INX_MQTT_VERSION=1.0.0-beta.6" >> .env
-		echo "INX_PARTICIPATION_VERSION=1.0.0-beta.6" >> .env
-		echo "INX_SPAMMER_VERSION=1.0.0-beta.6" >> .env
-		echo "INX_POI_VERSION=1.0.0-beta.6" >> .env
-		echo "INX_DASHBOARD_VERSION=1.0.0-beta.6" >> .env
+		echo "INX_INDEXER_VERSION=$VAR_INX_INDEXER_VERSION" >> .env
+		echo "INX_MQTT_VERSION=$VAR_INX_MQTT_VERSION" >> .env
+		echo "INX_PARTICIPATION_VERSION=$VAR_INX_PARTICIPATION_VERSION" >> .env
+		echo "INX_SPAMMER_VERSION=$VAR_INX_SPAMMER_VERSION" >> .env
+		echo "INX_POI_VERSION=$VAR_INX_POI_VERSION" >> .env
+		echo "INX_DASHBOARD_VERSION=$VAR_INX_DASHBOARD_VERSION" >> .env
 		
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_INX_MQTT_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_MQTT_VERSION=.*/INX_MQTT_VERSION=$VAR_INX_MQTT_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_PARTICIPATION_VERSION=.*/INX_PARTICIPATION_VERSION=$VAR_INX_PARTICIPATION_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_SPAMMER_VERSION=.*/INX_SPAMMER_VERSION=$VAR_INX_SPAMMER_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_INX_POI_VERSION/g" .env; fi		
+		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_INX_DASHBOARD_VERSION/g" .env; fi
+		
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 
