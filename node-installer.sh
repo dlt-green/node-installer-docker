@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.8.0"
+VRSN="0.8.1"
 
 VAR_HOST=''
 VAR_DIR=''
@@ -15,7 +15,7 @@ VAR_IOTA_HORNET_VERSION='1.2.1'
 VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.4'
 VAR_IOTA_WASP_VERSION='0.2.5'
-VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.5'
+VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.6'
 VAR_SHIMMER_WASP_VERSION='dev'
 
 ca='\e[1;96m'
@@ -147,12 +147,12 @@ SetCertificateGlobal() {
 	   echo $ca
 	   echo 'Update Certificate for all Nodes...'
 	   echo $xx
-	   sleep 3
+	   sleep 5
 	   mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
 	   cd "/var/lib/$VAR_DIR/data/letsencrypt" || exit
 	   cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'$VAR_HOST'") | .certificate' | base64 -d > "$VAR_HOST.crt"
 	   cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'$VAR_HOST'") | .key' | base64 -d > "$VAR_HOST.key"
-	   sleep 3
+	   sleep 5
 	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" ]; then
 	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
 	   fi
@@ -160,7 +160,7 @@ SetCertificateGlobal() {
 	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" "/etc/letsencrypt/live/$VAR_HOST/privkey.pem"
 	     echo "$gn""Global Certificate is now updated for all Nodes""$xx"
 	   else
-	     echo "$rd""There was an Error on getting a Lets Encrypt Certificate!""$xx"
+	     echo "$rd""There was an Error on getting a Let's Encrypt Certificate!""$xx"
 	     echo "$gn""A default Certificate is now generated only for this Node""$xx"
 	   fi
 	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
@@ -1543,12 +1543,12 @@ ShimmerHornet() {
 			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 		
-		echo "INX_INDEXER_VERSION=1.0.0-beta.5" >> .env
-		echo "INX_MQTT_VERSION=1.0.0-beta.5" >> .env
-		echo "INX_PARTICIPATION_VERSION=1.0.0-beta.5" >> .env
-		echo "INX_SPAMMER_VERSION=1.0.0-beta.5" >> .env
-		echo "INX_POI_VERSION=1.0.0-beta.5" >> .env
-		echo "INX_DASHBOARD_VERSION=1.0.0-beta.5" >> .env
+		echo "INX_INDEXER_VERSION=1.0.0-beta.6" >> .env
+		echo "INX_MQTT_VERSION=1.0.0-beta.6" >> .env
+		echo "INX_PARTICIPATION_VERSION=1.0.0-beta.6" >> .env
+		echo "INX_SPAMMER_VERSION=1.0.0-beta.6" >> .env
+		echo "INX_POI_VERSION=1.0.0-beta.6" >> .env
+		echo "INX_DASHBOARD_VERSION=1.0.0-beta.6" >> .env
 		
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION/g" .env; fi
