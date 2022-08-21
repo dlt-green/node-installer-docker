@@ -46,7 +46,7 @@ services:
   ##################################################################
 
   traefik:
-    image: traefik:latest
+    image: traefik:2.8.1
     restart: unless-stopped
     command:
       - "--log.level=WARN"
@@ -69,6 +69,7 @@ services:
     ports:
       - "${HORNET_HTTP_PORT:-80}:80/tcp"
       - "${HORNET_HTTPS_PORT:-443}:443/tcp"
+      - 8080:8080
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "${HORNET_DATA_DIR:-./data}/letsencrypt:/letsencrypt"
@@ -231,3 +232,4 @@ services:
       - "--dashboard.auth.username=${DASHBOARD_USERNAME}"
       - "--dashboard.auth.passwordHash=${DASHBOARD_PASSWORD}"
       - "--dashboard.auth.passwordSalt=${DASHBOARD_SALT}"
+      - "--prometheus.enabled=true"
