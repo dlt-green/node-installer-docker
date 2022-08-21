@@ -185,7 +185,7 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
-              "expr": "time()-container_start_time_seconds{name=\"hornet-hornet-1\"}",
+              "expr": "time()-container_start_time_seconds{name=\"shimmer-hornet\"}",
               "refId": "A"
             }
           ],
