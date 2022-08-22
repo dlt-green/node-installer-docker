@@ -1170,7 +1170,7 @@ IotaWasp() {
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 	else
-		if [ -f .env ]; then sed -i "s/NETWORK=.*/NETWORK=$VAR_WASP_LEDGER_NETWORK/g" .env; fi
+		if [ -f .env ]; then sed -i "s/WASP_LEDGER_NETWORK=.*/NETWORK=$VAR_WASP_LEDGER_NETWORK/g" .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_IOTA_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
