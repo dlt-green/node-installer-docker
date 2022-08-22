@@ -1763,7 +1763,6 @@ ShimmerWasp() {
 
 		VAR_WASP_LEDGER_NETWORK='shimmer'
 		
-
 		echo "WASP_VERSION=$VAR_SHIMMER_WASP_VERSION" >> .env
 		echo "WASP_HOST=$VAR_HOST" >> .env
 		echo "WASP_HTTPS_PORT=$VAR_SHIMMER_WASP_HTTPS_PORT" >> .env
