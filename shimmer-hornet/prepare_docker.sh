@@ -48,7 +48,7 @@ set_config $configPath ".pruning.size.targetSize"         "\"${HORNET_PRUNING_TA
 set_config $configPath ".p2p.autopeering.enabled"         "true"
 set_config $configPath ".restAPI.pow.enabled"             "${HORNET_POW_ENABLED:-true}"
 set_config $configPath ".prometheus.enabled"              "true"
-set_config $configPath ".prometheus.bindAddress"          "\"0.0.0.0:9312\""
+set_config $configPath ".prometheus.bindAddress"          "\"0.0.0.0:9311\""
 set_config $configPath ".inx.enabled"                     "true"
 set_config $configPath ".inx.bindAddress"                 "\"0.0.0.0:9029\""
 
