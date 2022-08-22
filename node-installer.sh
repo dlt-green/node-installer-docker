@@ -1146,9 +1146,8 @@ IotaWasp() {
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
-		VAR_NETWORK='iota'
+		VAR_WASP_LEDGER_NETWORK='iota'
 		
-		echo "NETWORK=$VAR_NETWORK" >> .env
 		echo "WASP_VERSION=$VAR_IOTA_WASP_VERSION" >> .env
 
 		echo "WASP_HOST=$VAR_HOST" >> .env
@@ -1156,6 +1155,7 @@ IotaWasp() {
 		echo "WASP_API_PORT=$VAR_IOTA_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_IOTA_WASP_PEERING_PORT" >> .env
 		echo "WASP_NANO_MSG_PORT=$VAR_IOTA_WASP_NANO_MSG_PORT" >> .env
+		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_LEDGER_CONNECTION=$VAR_IOTA_WASP_LEDGER_CONNECTION" >> .env
 	
 		if [ $VAR_CERT = 0 ]
@@ -1170,7 +1170,7 @@ IotaWasp() {
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 	else
-		if [ -f .env ]; then sed -i "s/NETWORK=.*/NETWORK=$VAR_NETWORK/g" .env; fi
+		if [ -f .env ]; then sed -i "s/NETWORK=.*/NETWORK=$VAR_WASP_LEDGER_NETWORK/g" .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_IOTA_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
@@ -1761,9 +1761,8 @@ ShimmerWasp() {
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
-		VAR_NETWORK='shimmer'
+		VAR_WASP_LEDGER_NETWORK='shimmer'
 		
-		echo "NETWORK=$VAR_NETWORK" >> .env
 
 		echo "WASP_VERSION=$VAR_SHIMMER_WASP_VERSION" >> .env
 		echo "WASP_HOST=$VAR_HOST" >> .env
@@ -1771,6 +1770,7 @@ ShimmerWasp() {
 		echo "WASP_API_PORT=$VAR_SHIMMER_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_SHIMMER_WASP_PEERING_PORT" >> .env
 		echo "WASP_NANO_MSG_PORT=$VAR_SHIMMER_WASP_NANO_MSG_PORT" >> .env
+		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_LEDGER_CONNECTION=$VAR_SHIMMER_WASP_LEDGER_CONNECTION" >> .env
 	
 		if [ $VAR_CERT = 0 ]
@@ -1785,7 +1785,7 @@ ShimmerWasp() {
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 	else
-		if [ -f .env ]; then sed -i "s/NETWORK=.*/NETWORK=$VAR_NETWORK/g" .env; fi
+		if [ -f .env ]; then sed -i "s/NETWORK=.*/NETWORK=$VAR_WASP_LEDGER_NETWORK/g" .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
