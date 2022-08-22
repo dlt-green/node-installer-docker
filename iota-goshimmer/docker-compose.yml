@@ -58,7 +58,7 @@ services:
   ##################################################################
 
   traefik:
-    image: traefik:v2.8.1
+    image: traefik:v2.8.2
     container_name: iota-goshimmer.traefik
     restart: unless-stopped
     command:
