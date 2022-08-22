@@ -3,6 +3,7 @@ services:
 
   goshimmer:
     image: iotaledger/goshimmer:v${GOSHIMMER_VERSION:?GOSHIMMER_VERSION is missing}
+    container_name: iota-goshimmer
     restart: unless-stopped
     ulimits:
       nofile:
@@ -58,6 +59,7 @@ services:
 
   traefik:
     image: traefik:v2.8.1
+    container_name: iota-goshimmer.traefik
     restart: unless-stopped
     command:
       - "--log.level=WARN"
