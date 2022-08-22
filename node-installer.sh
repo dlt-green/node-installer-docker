@@ -1100,6 +1100,7 @@ IotaWasp() {
 
 	CheckConfiguration
 
+	VAR_WASP_LEDGER_NETWORK='iota'
 		
 	if [ $VAR_CONF_RESET = 1 ]; then
 	
