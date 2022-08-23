@@ -558,6 +558,7 @@ Docker() {
 	sudo docker ps -a -q
 	sudo apt-get install jq -y
 	sudo apt-get install expect -y
+	sudo apt-get install dnsutils -y
 	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
