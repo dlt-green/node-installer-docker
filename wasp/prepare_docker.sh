@@ -17,6 +17,12 @@ configPath="${dataDir}/config/$configFilename"
 validate_ssl_config "WASP_SSL_CERT" "WASP_SSL_KEY"
 create_common_assets
 
+# Validate HORNET_NETWORK config
+if [[ "$WASP_LEDGER_NETWORK" != "iota" ]] && [[ "$WASP_LEDGER_NETWORK" != "shimmer" ]]; then
+  echo "Invalid WASP_LEDGER_NETWORK: $WASP_LEDGER_NETWORK"
+  exit -1
+fi
+
 prepare_data_dir "$dataDir" "config" "waspdb"
 
 # Generate config

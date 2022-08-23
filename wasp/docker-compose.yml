@@ -3,6 +3,7 @@ services:
 
   wasp:
     image: dltgreen/wasp:${WASP_VERSION:?WASP_VERSION is missing}
+    container_name: ${WASP_LEDGER_NETWORK:?WASP_LEDGER_NETWORK is missing}-wasp
     restart: unless-stopped
     ulimits:
       nofile:
@@ -51,7 +52,8 @@ services:
   ##################################################################
 
   traefik:
-    image: traefik:v2.8.1
+    image: traefik:v2.8.2
+    container_name: ${WASP_LEDGER_NETWORK:?WASP_LEDGER_NETWORK is missing}-wasp.traefik
     restart: unless-stopped
     command:
       - "--log.level=WARN"

@@ -18,6 +18,7 @@ ACME_EMAIL=your-email@example.com
 # WASP_SSL_CERT=<absolute path to cert>
 # WASP_SSL_KEY=<absolute path to key>
 
+WASP_LEDGER_NETWORK=iota # or shimmer
 WASP_VERSION=0.2.5
 WASP_HOST=node.your-domain.com
 # WASP_HTTP_PORT=80
@@ -35,6 +36,7 @@ WASP_LEDGER_CONNECTION=node.your-domain.com:5000
 
 | Parameter              | Mandatory |   Default   | Description                                                                                                                                                           |
 | ---------------------- | :-------: | :---------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WASP_LEDGER_NETWORK    |     x     |             | Network this wasp note belongs to (iota or shimmer)                                                                                                                   |
 | WASP_VERSION           |     x     |             | Version of `dltgreen/wasp` docker image to use                                                                                                                        |
 | WASP_HOST              |     x     |             | Host domain name e.g. `wasp.dlt.green`                                                                                                                                |
 | WASP_HTTP_PORT         |           |     80      | HTTP port to access dashboard. Must be 80 if letsencrypt is used.                                                                                                     |

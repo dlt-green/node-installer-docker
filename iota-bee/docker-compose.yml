@@ -3,6 +3,7 @@ services:
 
   bee:
     image: iotaledger/bee:${BEE_VERSION:?BEE_VERSION is missing}
+    container_name: iota-bee
     restart: unless-stopped
     ulimits:
       nofile:
@@ -49,7 +50,8 @@ services:
   ##################################################################
 
   traefik:
-    image: traefik:v2.8.1
+    image: traefik:v2.8.2
+    container_name: iota-bee.traefik
     restart: unless-stopped
     command:
       - "--log.level=WARN"

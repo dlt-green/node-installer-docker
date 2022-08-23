@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.8.1"
+VRSN="0.8.2"
 
 VAR_HOST=''
 VAR_DIR=''
@@ -48,6 +48,19 @@ SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/s
 clear
 if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
 if [ $(id -u) -ne 0 ]; then	echo $rd && echo 'Please run DLT.GREEN Automatic Node-Installer with sudo or as root' && echo $xx; exit; fi
+
+CheckDomain() {
+	if [ "$(dig +short "$1")" != "$(curl -s 'https://ipinfo.io/ip')" ]
+	then
+		echo ""
+	    echo "$rd""Attention! Verification of your specified Domain failed! Installation aborted!""$xx"
+	    echo "$rd""Maybe you entered a wrong Domain or the DNS is not reachable yet?""$xx"
+	    echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+		SubMenuMaintenance
+	else 
+	    echo "$gn""Verification of your specified domain successful""$xx"
+	fi 
+}
 
 CheckCertificate() {
 	clear
@@ -708,6 +721,8 @@ IotaHornet() {
 
 		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
 		read -p '> ' VAR_HOST
+		CheckDomain $VAR_HOST
+
 		echo ''
 		echo "Set the dashboard port (example: $ca""443""$xx):"
 		read -p '> ' VAR_IOTA_HORNET_HTTPS_PORT
@@ -912,6 +927,8 @@ IotaBee() {
 
 		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
 		read -p '> ' VAR_HOST
+		CheckDomain $VAR_HOST
+
 		echo ''
 		echo "Set the dashboard port (example: $ca""440""$xx):"
 		read -p '> ' VAR_IOTA_BEE_HTTPS_PORT
@@ -1099,7 +1116,9 @@ IotaWasp() {
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	CheckConfiguration
-	
+
+	VAR_WASP_LEDGER_NETWORK='iota'
+		
 	if [ $VAR_CONF_RESET = 1 ]; then
 	
 		clear
@@ -1111,6 +1130,8 @@ IotaWasp() {
 
 		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
 		read -p '> ' VAR_HOST
+		CheckDomain $VAR_HOST
+
 		echo ''
 		echo "Set the dashboard port (example: $ca""447""$xx):"
 		read -p '> ' VAR_IOTA_WASP_HTTPS_PORT
@@ -1145,7 +1166,7 @@ IotaWasp() {
 
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
-
+	
 		echo "WASP_VERSION=$VAR_IOTA_WASP_VERSION" >> .env
 
 		echo "WASP_HOST=$VAR_HOST" >> .env
@@ -1153,6 +1174,7 @@ IotaWasp() {
 		echo "WASP_API_PORT=$VAR_IOTA_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_IOTA_WASP_PEERING_PORT" >> .env
 		echo "WASP_NANO_MSG_PORT=$VAR_IOTA_WASP_NANO_MSG_PORT" >> .env
+		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_LEDGER_CONNECTION=$VAR_IOTA_WASP_LEDGER_CONNECTION" >> .env
 	
 		if [ $VAR_CERT = 0 ]
@@ -1167,6 +1189,7 @@ IotaWasp() {
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 	else
+		if grep -q 'WASP_LEDGER_NETWORK=' .env; then sed -i "s/WASP_LEDGER_NETWORK=.*/WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK/g" .env; else echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_IOTA_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
@@ -1320,6 +1343,8 @@ IotaGoshimmer() {
 
 		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
 		read -p '> ' VAR_HOST
+		CheckDomain $VAR_HOST
+
 		echo ''
 		echo "Set the dashboard port (example: $ca""446""$xx):"
 		read -p '> ' VAR_IOTA_GOSHIMMER_HTTPS_PORT
@@ -1497,6 +1522,8 @@ ShimmerHornet() {
 
 		echo "Set the domain name (example: $ca""vrom.dlt.builders""$xx):"
 		read -p '> ' VAR_HOST
+		CheckDomain $VAR_HOST
+		
 		echo ''
 		echo "Set the dashboard port (example: $ca""443""$xx):"
 		read -p '> ' VAR_SHIMMER_HORNET_HTTPS_PORT
@@ -1710,6 +1737,8 @@ ShimmerWasp() {
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	CheckConfiguration
+
+	VAR_WASP_LEDGER_NETWORK='shimmer'
 	
 	if [ $VAR_CONF_RESET = 1 ]; then
 	
@@ -1722,6 +1751,8 @@ ShimmerWasp() {
 
 		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
 		read -p '> ' VAR_HOST
+		CheckDomain $VAR_HOST		
+		
 		echo ''
 		echo "Set the dashboard port (example: $ca""447""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_HTTPS_PORT
@@ -1763,6 +1794,7 @@ ShimmerWasp() {
 		echo "WASP_API_PORT=$VAR_SHIMMER_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_SHIMMER_WASP_PEERING_PORT" >> .env
 		echo "WASP_NANO_MSG_PORT=$VAR_SHIMMER_WASP_NANO_MSG_PORT" >> .env
+		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_LEDGER_CONNECTION=$VAR_SHIMMER_WASP_LEDGER_CONNECTION" >> .env
 	
 		if [ $VAR_CERT = 0 ]
@@ -1777,6 +1809,7 @@ ShimmerWasp() {
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 	else
+		if grep -q 'WASP_LEDGER_NETWORK=' .env; then sed -i "s/WASP_LEDGER_NETWORK=.*/WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK/g" .env; else echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
