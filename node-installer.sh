@@ -49,6 +49,19 @@ clear
 if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
 if [ $(id -u) -ne 0 ]; then	echo $rd && echo 'Please run DLT.GREEN Automatic Node-Installer with sudo or as root' && echo $xx; exit; fi
 
+CheckDomain() {
+	if [ "$(dig +short "$1")" != "$(curl -s 'https://ipinfo.io/ip')" ]
+	then
+		echo ""
+	    echo "$rd""Attention! Verification of your specified Domain failed! Installation aborted!""$xx"
+	    echo "$rd""Maybe you entered a wrong Domain or the DNS is not reachable yet?""$xx"
+	    echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+		SubMenuMaintenance
+	else 
+	    echo "$gn""Verification of your specified domain successful""$xx"
+	fi 
+}
+
 CheckCertificate() {
 	clear
 	echo ""
@@ -708,6 +721,8 @@ IotaHornet() {
 
 		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
 		read -p '> ' VAR_HOST
+		CheckDomain $VAR_HOST
+
 		echo ''
 		echo "Set the dashboard port (example: $ca""443""$xx):"
 		read -p '> ' VAR_IOTA_HORNET_HTTPS_PORT
@@ -912,6 +927,8 @@ IotaBee() {
 
 		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
 		read -p '> ' VAR_HOST
+		CheckDomain $VAR_HOST
+
 		echo ''
 		echo "Set the dashboard port (example: $ca""440""$xx):"
 		read -p '> ' VAR_IOTA_BEE_HTTPS_PORT
@@ -1113,6 +1130,8 @@ IotaWasp() {
 
 		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
 		read -p '> ' VAR_HOST
+		CheckDomain $VAR_HOST
+
 		echo ''
 		echo "Set the dashboard port (example: $ca""447""$xx):"
 		read -p '> ' VAR_IOTA_WASP_HTTPS_PORT
@@ -1324,6 +1343,8 @@ IotaGoshimmer() {
 
 		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
 		read -p '> ' VAR_HOST
+		CheckDomain $VAR_HOST
+
 		echo ''
 		echo "Set the dashboard port (example: $ca""446""$xx):"
 		read -p '> ' VAR_IOTA_GOSHIMMER_HTTPS_PORT
@@ -1501,6 +1522,8 @@ ShimmerHornet() {
 
 		echo "Set the domain name (example: $ca""vrom.dlt.builders""$xx):"
 		read -p '> ' VAR_HOST
+		CheckDomain $VAR_HOST
+		
 		echo ''
 		echo "Set the dashboard port (example: $ca""443""$xx):"
 		read -p '> ' VAR_SHIMMER_HORNET_HTTPS_PORT
@@ -1728,6 +1751,8 @@ ShimmerWasp() {
 
 		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
 		read -p '> ' VAR_HOST
+		CheckDomain $VAR_HOST		
+		
 		echo ''
 		echo "Set the dashboard port (example: $ca""447""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_HTTPS_PORT
