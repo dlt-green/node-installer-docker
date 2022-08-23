@@ -58,7 +58,7 @@ CheckDomain() {
 	    echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 		SubMenuMaintenance
 	else 
-	    echo "$gn""Verification of your specified domain successful""$xx"
+	    echo "$gn""Verification of your specified Domain successful""$xx"
 	fi 
 }
 
