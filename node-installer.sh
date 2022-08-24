@@ -556,9 +556,6 @@ Docker() {
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	sudo docker ps -a -q
-	sudo apt-get install jq -y
-	sudo apt-get install expect -y
-	sudo apt-get install dnsutils -y
 	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1934,6 +1931,11 @@ RenameContainer() {
 	docker container rename shimmer-hornet_grafana_1 grafana >/dev/null 2>&1	
 	docker container rename shimmer-hornet_prometheus_1 prometheus >/dev/null 2>&1
 }
+
+sudo apt-get install curl -y -qq
+sudo apt-get install jq -y -qq
+sudo apt-get install expect -y -qq
+sudo apt-get install dnsutils -y -qq
 
 docker --version | grep "Docker version" >/dev/null 2>&1
 if [ $? -eq 0 ]
