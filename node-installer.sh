@@ -282,6 +282,7 @@ MainMenu() {
 	echo "║                              3. Docker Status                               ║"
 	echo "║                              4. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
+	echo "║                              Q. Quit                                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
