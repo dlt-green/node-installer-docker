@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.8.2"
+VRSN="0.8.3"
 
 VAR_DOMAIN=''
 VAR_HOST=''
