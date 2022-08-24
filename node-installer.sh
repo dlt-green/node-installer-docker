@@ -1932,10 +1932,10 @@ RenameContainer() {
 	docker container rename shimmer-hornet_prometheus_1 prometheus >/dev/null 2>&1
 }
 
-sudo apt-get install curl -y -qq
-sudo apt-get install jq -y -qq
-sudo apt-get install expect -y -qq
-sudo apt-get install dnsutils -y -qq
+sudo apt-get install curl -y -qq >/dev/null 2>&1
+sudo apt-get install jq -y -qq >/dev/null 2>&1
+sudo apt-get install expect -y -qq >/dev/null 2>&1
+sudo apt-get install dnsutils -y -qq >/dev/null 2>&1
 
 docker --version | grep "Docker version" >/dev/null 2>&1
 if [ $? -eq 0 ]
