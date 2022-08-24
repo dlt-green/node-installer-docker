@@ -294,7 +294,14 @@ MainMenu() {
 	2) Docker ;;
 	3) docker stats 2>/dev/null ;;
 	4) SubMenuLicense ;;
-	*) Dashboard ;;
+	q|Q) clear; exit ;;  
+	*) docker --version | grep "Docker version" >/dev/null 2>&1
+	   if [ $? -eq 0 ]; then Dashboard; else
+  	     echo ""
+  	     echo "$rd""Attention! Please install Docker! Loading Dashboard aborted!""$xx"
+	     echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	 
+	     MainMenu
+       fi;;
 	esac
 }
 
@@ -555,7 +562,7 @@ Docker() {
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	sudo docker ps -a -q
+	sudo docker ps -a -q >/dev/null 2>&1
 	
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
