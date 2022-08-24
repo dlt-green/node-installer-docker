@@ -76,7 +76,7 @@ CheckCertificate() {
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║ DLT.GREEN            AUTOMATIC NODE-INSTALLER WITH DOCKER           v.$VRSN ║"
+		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
 		echo "║"$ca"$VAR_DOMAIN"$xx"║"
 		echo "║                                                                             ║"
 		echo "║                            1. Use existing Certificate                      ║"
@@ -119,7 +119,7 @@ CheckConfiguration() {
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║ DLT.GREEN            AUTOMATIC NODE-INSTALLER WITH DOCKER           v.$VRSN ║"
+		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
 		echo "║"$ca"$VAR_DOMAIN"$xx"║"
 		echo "║                                                                             ║"
 		echo "║                            1. Reset Configuration (*.env)                   ║"
@@ -147,7 +147,7 @@ SetCertificateGlobal() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN            AUTOMATIC NODE-INSTALLER WITH DOCKER           v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
 	echo "║"$ca"$VAR_DOMAIN"$xx"║"
 	echo "║                                                                             ║"
 	echo "║                            1. Update Certificate for all Nodes (recommend)  ║"
@@ -216,7 +216,7 @@ Dashboard() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN            AUTOMATIC NODE-INSTALLER WITH DOCKER           v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
 	echo "║"$ca"$VAR_DOMAIN"$xx"║"
 	echo "║                                                                             ║"
 	echo "║                             IOTA Mainnet/Devnet                             ║"
@@ -297,7 +297,7 @@ MainMenu() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN            AUTOMATIC NODE-INSTALLER WITH DOCKER           v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
 	echo "║"$ca"$VAR_DOMAIN"$xx"║"
 	echo "║                                                                             ║"
 	echo "║                              1. System Updates/Docker Cleanup               ║"
@@ -333,7 +333,7 @@ SubMenuLicense() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN            AUTOMATIC NODE-INSTALLER WITH DOCKER           v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
 	echo "║"$ca"$VAR_DOMAIN"$xx"║"
 	echo "║                                                                             ║"
 	echo "║                      GNU General Public License v3.0                        ║"
@@ -363,7 +363,7 @@ SubMenuMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN            AUTOMATIC NODE-INSTALLER WITH DOCKER           v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
 	echo "║"$ca"$VAR_DOMAIN"$xx"║"
 	echo "║                                                                             ║"
 	echo "║                              1. Install/Update                              ║"
@@ -544,7 +544,7 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN            AUTOMATIC NODE-INSTALLER WITH DOCKER           v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
 	echo "║"$ca"$VAR_DOMAIN"$xx"║"
 	echo "║                                                                             ║"
 	echo "║                            1. System Reboot (recommend)                     ║"
@@ -1965,7 +1965,27 @@ RenameContainer() {
 
 clear
 echo ""
-echo "Loading Installer..."
+echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+echo "║                                                                             ║"
+echo "║      ____    _       _____        ____   ____    _____   _____   _   _      ║"
+echo "║     |  _ \  | |     |_   _|      / ___| |  _ \  | ____| | ____| | \ | |     ║"
+echo "║     | | | | | |       | |       | |  _  | |_) | |  _|   |  _|   |  \| |     ║"
+echo "║     | |_| | | |___    | |    _  | |_| | |  _ <  | |___  | |___  | |\  |     ║"
+echo "║     |____/  |_____|   |_|   (_)  \____| |_| \_\ |_____| |_____| |_| \_|     ║"
+echo "║                                                                             ║"
+echo "║                                                                             ║"
+echo "║                            loading Installer...                             ║"
+echo "║                                                                             ║"
+echo "║                                                                             ║"
+echo "║         Github: https://github.com/dlt-green/node-installer-docker          ║"
+echo "║                                                                             ║"
+echo "║                                                                             ║"
+echo "║                       GNU General Public License v3.0                       ║"
+echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+echo ""
+	
+sleep 3
 
 sudo apt-get install curl jq expect dnsutils -y -qq >/dev/null 2>&1
 
