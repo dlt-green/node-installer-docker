@@ -294,6 +294,9 @@ Dashboard
 }
 
 MainMenu() {
+
+	if [ -z "$VAR_DOMAIN" ]; then PositionCenter ''; VAR_DOMAIN=$text; fi
+
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
