@@ -58,9 +58,9 @@ CheckDomain() {
 	    echo "$rd""Maybe you entered a wrong Domain or the DNS is not reachable yet?""$xx"
 	    echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 		SubMenuMaintenance
-	else 
+	else
 	    echo "$gn""Verification of your specified Domain successful""$xx"
-	fi 
+	fi
 }
 
 CheckCertificate() {
@@ -71,8 +71,8 @@ CheckCertificate() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ -f "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" ] 
-	then 
+	if [ -f "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" ]
+	then
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -99,11 +99,11 @@ CheckCertificate() {
 		   VAR_CERT=0
 		   rm -rf /var/lib/$VAR_DIR/data/letsencrypt/* ;;
 		esac
-	else 
+	else
 		echo "No existing Let's Encrypt Certificate found, generate a new one... "
 		VAR_CERT=0
 		rm -rf /var/lib/$VAR_DIR/data/letsencrypt/*
-	fi 
+	fi
 }
 
 CheckConfiguration() {
@@ -114,8 +114,8 @@ CheckConfiguration() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ -f "/var/lib/$VAR_DIR/.env" ] 
-	then 
+	if [ -f "/var/lib/$VAR_DIR/.env" ]
+	then
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -126,7 +126,7 @@ CheckConfiguration() {
 		echo "║                            X. Use existing Configuration (*.env)            ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""		
+		echo ""
 		echo "select menu item: "
 		echo ""
 
@@ -137,10 +137,10 @@ CheckConfiguration() {
 		*) echo "Use existing Configuration... "
 		   VAR_CONF_RESET=0 ;;
 		esac
-	else 
+	else
 	    echo "New Configuration... "
 		VAR_CONF_RESET=1
-	fi 
+	fi
 }
 
 SetCertificateGlobal() {
@@ -163,7 +163,7 @@ SetCertificateGlobal() {
 
 	read  -p '> ' n
 	case $n in
-	1) 
+	1)
 	   clear
 	   echo $ca
 	   echo 'Update Certificate for all Nodes...'
@@ -187,7 +187,7 @@ SetCertificateGlobal() {
 	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   ;;
 	X) ;;
-	esac	   
+	esac
 }
 
 Dashboard() {
@@ -201,18 +201,18 @@ Dashboard() {
 	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-wasp'   2>/dev/null)" = 'running' ]; then sw=$gn; else if [ -d /var/lib/shimmer-wasp ];   then sw=$rd; else sw=$gr; fi; fi
 
 	VAR_DOMAIN=''
-	
+
 	if [ -s "/var/lib/iota-hornet/.env" ];    then VAR_DOMAIN=$(cat /var/lib/iota-hornet/.env    | grep _HOST | cut -d '=' -f 2); fi
 	if [ -s "/var/lib/iota-bee/.env" ];       then VAR_DOMAIN=$(cat /var/lib/iota-bee/.env       | grep _HOST | cut -d '=' -f 2); fi
 	if [ -s "/var/lib/iota-goshimmer/.env" ]; then VAR_DOMAIN=$(cat /var/lib/iota-goshimmer/.env | grep _HOST | cut -d '=' -f 2); fi
 	if [ -s "/var/lib/iota-wasp/.env" ];      then VAR_DOMAIN=$(cat /var/lib/iota-wasp/.env      | grep _HOST | cut -d '=' -f 2); fi
-	if [ -s "/var/lib/shimmer-hornet/.env" ]; then VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2); fi	
+	if [ -s "/var/lib/shimmer-hornet/.env" ]; then VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2); fi
 	if [ -s "/var/lib/shimmer-bee/.env" ];    then VAR_DOMAIN=$(cat /var/lib/shimmer-bee/.env    | grep _HOST | cut -d '=' -f 2); fi
 	if [ -s "/var/lib/shimmer-wasp/.env" ];   then VAR_DOMAIN=$(cat /var/lib/shimmer-wasp/.env   | grep _HOST | cut -d '=' -f 2); fi
-	
+
 	PositionCenter $VAR_DOMAIN
 	VAR_DOMAIN=$text
-	
+
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -255,27 +255,27 @@ Dashboard() {
 	   RenameContainer
 	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   DashboardHelper ;;
-	   
-	0) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'   
+
+	0) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
 	   S2DLT ;;
-	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'   
+	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
 	   SubMenuMaintenance ;;
-	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-bee'   
+	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-bee'
 	   SubMenuMaintenance ;;
-	3) VAR_NETWORK=1; VAR_NODE=3; VAR_DIR='iota-goshimmer'   
+	3) VAR_NETWORK=1; VAR_NODE=3; VAR_DIR='iota-goshimmer'
 	   SubMenuMaintenance ;;
-	4) VAR_NETWORK=1; VAR_NODE=4; VAR_DIR='iota-wasp'   
+	4) VAR_NETWORK=1; VAR_NODE=4; VAR_DIR='iota-wasp'
 	   SubMenuMaintenance ;;
-	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-hornet'   
+	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-hornet'
 	   SubMenuMaintenance ;;
-	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-bee'   
+	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-bee'
 	   DashboardHelper ;;
-	7) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-bee'   
+	7) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-bee'
 	   DashboardHelper ;;
-	8) VAR_NETWORK=2; VAR_NODE=8; VAR_DIR='shimmer-wasp'   
+	8) VAR_NETWORK=2; VAR_NODE=8; VAR_DIR='shimmer-wasp'
 	   SubMenuMaintenance ;;
 
-	q|Q) clear; exit ;; 
+	q|Q) clear; exit ;;
 	*) MainMenu ;;
 	esac
 }
@@ -321,12 +321,12 @@ MainMenu() {
 	2) Docker ;;
 	3) docker stats 2>/dev/null ;;
 	4) SubMenuLicense ;;
-	q|Q) clear; exit ;;  
+	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
 	   if [ $? -eq 0 ]; then Dashboard; else
   	     echo ""
   	     echo "$rd""Attention! Please install Docker! Loading Dashboard aborted!""$xx"
-	     echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	 
+	     echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	     MainMenu
        fi;;
 	esac
@@ -342,7 +342,7 @@ SubMenuLicense() {
 	echo "║                      GNU General Public License v3.0                        ║"
 	echo "║                                                                             ║"
 	echo "║    https://github.com/dlt-green/node-installer-docker/blob/main/license     ║"
-	echo "║                                                                             ║"	
+	echo "║                                                                             ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -372,10 +372,10 @@ SubMenuMaintenance() {
 	echo "║                              1. Install/Update                              ║"
 	echo "║                              2. Start/Restart                               ║"
 	echo "║                              3. Stop                                        ║"
-	echo "║                              4. Reset Database                              ║"	
-	echo "║                              5. Loading Snapshot                            ║"	
-	echo "║                              6. Show Logs                                   ║"	
-	echo "║                              7. Deinstall/Remove                            ║"	
+	echo "║                              4. Reset Database                              ║"
+	echo "║                              5. Loading Snapshot                            ║"
+	echo "║                              6. Show Logs                                   ║"
+	echo "║                              7. Deinstall/Remove                            ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -383,10 +383,10 @@ SubMenuMaintenance() {
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_HORNET_VERSION""$xx"; fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_BEE_VERSION""$xx"; fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_GOSHIMMER_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_WASP_VERSION""$xx"; fi	
-	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_HORNET_VERSION""$xx"; fi	
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_WASP_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_HORNET_VERSION""$xx"; fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_WASP_VERSION""$xx"; fi
-	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"	
+	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 	echo ""
 	echo "select menu item: "
 	echo ""
@@ -405,20 +405,20 @@ SubMenuMaintenance() {
 	   echo $ca
 	   echo 'Please wait, this process can take up to 5 minutes...'
 	   echo $xx
-	   
+
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then docker stop shimmer-wasp; fi
-	   
+
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
 	   rm -rf /var/lib/$VAR_DIR/data/peerdb/*
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose up -d; fi
 
 	   RenameContainer; sleep 3
-	   
+
 	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   SubMenuMaintenance
 	   ;;
@@ -427,17 +427,17 @@ SubMenuMaintenance() {
 	   echo $ca
 	   echo 'Please wait, this process can take up to 5 minutes...'
 	   echo $xx
-	   
+
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then docker stop shimmer-wasp; fi
-	   
+
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
 	   sleep 3;
-	   
+
 	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   SubMenuMaintenance
 	   ;;
@@ -448,19 +448,19 @@ SubMenuMaintenance() {
 	   echo $xx
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
-	   
+
 	   rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
 	   rm -rf /var/lib/$VAR_DIR/data/storage/devnet/*
 	   rm -rf /var/lib/$VAR_DIR/data/database/*
 	   rm -rf /var/lib/$VAR_DIR/data/mainnetdb/*
 	   rm -rf /var/lib/$VAR_DIR/data/peerdb/*
 	   rm -rf /var/lib/$VAR_DIR/data/waspdb/*
-	   
+
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose up -d; fi
 
 	   RenameContainer; sleep 3
 
-	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	   
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   SubMenuMaintenance
 	   ;;
 	5) echo 'loading...'; sleep 3
@@ -470,7 +470,7 @@ SubMenuMaintenance() {
 	   echo $xx
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
-	   
+
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/storage/*
 	      rm -rf /var/lib/$VAR_DIR/data/snapshots/*
@@ -488,18 +488,18 @@ SubMenuMaintenance() {
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose up -d; fi
-	   
+
 	   RenameContainer
 
-	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	  	   
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   SubMenuMaintenance
 	   ;;
 	6) docker logs -f --tail 300 $VAR_DIR
-	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   SubMenuMaintenance
 	   ;;
 	7) echo 'deinstall/remove...'; sleep 3
-	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   clear
 	   echo $ca
 	   echo 'Please wait, this process can take up to 5 minutes...'
@@ -509,7 +509,7 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then rm -r /var/lib/$VAR_DIR; fi
 
 	   echo $rd""$VAR_DIR" removed from your system!"$xx
-	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
+	   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	   SubMenuMaintenance
 	   ;;
 	*) Dashboard ;;
@@ -543,7 +543,7 @@ SystemMaintenance() {
 	docker system prune
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
-	
+
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -563,13 +563,13 @@ SystemMaintenance() {
 	echo ""
 	echo "select menu item: "
 	echo ""
-	
+
 	read  -p '> ' n
 	case $n in
 	1) 	echo 'rebooting...'; sleep 3
 	    echo $ca
 	    echo 'Please wait, this process can take up to 5 minutes...'
-	    echo $xx   
+	    echo $xx
 		docker stop $(docker ps -a -q)
 		docker ps -a -q
 	    sleep 3
@@ -590,7 +590,7 @@ Docker() {
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	sudo docker ps -a -q >/dev/null 2>&1
-	
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║   Update and install packages to allow apt to use a repository over HTTPS   ║"
@@ -656,7 +656,7 @@ S2DLT() {
 	clear
 	echo ""
 	echo "$rd""Change Dir to iota-hornet_tmp...""$xx"
-	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	sudo mv /var/lib/iota-hornet /var/lib/iota-hornet_tmp
 	clear
 	echo ""
@@ -665,8 +665,8 @@ S2DLT() {
 	echo "$rd""Set yourself following Parameters during coming Installation:""$xx"
 	echo "$ca""(X) Generate new Let's Encrypt Certificate""$xx"
 	echo "$ca""(1) Update Certificate for all Nodes""$xx"
-	echo ""	
-	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx	
+	echo ""
+	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 	VAR_NETWORK=1
 	VAR_NODE=1
 	VAR_DIR='iota-hornet'
@@ -729,7 +729,7 @@ IotaHornet() {
 	echo ""
 
 	wget -cO - "$DockerIotaHornet" > install.tar.gz
-	
+
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
 	echo "unpack:"
@@ -741,9 +741,9 @@ IotaHornet() {
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	CheckConfiguration
-	
+
 	if [ $VAR_CONF_RESET = 1 ]; then
-	
+
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -766,16 +766,16 @@ IotaHornet() {
 		echo "Set PoW / proof of work (example: $ca""true""$xx): "
 		read -p '> ' VAR_IOTA_HORNET_POW
 		echo ''
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"		
+		echo "Set the dashboard username (example: $ca""vrom""$xx):"
 		read -p '> ' VAR_USERNAME
 		echo ''
 		echo "Set the dashboard password:"
 		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
 		read -p '> ' VAR_PASSWORD
 		echo ''
-		
+
 		CheckCertificate
-	
+
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                              Write Parameters                               ║"
@@ -788,14 +788,14 @@ IotaHornet() {
 		echo "HORNET_VERSION=$VAR_IOTA_HORNET_VERSION" >> .env
 
 		echo "HORNET_NETWORK=mainnet" >> .env
-	
+
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_IOTA_HORNET_PRUNING_SIZE" >> .env
 		echo "HORNET_POW_ENABLED=$VAR_IOTA_HORNET_POW" >> .env
 		echo "HORNET_HTTPS_PORT=$VAR_IOTA_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
-	
+
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "HORNET_HTTP_PORT=80" >> .env
@@ -811,7 +811,7 @@ IotaHornet() {
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_IOTA_HORNET_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
-	
+
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	clear
@@ -824,7 +824,7 @@ IotaHornet() {
 	docker-compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
-	
+
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                               Set Creditials                                ║"
@@ -840,7 +840,7 @@ IotaHornet() {
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 	fi
-	
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                               Prepare Docker                                ║"
@@ -858,13 +858,13 @@ IotaHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi	
-	
+		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
+
 		echo ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
 		echo ufw allow '14626/udp' && ufw allow '14626/udp'
 	fi
-	
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                              Start IOTA-Hornet                              ║"
@@ -874,21 +874,21 @@ IotaHornet() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
-	
+
 	sleep 3
-	
+
 	RenameContainer
 
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi	
+	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
 	clear
 	echo ""
 
-	if [ $VAR_CONF_RESET = 1 ]; then	
-	
+	if [ $VAR_CONF_RESET = 1 ]; then
+
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -901,7 +901,7 @@ IotaHornet() {
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
 	fi
 	echo ""
-	
+
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	if [ $VAR_S2DLT != 1 ]; then SubMenuMaintenance; fi
@@ -935,7 +935,7 @@ IotaBee() {
 	echo ""
 
 	wget -cO - "$DockerIotaBee" > install.tar.gz
-	
+
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
 	echo "unpack:"
@@ -947,9 +947,9 @@ IotaBee() {
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	CheckConfiguration
-	
+
 	if [ $VAR_CONF_RESET = 1 ]; then
-	
+
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -975,9 +975,9 @@ IotaBee() {
 		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
 		read -p '> ' VAR_PASSWORD
 		echo ''
-		
+
 		CheckCertificate
-	
+
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                              Write Parameters                               ║"
@@ -990,13 +990,13 @@ IotaBee() {
 		echo "BEE_VERSION=$VAR_IOTA_BEE_VERSION" >> .env
 
 		echo "BEE_NETWORK=mainnet" >> .env
-	
+
 		echo "BEE_HOST=$VAR_HOST" >> .env
 		echo "BEE_POW_ENABLED=$VAR_IOTA_BEE_POW" >> .env
 		echo "BEE_HTTPS_PORT=$VAR_IOTA_BEE_HTTPS_PORT" >> .env
 		echo "BEE_GOSSIP_PORT=15601" >> .env
 		echo "BEE_AUTOPEERING_PORT=14636" >> .env
-	
+
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "BEE_HTTP_PORT=80" >> .env
@@ -1012,7 +1012,7 @@ IotaBee() {
 		if [ -f .env ]; then sed -i "s/BEE_VERSION=.*/BEE_VERSION=$VAR_IOTA_BEE_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
-	
+
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	clear
@@ -1025,7 +1025,7 @@ IotaBee() {
 	docker-compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
-	
+
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                               Set Creditials                                ║"
@@ -1041,7 +1041,7 @@ IotaBee() {
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 	fi
-	
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                               Prepare Docker                                ║"
@@ -1059,13 +1059,13 @@ IotaBee() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi	
-	
+		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
+
 		echo ufw allow "$VAR_IOTA_BEE_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_BEE_HTTPS_PORT/tcp"
 		echo ufw allow '15601/tcp' && ufw allow '15601/tcp'
 		echo ufw allow '14636/udp' && ufw allow '14636/udp'
 	fi
-	
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                                Start IOTA-Bee                               ║"
@@ -1075,21 +1075,21 @@ IotaBee() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
-	
+
 	sleep 3
-	
+
 	RenameContainer
 
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi	
+	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
 	clear
 	echo ""
 
-	if [ $VAR_CONF_RESET = 1 ]; then	
-	
+	if [ $VAR_CONF_RESET = 1 ]; then
+
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -1102,7 +1102,7 @@ IotaBee() {
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
 	fi
 	echo ""
-	
+
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	SubMenuMaintenance
@@ -1150,9 +1150,9 @@ IotaWasp() {
 	CheckConfiguration
 
 	VAR_WASP_LEDGER_NETWORK='iota'
-		
+
 	if [ $VAR_CONF_RESET = 1 ]; then
-	
+
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1187,9 +1187,9 @@ IotaWasp() {
 		echo "(information: $ca""will be saved as text / don't leave it empty""$xx):"
 		read -p '> ' VAR_PASSWORD
 		echo ''
-		
+
 		CheckCertificate
-	
+
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                              Write Parameters                               ║"
@@ -1198,7 +1198,7 @@ IotaWasp() {
 
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
-	
+
 		echo "WASP_VERSION=$VAR_IOTA_WASP_VERSION" >> .env
 
 		echo "WASP_HOST=$VAR_HOST" >> .env
@@ -1208,7 +1208,7 @@ IotaWasp() {
 		echo "WASP_NANO_MSG_PORT=$VAR_IOTA_WASP_NANO_MSG_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_LEDGER_CONNECTION=$VAR_IOTA_WASP_LEDGER_CONNECTION" >> .env
-	
+
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "WASP_HTTP_PORT=80" >> .env
@@ -1225,7 +1225,7 @@ IotaWasp() {
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_IOTA_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
-	
+
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	clear
@@ -1238,7 +1238,7 @@ IotaWasp() {
 	docker-compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
-	
+
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                               Set Creditials                                ║"
@@ -1250,7 +1250,7 @@ IotaWasp() {
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_PASSWORD" >> .env
 	fi
-	
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                               Prepare Docker                                ║"
@@ -1268,16 +1268,16 @@ IotaWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi	
-	
+		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
+
 		echo ufw allow "$VAR_IOTA_WASP_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_HTTPS_PORT/tcp"
 		echo ufw allow "$VAR_IOTA_WASP_API_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_API_PORT/tcp"
 		echo ufw allow "$VAR_IOTA_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_PEERING_PORT/tcp"
-		echo ufw allow "$VAR_IOTA_WASP_NANO_MSG_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_NANO_MSG_PORT/tcp"		
+		echo ufw allow "$VAR_IOTA_WASP_NANO_MSG_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_NANO_MSG_PORT/tcp"
 		VAR_IOTA_WASP_LEDGER_CONNECTION_PORT=$(echo $VAR_IOTA_WASP_LEDGER_CONNECTION | sed -e 's/^.*://')
 		echo ufw allow "$VAR_IOTA_WASP_LEDGER_CONNECTION_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_LEDGER_CONNECTION_PORT/tcp"
 	fi
-	
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                               Start IOTA-Wasp                               ║"
@@ -1287,21 +1287,21 @@ IotaWasp() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
-	
+
 	sleep 3
-	
+
 	RenameContainer
 
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi	
+	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
 	clear
 	echo ""
 
-	if [ $VAR_CONF_RESET = 1 ]; then	
-	
+	if [ $VAR_CONF_RESET = 1 ]; then
+
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -1317,7 +1317,7 @@ IotaWasp() {
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
 	fi
 	echo ""
-	
+
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	SubMenuMaintenance
@@ -1365,7 +1365,7 @@ IotaGoshimmer() {
 	CheckConfiguration
 
 	if [ $VAR_CONF_RESET = 1 ]; then
-	
+
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1381,7 +1381,7 @@ IotaGoshimmer() {
 		echo "Set the dashboard port (example: $ca""446""$xx):"
 		read -p '> ' VAR_IOTA_GOSHIMMER_HTTPS_PORT
 		echo ''
-	
+
 		CheckCertificate
 
 		echo ""
@@ -1399,7 +1399,7 @@ IotaGoshimmer() {
 		echo "GOSHIMMER_HTTPS_PORT=$VAR_IOTA_GOSHIMMER_HTTPS_PORT" >> .env
 		echo "GOSHIMMER_GOSSIP_PORT=14666" >> .env
 		echo "GOSHIMMER_AUTOPEERING_PORT=14646" >> .env
-	
+
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "GOSHIMMER_HTTP_PORT=80" >> .env
@@ -1415,7 +1415,7 @@ IotaGoshimmer() {
 		if [ -f .env ]; then sed -i "s/GOSHIMMER_VERSION=.*/GOSHIMMER_VERSION=$VAR_IOTA_GOSHIMMER_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
-	
+
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	clear
@@ -1428,14 +1428,14 @@ IotaGoshimmer() {
 	docker-compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
-	
+
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                            No Creditials Needed                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 	fi
-	
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                               Prepare Docker                                ║"
@@ -1453,14 +1453,14 @@ IotaGoshimmer() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi	
-	
+		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
+
 		echo ufw allow "$VAR_IOTA_GOSHIMMER_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_GOSHIMMER_HTTPS_PORT/tcp"
 		echo ufw allow '14666/tcp' && ufw allow '14666/tcp'
 		echo ufw allow '14646/udp' && ufw allow '14646/udp'
 		echo ufw allow '5000/tcp' && ufw allow '5000/tcp'
 	fi
-	
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                              Start Goshimmer                                ║"
@@ -1470,21 +1470,21 @@ IotaGoshimmer() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
-	
+
 	sleep 3
-	
+
 	RenameContainer
 
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi	
+	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
 	clear
 	echo ""
-	
+
 	if [ $VAR_CONF_RESET = 1 ]; then
-	
+
 		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -1495,7 +1495,7 @@ IotaGoshimmer() {
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
 	fi
-	echo ""	
+	echo ""
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
@@ -1530,7 +1530,7 @@ ShimmerHornet() {
 	echo ""
 
 	wget -cO - "$DockerShimmerHornet" > install.tar.gz
-	
+
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
 	echo "unpack:"
@@ -1544,7 +1544,7 @@ ShimmerHornet() {
 	CheckConfiguration
 
 	if [ $VAR_CONF_RESET = 1 ]; then
-	
+
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1555,7 +1555,7 @@ ShimmerHornet() {
 		echo "Set the domain name (example: $ca""vrom.dlt.builders""$xx):"
 		read -p '> ' VAR_HOST
 		CheckDomain $VAR_HOST
-		
+
 		echo ''
 		echo "Set the dashboard port (example: $ca""443""$xx):"
 		read -p '> ' VAR_SHIMMER_HORNET_HTTPS_PORT
@@ -1567,16 +1567,16 @@ ShimmerHornet() {
 		echo "Set PoW / proof of work (example: $ca""false""$xx): "
 		read -p '> ' VAR_SHIMMER_HORNET_POW
 		echo ''
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"		
+		echo "Set the dashboard username (example: $ca""vrom""$xx):"
 		read -p '> ' VAR_USERNAME
 		echo ''
 		echo "Set the dashboard password:"
 		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
 		read -p '> ' VAR_PASSWORD
 		echo ''
-		
+
 		CheckCertificate
-	
+
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                              Write Parameters                               ║"
@@ -1589,14 +1589,14 @@ ShimmerHornet() {
 		echo "HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION" >> .env
 
 		echo "HORNET_NETWORK=mainnet" >> .env
-	
+
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_SHIMMER_HORNET_PRUNING_SIZE" >> .env
 		echo "HORNET_POW_ENABLED=$VAR_SHIMMER_HORNET_POW" >> .env
 		echo "HORNET_HTTPS_PORT=$VAR_SHIMMER_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
-	
+
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "HORNET_HTTP_PORT=80" >> .env
@@ -1608,23 +1608,23 @@ ShimmerHornet() {
 			echo "HORNET_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
-		
+
 		echo "INX_INDEXER_VERSION=$VAR_INX_INDEXER_VERSION" >> .env
 		echo "INX_MQTT_VERSION=$VAR_INX_MQTT_VERSION" >> .env
 		echo "INX_PARTICIPATION_VERSION=$VAR_INX_PARTICIPATION_VERSION" >> .env
 		echo "INX_SPAMMER_VERSION=$VAR_INX_SPAMMER_VERSION" >> .env
 		echo "INX_POI_VERSION=$VAR_INX_POI_VERSION" >> .env
 		echo "INX_DASHBOARD_VERSION=$VAR_INX_DASHBOARD_VERSION" >> .env
-		
+
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_INX_MQTT_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_MQTT_VERSION=.*/INX_MQTT_VERSION=$VAR_INX_MQTT_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_PARTICIPATION_VERSION=.*/INX_PARTICIPATION_VERSION=$VAR_INX_PARTICIPATION_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_SPAMMER_VERSION=.*/INX_SPAMMER_VERSION=$VAR_INX_SPAMMER_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_INX_POI_VERSION/g" .env; fi		
+		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_INX_POI_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_INX_DASHBOARD_VERSION/g" .env; fi
-		
+
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 
@@ -1651,7 +1651,7 @@ ShimmerHornet() {
 
 		VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-	
+
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
@@ -1674,7 +1674,7 @@ ShimmerHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi	
+		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
 
 		echo ufw allow '443/tcp' && ufw allow '443/tcp'
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
@@ -1690,7 +1690,7 @@ ShimmerHornet() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
-	
+
 	sleep 3
 
 	RenameContainer
@@ -1701,12 +1701,12 @@ ShimmerHornet() {
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
-	
+
 	clear
-	echo ""	
+	echo ""
 
 	if [ $VAR_CONF_RESET = 1 ]; then
-	
+
 		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -1716,13 +1716,13 @@ ShimmerHornet() {
 		echo " SHIMMER-Hornet API: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/api/core/v2/info"
 		echo " Grafana Dashboard: https://$VAR_HOST/grafana"
 		echo " Grafana Username: admin"
-		echo " Grafana Password: <same as hornet password>"		
+		echo " Grafana Password: <same as hornet password>"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
 	fi
-	echo ""		
+	echo ""
 
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
@@ -1771,9 +1771,9 @@ ShimmerWasp() {
 	CheckConfiguration
 
 	VAR_WASP_LEDGER_NETWORK='shimmer'
-	
+
 	if [ $VAR_CONF_RESET = 1 ]; then
-	
+
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1783,8 +1783,8 @@ ShimmerWasp() {
 
 		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
 		read -p '> ' VAR_HOST
-		CheckDomain $VAR_HOST		
-		
+		CheckDomain $VAR_HOST
+
 		echo ''
 		echo "Set the dashboard port (example: $ca""447""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_HTTPS_PORT
@@ -1808,9 +1808,9 @@ ShimmerWasp() {
 		echo "(information: $ca""will be saved as text / don't leave it empty""$xx):"
 		read -p '> ' VAR_PASSWORD
 		echo ''
-		
+
 		CheckCertificate
-	
+
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                              Write Parameters                               ║"
@@ -1828,7 +1828,7 @@ ShimmerWasp() {
 		echo "WASP_NANO_MSG_PORT=$VAR_SHIMMER_WASP_NANO_MSG_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_LEDGER_CONNECTION=$VAR_SHIMMER_WASP_LEDGER_CONNECTION" >> .env
-	
+
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "WASP_HTTP_PORT=80" >> .env
@@ -1845,7 +1845,7 @@ ShimmerWasp() {
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
-	
+
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	clear
@@ -1858,7 +1858,7 @@ ShimmerWasp() {
 	docker-compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
-	
+
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                               Set Creditials                                ║"
@@ -1870,7 +1870,7 @@ ShimmerWasp() {
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_PASSWORD" >> .env
 	fi
-	
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                               Prepare Docker                                ║"
@@ -1888,16 +1888,16 @@ ShimmerWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi	
-	
+		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
+
 		echo ufw allow "$VAR_SHIMMER_WASP_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_HTTPS_PORT/tcp"
 		echo ufw allow "$VAR_SHIMMER_WASP_API_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_API_PORT/tcp"
 		echo ufw allow "$VAR_SHIMMER_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_PEERING_PORT/tcp"
-		echo ufw allow "$VAR_SHIMMER_WASP_NANO_MSG_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_NANO_MSG_PORT/tcp"		
+		echo ufw allow "$VAR_SHIMMER_WASP_NANO_MSG_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_NANO_MSG_PORT/tcp"
 		VAR_SHIMMER_WASP_LEDGER_CONNECTION_PORT=$(echo $VAR_SHIMMER_WASP_LEDGER_CONNECTION | sed -e 's/^.*://')
 		echo ufw allow "$VAR_SHIMMER_WASP_LEDGER_CONNECTION_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_LEDGER_CONNECTION_PORT/tcp"
 	fi
-	
+
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                             Start SHIMMER-Wasp                              ║"
@@ -1907,21 +1907,21 @@ ShimmerWasp() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
 	docker-compose up -d
-	
+
 	sleep 3
-	
+
 	RenameContainer
 
 	echo ""
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
-	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi	
+	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
 	clear
 	echo ""
 
-	if [ $VAR_CONF_RESET = 1 ]; then	
-	
+	if [ $VAR_CONF_RESET = 1 ]; then
+
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -1937,7 +1937,7 @@ ShimmerWasp() {
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
 	fi
 	echo ""
-	
+
 	echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
 
 	SubMenuMaintenance
@@ -1962,7 +1962,7 @@ RenameContainer() {
 	docker container rename shimmer-hornet_inx-mqtt_1 shimmer-hornet.inx-mqtt >/dev/null 2>&1
 	docker container rename shimmer-wasp_traefik_1 shimmer-wasp.traefik >/dev/null 2>&1
 	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
-	docker container rename shimmer-hornet_grafana_1 grafana >/dev/null 2>&1	
+	docker container rename shimmer-hornet_grafana_1 grafana >/dev/null 2>&1
 	docker container rename shimmer-hornet_prometheus_1 prometheus >/dev/null 2>&1
 }
 
@@ -1987,7 +1987,7 @@ echo "║                                                                       
 echo "║                       GNU General Public License v3.0                       ║"
 echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 echo ""
-	
+
 sleep 3
 
 sudo apt-get install curl jq expect dnsutils -y -qq >/dev/null 2>&1
