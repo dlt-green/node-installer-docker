@@ -18,7 +18,7 @@ create_common_assets
 # Validate BEE_NETWORK config
 if [[ ! -z $BEE_NETWORK ]] && [[ "$BEE_NETWORK" != "mainnet" && "$BEE_NETWORK" != "devnet" ]]; then
   echo "Invalid BEE_NETWORK: $BEE_NETWORK"
-  exit -1
+  exit 255
 fi
 
 prepare_data_dir "$dataDir" "config" "storage" "snapshots" "letsencrypt"

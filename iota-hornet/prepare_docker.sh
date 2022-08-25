@@ -22,7 +22,7 @@ create_common_assets
 # Validate HORNET_NETWORK config
 if [[ ! -z $HORNET_NETWORK ]] && [[ "$HORNET_NETWORK" != "mainnet" && "$HORNET_NETWORK" != "devnet" ]]; then
   echo "Invalid HORNET_NETWORK: $HORNET_NETWORK"
-  exit -1
+  exit 255
 fi
 
 prepare_data_dir "$dataDir" "config" "/storage/${HORNET_NETWORK:-mainnet}" "/p2pstore/${HORNET_NETWORK:-mainnet}" "/snapshots/${HORNET_NETWORK:-mainnet}" "letsencrypt"
