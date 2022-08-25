@@ -20,7 +20,7 @@ create_common_assets
 # Validate HORNET_NETWORK config
 if [[ "$WASP_LEDGER_NETWORK" != "iota" ]] && [[ "$WASP_LEDGER_NETWORK" != "shimmer" ]]; then
   echo "Invalid WASP_LEDGER_NETWORK: $WASP_LEDGER_NETWORK"
-  exit -1
+  exit 255
 fi
 
 prepare_data_dir "$dataDir" "config" "waspdb"

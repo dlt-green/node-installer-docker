@@ -16,20 +16,20 @@ validate_ssl_config () {
 
   if [[ ! -z $SSL_CONFIG ]] && [[ "$SSL_CONFIG" != "certs" && "$SSL_CONFIG" != "letsencrypt" ]]; then
     echo "Invalid SSL_CONFIG: $SSL_CONFIG"
-    exit -1
+    exit 255
   fi
 
   if [[ -z $SSL_CONFIG ]] || [[ "$SSL_CONFIG" == "letsencrypt" ]]; then
     if [[ -z $ACME_EMAIL ]]; then
       echo "ACME_EMAIL must be set to use letsencrypt"
-      exit -1
+      exit 255
     fi
   fi
 
   if [[ "$SSL_CONFIG" == "certs" ]]; then
     if [[ -z "${!sslCertConfigName}" || -z "${!sslKeyConfigName}" ]]; then
       echo "${sslCertConfigName} and ${sslKeyConfigName} must be set"
-      exit -1
+      exit 255
     fi
   fi
 }

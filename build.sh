@@ -17,7 +17,7 @@ build_node () {
 
   if [ ! -d $sourceDir ]; then
     echo "Please cd to root dir to run $(basename $0)"
-    exit -1
+    exit 255
   fi
 
   rsyncExclusions=$(echo $EXCLUSIONS | sed 's/ //g' | sed 's/,/ --exclude /g' | sed 's/^/--exclude /')
