@@ -192,13 +192,13 @@ SetCertificateGlobal() {
 
 Dashboard() {
 
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'iota-hornet'    2>/dev/null)" = 'running' ]; then ih=$gn; else if [ -d /var/lib/iota-hornet ];    then ih=$rd; else ih=$gr; fi; fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'iota-bee'       2>/dev/null)" = 'running' ]; then ib=$gn; else if [ -d /var/lib/iota-bee ];       then ib=$rd; else ib=$gr; fi; fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'iota-goshimmer' 2>/dev/null)" = 'running' ]; then ig=$gn; else if [ -d /var/lib/iota-goshimmer ]; then ig=$rd; else ig=$gr; fi; fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'iota-wasp'      2>/dev/null)" = 'running' ]; then iw=$gn; else if [ -d /var/lib/iota-wasp ];      then iw=$rd; else iw=$gr; fi; fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-hornet' 2>/dev/null)" = 'running' ]; then sh=$gn; else if [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi; fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-bee'    2>/dev/null)" = 'running' ]; then sb=$gn; else if [ -d /var/lib/shimmer-bee ];    then sb=$rd; else sb=$gr; fi; fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-wasp'   2>/dev/null)" = 'running' ]; then sw=$gn; else if [ -d /var/lib/shimmer-wasp ];   then sw=$rd; else sw=$gr; fi; fi
+	if [ "$(docker container inspect -f '{{.State.Status}}' 'iota-hornet'    2>/dev/null)" = 'running' ]; then ih=$gn; elif [ -d /var/lib/iota-hornet ];    then ih=$rd; else ih=$gr; fi
+	if [ "$(docker container inspect -f '{{.State.Status}}' 'iota-bee'       2>/dev/null)" = 'running' ]; then ib=$gn; elif [ -d /var/lib/iota-bee ];       then ib=$rd; else ib=$gr; fi
+	if [ "$(docker container inspect -f '{{.State.Status}}' 'iota-goshimmer' 2>/dev/null)" = 'running' ]; then ig=$gn; elif [ -d /var/lib/iota-goshimmer ]; then ig=$rd; else ig=$gr; fi
+	if [ "$(docker container inspect -f '{{.State.Status}}' 'iota-wasp'      2>/dev/null)" = 'running' ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ];      then iw=$rd; else iw=$gr; fi
+	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-hornet' 2>/dev/null)" = 'running' ]; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi
+	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-bee'    2>/dev/null)" = 'running' ]; then sb=$gn; elif [ -d /var/lib/shimmer-bee ];    then sb=$rd; else sb=$gr; fi
+	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-wasp'   2>/dev/null)" = 'running' ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ];   then sw=$rd; else sw=$gr; fi
 
 	VAR_DOMAIN=''
 
