@@ -170,12 +170,12 @@ SetCertificateGlobal() {
 	   echo "$ca"
 	   echo 'Update Certificate for all Nodes...'
 	   echo "$xx"
-	   sleep 5
+	   sleep 10
 	   mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
 	   cd "/var/lib/$VAR_DIR/data/letsencrypt" || exit
 	   cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$VAR_HOST"'") | .certificate' | base64 -d > "$VAR_HOST.crt"
 	   cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$VAR_HOST"'") | .key' | base64 -d > "$VAR_HOST.key"
-	   sleep 5
+
 	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" ]; then
 	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
 	   fi
@@ -572,7 +572,7 @@ SystemMaintenance() {
 	    echo "$ca"
 	    echo 'Please wait, this process can take up to 5 minutes...'
 	    echo "$xx"
-		docker stop "$(docker ps -a -q)"
+		docker stop $(docker ps -a -q)
 		docker ps -a -q
 	    sleep 3
 		sudo reboot
