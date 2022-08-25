@@ -17,7 +17,7 @@ build_node () {
 
   if [ ! -d $sourceDir ]; then
     echo "Please cd to root dir to run $(basename $0)"
-    exit -1
+    exit 255
   fi
 
   rsyncExclusions=$(echo $EXCLUSIONS | sed 's/ //g' | sed 's/,/ --exclude /g' | sed 's/^/--exclude /')
@@ -74,11 +74,11 @@ build_wasp_image () {
 
 push_docker_image () {
   local imageName=$1
-  
+
   print_line
   read -p "Push docker image to dockerhub? (y/n) " yn
   echo ""
-  case $yn in 
+  case $yn in
     y) docker push $imageName
        ;;
     *) echo "Image has not been pushed"
@@ -317,7 +317,7 @@ if [ ! $# -eq 0 ]; then
   done
 
   set -- "${POSITIONAL_ARGS[@]}"
- 
+
   if [ ! -z "$modifiedFile" ]; then
     nodes=$(echo $modifiedFile | cut -d '/' -f 2)
     if [ $nodes == "common" ]; then

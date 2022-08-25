@@ -16,20 +16,20 @@ validate_ssl_config () {
 
   if [[ ! -z $SSL_CONFIG ]] && [[ "$SSL_CONFIG" != "certs" && "$SSL_CONFIG" != "letsencrypt" ]]; then
     echo "Invalid SSL_CONFIG: $SSL_CONFIG"
-    exit -1
+    exit 255
   fi
 
   if [[ -z $SSL_CONFIG ]] || [[ "$SSL_CONFIG" == "letsencrypt" ]]; then
     if [[ -z $ACME_EMAIL ]]; then
       echo "ACME_EMAIL must be set to use letsencrypt"
-      exit -1
+      exit 255
     fi
   fi
 
   if [[ "$SSL_CONFIG" == "certs" ]]; then
     if [[ -z "${!sslCertConfigName}" || -z "${!sslKeyConfigName}" ]]; then
       echo "${sslCertConfigName} and ${sslKeyConfigName} must be set"
-      exit -1
+      exit 255
     fi
   fi
 }
@@ -65,7 +65,7 @@ create_common_assets () {
   echo "fake.cert and fake.key is used to prevent docker-compose failures on usage of letsencrypt" > ./assets/traefik/certs/fake.cert
   echo "  ./assets/traefik/certs/fake.key"
   echo "fake.cert and fake.key is used to prevent docker-compose failures on usage of letsencrypt" > ./assets/traefik/certs/fake.key
-  
+
   echo "  ./assets/traefik/certs.yml"
   echo "tls:" > ./assets/traefik/certs.yml
   echo "  certificates:" >> ./assets/traefik/certs.yml
@@ -145,10 +145,10 @@ set_config_if_field_exists () {
 }
 
 set_config_if_present_in_env () {
-  local configPath="$1" 
+  local configPath="$1"
   local envVariableName="$2" # name of env variable containing value
   local jsonPath="$3"        # jsonpath to set value in configuration
-  
+
   local defaultValue=$(read_config "$configPath" "$jsonPath")
   if [ ! -z "${!envVariableName}" ]; then set_config "$configPath" "$jsonPath" "${!envVariableName:-$defaultValue}"; else echo "  $jsonPath: $defaultValue (default)"; fi
 }
@@ -156,7 +156,7 @@ set_config_if_present_in_env () {
 start_node () {
   if [ ! -z "$(docker-compose ps | tail -n +3)" ]; then
       read -p "Node is already running. Restart? (y/n) " yn
-      case $yn in 
+      case $yn in
         y) stop_node
            ;;
         *) echo "Restart cancelled"

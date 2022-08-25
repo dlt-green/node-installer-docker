@@ -19,7 +19,7 @@ create_common_assets
 # Validate HORNET_NETWORK config
 if [[ ! -z $HORNET_NETWORK ]] && [[ "$HORNET_NETWORK" != "mainnet" ]]; then
   echo "Invalid HORNET_NETWORK: $HORNET_NETWORK"
-  exit -1
+  exit 255
 fi
 
 prepare_data_dir "$dataDir" \
