@@ -76,8 +76,10 @@ create_common_assets () {
   echo "      minVersion: VersionTLS12" >> ./assets/traefik/certs.yml
 
   echo "  ./assets/traefik/letsencrypt.yml"
-  echo "# no config necessary here to use letsencrypt" > ./assets/traefik/letsencrypt.yml
-  echo "# actual tls configuration can be found in docker-compose.yml" >> ./assets/traefik/letsencrypt.yml
+  echo "tls:" > ./assets/traefik/letsencrypt.yml
+  echo "  options:" >> ./assets/traefik/letsencrypt.yml
+  echo "    default:" >> ./assets/traefik/letsencrypt.yml
+  echo "      minVersion: VersionTLS12" >> ./assets/traefik/letsencrypt.yml
 
   chown $SUDO_USER:$SUDO_USER -R ./assets
 }
