@@ -71,6 +71,9 @@ create_common_assets () {
   echo "  certificates:" >> ./assets/traefik/certs.yml
   echo "    - certFile: /certs/domain.cert" >> ./assets/traefik/certs.yml
   echo "      keyFile: /certs/domain.key" >> ./assets/traefik/certs.yml
+  echo "  options:" >> ./assets/traefik/certs.yml
+  echo "    default:" >> ./assets/traefik/certs.yml
+  echo "      minVersion: VersionTLS12" >> ./assets/traefik/certs.yml
 
   echo "  ./assets/traefik/letsencrypt.yml"
   echo "# no config necessary here to use letsencrypt" > ./assets/traefik/letsencrypt.yml
