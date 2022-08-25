@@ -572,7 +572,7 @@ SystemMaintenance() {
 	    echo "$ca"
 	    echo 'Please wait, this process can take up to 5 minutes...'
 	    echo "$xx"
-		docker stop "$(docker ps -a -q)"
+		docker stop $(docker ps -a -q)
 		docker ps -a -q
 	    sleep 3
 		sudo reboot
