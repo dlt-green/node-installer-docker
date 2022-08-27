@@ -1,7 +1,8 @@
 .env
 build
 data
-assets
 
+assets
+!common/assets
 !shimmer-hornet/assets
 shimmer-hornet/assets/traefik

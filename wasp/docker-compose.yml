@@ -55,6 +55,8 @@ services:
     image: traefik:v2.8.2
     container_name: ${WASP_LEDGER_NETWORK:?WASP_LEDGER_NETWORK is missing}-wasp.traefik
     restart: unless-stopped
+    env_file:
+      - .env
     command:
       - "--log.level=WARN"
       - "--providers.docker=true"
@@ -82,7 +84,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "${WASP_DATA_DIR:-./data}/letsencrypt:/letsencrypt"
-      - "./assets/traefik/${SSL_CONFIG:-letsencrypt}.yml:/etc/traefik/dynamic/config.yml:ro"
+      - "./assets/traefik:/etc/traefik/dynamic:ro"
       - "${WASP_SSL_CERT:-./assets/traefik/certs/fake.cert}:/certs/domain.cert:ro"
       - "${WASP_SSL_KEY:-./assets/traefik/certs/fake.key}:/certs/domain.key:ro"
     logging:

@@ -24,9 +24,16 @@ build_node () {
 
   mkdir -p $BUILD_DIR
   rsync -a $sourceDir $BUILD_DIR $rsyncExclusions
+  
+  # common assets
+  mkdir -p $BUILD_DIR/$node/assets
+  cp -r ./common/assets/* $BUILD_DIR/$node/assets
+
+  # common scripts
   mkdir -p $BUILD_DIR/$node/scripts
-  cp ./common/prepare_docker_functions.sh $BUILD_DIR/$node/scripts/prepare_docker_functions.sh
-  find $BUILD_DIR/$node -type f -name '*.sh' -exec sed -i 's/..\/common\/prepare_docker_functions.sh/.\/scripts\/prepare_docker_functions.sh/g' {} \;
+  cp -r ./common/scripts/* $BUILD_DIR/$node/scripts
+  find $BUILD_DIR/$node -type f -name '*.sh' -exec sed -i 's/..\/common\/scripts/.\/scripts/g' {} \;
+
   find $BUILD_DIR/$node -type f -exec sed -i 's/\r//' {} \;
   (cd $BUILD_DIR/$node; tar -pcz -f ../$node.tar.gz *)
   rm -Rf $BUILD_DIR/$node

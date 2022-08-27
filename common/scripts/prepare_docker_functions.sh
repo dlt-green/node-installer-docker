@@ -57,31 +57,12 @@ prepare_data_dir () {
   fi
 }
 
-create_common_assets () {
-  echo "Creating common assets..."
-  mkdir -p ./assets/traefik/certs
-
-  echo "  ./assets/traefik/certs/fake.cert"
-  echo "fake.cert and fake.key is used to prevent docker-compose failures on usage of letsencrypt" > ./assets/traefik/certs/fake.cert
-  echo "  ./assets/traefik/certs/fake.key"
-  echo "fake.cert and fake.key is used to prevent docker-compose failures on usage of letsencrypt" > ./assets/traefik/certs/fake.key
-
-  echo "  ./assets/traefik/certs.yml"
-  echo "tls:" > ./assets/traefik/certs.yml
-  echo "  certificates:" >> ./assets/traefik/certs.yml
-  echo "    - certFile: /certs/domain.cert" >> ./assets/traefik/certs.yml
-  echo "      keyFile: /certs/domain.key" >> ./assets/traefik/certs.yml
-  echo "  options:" >> ./assets/traefik/certs.yml
-  echo "    default:" >> ./assets/traefik/certs.yml
-  echo "      minVersion: VersionTLS12" >> ./assets/traefik/certs.yml
-
-  echo "  ./assets/traefik/letsencrypt.yml"
-  echo "tls:" > ./assets/traefik/letsencrypt.yml
-  echo "  options:" >> ./assets/traefik/letsencrypt.yml
-  echo "    default:" >> ./assets/traefik/letsencrypt.yml
-  echo "      minVersion: VersionTLS12" >> ./assets/traefik/letsencrypt.yml
-
-  chown $SUDO_USER:$SUDO_USER -R ./assets
+copy_common_assets () {
+  if [[ -d ../common/assets ]]; then
+    echo "Copying common assets..."
+    mkdir -p ./assets
+    cp -r ../common/assets/* ./assets
+  fi
 }
 
 extract_file_from_image () {

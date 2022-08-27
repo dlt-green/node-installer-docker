@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-source ../common/prepare_docker_functions.sh
+source ../common/scripts/prepare_docker_functions.sh
 
 check_env
 elevate_to_root
@@ -13,7 +13,7 @@ configFilename="config.chrysalis-${BEE_NETWORK:-mainnet}.json"
 configPath="${dataDir}/config/$configFilename"
 
 validate_ssl_config "BEE_SSL_CERT" "BEE_SSL_KEY"
-create_common_assets
+copy_common_assets
 
 # Validate BEE_NETWORK config
 if [[ ! -z $BEE_NETWORK ]] && [[ "$BEE_NETWORK" != "mainnet" && "$BEE_NETWORK" != "devnet" ]]; then

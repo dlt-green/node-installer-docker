@@ -1,0 +1,11 @@
+{{$sslConfig := env "SSL_CONFIG"}}
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+{{if eq $sslConfig "certs"}}
+  certificates:
+    - certFile: /certs/domain.cert
+      keyFile: /certs/domain.key
+{{end}}
