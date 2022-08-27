@@ -2,6 +2,3 @@
 build
 data
 assets
-
-!shimmer-hornet/assets
-shimmer-hornet/assets/traefik

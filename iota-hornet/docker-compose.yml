@@ -64,6 +64,8 @@ services:
     image: traefik:v2.8.2
     container_name: iota-hornet.traefik
     restart: unless-stopped
+    env_file:
+      - .env
     command:
       - "--log.level=WARN"
       - "--providers.docker=true"
@@ -87,7 +89,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "${HORNET_DATA_DIR:-./data}/letsencrypt:/letsencrypt"
-      - "./assets/traefik/${SSL_CONFIG:-letsencrypt}.yml:/etc/traefik/dynamic/config.yml:ro"
+      - "./assets/traefik:/etc/traefik/dynamic:ro"
       - "${HORNET_SSL_CERT:-./assets/traefik/certs/fake.cert}:/certs/domain.cert:ro"
       - "${HORNET_SSL_KEY:-./assets/traefik/certs/fake.key}:/certs/domain.key:ro"
     logging:

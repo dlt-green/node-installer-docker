@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-source ../common/prepare_docker_functions.sh
+source ../common/scripts/prepare_docker_functions.sh
 
 check_env
 elevate_to_root
@@ -13,7 +13,7 @@ configFilename="config.json"
 configPath="${dataDir}/config/$configFilename"
 
 validate_ssl_config "GOSHIMMER_SSL_CERT" "GOSHIMMER_SSL_KEY"
-create_common_assets
+copy_common_assets
 
 prepare_data_dir "$dataDir" "config" "mainnetdb" "peerdb" "letsencrypt" "snapshots"
 
