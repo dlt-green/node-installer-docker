@@ -27,11 +27,12 @@ build_node () {
   
   # common assets
   mkdir -p $BUILD_DIR/$node/assets
-  cp -r ./common/assets/* $BUILD_DIR/$node/assets
+  rsync -a ./common/assets/* $BUILD_DIR/$node/assets $rsyncExclusions
+  find $BUILD_DIR/$node -type f -name 'prepare_docker.sh' -exec sed -i '/copy_common_assets/d' {} \;
 
   # common scripts
   mkdir -p $BUILD_DIR/$node/scripts
-  cp -r ./common/scripts/* $BUILD_DIR/$node/scripts
+  rsync -a ./common/scripts/* $BUILD_DIR/$node/scripts $rsyncExclusions
   find $BUILD_DIR/$node -type f -name '*.sh' -exec sed -i 's/..\/common\/scripts/.\/scripts/g' {} \;
 
   find $BUILD_DIR/$node -type f -exec sed -i 's/\r//' {} \;
