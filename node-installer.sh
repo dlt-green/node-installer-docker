@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.8.5"
+VRSN="0.8.6"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -1783,7 +1783,7 @@ ShimmerWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
+		echo "Set the domain name (example: $ca""vrom.dlt.builders""$xx):"
 		read -p '> ' VAR_HOST
 		CheckDomain "$VAR_HOST"
 
