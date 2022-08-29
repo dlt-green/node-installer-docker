@@ -52,6 +52,54 @@ clear
 if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
 if [ "$(id -u)" -ne 0 ]; then	echo "$rd" && echo 'Please run DLT.GREEN Automatic Node-Installer with sudo or as root' && echo "$xx"; exit; fi
 
+CheckFirewall() {
+	if [ $(ufw status | grep 'Status:' | cut -d ' ' -f 2) != 'active' ]
+	then
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+		echo "║                                                                             ║"
+		echo "║$rd            _   _____  _____  _____  _   _  _____  ___  ___   _   _          $xx║"
+		echo "║$rd           / \ |_   _||_   _|| ____|| \ | ||_   _||_ _|/ _ \ | \ | |         $xx║"
+		echo "║$rd          / _ \  | |    | |  |  _|  |  \| |  | |   | || | | ||  \| |         $xx║"
+		echo "║$rd         / ___ \ | |    | |  | |___ | |\  |  | |   | || |_| || |\  |         $xx║"
+		echo "║$rd        /_/   \_\|_|    |_|  |_____||_| \_|  |_|  |___|\___/ |_| \_|         $xx║"
+		echo "║                                                                             ║"
+		echo "║                                                                             ║"
+		echo "║$rd                       !!! Firewall UFW not enabled !!!                      $xx║"
+		echo "║                                                                             ║"
+		echo "║      with enabling you have the opportunity to set a foreigen SSH port      ║"
+		echo "║                                                                             ║"
+		echo "║          press [S] to skip, [F] to enable the Firewall, [Q] to quit         ║"
+		echo "║                                                                             ║"
+		echo "║                       GNU General Public License v3.0                       ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+		echo "select menu item:"
+		echo ""
+
+		read  -p '> ' n
+		case $n in
+		s|S) ;;
+		q|Q) clear; exit ;;
+		*) clear
+		     echo "$ca"
+		     echo 'Enable UFW Firewall...'
+		     echo "$xx"
+		     sleep 3
+		     echo "Set the SSH port for connection to your server (example: $ca""22""$xx):"
+		     read -p '> ' VAR_SSH_PORT
+		     echo ''
+		     echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
+	         echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+		     sudo ufw enable
+	         echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+		     ;;
+		esac
+	fi
+}
+
 CheckDomain() {
 	if [ "$(dig +short "$1")" != "$(curl -s 'https://ipinfo.io/ip')" ]
 	then
@@ -2042,6 +2090,8 @@ echo ""
 sleep 3
 
 sudo apt-get install curl jq expect dnsutils ufw -y -qq >/dev/null 2>&1
+
+CheckFirewall
 
 docker --version | grep "Docker version" >/dev/null 2>&1
 if [ $? -eq 0 ]
