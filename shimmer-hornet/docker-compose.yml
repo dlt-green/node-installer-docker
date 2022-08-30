@@ -190,7 +190,7 @@ services:
     command:
       - "--inx.address=hornet:9029"
       - "--participation.db.path=/app/data/participation"
-      - "--participation.bindAddress=inx-participation:9892"
+      - "--restAPI.bindAddress=inx-participation:9892"
 
   inx-spammer:
     image: iotaledger/inx-spammer:${INX_SPAMMER_VERSION:?INX_SPAMMER_VERSION is missing}
@@ -201,7 +201,7 @@ services:
       - "/etc/localtime:/etc/localtime:ro"
     command:
       - "--inx.address=hornet:9029"
-      - "--spammer.bindAddress=inx-spammer:9092"
+      - "--restAPI.bindAddress=inx-spammer:9092"
       - "--prometheus.enabled=true"
       - "--prometheus.bindAddress=inx-spammer:9312"
 
