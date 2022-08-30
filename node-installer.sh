@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.8.6"
+VRSN="0.8.8"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -51,6 +51,54 @@ SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/s
 clear
 if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
 if [ "$(id -u)" -ne 0 ]; then	echo "$rd" && echo 'Please run DLT.GREEN Automatic Node-Installer with sudo or as root' && echo "$xx"; exit; fi
+
+CheckFirewall() {
+	if [ $(ufw status | grep 'Status:' | cut -d ' ' -f 2) != 'active' ]
+	then
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+		echo "║                                                                             ║"
+		echo "║$rd            _   _____  _____  _____  _   _  _____  ___  ___   _   _          $xx║"
+		echo "║$rd           / \ |_   _||_   _|| ____|| \ | ||_   _||_ _|/ _ \ | \ | |         $xx║"
+		echo "║$rd          / _ \  | |    | |  |  _|  |  \| |  | |   | || | | ||  \| |         $xx║"
+		echo "║$rd         / ___ \ | |    | |  | |___ | |\  |  | |   | || |_| || |\  |         $xx║"
+		echo "║$rd        /_/   \_\|_|    |_|  |_____||_| \_|  |_|  |___|\___/ |_| \_|         $xx║"
+		echo "║                                                                             ║"
+		echo "║                                                                             ║"
+		echo "║$rd                       !!! Firewall UFW not enabled !!!                      $xx║"
+		echo "║                                                                             ║"
+		echo "║      with enabling you have the opportunity to set a foreigen SSH port      ║"
+		echo "║                                                                             ║"
+		echo "║          press [S] to skip, [F] to enable the Firewall, [Q] to quit         ║"
+		echo "║                                                                             ║"
+		echo "║                       GNU General Public License v3.0                       ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+		echo "select menu item:"
+		echo ""
+
+		read  -p '> ' n
+		case $n in
+		s|S) ;;
+		q|Q) clear; exit ;;
+		*) clear
+		     echo "$ca"
+		     echo 'Enable UFW Firewall...'
+		     echo "$xx"
+		     sleep 3
+		     echo "Set the SSH port for connection to your server (example: $ca""22""$xx):"
+		     read -p '> ' VAR_SSH_PORT
+		     echo ''
+		     echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
+	         echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+		     sudo ufw enable
+	         echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+		     ;;
+		esac
+	fi
+}
 
 CheckDomain() {
 	if [ "$(dig +short "$1")" != "$(curl -s 'https://ipinfo.io/ip')" ]
@@ -250,9 +298,10 @@ Dashboard() {
 	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker-compose up -d; fi
 	   if [ -d /var/lib/iota-bee ]; then cd /var/lib/iota-bee || Dashboard; docker-compose up -d; fi
 	   if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || Dashboard; docker-compose up -d; fi
-	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker-compose up -d; fi
 	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker-compose up -d; fi
 	   if [ -d /var/lib/shimmer-bee ]; then cd /var/lib/shimmer-bee || Dashboard; docker-compose up -d; fi
+	   sleep 5
+	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker-compose up -d; fi
 	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker-compose up -d; fi
 	   RenameContainer
 	   echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
@@ -726,6 +775,14 @@ IotaHornet() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                             Clean up directory                              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
@@ -932,6 +989,14 @@ IotaBee() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                             Clean up directory                              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
@@ -1130,6 +1195,14 @@ IotaWasp() {
 
 	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
 	cd /var/lib/$VAR_DIR || exit
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                             Clean up directory                              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1348,6 +1421,14 @@ IotaGoshimmer() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                             Clean up directory                              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
@@ -1524,6 +1605,14 @@ ShimmerHornet() {
 
 	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
 	cd /var/lib/$VAR_DIR || exit
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                             Clean up directory                              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1751,6 +1840,14 @@ ShimmerWasp() {
 
 	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
 	cd /var/lib/$VAR_DIR || exit
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                             Clean up directory                              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1992,7 +2089,9 @@ echo ""
 
 sleep 3
 
-sudo apt-get install curl jq expect dnsutils -y -qq >/dev/null 2>&1
+sudo apt-get install curl jq expect dnsutils ufw -y -qq >/dev/null 2>&1
+
+CheckFirewall
 
 docker --version | grep "Docker version" >/dev/null 2>&1
 if [ $? -eq 0 ]
