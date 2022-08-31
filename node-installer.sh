@@ -364,7 +364,8 @@ MainMenu() {
 	echo "║                              1. System Updates/Docker Cleanup               ║"
 	echo "║                              2. Docker Installation                         ║"
 	echo "║                              3. Docker Status                               ║"
-	echo "║                              4. License Information                         ║"
+	echo "║                              4. Firewall Status/Ports                       ║"
+	echo "║                              5. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                              Q. Quit                                        ║"
 	echo "║                                                                             ║"
@@ -377,8 +378,21 @@ MainMenu() {
 	case $n in
 	1) SystemMaintenance ;;
 	2) Docker ;;
-	3) docker stats 2>/dev/null ;;
-	4) SubMenuLicense ;;
+	3) clear
+	   echo "$ca"
+	   echo 'Docker Status:'
+	   echo "$xx"
+	   docker stats 2>/dev/null
+	   echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   MainMenu ;;
+	4) clear
+	   echo "$ca"
+	   echo 'Firewall Status/Ports:'
+	   echo "$xx"
+	   ufw status numbered 2>/dev/null
+	   echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   MainMenu ;;
+	5) SubMenuLicense ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
 	   if [ $? -eq 0 ]; then Dashboard; else
