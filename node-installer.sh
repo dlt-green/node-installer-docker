@@ -69,7 +69,7 @@ CheckFirewall() {
 		echo "║                                                                             ║"
 		echo "║$rd                       !!! Firewall UFW not enabled !!!                      $xx║"
 		echo "║                                                                             ║"
-		echo "║      with enabling you have the opportunity to set a foreigen SSH port      ║"
+		echo "║                 your defaulr or custom SSH Port will be set                 ║"
 		echo "║                                                                             ║"
 		echo "║          press [S] to skip, [F] to enable the Firewall, [Q] to quit         ║"
 		echo "║                                                                             ║"
@@ -88,11 +88,18 @@ CheckFirewall() {
 		     echo 'Enable UFW Firewall...'
 		     echo "$xx"
 		     sleep 3
-		     echo "Set the SSH port for connection to your server (example: $ca""22""$xx):"
-		     read -p '> ' VAR_SSH_PORT
-		     echo ''
-		     echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
+		     
+			 if [ -z "$(cat /etc/ssh/sshd_config | grep -v '^#' | grep "^Port"| cut -d ' ' -f 2)" ]
+			 then
+				VAR_SSH_PORT=22
+				echo "Set default SSH-Port... $VAR_SSH_PORT/tcp"
+		     else
+				VAR_SSH_PORT=$(cat /etc/ssh/sshd_config | grep -v '^#' | grep "^Port"| cut -d ' ' -f 2)
+				echo "Set custom SSH-Port... $VAR_SSH_PORT/tcp"		 
+			 fi
+			 
 	         echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+			 echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
 		     sudo ufw enable
 	         echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 		     ;;
