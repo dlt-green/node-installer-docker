@@ -53,7 +53,7 @@ if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
 if [ "$(id -u)" -ne 0 ]; then	echo "$rd" && echo 'Please run DLT.GREEN Automatic Node-Installer with sudo or as root' && echo "$xx"; exit; fi
 
 CheckFirewall() {
-	if [ $(ufw status | grep 'Status:' | cut -d ' ' -f 2) != 'active' ]
+	if [ $(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2) != 'active' ]
 	then
 		clear
 		echo ""
