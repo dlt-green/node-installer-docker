@@ -98,11 +98,11 @@ CheckFirewall() {
 				echo "Set custom SSH-Port... $VAR_SSH_PORT/tcp"		 
 			 fi
 			 
-	         echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+			 echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 			 echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
-		     sudo ufw enable
-	         echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-		     ;;
+			 sudo ufw enable
+			 echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+			 ;;
 		esac
 	fi
 }
