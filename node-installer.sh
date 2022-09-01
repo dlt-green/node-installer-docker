@@ -93,7 +93,7 @@ CheckFirewall() {
 			 then
 				VAR_SSH_PORT=22
 				echo "Set default SSH-Port... $VAR_SSH_PORT/tcp"
-		     else
+			 else
 				VAR_SSH_PORT=$(cat /etc/ssh/sshd_config | grep -v '^#' | grep "^Port"| cut -d ' ' -f 2)
 				echo "Set custom SSH-Port... $VAR_SSH_PORT/tcp"		 
 			 fi
