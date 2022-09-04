@@ -69,7 +69,7 @@ CheckFirewall() {
 		echo "║                                                                             ║"
 		echo "║$rd                       !!! Firewall UFW not enabled !!!                      $xx║"
 		echo "║                                                                             ║"
-		echo "║                 your defaulr or custom SSH Port will be set                 ║"
+		echo "║                 your default or custom SSH Port will be set                 ║"
 		echo "║                                                                             ║"
 		echo "║          press [S] to skip, [F] to enable the Firewall, [Q] to quit         ║"
 		echo "║                                                                             ║"
