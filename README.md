@@ -34,10 +34,10 @@ sudo wget https://github.com/dlt-green/node-installer-docker/releases/latest/dow
 
 ### Bedienung
 Die Bedienung des Skripts erfolgt über die Eingabe der Zahlen, welche im Menü angezeigt werden.  
-Wenn Sie auf das Bild klicken, sehen Sie ein <a href="https://www.youtube.com/embed/8QkvdLCL7K8">Video-Tutorial</a> für die Installation der IOTA Nodes:
+Wenn Sie auf das Bild klicken, sehen Sie <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">Video-Tutorials</a> für die Installation von IOTA und Shimmer Nodes:
 
 <div align="center">
-      <a href="https://www.youtube.com/embed/8QkvdLCL7K8">
+      <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">
       <img src="https://user-images.githubusercontent.com/89119285/184715070-5f8b2f84-06ec-4cc2-af43-8a59cbcb760f.png"
       alt="Installation IOTA Nodes Hornet/Bee/Goshimmer/Wasp">
       </a>

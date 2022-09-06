@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.8.8"
+VRSN="0.9.2"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -14,17 +14,17 @@ VAR_S2DLT=0
 
 VAR_IOTA_HORNET_VERSION='1.2.1'
 VAR_IOTA_BEE_VERSION='0.3.1'
-VAR_IOTA_GOSHIMMER_VERSION='0.9.4'
+VAR_IOTA_GOSHIMMER_VERSION='0.9.7'
 VAR_IOTA_WASP_VERSION='0.2.5'
-VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.6'
+VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.7'
 VAR_SHIMMER_WASP_VERSION='dev'
 
-VAR_INX_INDEXER_VERSION='1.0.0-beta.5'
-VAR_INX_MQTT_VERSION='1.0.0-beta.5'
-VAR_INX_PARTICIPATION_VERSION='1.0.0-beta.5'
-VAR_INX_SPAMMER_VERSION='1.0.0-beta.5'
-VAR_INX_POI_VERSION='1.0.0-beta.5'
-VAR_INX_DASHBOARD_VERSION='1.0.0-beta.5'
+VAR_INX_INDEXER_VERSION='1.0.0-beta.6'
+VAR_INX_MQTT_VERSION='1.0.0-beta.6'
+VAR_INX_PARTICIPATION_VERSION='1.0.0-beta.6'
+VAR_INX_SPAMMER_VERSION='1.0.0-beta.7'
+VAR_INX_POI_VERSION='1.0.0-beta.6'
+VAR_INX_DASHBOARD_VERSION='1.0.0-beta.6'
 
 
 lg='\033[1m'
@@ -53,7 +53,7 @@ if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
 if [ "$(id -u)" -ne 0 ]; then	echo "$rd" && echo 'Please run DLT.GREEN Automatic Node-Installer with sudo or as root' && echo "$xx"; exit; fi
 
 CheckFirewall() {
-	if [ $(ufw status | grep 'Status:' | cut -d ' ' -f 2) != 'active' ]
+	if [ $(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2) != 'active' ]
 	then
 		clear
 		echo ""
@@ -69,7 +69,7 @@ CheckFirewall() {
 		echo "║                                                                             ║"
 		echo "║$rd                       !!! Firewall UFW not enabled !!!                      $xx║"
 		echo "║                                                                             ║"
-		echo "║      with enabling you have the opportunity to set a foreigen SSH port      ║"
+		echo "║                 your default or custom SSH Port will be set                 ║"
 		echo "║                                                                             ║"
 		echo "║          press [S] to skip, [F] to enable the Firewall, [Q] to quit         ║"
 		echo "║                                                                             ║"
@@ -88,14 +88,21 @@ CheckFirewall() {
 		     echo 'Enable UFW Firewall...'
 		     echo "$xx"
 		     sleep 3
-		     echo "Set the SSH port for connection to your server (example: $ca""22""$xx):"
-		     read -p '> ' VAR_SSH_PORT
-		     echo ''
-		     echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
-	         echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-		     sudo ufw enable
-	         echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-		     ;;
+		     
+			 if [ -z "$(cat /etc/ssh/sshd_config | grep -v '^#' | grep "^Port"| cut -d ' ' -f 2)" ]
+			 then
+				VAR_SSH_PORT=22
+				echo "Set default SSH-Port... $VAR_SSH_PORT/tcp"
+			 else
+				VAR_SSH_PORT=$(cat /etc/ssh/sshd_config | grep -v '^#' | grep "^Port"| cut -d ' ' -f 2)
+				echo "Set custom SSH-Port... $VAR_SSH_PORT/tcp"		 
+			 fi
+			 
+			 echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+			 echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
+			 sudo ufw enable
+			 echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+			 ;;
 		esac
 	fi
 }
@@ -357,7 +364,8 @@ MainMenu() {
 	echo "║                              1. System Updates/Docker Cleanup               ║"
 	echo "║                              2. Docker Installation                         ║"
 	echo "║                              3. Docker Status                               ║"
-	echo "║                              4. License Information                         ║"
+	echo "║                              4. Firewall Status/Ports                       ║"
+	echo "║                              5. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                              Q. Quit                                        ║"
 	echo "║                                                                             ║"
@@ -370,8 +378,21 @@ MainMenu() {
 	case $n in
 	1) SystemMaintenance ;;
 	2) Docker ;;
-	3) docker stats 2>/dev/null ;;
-	4) SubMenuLicense ;;
+	3) clear
+	   echo "$ca"
+	   echo 'Docker Status:'
+	   echo "$xx"
+	   docker stats 2>/dev/null
+	   echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   MainMenu ;;
+	4) clear
+	   echo "$ca"
+	   echo 'Firewall Status/Ports:'
+	   echo "$xx"
+	   ufw status numbered 2>/dev/null
+	   echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   MainMenu ;;
+	5) SubMenuLicense ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
 	   if [ $? -eq 0 ]; then Dashboard; else
