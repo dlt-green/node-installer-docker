@@ -1563,6 +1563,7 @@ IotaGoshimmer() {
 		echo ufw allow '14666/tcp' && ufw allow '14666/tcp'
 		echo ufw allow '14646/udp' && ufw allow '14646/udp'
 		echo ufw allow '5000/tcp' && ufw allow '5000/tcp'
+		echo ufw allow '8083/tcp' && ufw allow '8083/tcp'
 	fi
 
 	echo ""
@@ -1594,6 +1595,7 @@ IotaGoshimmer() {
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo " IOTA-Goshimmer Dashboard: https://$VAR_HOST:$VAR_IOTA_GOSHIMMER_HTTPS_PORT/dashboard"
 		echo " IOTA-Goshimmer API: https://$VAR_HOST:$VAR_IOTA_GOSHIMMER_HTTPS_PORT/info"
+		echo " IOTA-Goshimmer API HTTP Port (for cli-wallet): 8083"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
