@@ -1503,6 +1503,7 @@ IotaGoshimmer() {
 		echo "GOSHIMMER_HTTPS_PORT=$VAR_IOTA_GOSHIMMER_HTTPS_PORT" >> .env
 		echo "GOSHIMMER_GOSSIP_PORT=14666" >> .env
 		echo "GOSHIMMER_AUTOPEERING_PORT=14646" >> .env
+		echo "GOSHIMMER_WEBAPI_PORT=8080" >> .env
 
 		if [ $VAR_CERT = 0 ]
 		then
@@ -1518,6 +1519,10 @@ IotaGoshimmer() {
 	else
 		if [ -f .env ]; then sed -i "s/GOSHIMMER_VERSION=.*/GOSHIMMER_VERSION=$VAR_IOTA_GOSHIMMER_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
+		echo ""
+		echo "Add http Port for connection cli-wallet..."
+		fgrep -q "GOSHIMMER_WEBAPI_PORT" .env || echo "GOSHIMMER_WEBAPI_PORT=8080" >> .env
+		echo ufw allow '8080/tcp' && ufw allow '8080/tcp'
 	fi
 
 	echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
@@ -1563,6 +1568,7 @@ IotaGoshimmer() {
 		echo ufw allow '14666/tcp' && ufw allow '14666/tcp'
 		echo ufw allow '14646/udp' && ufw allow '14646/udp'
 		echo ufw allow '5000/tcp' && ufw allow '5000/tcp'
+		echo ufw allow '8080/tcp' && ufw allow '8080/tcp'
 	fi
 
 	echo ""
@@ -1594,6 +1600,7 @@ IotaGoshimmer() {
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo " IOTA-Goshimmer Dashboard: https://$VAR_HOST:$VAR_IOTA_GOSHIMMER_HTTPS_PORT/dashboard"
 		echo " IOTA-Goshimmer API: https://$VAR_HOST:$VAR_IOTA_GOSHIMMER_HTTPS_PORT/info"
+		echo " IOTA-Goshimmer API HTTP Port (for cli-wallet): 8080"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
