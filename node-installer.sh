@@ -795,7 +795,7 @@ IotaHornet() {
 	echo ""
 
 	CheckShimmer
-	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
+	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
 	echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
@@ -1013,7 +1013,7 @@ IotaBee() {
 	echo ""
 
 	CheckShimmer
-	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
+	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
 	echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
@@ -1226,7 +1226,7 @@ IotaWasp() {
 	echo ""
 
 	CheckShimmer
-	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
+	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
 	echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
@@ -1453,7 +1453,7 @@ IotaGoshimmer() {
 	echo ""
 
 	CheckShimmer
-	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
+	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
 	echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
@@ -1651,7 +1651,7 @@ ShimmerHornet() {
 	echo ""
 
 	CheckIota
-	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
+	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
 	echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
@@ -1890,7 +1890,7 @@ ShimmerWasp() {
 	echo ""
 
 	CheckIota
-	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
+	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
 	echo "$fl"; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
