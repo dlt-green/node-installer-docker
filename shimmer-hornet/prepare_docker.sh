@@ -34,6 +34,8 @@ prepare_data_dir "$dataDir" \
                  "grafana" \
                  "letsencrypt"
 
+create_docker_network "shimmer"
+
 # Generate config
 extract_file_from_image "iotaledger/hornet" "$HORNET_VERSION" "/app/$configFilenameInContainer" "$configPath"
 

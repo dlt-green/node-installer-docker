@@ -91,3 +91,8 @@ services:
       driver: "json-file"
       options:
         max-size: "200m"
+
+networks:
+  default:
+    external:
+      name: ${WASP_LEDGER_NETWORK}
