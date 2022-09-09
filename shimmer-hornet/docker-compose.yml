@@ -244,3 +244,8 @@ services:
       - "--dashboard.auth.username=${DASHBOARD_USERNAME}"
       - "--dashboard.auth.passwordHash=${DASHBOARD_PASSWORD}"
       - "--dashboard.auth.passwordSalt=${DASHBOARD_SALT}"
+
+networks:
+  default:
+    external:
+      name: shimmer
