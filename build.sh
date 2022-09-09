@@ -6,7 +6,7 @@ EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore"
 
 NODES="iota-hornet iota-bee iota-goshimmer wasp shimmer-hornet"
 HORNET_VERSION=1.2.1
-WASP_VERSION=0.2.5
+WASP_VERSION=0.3.0
 WASP_DEV_BRANCH="develop"
 
 DEVSERVER_PORTDEVSERVER_PORT=8040
