@@ -45,8 +45,8 @@ elevate_to_root () {
 create_docker_network () {
   local networkName=$1
   
-  local existingNetwork=$(docker network ls | tail -n +2 | tr -s ' ' | cut -d ' ' -f 2 | grep $networkName)
-  if [ "$networkFound" != "$existingNetwork" ]; then
+  local existingNetwork=$(docker network ls | tail -n +2 | tr -s ' ' | cut -d ' ' -f 2 | grep "^$networkName$")
+  if [ "$networkName" != "$existingNetwork" ]; then
     echo "Creating docker network '${networkName}'"
     docker network create $networkName
   fi
