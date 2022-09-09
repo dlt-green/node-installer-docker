@@ -25,6 +25,8 @@ fi
 
 prepare_data_dir "$dataDir" "config" "waspdb"
 
+create_docker_network "$WASP_LEDGER_NETWORK"
+
 # Generate config
 extract_file_from_image "dltgreen/wasp" "$WASP_VERSION" "/etc/wasp_config.json" "$configPath"
 
@@ -37,14 +39,14 @@ set_config $configPath ".logger.outputPaths"      "[\"stdout\"]"
 # wasp 0.2.5
 set_config_if_field_exists $configPath ".dashboard.auth.username" "\"${DASHBOARD_USERNAME:-wasp}\""
 set_config_if_field_exists $configPath ".dashboard.auth.password" "\"${DASHBOARD_PASSWORD:-wasp}\""
+set_config_if_field_exists $configPath ".nodeconn.address"        "\"${WASP_LEDGER_CONNECTION}\""
 # wasp 0.3.0
 move_rename_config         $configPath ".users.wasp"                                      ".users[\"${DASHBOARD_USERNAME:-wasp}\"]"
 set_config_if_field_exists $configPath ".users[\"${DASHBOARD_USERNAME:-wasp}\"].password" "\"${DASHBOARD_PASSWORD:-wasp}\""
 set_config_if_field_exists $configPath ".webapi.auth.basic.username"                      "\"${DASHBOARD_USERNAME:-wasp}\""
 set_config_if_field_exists $configPath ".webapi.auth.scheme"                              "\"basic\""
 set_config_if_field_exists $configPath ".dashboard.auth.basic.username"                   "\"${DASHBOARD_USERNAME:-wasp}\""
-set_config_if_field_exists $configPath ".nodeconn.address"                                "\"${WASP_LEDGER_CONNECTION:?WASP_LEDGER_CONNECTION is mandatory}\""
-set_config_if_field_exists $configPath ".l1.apiAddress"                                   "\"${WASP_LEDGER_CONNECTION:?WASP_LEDGER_CONNECTION is mandatory}\""
+set_config_if_field_exists $configPath ".l1.inxAddress"                                   "\"hornet:9029\""
 rm -f $tmp
 
 echo "Finished"

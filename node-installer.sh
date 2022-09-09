@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.9.3"
+VRSN="0.9.4"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -17,7 +17,7 @@ VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.7'
-VAR_SHIMMER_WASP_VERSION='dev'
+VAR_SHIMMER_WASP_VERSION='0.3.0'
 
 VAR_INX_INDEXER_VERSION='1.0.0-beta.6'
 VAR_INX_MQTT_VERSION='1.0.0-beta.6'
@@ -1888,7 +1888,7 @@ ShimmerWasp() {
 	echo "║          DLT.GREEN AUTOMATIC SHIMMER-WASP INSTALLATION WITH DOCKER          ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-
+	echo "$fl""Wasp is like a INX-Plugin and can only installed on the same Server as Shimmer!""$xx";
 	CheckIota
 	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
@@ -1962,9 +1962,6 @@ ShimmerWasp() {
 		echo "Set the nano-msg-port (example: $ca""5550""$xx):"
 		read -p '> ' VAR_SHIMMER_WASP_NANO_MSG_PORT
 		echo ''
-		echo "Set the ledger-connection/txstream (example: $ca""https://vrom.dlt.builders:443""$xx):"
-		read -p '> ' VAR_SHIMMER_WASP_LEDGER_CONNECTION
-		echo ''
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"
 		read -p '> ' VAR_USERNAME
 		echo ''
@@ -1991,7 +1988,6 @@ ShimmerWasp() {
 		echo "WASP_PEERING_PORT=$VAR_SHIMMER_WASP_PEERING_PORT" >> .env
 		echo "WASP_NANO_MSG_PORT=$VAR_SHIMMER_WASP_NANO_MSG_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
-		echo "WASP_LEDGER_CONNECTION=$VAR_SHIMMER_WASP_LEDGER_CONNECTION" >> .env
 
 		if [ $VAR_CERT = 0 ]
 		then
@@ -2005,7 +2001,6 @@ ShimmerWasp() {
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 	else
-		if grep -q 'WASP_LEDGER_NETWORK=' .env; then sed -i "s/WASP_LEDGER_NETWORK=.*/WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK/g" .env; else echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
