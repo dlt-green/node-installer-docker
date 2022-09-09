@@ -1888,7 +1888,7 @@ ShimmerWasp() {
 	echo "║          DLT.GREEN AUTOMATIC SHIMMER-WASP INSTALLATION WITH DOCKER          ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-
+	echo "$fl""Wasp is like a INX-Plugin and can only installed on the same Server as Shimmer!""$xx";
 	CheckIota
 	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
