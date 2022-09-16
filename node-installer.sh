@@ -395,8 +395,17 @@ MainMenu() {
 	   echo "$ca"
 	   echo 'Docker Status:'
 	   echo "$xx"
-	   docker stats 2>/dev/null
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   docker stats --no-stream
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [L] to start live stream... > ' n; echo "$xx"
+	   case $n in
+	   l|L) clear
+	        echo "$rd"; echo 'Closing Installer now, starting Docker Status live stream...';
+	        echo 'Hint: Press [STRG+C] to quit the live stream'; echo "$xx"
+		  sleep 5
+	      docker stats ;;
+	   *) ;;
+	   esac	   
+	   echo "$xx"
 	   MainMenu ;;
 	4) clear
 	   echo "$ca"
