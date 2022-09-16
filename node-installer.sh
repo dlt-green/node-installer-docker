@@ -633,14 +633,6 @@ SystemMaintenance() {
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 
-	clear
-	sudo apt-get update && apt-get upgrade -y
-	sudo apt-get dist-upgrade -y
-	sudo apt upgrade -y
-	sudo apt-get autoremove -y
-
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                  Delete unused old docker containers/images                 ║"
@@ -648,6 +640,26 @@ SystemMaintenance() {
 	echo ""
 
 	docker system prune
+
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+
+	clear
+	echo "$ca"
+	echo 'Please wait, stopping Nodes can take up to 5 minutes...'
+	echo "$xx"
+	docker stop $(docker ps -a -q)
+	docker ps -a -q
+
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+
+	clear
+	echo "$ca"
+	echo 'Please wait, updating the System...'
+	echo "$xx"
+	sudo apt-get update && apt-get upgrade -y
+	sudo apt-get dist-upgrade -y
+	sudo apt upgrade -y
+	sudo apt-get autoremove -y
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 
@@ -662,9 +674,6 @@ SystemMaintenance() {
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	echo "$rd""Attention! If you choose a System Reboot then you must stop Nodes,"
-	echo "which are additionally installed with a foreign Installer (e.g. SWARM)""$xx"
-	echo ""
 	echo "$gn""You don't have to stop Nodes installed with the DLT.GREEN Installer,"
 	echo "but you must restart them with our Installer after reastarting your System""$xx"
 	echo ""
@@ -674,15 +683,25 @@ SystemMaintenance() {
 	read -r -p '> ' n
 	case $n in
 	1) 	echo 'rebooting...'; sleep 3
-	    echo "$ca"
-	    echo 'Please wait, this process can take up to 5 minutes...'
-	    echo "$xx"
-		docker stop $(docker ps -a -q)
-		docker ps -a -q
-	    sleep 3
 		sudo reboot
 		;;
-	*) MainMenu ;;
+	*) clear
+	   echo "$ca"
+	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
+	   echo "$xx"
+	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/iota-bee ]; then cd /var/lib/iota-bee || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/shimmer-bee ]; then cd /var/lib/shimmer-bee || Dashboard; docker-compose up -d; fi
+	   sleep 5
+	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker-compose up -d; fi
+	   RenameContainer
+
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+
+	   MainMenu ;;
 	esac
 }
 
