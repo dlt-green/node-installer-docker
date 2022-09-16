@@ -80,6 +80,26 @@ build_wasp_image () {
   push_docker_image $imageName
 }
 
+build_wasp-cli_image () {
+  local repoTag=$1
+  local name=$2
+  local imageTag=$3
+
+  local imageName=dltgreen/$name:$imageTag
+  local buildDirWaspCli=$BUILD_DIR/tmp_wasp
+
+  rm -Rf $buildDirWaspCli && mkdir -p $buildDirWaspCli
+  (cd $BUILD_DIR; git clone https://github.com/iotaledger/wasp.git tmp_wasp; cd tmp_wasp; git checkout $repoTag)
+
+  cp ./wasp-cli/Dockerfile $buildDirWaspCli
+  (cd $buildDirWaspCli; docker build --no-cache -t $imageName .)
+
+  docker save $imageName > $BUILD_DIR/wasp-cli-$imageTag.tar
+  rm -Rf $buildDirWaspCli
+
+  push_docker_image $imageName
+}
+
 push_docker_image () {
   local imageName=$1
 
@@ -205,7 +225,7 @@ MainMenu() {
 }
 
 DockerImagesMenu() {
-  print_menu "iota-hornet ($HORNET_VERSION)" "wasp ($WASP_VERSION)" "wasp (dev)" "Back"
+  print_menu "iota-hornet ($HORNET_VERSION)" "wasp ($WASP_VERSION)" "wasp-cli ($WASP_VERSION)" "wasp (dev)" "Back"
 	read  -p '> ' n
 	case $n in
 	1) print_line
@@ -219,6 +239,11 @@ DockerImagesMenu() {
      DockerImagesMenu
      ;;
 	3) print_line
+     build_wasp-cli_image "v$WASP_VERSION" "wasp-cli" "$WASP_VERSION"
+     enter_to_continue
+     DockerImagesMenu
+     ;;
+	4) print_line
      build_wasp_image "$WASP_DEV_BRANCH" "wasp" "dev"
      enter_to_continue
      DockerImagesMenu

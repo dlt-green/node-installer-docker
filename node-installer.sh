@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.9.5"
+VRSN="0.9.6"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -16,16 +16,15 @@ VAR_IOTA_HORNET_VERSION='1.2.1'
 VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
-VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.8'
-VAR_SHIMMER_WASP_VERSION='0.3.0'
+VAR_SHIMMER_HORNET_VERSION='2.0-beta'
+VAR_SHIMMER_WASP_VERSION='0.3.1'
 
-VAR_INX_INDEXER_VERSION='1.0.0-beta.7'
-VAR_INX_MQTT_VERSION='1.0.0-beta.7'
-VAR_INX_PARTICIPATION_VERSION='1.0.0-beta.7'
-VAR_INX_SPAMMER_VERSION='1.0.0-beta.8'
-VAR_INX_POI_VERSION='1.0.0-beta.7'
-VAR_INX_DASHBOARD_VERSION='1.0.0-beta.7'
-
+VAR_INX_INDEXER_VERSION='1.0-beta'
+VAR_INX_MQTT_VERSION='1.0-beta'
+VAR_INX_PARTICIPATION_VERSION='1.0-beta'
+VAR_INX_SPAMMER_VERSION='1.0-beta'
+VAR_INX_POI_VERSION='1.0-beta'
+VAR_INX_DASHBOARD_VERSION='1.0-beta'
 
 lg='\033[1m'
 ca='\e[1;96m'
@@ -38,19 +37,33 @@ xx='\033[0m'
 
 echo "$xx"
 
-DockerShimmerHornet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
-DockerShimmerWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
+CheckHash=false
 
-DockerIotaHornet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
-DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
-DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
-DockerIotaWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
+InstallerHash=''
+
+IotaHornetHash='a11d0db866a731f105d40a642ad72f6b5b57918ba1366a3f53f29ba21fc1fb05'
+IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
+
+IotaBeeHash='a231c786a3fc4deb10eed88623fdd6d29851209ab0b93361eb27f9c7a2f830d3'
+IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
+
+IotaGoshimmerHash='9500b1c9db692804dd57209ed761cd2e8e600210afa37600ec8df8d080adc13e'
+IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
+
+IotaWaspHash='093d0b450d1e16ecca92ab8bbc7b8c1ea1f4879c809c727865429c59dad7fd87'
+IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
+
+ShimmerHornetHash='7604c3e0b7d8b719e65b73e9f5b8be424fbd50ade4a284daadf4750c63bd4325'
+ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
+
+ShimmerWaspHash='093d0b450d1e16ecca92ab8bbc7b8c1ea1f4879c809c727865429c59dad7fd87'
+ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 
 clear
 if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
-if [ "$(id -u)" -ne 0 ]; then	echo "$rd" && echo 'Please run DLT.GREEN Automatic Node-Installer with sudo or as root' && echo "$xx"; exit; fi
+if [ "$(id -u)" -ne 0 ]; then echo "$rd" && echo 'Please run DLT.GREEN Automatic Node-Installer with sudo or as root' && echo "$xx"; exit; fi
 
 CheckIota() {
 	if [ -s "/var/lib/iota-hornet/.env" ];    then VAR_NETWORK=1; fi
@@ -834,7 +847,17 @@ IotaHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerIotaHornet" > install.tar.gz
+	wget -cO - "$IotaHornetPackage" > install.tar.gz
+
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaHornetHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Installer has been tampered, loading Installer aborted for your Security!'
+	    echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1052,7 +1075,17 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerIotaBee" > install.tar.gz
+	wget -cO - "$IotaBeePackage" > install.tar.gz
+
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaBeeHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Installer has been tampered, loading Installer aborted for your Security!'
+	    echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1265,7 +1298,17 @@ IotaWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerIotaWasp" > install.tar.gz
+	wget -cO - "$IotaWaspPackage" > install.tar.gz
+
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaWaspHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Installer has been tampered, loading Installer aborted for your Security!'
+	    echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1492,7 +1535,17 @@ IotaGoshimmer() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerIotaGoshimmer" > install.tar.gz
+	wget -cO - "$IotaGoshimmerPackage" > install.tar.gz
+
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaGoshimmerHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Installer has been tampered, loading Installer aborted for your Security!'
+	    echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1690,7 +1743,17 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerShimmerHornet" > install.tar.gz
+	wget -cO - "$ShimmerHornetPackage" > install.tar.gz
+
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerHornetHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Installer has been tampered, loading Installer aborted for your Security!'
+	    echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1929,7 +1992,17 @@ ShimmerWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerShimmerWasp" > install.tar.gz
+	wget -cO - "$ShimmerWaspPackage" > install.tar.gz
+
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerWaspHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Installer has been tampered, loading Installer aborted for your Security!'
+	    echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
