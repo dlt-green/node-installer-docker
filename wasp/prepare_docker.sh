@@ -38,11 +38,11 @@ set_config $configPath ".logger.outputPaths"      "[\"stdout\"]"
 
 # wasp 0.2.5
 set_config_if_field_exists $configPath ".dashboard.auth.username" "\"${DASHBOARD_USERNAME:-wasp}\""
-set_config_if_field_exists $configPath ".dashboard.auth.password" "\"${DASHBOARD_PASSWORD:-wasp}\""
+set_config_if_field_exists $configPath ".dashboard.auth.password" "\"${DASHBOARD_PASSWORD:-wasp}\"" "secret"
 set_config_if_field_exists $configPath ".nodeconn.address"        "\"${WASP_LEDGER_CONNECTION}\""
 # wasp 0.3.0
 move_rename_config         $configPath ".users.wasp"                                      ".users[\"${DASHBOARD_USERNAME:-wasp}\"]"
-set_config_if_field_exists $configPath ".users[\"${DASHBOARD_USERNAME:-wasp}\"].password" "\"${DASHBOARD_PASSWORD:-wasp}\""
+set_config_if_field_exists $configPath ".users[\"${DASHBOARD_USERNAME:-wasp}\"].password" "\"${DASHBOARD_PASSWORD:-wasp}\"" "secret"
 set_config_if_field_exists $configPath ".webapi.auth.basic.username"                      "\"${DASHBOARD_USERNAME:-wasp}\""
 set_config_if_field_exists $configPath ".webapi.auth.scheme"                              "\"basic\""
 set_config_if_field_exists $configPath ".dashboard.auth.basic.username"                   "\"${DASHBOARD_USERNAME:-wasp}\""

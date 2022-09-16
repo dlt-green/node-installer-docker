@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+OUTPUT_RED='\033[0;31m'
+OUTPUT_GREEN='\033[0;32m'
+OUTPUT_BLUE='\033[0;34m'
+OUTPUT_PURPLE='\033[0;35m'
+OUTPUT_PURPLE_UNDERLINED='\033[4;35m'
+OUTPUT_RESET='\033[0m'
+
 check_env () {
   if [[ ! -f .env ]] || [[ "$1" == "--help" ]]; then
     cat README.md
@@ -125,8 +132,11 @@ set_config () {
   local configPath="$1"
   local jsonPath="$2"
   local value="$3"
+  local outputCfg="$4"
 
-  echo "  $jsonPath: $value"
+  if [ "$outputCfg" != "suppress" ]; then
+    if [ "$outputCfg" == "secret" ]; then echo "  $jsonPath: ****"; else echo "  $jsonPath: $value"; fi
+  fi
   jq "$jsonPath=$value" "$configPath" > "$configPath.tmp" && mv "$configPath.tmp" "$configPath"
 }
 
@@ -134,9 +144,10 @@ set_config_if_field_exists () {
   local configPath="$1"
   local jsonPath="$2"
   local value="$3"
+  local outputCfg="$4"
 
   if [ "$(jq $jsonPath $configPath)" != "null" ]; then
-    set_config "$configPath" "$jsonPath" "$value"
+    set_config "$configPath" "$jsonPath" "$value" "$outputCfg"
   fi
 }
 
@@ -144,9 +155,10 @@ set_config_if_present_in_env () {
   local configPath="$1"
   local envVariableName="$2" # name of env variable containing value
   local jsonPath="$3"        # jsonpath to set value in configuration
+  local outputCfg="$4"
 
   local defaultValue=$(read_config "$configPath" "$jsonPath")
-  if [ ! -z "${!envVariableName}" ]; then set_config "$configPath" "$jsonPath" "${!envVariableName:-$defaultValue}"; else echo "  $jsonPath: $defaultValue (default)"; fi
+  if [ ! -z "${!envVariableName}" ]; then set_config "$configPath" "$jsonPath" "${!envVariableName:-$defaultValue}" "$outputCfg"; else echo "  $jsonPath: $defaultValue (default)"; fi
 }
 
 start_node () {

@@ -46,7 +46,7 @@ set_config $configPath ".manaInitializer.FaucetAPI" "\"http://faucet-01.devnet.s
 if [ ! -z "$DASHBOARD_PASSWORD" ]; then
   set_config $configPath ".dashboard.basicAuth.enabled"  "true"
   set_config $configPath ".dashboard.basicAuth.username" "\"${DASHBOARD_USERNAME:-admin}\""
-  set_config $configPath ".dashboard.basicAuth.password" "\"${DASHBOARD_PASSWORD}\""
+  set_config $configPath ".dashboard.basicAuth.password" "\"${DASHBOARD_PASSWORD}\"" "secret"
 fi
 rm -f $tmp
 
