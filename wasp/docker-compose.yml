@@ -36,6 +36,9 @@ services:
       - "traefik.http.routers.webapi.entrypoints=webapisecure"
       - "traefik.http.routers.webapi.tls=true"
       - "traefik.http.routers.webapi.tls.certresolver=myresolver"
+    command:
+      - "-c"
+      - "/etc/wasp_config.json"
     cap_drop:
       - ALL
     volumes:
