@@ -38,13 +38,25 @@ xx='\033[0m'
 
 echo "$xx"
 
-DockerShimmerHornet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
-DockerShimmerWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
+InstallerHash='dd10ae19bc47dc631ffaea01dead806920ee420d978e8dff7925638505c637be'
 
-DockerIotaHornet="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
-DockerIotaBee="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
-DockerIotaGoshimmer="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
-DockerIotaWasp="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
+IotaHornetHash='a11d0db866a731f105d40a642ad72f6b5b57918ba1366a3f53f29ba21fc1fb05'
+IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
+
+IotaBeeHash='a231c786a3fc4deb10eed88623fdd6d29851209ab0b93361eb27f9c7a2f830d3'
+IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
+
+IotaGoshimmerHash='9500b1c9db692804dd57209ed761cd2e8e600210afa37600ec8df8d080adc13e'
+IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
+
+IotaWaspHash='cd21cc1149c8815fccde46a9981df18cadea570c19c28f089c03cdeb8e90822c'
+IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
+
+ShimmerHornetHash='4e17f8fe27a6ea52b93dc89c7d5ddfcca1248bbcb431e4133c1d50a7dbd2c68b'
+ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
+
+ShimmerWaspHash='cd21cc1149c8815fccde46a9981df18cadea570c19c28f089c03cdeb8e90822c'
+ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 
@@ -834,7 +846,7 @@ IotaHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerIotaHornet" > install.tar.gz
+	wget -cO - "$IotaHornetPackage" > install.tar.gz
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1052,7 +1064,7 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerIotaBee" > install.tar.gz
+	wget -cO - "$IotaBeePackage" > install.tar.gz
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1265,7 +1277,7 @@ IotaWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerIotaWasp" > install.tar.gz
+	wget -cO - "$IotaWaspPackage" > install.tar.gz
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1492,7 +1504,7 @@ IotaGoshimmer() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerIotaGoshimmer" > install.tar.gz
+	wget -cO - "$IotaGoshimmerPackage" > install.tar.gz
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1690,7 +1702,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerShimmerHornet" > install.tar.gz
+	wget -cO - "$ShimmerHornetPackage" > install.tar.gz
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1929,7 +1941,7 @@ ShimmerWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$DockerShimmerWasp" > install.tar.gz
+	wget -cO - "$ShimmerWaspPackage" > install.tar.gz
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
