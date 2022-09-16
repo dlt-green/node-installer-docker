@@ -28,7 +28,8 @@ prepare_data_dir "$dataDir" "config" "waspdb"
 create_docker_network "$WASP_LEDGER_NETWORK"
 
 # Generate config
-extract_file_from_image "dltgreen/wasp" "$WASP_VERSION" "/etc/wasp_config.json" "$configPath"
+#extract_file_from_image "dltgreen/wasp" "$WASP_VERSION" "/etc/wasp_config.json" "$configPath"
+cp assets/wasp/docker_default.yml "$configPath"
 
 echo "Adapting config with values from .env..."
 set_config $configPath ".database.directory"      "\"/app/waspdb\""
@@ -50,6 +51,8 @@ set_config_if_field_exists $configPath ".dashboard.auth.basic.username"         
 set_config_if_field_exists $configPath ".webapi.auth.jwt.durationHours"                   "${WASP_JWT_DURATION_HOURS:-24}"
 set_config_if_field_exists $configPath ".dashboard.auth.jwt.durationHours"                "${WASP_JWT_DURATION_HOURS:-24}"
 set_config_if_field_exists $configPath ".l1.inxAddress"                                   "\"hornet:9029\""
+# wasp 0.3.1
+set_config_if_field_exists $configPath ".inx.address"                                     "\"hornet:9029\""
 rm -f $tmp
 
 echo "Finished"
