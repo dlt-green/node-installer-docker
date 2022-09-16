@@ -853,8 +853,8 @@ IotaHornet() {
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Installer has been tampered, loading Installer aborted for your Security!'
-	    echo "Downloaded Package is deleted!"
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
 		rm -r install.tar.gz
 		echo "$xx"; exit;
 	fi
@@ -1081,8 +1081,8 @@ IotaBee() {
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Installer has been tampered, loading Installer aborted for your Security!'
-	    echo "Downloaded Package is deleted!"
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
 		rm -r install.tar.gz
 		echo "$xx"; exit;
 	fi
@@ -1304,8 +1304,8 @@ IotaWasp() {
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Installer has been tampered, loading Installer aborted for your Security!'
-	    echo "Downloaded Package is deleted!"
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
 		rm -r install.tar.gz
 		echo "$xx"; exit;
 	fi
@@ -1541,8 +1541,8 @@ IotaGoshimmer() {
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Installer has been tampered, loading Installer aborted for your Security!'
-	    echo "Downloaded Package is deleted!"
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
 		rm -r install.tar.gz
 		echo "$xx"; exit;
 	fi
@@ -1749,8 +1749,8 @@ ShimmerHornet() {
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Installer has been tampered, loading Installer aborted for your Security!'
-	    echo "Downloaded Package is deleted!"
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
 		rm -r install.tar.gz
 		echo "$xx"; exit;
 	fi
@@ -1998,8 +1998,8 @@ ShimmerWasp() {
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Installer has been tampered, loading Installer aborted for your Security!'
-	    echo "Downloaded Package is deleted!"
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
 		rm -r install.tar.gz
 		echo "$xx"; exit;
 	fi
