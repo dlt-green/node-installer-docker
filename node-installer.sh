@@ -17,7 +17,7 @@ VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0-beta'
-VAR_SHIMMER_WASP_VERSION='0.3.0'
+VAR_SHIMMER_WASP_VERSION='0.3.1'
 
 VAR_INX_INDEXER_VERSION='1.0-beta'
 VAR_INX_MQTT_VERSION='1.0-beta'
@@ -53,7 +53,7 @@ IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/release
 IotaWaspHash='cd21cc1149c8815fccde46a9981df18cadea570c19c28f089c03cdeb8e90822c'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
-ShimmerHornetHash='4e17f8fe27a6ea52b93dc89c7d5ddfcca1248bbcb431e4133c1d50a7dbd2c68b'
+ShimmerHornetHash='7604c3e0b7d8b719e65b73e9f5b8be424fbd50ade4a284daadf4750c63bd4325'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
 
 ShimmerWaspHash='cd21cc1149c8815fccde46a9981df18cadea570c19c28f089c03cdeb8e90822c'
@@ -849,8 +849,15 @@ IotaHornet() {
 
 	wget -cO - "$IotaHornetPackage" > install.tar.gz
 
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaHornetHash" ]; then CheckHash=true; else CheckHash=false; fi	
-	if [ ! $CheckHash ]; then echo "$rd" && echo 'Installer has been tampered, loading Installer aborted for your Security!' && echo "$xx"; exit; fi
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaHornetHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Installer has been tampered, loading Installer aborted for your Security!'
+	    echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1070,8 +1077,15 @@ IotaBee() {
 
 	wget -cO - "$IotaBeePackage" > install.tar.gz
 
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaBeeHash" ]; then CheckHash=true; else CheckHash=false; fi	
-	if [ ! $CheckHash ]; then echo "$rd" && echo 'Installer has been tampered, loading Installer aborted for your Security!' && echo "$xx"; exit; fi
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaBeeHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Installer has been tampered, loading Installer aborted for your Security!'
+	    echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1286,8 +1300,15 @@ IotaWasp() {
 
 	wget -cO - "$IotaWaspPackage" > install.tar.gz
 
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaWaspHash" ]; then CheckHash=true; else CheckHash=false; fi	
-	if [ ! $CheckHash ]; then echo "$rd" && echo 'Installer has been tampered, loading Installer aborted for your Security!' && echo "$xx"; exit; fi
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaWaspHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Installer has been tampered, loading Installer aborted for your Security!'
+	    echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1516,8 +1537,15 @@ IotaGoshimmer() {
 
 	wget -cO - "$IotaGoshimmerPackage" > install.tar.gz
 
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaGoshimmerHash" ]; then CheckHash=true; else CheckHash=false; fi	
-	if [ ! $CheckHash ]; then echo "$rd" && echo 'Installer has been tampered, loading Installer aborted for your Security!' && echo "$xx"; exit; fi
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaGoshimmerHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Installer has been tampered, loading Installer aborted for your Security!'
+	    echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
@@ -1717,10 +1745,17 @@ ShimmerHornet() {
 
 	wget -cO - "$ShimmerHornetPackage" > install.tar.gz
 
-	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerHornetHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Installer has been tampered, loading Installer aborted for your Security!'
+	    echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
 
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerHornetHash" ]; then CheckHash=true; else CheckHash=false; fi	
-	if [ ! $CheckHash ]; then echo "$rd" && echo 'Installer has been tampered, loading Installer aborted for your Security!' && echo "$xx"; exit; fi
+	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
 	echo "unpack:"
 	tar -xzf install.tar.gz
@@ -1959,8 +1994,15 @@ ShimmerWasp() {
 
 	wget -cO - "$ShimmerWaspPackage" > install.tar.gz
 
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerWaspHash" ]; then CheckHash=true; else CheckHash=false; fi	
-	if [ ! $CheckHash ]; then echo "$rd" && echo 'Installer has been tampered, loading Installer aborted for your Security!' && echo "$xx"; exit; fi
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerWaspHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Installer has been tampered, loading Installer aborted for your Security!'
+	    echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
