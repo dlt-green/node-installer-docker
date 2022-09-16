@@ -324,7 +324,7 @@ Dashboard() {
 	s|S)
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
 	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker-compose up -d; fi
 	   if [ -d /var/lib/iota-bee ]; then cd /var/lib/iota-bee || Dashboard; docker-compose up -d; fi
@@ -506,7 +506,7 @@ SubMenuMaintenance() {
 	2) echo '(re)starting...'; sleep 3
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo 'Please wait, (re)starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
@@ -528,7 +528,7 @@ SubMenuMaintenance() {
 	3) echo 'stopping...'; sleep 3
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo 'Please wait, stopping Nodes can take up to 5 minutes...'
 	   echo "$xx"
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
@@ -547,7 +547,7 @@ SubMenuMaintenance() {
 	4) echo 'resetting...'; sleep 3
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo 'Please wait, resetting Nodes can take up to 5 minutes...'
 	   echo "$xx"
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
@@ -569,7 +569,7 @@ SubMenuMaintenance() {
 	5) echo 'loading...'; sleep 3
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo 'Please wait, loading Snapshots can take up to 5 minutes...'
 	   echo "$xx"
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
@@ -605,7 +605,7 @@ SubMenuMaintenance() {
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo 'Please wait, deinstalling Nodes can take up to 5 minutes...'
 	   echo "$xx"
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down >/dev/null 2>&1; fi
