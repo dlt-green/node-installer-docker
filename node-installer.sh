@@ -35,9 +35,7 @@ xx='\033[0m'
 
 echo "$xx"
 
-CheckHash=false
-
-InstallerHash=''
+InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum.txt)
 
 IotaHornetHash='a11d0db866a731f105d40a642ad72f6b5b57918ba1366a3f53f29ba21fc1fb05'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
@@ -60,7 +58,17 @@ ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 
 clear
-if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
+if [ -f "node-installer.sh" ]; then 
+	if [ "$(shasum -a 256 './node-installer.sh' | cut -d ' ' -f 1)" != "$InstallerHash" ]; then
+		echo "$rd"; echo 'Checking Hash of Installer failed...'
+		echo 'Installer has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Installer is deleted!"
+		sudo rm -r node-installer.sh -f
+		echo "$xx"; exit;
+	fi
+	sudo rm node-installer.sh -f
+fi
+
 if [ "$(id -u)" -ne 0 ]; then echo "$rd" && echo 'Please run DLT.GREEN Automatic Node-Installer with sudo or as root' && echo "$xx"; exit; fi
 
 CheckIota() {
@@ -2171,7 +2179,7 @@ echo "║                                                                       
 echo "║                                                                             ║"
 echo "║                         for IOTA and SHIMMER Nodes                          ║"
 echo "║                                                                             ║"
-echo "║                                 loading...                                  ║"
+echo "║$gn                  Checking Hash of Installer successful...                   $xx║"
 echo "║                                                                             ║"
 echo "║         Github: https://github.com/dlt-green/node-installer-docker          ║"
 echo "║                                                                             ║"
