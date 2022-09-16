@@ -10,8 +10,6 @@ VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
 
-VAR_S2DLT=0
-
 VAR_IOTA_HORNET_VERSION='1.2.1'
 VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
@@ -326,7 +324,7 @@ Dashboard() {
 	s|S)
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
 	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker-compose up -d; fi
 	   if [ -d /var/lib/iota-bee ]; then cd /var/lib/iota-bee || Dashboard; docker-compose up -d; fi
@@ -340,8 +338,6 @@ Dashboard() {
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   DashboardHelper ;;
 
-	0) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
-	   S2DLT ;;
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
 	   SubMenuMaintenance ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-bee'
@@ -510,7 +506,7 @@ SubMenuMaintenance() {
 	2) echo '(re)starting...'; sleep 3
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo 'Please wait, (re)starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
@@ -532,7 +528,7 @@ SubMenuMaintenance() {
 	3) echo 'stopping...'; sleep 3
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo 'Please wait, stopping Nodes can take up to 5 minutes...'
 	   echo "$xx"
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
@@ -551,7 +547,7 @@ SubMenuMaintenance() {
 	4) echo 'resetting...'; sleep 3
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo 'Please wait, resetting Nodes can take up to 5 minutes...'
 	   echo "$xx"
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
@@ -573,7 +569,7 @@ SubMenuMaintenance() {
 	5) echo 'loading...'; sleep 3
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo 'Please wait, loading Snapshots can take up to 5 minutes...'
 	   echo "$xx"
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
@@ -609,7 +605,7 @@ SubMenuMaintenance() {
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, this process can take up to 5 minutes...'
+	   echo 'Please wait, deinstalling Nodes can take up to 5 minutes...'
 	   echo "$xx"
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down >/dev/null 2>&1; fi
@@ -633,14 +629,6 @@ SystemMaintenance() {
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 
-	clear
-	sudo apt-get update && apt-get upgrade -y
-	sudo apt-get dist-upgrade -y
-	sudo apt upgrade -y
-	sudo apt-get autoremove -y
-
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                  Delete unused old docker containers/images                 ║"
@@ -648,6 +636,26 @@ SystemMaintenance() {
 	echo ""
 
 	docker system prune
+
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+
+	clear
+	echo "$ca"
+	echo 'Please wait, stopping Nodes can take up to 5 minutes...'
+	echo "$xx"
+	docker stop $(docker ps -a -q)
+	docker ps -a -q
+
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+
+	clear
+	echo "$ca"
+	echo 'Please wait, updating the System...'
+	echo "$xx"
+	sudo apt-get update && apt-get upgrade -y
+	sudo apt-get dist-upgrade -y
+	sudo apt upgrade -y
+	sudo apt-get autoremove -y
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 
@@ -662,9 +670,6 @@ SystemMaintenance() {
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	echo "$rd""Attention! If you choose a System Reboot then you must stop Nodes,"
-	echo "which are additionally installed with a foreign Installer (e.g. SWARM)""$xx"
-	echo ""
 	echo "$gn""You don't have to stop Nodes installed with the DLT.GREEN Installer,"
 	echo "but you must restart them with our Installer after reastarting your System""$xx"
 	echo ""
@@ -674,15 +679,25 @@ SystemMaintenance() {
 	read -r -p '> ' n
 	case $n in
 	1) 	echo 'rebooting...'; sleep 3
-	    echo "$ca"
-	    echo 'Please wait, this process can take up to 5 minutes...'
-	    echo "$xx"
-		docker stop $(docker ps -a -q)
-		docker ps -a -q
-	    sleep 3
 		sudo reboot
 		;;
-	*) MainMenu ;;
+	*) clear
+	   echo "$ca"
+	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
+	   echo "$xx"
+	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/iota-bee ]; then cd /var/lib/iota-bee || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/shimmer-bee ]; then cd /var/lib/shimmer-bee || Dashboard; docker-compose up -d; fi
+	   sleep 5
+	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker-compose up -d; fi
+	   RenameContainer
+
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+
+	   MainMenu ;;
 	esac
 }
 
@@ -745,69 +760,6 @@ Docker() {
 	MainMenu
 }
 
-S2DLT() {
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                  DLT.GREEN AUTOMATIC IOTA-HORNET DB TRANSFER                ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-	echo "$rd""!!! Make sure you have stopped IOTA-Hornet in SWARM and Watchdog is disabled !!!""$xx"
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-	echo "$rd""!!! Make sure you have SWARM deinstalled !!!""$xx"
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-	systemctl stop nginx.service
-	sudo apt-get purge nginx nginx-common -y
-	sudo apt-get autoremove -y
-	rm -rf /etc/nginx
-	clear
-	echo ""
-	echo "$rd""Change Dir to iota-hornet_tmp...""$xx"
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-	sudo mv /var/lib/iota-hornet /var/lib/iota-hornet_tmp
-	clear
-	echo ""
-	echo "$rd""Install IOTA-Hornet...""$xx"
-	echo ""
-	echo "$rd""Set yourself following Parameters during coming Installation:""$xx"
-	echo "$ca""(X) Generate new Let's Encrypt Certificate""$xx"
-	echo "$ca""(1) Update Certificate for all Nodes""$xx"
-	echo ""
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-	VAR_NETWORK=1
-	VAR_NODE=1
-	VAR_DIR='iota-hornet'
-	VAR_S2DLT=1
-	IotaHornet
-	VAR_S2DLT=0
-	clear
-	echo ""
-	echo "$rd""Stopp Container IOTA-Hornet...""$xx"
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-	docker stop iota-hornet
-	echo ""
-	echo "$rd""Quit with DockerScript...""$xx"
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-	if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || exit; docker-compose down; fi
-	echo ""
-	echo "$rd""Move Database...""$xx"
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-	rm -r /var/lib/iota-hornet/data/storage/mainnet/*
-	rm -r /var/lib/iota-hornet_tmp/mainnetdb/mainnetdb >/dev/null 2>&1
-	mv /var/lib/iota-hornet_tmp/mainnetdb/* /var/lib/iota-hornet/data/storage/mainnet
-	rm -r /var/lib/iota-hornet_tmp
-	chown -R 65532:65532 /var/lib/iota-hornet/data
-	echo ""
-	echo "$rd""Start Hornet with DockerScript...""$xx"
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-	cd /var/lib/iota-hornet || SubMenuMaintenance; docker-compose up -d
-	RenameContainer
-	clear
-	echo "---------------------------- TRANSFER IS FINISH - -----------------------------"
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
-	MainMenu
-}
-
 IotaHornet() {
 	clear
 	echo ""
@@ -853,8 +805,8 @@ IotaHornet() {
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Installer has been tampered, loading Installer aborted for your Security!'
-	    echo "Downloaded Package is deleted!"
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
 		rm -r install.tar.gz
 		echo "$xx"; exit;
 	fi
@@ -1033,7 +985,7 @@ IotaHornet() {
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 
-	if [ $VAR_S2DLT != 1 ]; then SubMenuMaintenance; fi
+	SubMenuMaintenance
 }
 
 IotaBee() {
@@ -1081,8 +1033,8 @@ IotaBee() {
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Installer has been tampered, loading Installer aborted for your Security!'
-	    echo "Downloaded Package is deleted!"
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
 		rm -r install.tar.gz
 		echo "$xx"; exit;
 	fi
@@ -1304,8 +1256,8 @@ IotaWasp() {
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Installer has been tampered, loading Installer aborted for your Security!'
-	    echo "Downloaded Package is deleted!"
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
 		rm -r install.tar.gz
 		echo "$xx"; exit;
 	fi
@@ -1541,8 +1493,8 @@ IotaGoshimmer() {
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Installer has been tampered, loading Installer aborted for your Security!'
-	    echo "Downloaded Package is deleted!"
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
 		rm -r install.tar.gz
 		echo "$xx"; exit;
 	fi
@@ -1749,8 +1701,8 @@ ShimmerHornet() {
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Installer has been tampered, loading Installer aborted for your Security!'
-	    echo "Downloaded Package is deleted!"
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
 		rm -r install.tar.gz
 		echo "$xx"; exit;
 	fi
@@ -1998,8 +1950,8 @@ ShimmerWasp() {
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Installer has been tampered, loading Installer aborted for your Security!'
-	    echo "Downloaded Package is deleted!"
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
 		rm -r install.tar.gz
 		echo "$xx"; exit;
 	fi
