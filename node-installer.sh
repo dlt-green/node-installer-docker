@@ -2179,13 +2179,14 @@ echo "║                                                                       
 echo "║                                                                             ║"
 echo "║                         for IOTA and SHIMMER Nodes                          ║"
 echo "║                                                                             ║"
-echo "║$gn                  Checking Hash of Installer successful...                   $xx║"
+echo "║                                 loading...                                  ║"
 echo "║                                                                             ║"
 echo "║         Github: https://github.com/dlt-green/node-installer-docker          ║"
 echo "║                                                                             ║"
 echo "║                       GNU General Public License v3.0                       ║"
 echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 echo ""
+echo "> $gn""Checking Hash of Installer successful...$xx"
 
 sleep 3
 
