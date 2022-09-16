@@ -16,18 +16,24 @@ services:
       - "${HORNET_GOSSIP_PORT:-15600}:${HORNET_GOSSIP_PORT:-15600}/tcp"
       - "${HORNET_AUTOPEERING_PORT:-14626}:${HORNET_AUTOPEERING_PORT:-14626}/udp"
     labels:
-      - "proxy.constraint=hornet-${HORNET_NETWORK:-mainnet}"
       - "traefik.enable=true"
+      - "proxy.constraint=hornet-${HORNET_NETWORK:-mainnet}"
 
-      - "traefik.http.services.webapi.loadbalancer.server.port=14265"
-      - "traefik.http.services.webapi.loadbalancer.healthCheck.path=/api/core/v2/info"
-      - "traefik.http.services.webapi.loadbalancer.healthCheck.interval=10s"
-      - "traefik.http.services.webapi.loadbalancer.healthCheck.timeout=3s"
-      - "traefik.http.routers.webapi.service=webapi"
-      - "traefik.http.routers.webapi.rule=Host(`${HORNET_HOST:?HORNET_HOST is missing}`) && PathPrefix(`/api`, `/health`)"
-      - "traefik.http.routers.webapi.entrypoints=websecure"
-      - "traefik.http.routers.webapi.tls=true"
-      - "traefik.http.routers.webapi.tls.certresolver=myresolver"
+      - "traefik.http.routers.hornet.service=hornet"
+      - "traefik.http.routers.hornet.rule=Host(`${HORNET_HOST:?HORNET_HOST is missing}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.hornet.entrypoints=websecure"
+      - "traefik.http.routers.hornet.tls=true"
+      - "traefik.http.routers.hornet.tls.certresolver=myresolver"
+
+      - "traefik.http.services.hornet.loadbalancer.server.port=14265"
+      - "traefik.http.services.hornet.loadbalancer.healthCheck.path=/api/core/v2/info"
+      - "traefik.http.services.hornet.loadbalancer.healthCheck.interval=10s"
+      - "traefik.http.services.hornet.loadbalancer.healthCheck.timeout=3s"
+
+      - "traefik.http.routers.hornet.middlewares=redirect-dashboard"
+      - "traefik.http.middlewares.redirect-dashboard.redirectregex.regex=^(https?://[^/]+)/?$$"
+      - "traefik.http.middlewares.redirect-dashboard.redirectregex.replacement=$$1/dashboard/"
+      - "traefik.http.middlewares.redirect-dashboard.redirectregex.permanent=true"
     cap_drop:
       - ALL
     command: [ "--config", "/app/config/config.json" ]
@@ -106,7 +112,7 @@ services:
     labels:
       - "proxy.constraint=hornet-${HORNET_NETWORK:-mainnet}"
       - "traefik.enable=true"
-      - "traefik.http.routers.grafana.rule=Host(`${HORNET_HOST:?HORNET_HOST is missing}`) && PathPrefix(`/grafana`)"
+      - "traefik.http.routers.grafana.rule=Host(`${HORNET_HOST:?HORNET_HOST is missing}`) && (Path(`/grafana`) || PathPrefix(`/grafana/`))"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls=true"
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
@@ -225,15 +231,15 @@ services:
       - "proxy.constraint=hornet-${HORNET_NETWORK:-mainnet}"
       - "traefik.enable=true"
 
-      - "traefik.http.services.hornet.loadbalancer.server.port=8081"
-      - "traefik.http.services.hornet.loadbalancer.healthCheck.path=/"
-      - "traefik.http.services.hornet.loadbalancer.healthCheck.interval=10s"
-      - "traefik.http.services.hornet.loadbalancer.healthCheck.timeout=3s"
-      - "traefik.http.routers.hornet.service=hornet"
-      - "traefik.http.routers.hornet.rule=Host(`${HORNET_HOST:?HORNET_HOST is missing}`)"
-      - "traefik.http.routers.hornet.entrypoints=websecure"
-      - "traefik.http.routers.hornet.tls=true"
-      - "traefik.http.routers.hornet.tls.certresolver=myresolver"
+      - "traefik.http.services.hornet-dashboard.loadbalancer.server.port=8081"
+      - "traefik.http.services.hornet-dashboard.loadbalancer.healthCheck.path=/"
+      - "traefik.http.services.hornet-dashboard.loadbalancer.healthCheck.interval=10s"
+      - "traefik.http.services.hornet-dashboard.loadbalancer.healthCheck.timeout=3s"
+      - "traefik.http.routers.hornet-dashboard.service=hornet-dashboard"
+      - "traefik.http.routers.hornet-dashboard.rule=Host(`${HORNET_HOST:?HORNET_HOST is missing}`) && (Path(`/dashboard`) || PathPrefix(`/dashboard/`))"
+      - "traefik.http.routers.hornet-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.hornet-dashboard.tls=true"
+      - "traefik.http.routers.hornet-dashboard.tls.certresolver=myresolver"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "${HORNET_DATA_DIR:-./data}/dashboard/${HORNET_NETWORK:-mainnet}:/app/data"
