@@ -11,9 +11,13 @@ configTemplate=assets/wasp-cli.json.template
 configFilename="wasp-cli.json"
 configPath=$(realpath "${dataDir}/config/$configFilename")
 
-echo "Creating wasp-cli config..."
-rm -Rf $configPath && cp $configTemplate $configPath
 source .env
+echo "Creating wasp-cli config..."
+rm -Rf $configPath && echo "{}" > $configPath
+set_config $configPath ".l1.apiaddress"    "\"http://hornet:14265\""
+set_config $configPath ".l1.faucetaddress" "\"http://inx-faucet:8091\""
+set_config $configPath ".wallet.seed"      "\"dummy\"" "suppress"
+
 if [ "$WASP_CLI_WALLET_SEED" != "" ]; then
   echo "  Using wallet seed from .env"
   set_config $configPath ".wallet.seed" "\"$WASP_CLI_WALLET_SEED\"" "suppress"
@@ -29,7 +33,7 @@ fi
 
 echo "Configuring committee..."
 source .env
-for committeeApiConfig in $(grep -E "WASP_CLI_COMMITTEE_[0-9]+_API" .env); do
+for committeeApiConfig in $(grep -E "^WASP_CLI_COMMITTEE_[0-9]+_API" .env); do
   committeeConfigNumber=$(echo $committeeApiConfig | cut -d '_' -f 4)
   api=$(grep -E "WASP_CLI_COMMITTEE_${committeeConfigNumber}_API" .env | cut -d '=' -f 2)
   nanomsg=$(grep -E "WASP_CLI_COMMITTEE_${committeeConfigNumber}_NANOMSG" .env | cut -d '=' -f 2)
