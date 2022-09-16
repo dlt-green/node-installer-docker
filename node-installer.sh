@@ -2186,7 +2186,8 @@ echo "║                                                                       
 echo "║                       GNU General Public License v3.0                       ║"
 echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 echo ""
-echo "> $gn""Checking Hash of Installer successful...$xx"
+echo "> $gn""Checking Hash of Installer successful...""$xx"
+echo "> $gn""$InstallerHash""$xx"
 
 sleep 3
 
