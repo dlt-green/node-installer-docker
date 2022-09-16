@@ -28,8 +28,11 @@ prepare_data_dir "$dataDir" "config" "waspdb"
 create_docker_network "$WASP_LEDGER_NETWORK"
 
 # Generate config
-#extract_file_from_image "dltgreen/wasp" "$WASP_VERSION" "/etc/wasp_config.json" "$configPath"
-cp assets/wasp/docker_default.yml "$configPath"
+if [ "$WASP_VERSION" == "0.2.5" ] || [ "$WASP_VERSION" == "0.3.0" ]; then
+  extract_file_from_image "dltgreen/wasp" "$WASP_VERSION" "/etc/wasp_config.json" "$configPath"
+else
+  cp assets/wasp/docker_default.yml "$configPath"
+fi
 
 echo "Adapting config with values from .env..."
 set_config $configPath ".database.directory"      "\"/app/waspdb\""
