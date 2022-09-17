@@ -161,6 +161,17 @@ set_config_if_present_in_env () {
   if [ ! -z "${!envVariableName}" ]; then set_config "$configPath" "$jsonPath" "${!envVariableName:-$defaultValue}" "$outputCfg"; else echo "  $jsonPath: $defaultValue (default)"; fi
 }
 
+get_env_by_name () {
+  local envVariableName="$1"
+  local defaultValue="$2"
+  echo "${!envVariableName:-$defaultValue}"
+}
+
+print_line () {
+  local columns="$1"
+  printf '%*s\n' "${columns:-$(tput cols)}" '' | tr ' ' -
+}
+
 start_node () {
   if [ ! -z "$(docker-compose ps | tail -n +3)" ]; then
       read -p "Node is already running. Restart? (y/n) " yn
