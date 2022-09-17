@@ -25,7 +25,7 @@ if [[ "$trustedNodes" != "" ]]; then
     pubKey=$(echo $trustedNode | tr -s ' ' | cut -d ' ' -f 1)
     netId=$(echo $trustedNode | tr -s ' ' | cut -d ' ' -f 2)
     echo -e "  Processing $netId"
-    echo -e "    ${OUTPUT_RED}skipped: distrusting nodes is disabled at the moment because wasp seems to hang after distrusting nodes${OUTPUT_RESET}"
+    echo -e "    ${OUTPUT_RED}skipped: distrusting nodes is disabled at the moment because wasp seems to hang partially (peering) after distrusting nodes${OUTPUT_RESET}"
     #$(wasp-cli peering distrust "$pubKey")
   done
   echo ""

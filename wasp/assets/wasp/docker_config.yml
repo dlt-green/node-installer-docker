@@ -26,14 +26,16 @@
     "enablePlugins": []
   },
   "users": {
-    "wasp": {
-      "password": "wasp",
-      "permissions": [
-        "dashboard",
-        "api",
-        "chain.read",
-        "chain.write"
-      ]
+    "users": {
+      "wasp": {
+        "password": "wasp",
+        "permissions": [
+          "dashboard",
+          "api",
+          "chain.read",
+          "chain.write"
+        ]
+      }
     }
   },
   "webapi": {

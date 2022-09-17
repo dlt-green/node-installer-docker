@@ -16,19 +16,10 @@ echo "Creating wasp-cli config..."
 rm -Rf $configPath && echo "{}" > $configPath
 set_config $configPath ".l1.apiaddress"    "\"http://hornet:14265\""
 set_config $configPath ".l1.faucetaddress" "\"http://inx-faucet:8091\""
-set_config $configPath ".wallet.seed"      "\"dummy\"" "suppress"
 
 if [ "$WASP_CLI_WALLET_SEED" != "" ]; then
-  echo "  Using wallet seed from .env"
+  echo "  ${OUTPUT_BLUE}Using wallet seed from .env${OUTPUT_RESET}"
   set_config $configPath ".wallet.seed" "\"$WASP_CLI_WALLET_SEED\"" "suppress"
-else
-  echo "  Generating new wallet seed"
-  echo "  -----"
-  docker run --rm -v "${configPath}":/wasp-cli/wasp-cli.json wasp-cli:latest wasp-cli init | while read line ; do echo -e "    ${OUTPUT_RED}$line${OUTPUT_RESET}"; done
-  echo "  -----"
-
-  walletSeed=$(read_config "$configPath" ".wallet.seed")
-  echo "WASP_CLI_WALLET_SEED=$walletSeed" >> $scriptDir/.env
 fi
 
 echo "Configuring committee..."
@@ -45,6 +36,13 @@ for committeeApiConfig in $(grep -E "^WASP_CLI_COMMITTEE_[0-9]+_API" .env); do
 done
 
 echo -e "----------"
+if [ "$WASP_CLI_WALLET_SEED" == "" ]; then
+  echo -e "${OUTPUT_PURPLE_UNDERLINED}HINT:${OUTPUT_RESET}"
+  echo -e "If you are using a wallet seed (generated with wasp-cli init) you can add a parameter WASP_CLI_WALLET_SEED in .env"
+  echo -e "with the value taken from data/config/wasp-cli.json. This will automatically add that seed on"
+  echo -e "re-execution of this script."
+  echo -e "----------"
+fi
 echo -e "${OUTPUT_PURPLE_UNDERLINED}FRIENDLY REMINDER${OUTPUT_RESET}"
 echo -e ""
 echo -e "Consider to create the following ${OUTPUT_PURPLE}alias${OUTPUT_RESET} (or add it to ~/.bashrc):"

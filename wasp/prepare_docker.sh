@@ -31,7 +31,7 @@ create_docker_network "$WASP_LEDGER_NETWORK"
 if [ "$WASP_VERSION" == "0.2.5" ] || [ "$WASP_VERSION" == "0.3.0" ]; then
   extract_file_from_image "dltgreen/wasp" "$WASP_VERSION" "/etc/wasp_config.json" "$configPath"
 else
-  cp assets/wasp/docker_default.yml "$configPath"
+  cp assets/wasp/docker_config.yml "$configPath"
 fi
 
 echo "Adapting config with values from .env..."
@@ -46,16 +46,16 @@ set_config_if_field_exists $configPath ".dashboard.auth.username" "\"${DASHBOARD
 set_config_if_field_exists $configPath ".dashboard.auth.password" "\"${DASHBOARD_PASSWORD:-wasp}\"" "secret"
 set_config_if_field_exists $configPath ".nodeconn.address"        "\"${WASP_LEDGER_CONNECTION}\""
 # wasp 0.3.0
-move_rename_config         $configPath ".users.wasp"                                      ".users[\"${DASHBOARD_USERNAME:-wasp}\"]"
-set_config_if_field_exists $configPath ".users[\"${DASHBOARD_USERNAME:-wasp}\"].password" "\"${DASHBOARD_PASSWORD:-wasp}\"" "secret"
-set_config_if_field_exists $configPath ".webapi.auth.basic.username"                      "\"${DASHBOARD_USERNAME:-wasp}\""
-set_config_if_field_exists $configPath ".webapi.auth.scheme"                              "\"${WASP_WEBAPI_AUTH_SCHEME:-jwt}\""
-set_config_if_field_exists $configPath ".dashboard.auth.basic.username"                   "\"${DASHBOARD_USERNAME:-wasp}\""
-set_config_if_field_exists $configPath ".webapi.auth.jwt.durationHours"                   "${WASP_JWT_DURATION_HOURS:-24}"
-set_config_if_field_exists $configPath ".dashboard.auth.jwt.durationHours"                "${WASP_JWT_DURATION_HOURS:-24}"
-set_config_if_field_exists $configPath ".l1.inxAddress"                                   "\"hornet:9029\""
+move_rename_config         $configPath ".users.users.wasp"                                      ".users.users[\"${DASHBOARD_USERNAME:-wasp}\"]"
+set_config_if_field_exists $configPath ".users.users[\"${DASHBOARD_USERNAME:-wasp}\"].password" "\"${DASHBOARD_PASSWORD:-wasp}\"" "secret"
+set_config_if_field_exists $configPath ".webapi.auth.basic.username"                            "\"${DASHBOARD_USERNAME:-wasp}\""
+set_config_if_field_exists $configPath ".webapi.auth.scheme"                                    "\"${WASP_WEBAPI_AUTH_SCHEME:-jwt}\""
+set_config_if_field_exists $configPath ".dashboard.auth.basic.username"                         "\"${DASHBOARD_USERNAME:-wasp}\""
+set_config_if_field_exists $configPath ".webapi.auth.jwt.durationHours"                         "${WASP_JWT_DURATION_HOURS:-24}"
+set_config_if_field_exists $configPath ".dashboard.auth.jwt.durationHours"                      "${WASP_JWT_DURATION_HOURS:-24}"
+set_config_if_field_exists $configPath ".l1.inxAddress"                                         "\"hornet:9029\""
 # wasp 0.3.1
-set_config_if_field_exists $configPath ".inx.address"                                     "\"hornet:9029\""
+set_config_if_field_exists $configPath ".inx.address" "\"hornet:9029\""
 rm -f $tmp
 
 echo "Finished"
