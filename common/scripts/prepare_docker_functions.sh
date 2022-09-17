@@ -167,6 +167,11 @@ get_env_by_name () {
   echo "${!envVariableName:-$defaultValue}"
 }
 
+print_line () {
+  local columns="$1"
+  printf '%*s\n' "${columns:-$(tput cols)}" '' | tr ' ' -
+}
+
 start_node () {
   if [ ! -z "$(docker-compose ps | tail -n +3)" ]; then
       read -p "Node is already running. Restart? (y/n) " yn

@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+source ./common/scripts/prepare_docker_functions.sh
 
 BUILD_DIR=./build
 EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore"
@@ -165,10 +166,6 @@ start_devserver () {
     .
 }
 
-print_line () {
-  echo "--------------------------------------------------------------------------------"
-}
-
 enter_to_continue () {
   print_line
   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
@@ -256,7 +253,7 @@ DockerImagesMenu() {
 }
 
 NodePackagesMenu() {
-  print_menu "all" "iota-hornet" "iota-bee" "iota-goshimmer" "wasp" "shimmer-hornet" "Back"
+  print_menu "all" "iota-hornet" "iota-bee" "iota-goshimmer" "shimmer-hornet" "wasp" "Back"
 	read  -p '> ' n
 	case $n in
   1) print_line
@@ -280,12 +277,12 @@ NodePackagesMenu() {
 	   NodePackagesMenu
      ;;
   5) print_line
-     build_node "wasp"
+     build_node "shimmer-hornet"
      enter_to_continue
 	   NodePackagesMenu
      ;;
   6) print_line
-     build_node "shimmer-hornet"
+     build_node "wasp"
      enter_to_continue
 	   NodePackagesMenu
      ;;

@@ -32,7 +32,7 @@ while true; do
 
   if [ "$api" == "" ]; then
     if [ $i -eq 0 ]; then
-      echo -e "  ${OUTPUT_RED}Missing WASP_CLI_COMMITTEE_0_* parameters. Defaulting to local node parameters.${OUTPUT_RESET}"
+      echo -e "  ${OUTPUT_BLUE}Missing WASP_CLI_COMMITTEE_0_* parameters. Defaulting to local node parameters.${OUTPUT_RESET}"
       api="https://$WASP_HOST:$WASP_API_PORT"
       nanomsg="$WASP_HOST:$WASP_NANO_MSG_PORT"
       peering="$WASP_HOST:$WASP_PEERING_PORT"
@@ -52,18 +52,19 @@ while true; do
   i=$((i+1))
 done
 
-echo -e "----------"
+print_line 120
 if [ "$WASP_CLI_WALLET_SEED" == "" ]; then
-  echo -e "${OUTPUT_PURPLE_UNDERLINED}HINT:${OUTPUT_RESET}"
+  echo -e "${OUTPUT_PURPLE_UNDERLINED}WALLET SEED${OUTPUT_RESET}"
   echo -e "If you are using a wallet seed (generated with wasp-cli init) you can add a parameter WASP_CLI_WALLET_SEED in .env"
   echo -e "with the value taken from data/config/wasp-cli.json. This will automatically add that seed on re-execution of this script."
-  echo -e "----------"
+  print_line 120
 fi
-echo -e "${OUTPUT_PURPLE_UNDERLINED}FRIENDLY REMINDER${OUTPUT_RESET}"
-echo -e ""
-echo -e "Consider to create the following ${OUTPUT_PURPLE}alias${OUTPUT_RESET} (or add it to ~/.bashrc):"
+echo -e "${OUTPUT_PURPLE_UNDERLINED}ALIAS${OUTPUT_RESET}"
+echo -e "Consider to create the following alias (or add it to ~/.bashrc):"
 echo -e ""
 echo -e "    alias wasp-cli=\"docker run -it --rm -v ${configPath}:/wasp-cli/wasp-cli.json --network ${WASP_LEDGER_NETWORK} dltgreen/wasp-cli:${WASP_VERSION} wasp-cli\""
-echo -e "----------"
+echo -e ""
+echo -e "Otherwise you always have to execute the longish docker command yourself ;-)"
+print_line 120
 echo -e "${OUTPUT_GREEN}wasp-cli is now ready to be used${OUTPUT_RESET}"
 
