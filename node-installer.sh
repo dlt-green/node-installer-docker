@@ -810,7 +810,8 @@ IotaHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$IotaHornetPackage" > install.tar.gz
+	echo "Download Package... install.tar.gz"
+	wget -cO -q "$IotaHornetPackage" > install.tar.gz
 
 	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaHornetHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
@@ -824,10 +825,10 @@ IotaHornet() {
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
-	echo "unpack:"
+	echo "Unpack Package... install.tar.gz"
 	tar -xzf install.tar.gz
 
-	echo "remove tar.gz:"
+	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
@@ -1038,7 +1039,8 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$IotaBeePackage" > install.tar.gz
+	echo "Download Package... install.tar.gz"
+	wget -cO -q "$IotaBeePackage" > install.tar.gz
 
 	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaBeeHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
@@ -1052,10 +1054,10 @@ IotaBee() {
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
-	echo "unpack:"
+	echo "Unpack Package... install.tar.gz"
 	tar -xzf install.tar.gz
 
-	echo "remove tar.gz:"
+	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
@@ -1261,7 +1263,8 @@ IotaWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$IotaWaspPackage" > install.tar.gz
+	echo "Download Package... install.tar.gz"
+	wget -cO -q "$IotaWaspPackage" > install.tar.gz
 
 	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaWaspHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
@@ -1275,10 +1278,10 @@ IotaWasp() {
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
-	echo "unpack:"
+	echo "Unpack Package... install.tar.gz"
 	tar -xzf install.tar.gz
 
-	echo "remove tar.gz:"
+	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
@@ -1498,7 +1501,8 @@ IotaGoshimmer() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$IotaGoshimmerPackage" > install.tar.gz
+	echo "Download Package... install.tar.gz"
+	wget -cO -q "$IotaGoshimmerPackage" > install.tar.gz
 
 	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaGoshimmerHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
@@ -1512,10 +1516,10 @@ IotaGoshimmer() {
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
-	echo "unpack:"
+	echo "Unpack Package... install.tar.gz"
 	tar -xzf install.tar.gz
 
-	echo "remove tar.gz:"
+	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
@@ -1706,7 +1710,8 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$ShimmerHornetPackage" > install.tar.gz
+	echo "Download Package... install.tar.gz"
+	wget -cO -q "$ShimmerHornetPackage" > install.tar.gz
 
 	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerHornetHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
@@ -1720,10 +1725,10 @@ ShimmerHornet() {
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
-	echo "unpack:"
+	echo "Unpack Package... install.tar.gz"
 	tar -xzf install.tar.gz
 
-	echo "remove tar.gz:"
+	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
@@ -1955,7 +1960,8 @@ ShimmerWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	wget -cO - "$ShimmerWaspPackage" > install.tar.gz
+	echo "Download Package... install.tar.gz"
+	wget -cO -q "$ShimmerWaspPackage" > install.tar.gz
 
 	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerWaspHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
@@ -1969,10 +1975,10 @@ ShimmerWasp() {
 
 	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
 
-	echo "unpack:"
+	echo "Unpack Package... install.tar.gz"
 	tar -xzf install.tar.gz
 
-	echo "remove tar.gz:"
+	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
