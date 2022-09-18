@@ -60,7 +60,8 @@ SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/s
 clear
 if [ -f "node-installer.sh" ]; then 
 
-	fgrep -q "alias dlt.green =" ~/.bash_aliases >/dev/null 2>&1 || echo "alias dlt.green='sudo wget https://github.com/dlt-green/node-installer-docker/releases/latest/download/node-installer.sh && sudo sh node-installer.sh'" >> ~/.bash_aliases
+	fgrep -q "alias dlt.green=" ~/.bash_aliases >/dev/null 2>&1 || (echo "" >> ~/.bash_aliases && echo "# DLT.GREEN Node-Installer-Docker" >> ~/.bash_aliases && echo "alias dlt.green=" >> ~/.bash_aliases)
+	if [ -f ~/.bash_aliases ]; then sed -i 's/alias dlt.green=.*/alias dlt.green=sudo wget https:\/\/github.com\/dlt-green\/node-installer-docker\/releases\/latest\/download\/node-installer.sh \&\& sudo sh node-installer.sh/g' ~/.bash_aliases; fi
 
 	if [ "$(shasum -a 256 './node-installer.sh' | cut -d ' ' -f 1)" != "$InstallerHash" ]; then
 		echo "$rd"; echo 'Checking Hash of Installer failed...'
