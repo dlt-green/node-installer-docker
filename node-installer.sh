@@ -67,7 +67,7 @@ if [ -f "node-installer.sh" ]; then
 		echo "$rd"; echo 'Checking Hash of Installer failed...'
 		echo 'Installer has been tampered, Installation aborted for your Security!'
 		echo "Downloaded Installer is deleted!"
-		sudo rm -r node-installer.sh -f
+		sudo rm node-installer.sh -f
 		echo "$xx"; exit;
 	fi
 	sudo rm node-installer.sh -f
