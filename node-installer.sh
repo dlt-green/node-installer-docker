@@ -14,7 +14,7 @@ VAR_IOTA_HORNET_VERSION='1.2.1'
 VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
-VAR_SHIMMER_HORNET_VERSION='2.0-beta'
+VAR_SHIMMER_HORNET_VERSION='2.0-beta.9'
 VAR_SHIMMER_WASP_VERSION='0.3.1'
 
 VAR_INX_INDEXER_VERSION='1.0-beta'
@@ -46,19 +46,22 @@ IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/down
 IotaGoshimmerHash='9500b1c9db692804dd57209ed761cd2e8e600210afa37600ec8df8d080adc13e'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
 
-IotaWaspHash='4d75c5bfd4981bf6bca70f1c54fc1f967dc261ddef819f832cc2d75bd01f1d0a'
+IotaWaspHash='3ac40eceb1e3232b7ed26234694ea35246a14ef35520d4c52b93c4033364bfae'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
 ShimmerHornetHash='7604c3e0b7d8b719e65b73e9f5b8be424fbd50ade4a284daadf4750c63bd4325'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='4d75c5bfd4981bf6bca70f1c54fc1f967dc261ddef819f832cc2d75bd01f1d0a'
+ShimmerWaspHash='3ac40eceb1e3232b7ed26234694ea35246a14ef35520d4c52b93c4033364bfae'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 
 clear
 if [ -f "node-installer.sh" ]; then 
+
+	fgrep -q "alias dlt.green =" ~/.bash_aliases >/dev/null 2>&1 || echo "alias dlt.green='sudo wget https://github.com/dlt-green/node-installer-docker/releases/latest/download/node-installer.sh && sudo sh node-installer.sh'" >> ~/.bash_aliases
+
 	if [ "$(shasum -a 256 './node-installer.sh' | cut -d ' ' -f 1)" != "$InstallerHash" ]; then
 		echo "$rd"; echo 'Checking Hash of Installer failed...'
 		echo 'Installer has been tampered, Installation aborted for your Security!'
