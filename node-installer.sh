@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.9.6"
+VRSN="0.9.7"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -785,33 +785,23 @@ IotaHornet() {
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
+	echo "Stopping Node... $VAR_DIR"
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                 Create hornet directory /var/lib/iota-hornet                ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	echo "Check Directory... /var/lib/$VAR_DIR"
 
 	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
 	cd /var/lib/$VAR_DIR || exit
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                             Clean up directory                              ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
 	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
 	echo "Download Package... install.tar.gz"
-	wget -cO -q "$IotaHornetPackage" > install.tar.gz
+	wget -cO - "$IotaHornetPackage" -q > install.tar.gz
 
 	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaHornetHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
@@ -1014,33 +1004,23 @@ IotaBee() {
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
+	echo "Stopping Node... $VAR_DIR"
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                     Create bee directory /var/lib/iota-bee                  ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	echo "Check Directory... /var/lib/$VAR_DIR"
 
 	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
 	cd /var/lib/$VAR_DIR || exit
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                             Clean up directory                              ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
 	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
 	echo "Download Package... install.tar.gz"
-	wget -cO -q "$IotaBeePackage" > install.tar.gz
+	wget -cO - "$IotaBeePackage" -q > install.tar.gz
 
 	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaBeeHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
@@ -1238,33 +1218,23 @@ IotaWasp() {
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
+	echo "Stopping Node... $VAR_DIR"
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                    Create wasp directory /var/lib/iota-wasp                 ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	echo "Check Directory... /var/lib/$VAR_DIR"
 
 	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
 	cd /var/lib/$VAR_DIR || exit
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                             Clean up directory                              ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
 	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
 	echo "Download Package... install.tar.gz"
-	wget -cO -q "$IotaWaspPackage" > install.tar.gz
+	wget -cO - "$IotaWaspPackage" -q > install.tar.gz
 
 	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaWaspHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
@@ -1476,33 +1446,23 @@ IotaGoshimmer() {
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
+	echo "Stopping Node... $VAR_DIR"
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                  Create bee directory /var/lib/iota-goshimmer               ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	echo "Check Directory... /var/lib/$VAR_DIR"
 
 	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
 	cd /var/lib/$VAR_DIR || exit
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                             Clean up directory                              ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
 	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
 	echo "Download Package... install.tar.gz"
-	wget -cO -q "$IotaGoshimmerPackage" > install.tar.gz
+	wget -cO - "$IotaGoshimmerPackage" -q > install.tar.gz
 
 	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaGoshimmerHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
@@ -1685,33 +1645,23 @@ ShimmerHornet() {
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
 
+	echo "Stopping Node... $VAR_DIR"
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                   Create hornet directory /var/lib/shimmer-hornet           ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	echo "Check Directory... /var/lib/$VAR_DIR"
 
 	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
 	cd /var/lib/$VAR_DIR || exit
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                             Clean up directory                              ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
 	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
 	echo "Download Package... install.tar.gz"
-	wget -cO -q "$ShimmerHornetPackage" > install.tar.gz
+	wget -cO - "$ShimmerHornetPackage" -q > install.tar.gz
 
 	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerHornetHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
@@ -1935,33 +1885,23 @@ ShimmerWasp() {
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
 
+	echo "Stopping Node... $VAR_DIR"
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                 Create wasp directory /var/lib/shimmer-wasp                 ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	echo "Check Directory... /var/lib/$VAR_DIR"
 
 	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
 	cd /var/lib/$VAR_DIR || exit
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                             Clean up directory                              ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
 	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
 
 	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║        Pull installer from github.com/dlt-green/node-installer-docker       ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
 	echo "Download Package... install.tar.gz"
-	wget -cO -q "$ShimmerWaspPackage" > install.tar.gz
+	wget -cO - "$ShimmerWaspPackage" -q > install.tar.gz
 
 	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerWaspHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
