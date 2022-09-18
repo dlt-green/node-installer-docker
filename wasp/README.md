@@ -68,7 +68,7 @@ wasp-cli is delivered in a docker image. To use it execute the following steps:
 
 1. Evenutally create a file named `.env` and set parameters given in documentation below
 2. Run `./prepare_cli.sh` to generate wasp-cli config from values in `.env`. The config is created in `data/config/wasp-cli.json`.
-3. Add _alias_ given in output of previous script execution
+3. An _alias_ names wasp-cli is automatically added to `~/.bash_aliases` for easier execution of wasp-cli in docker
 4. Try to execute `wasp-cli login` and use wasp credentials to authenticate with API
 5. Eventually run `./refresh_trusted_nodes.sh` to trust configured nodes. See `WASP_TRUSTED_NODE_* ` in the table above for further information.
 
@@ -81,7 +81,8 @@ wasp-cli is delivered in a docker image. To use it execute the following steps:
 
 **Important hints:**
 - The WASP_CLI_COMMITTEE_* parameters must be numbered in ascending order and without gaps starting from 0 or 1 respectively. If committee member 0 is not configured the information of the local node is used automatically.
-- Execute `prepare_cli.sh` and create/update _alias_ after each wasp upgrade.
+- Execute `prepare_cli.sh` after each wasp upgrade.
+- Uninstalling the wasp-cli alias can be done with `prepare_cli.sh --uninstall`
 
 ### FAQ
 

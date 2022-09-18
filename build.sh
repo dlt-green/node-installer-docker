@@ -92,7 +92,7 @@ build_wasp-cli_image () {
   rm -Rf $buildDirWaspCli && mkdir -p $buildDirWaspCli
   (cd $BUILD_DIR; git clone https://github.com/iotaledger/wasp.git tmp_wasp; cd tmp_wasp; git checkout $repoTag)
 
-  cp ./wasp-cli/Dockerfile $buildDirWaspCli
+  patch "$buildDirWaspCli/Dockerfile" < ./wasp-cli/Dockerfile_wasp-cli.diff
   rm -f $buildDirWaspCli/.dockerignore
   echo .git > $buildDirWaspCli/.dockerignore
   echo .github >> $buildDirWaspCli/.dockerignore

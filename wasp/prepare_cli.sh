@@ -2,10 +2,16 @@
 set -e
 source ../common/scripts/prepare_docker_functions.sh
 
+if [ ! $# -eq 0 ] && [ "$1" == "--uninstall" ]; then
+  echo "Deleting alias..."
+  sed -i '/alias wasp-cli=/d' ~/.bash_aliases && echo "  success"
+  exit 0
+fi
+
 check_env
 elevate_to_root
 
-scriptDir=$(dirname "$0")
+scriptDir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 dataDir="${WASP_DATA_DIR:-$scriptDir/data}"
 configTemplate=assets/wasp-cli.json.template
 configFilename="wasp-cli.json"
@@ -19,7 +25,7 @@ set_config $configPath ".l1.apiaddress"    "\"http://hornet:14265\""
 set_config $configPath ".l1.faucetaddress" "\"http://inx-faucet:8091\""
 
 if [ "$WASP_CLI_WALLET_SEED" != "" ]; then
-  echo "  ${OUTPUT_BLUE}Using wallet seed from .env${OUTPUT_RESET}"
+  echo -e "  ${OUTPUT_BLUE}Using wallet seed from .env${OUTPUT_RESET}"
   set_config $configPath ".wallet.seed" "\"$WASP_CLI_WALLET_SEED\"" "suppress"
 fi
 
@@ -52,6 +58,14 @@ while true; do
   i=$((i+1))
 done
 
+chown 65532:65532 $configPath
+
+echo -e "\nCreating/updating wasp-cli alias..."
+escapedScriptDir=${scriptDir//\//\\\/}
+su - $SUDO_USER -c "fgrep -q \"alias wasp-cli=\" ~/.bash_aliases >/dev/null 2>&1 || echo \"alias wasp-cli=\" >> ~/.bash_aliases"
+su - $SUDO_USER -c "if [ -f ~/.bash_aliases ]; then sed -i 's/alias wasp-cli=.*/alias wasp-cli=\"${escapedScriptDir}\/wasp-cli-wrapper.sh\"/g' ~/.bash_aliases; fi"
+echo -e "  success"
+
 print_line 120
 if [ "$WASP_CLI_WALLET_SEED" == "" ]; then
   echo -e "${OUTPUT_PURPLE_UNDERLINED}WALLET SEED${OUTPUT_RESET}"
@@ -60,11 +74,8 @@ if [ "$WASP_CLI_WALLET_SEED" == "" ]; then
   print_line 120
 fi
 echo -e "${OUTPUT_PURPLE_UNDERLINED}ALIAS${OUTPUT_RESET}"
-echo -e "Consider to create the following alias (or add it to ~/.bashrc):"
-echo -e ""
-echo -e "    alias wasp-cli=\"docker run -it --rm -v ${configPath}:/wasp-cli/wasp-cli.json --network ${WASP_LEDGER_NETWORK} dltgreen/wasp-cli:${WASP_VERSION} wasp-cli\""
-echo -e ""
-echo -e "Otherwise you always have to execute the longish docker command yourself ;-)"
+echo -e "An alias 'wasp-cli' has been created in ~/.bash_aliases."
+echo -e "It will be available on next login or you can also execute the following command to activate it immediately: ${OUTPUT_PURPLE}source ~/.bash_aliases${OUTPUT_RESET}"
 print_line 120
 echo -e "${OUTPUT_GREEN}wasp-cli is now ready to be used${OUTPUT_RESET}"
 
