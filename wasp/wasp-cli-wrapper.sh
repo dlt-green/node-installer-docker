@@ -45,7 +45,7 @@ if [ ! $# -eq 0 ] && [ "$1" == "init" ]; then
   case $yn in
     y) set_wallet_seed_in_env
        ;;
-    *) echo -e "aborted"
+    *) echo -e "cancelled"
        ;;
   esac
 fi
