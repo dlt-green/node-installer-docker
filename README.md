@@ -27,9 +27,17 @@ Die Konfiguration der Nodes sollte immer über den von DLT.GREEN bereitgestellte
 
 #
 
-### NODE-INSTALLER ausführen
+### NODE-INSTALLER Installation
 ```console
 sudo wget https://github.com/dlt-green/node-installer-docker/releases/latest/download/node-installer.sh && sudo sh node-installer.sh
+```
+
+### NODE-INSTALLER ausführen
+
+Mit dem erstmaligen ausführen des Installers wird automatisch ein Alias auf Benutzerebene angelegt, beduetet, dass under dem angemeldeten Benutzer nach dem erstmaligen starten des Installers alternativ dieser Alias verwendet werden kann:
+
+```console
+dlt.green
 ```
 
 ### Bedienung
