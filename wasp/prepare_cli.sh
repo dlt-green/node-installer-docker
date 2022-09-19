@@ -14,14 +14,6 @@ if [ ! $# -eq 0 ] && [ "$1" == "--uninstall" ]; then
   exit 0
 fi
 
-if [[ "$OSTYPE" != "darwin"* && "$EUID" -ne 0 ]]; then
-  echo -e "Creating/updating wasp-cli alias..."
-  escapedScriptDir=${scriptDir//\//\\\/}
-  fgrep -q "alias wasp-cli=" ~/.bash_aliases >/dev/null 2>&1 || echo "alias wasp-cli=" >> ~/.bash_aliases
-  if [ -f ~/.bash_aliases ]; then sed -i "s/alias wasp-cli=.*/alias wasp-cli=\"${escapedScriptDir}\/wasp-cli-wrapper.sh\"/g" ~/.bash_aliases; fi
-  echo ""
-fi
-
 check_env
 elevate_to_root
 
@@ -67,6 +59,12 @@ while true; do
 done
 
 chown 65532:65532 $configPath
+
+userHome=$(getent passwd "$(logname)" | cut -d: -f6)
+echo -e "\nCreating/updating wasp-cli alias in ${userHome}/.bash_aliases..."
+escapedScriptDir=${scriptDir//\//\\\/}
+fgrep -q "alias wasp-cli=" "$userHome/.bash_aliases" >/dev/null 2>&1 || echo "alias wasp-cli=" >> "$userHome/.bash_aliases"
+if [ -f "$userHome/.bash_aliases" ]; then sed -i "s/alias wasp-cli=.*/alias wasp-cli=\"${escapedScriptDir}\/wasp-cli-wrapper.sh\"/g" "$userHome/.bash_aliases"; fi
 
 print_line 120
 if [ "$WASP_CLI_WALLET_SEED" == "" ]; then
