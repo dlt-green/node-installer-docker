@@ -2,6 +2,12 @@
 set -e
 source ../common/scripts/prepare_docker_functions.sh
 
+scriptDir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+dataDir="${WASP_DATA_DIR:-$scriptDir/data}"
+configTemplate=assets/wasp-cli.json.template
+configFilename="wasp-cli.json"
+configPath=$(realpath "${dataDir}/config/$configFilename")
+
 if [ ! $# -eq 0 ] && [ "$1" == "--uninstall" ]; then
   echo "Deleting alias..."
   sed -i '/alias wasp-cli=/d' ~/.bash_aliases && echo "  success"
@@ -10,12 +16,6 @@ fi
 
 check_env
 elevate_to_root
-
-scriptDir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-dataDir="${WASP_DATA_DIR:-$scriptDir/data}"
-configTemplate=assets/wasp-cli.json.template
-configFilename="wasp-cli.json"
-configPath=$(realpath "${dataDir}/config/$configFilename")
 
 source .env
 
@@ -60,11 +60,11 @@ done
 
 chown 65532:65532 $configPath
 
-echo -e "\nCreating/updating wasp-cli alias..."
+userHome=$(getent passwd "$(logname)" | cut -d: -f6)
+echo -e "\nCreating/updating wasp-cli alias in ${userHome}/.bash_aliases..."
 escapedScriptDir=${scriptDir//\//\\\/}
-su - $SUDO_USER -c "fgrep -q \"alias wasp-cli=\" ~/.bash_aliases >/dev/null 2>&1 || echo \"alias wasp-cli=\" >> ~/.bash_aliases"
-su - $SUDO_USER -c "if [ -f ~/.bash_aliases ]; then sed -i 's/alias wasp-cli=.*/alias wasp-cli=\"${escapedScriptDir}\/wasp-cli-wrapper.sh\"/g' ~/.bash_aliases; fi"
-echo -e "  success"
+fgrep -q "alias wasp-cli=" "$userHome/.bash_aliases" >/dev/null 2>&1 || echo "alias wasp-cli=" >> "$userHome/.bash_aliases"
+if [ -f "$userHome/.bash_aliases" ]; then sed -i "s/alias wasp-cli=.*/alias wasp-cli=\"${escapedScriptDir}\/wasp-cli-wrapper.sh\"/g" "$userHome/.bash_aliases"; fi
 
 print_line 120
 if [ "$WASP_CLI_WALLET_SEED" == "" ]; then
