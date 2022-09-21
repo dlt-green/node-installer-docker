@@ -15,7 +15,7 @@ VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.9'
-VAR_SHIMMER_WASP_VERSION='0.3.1'
+VAR_SHIMMER_WASP_VERSION='0.3.2'
 
 VAR_INX_INDEXER_VERSION='1.0-beta'
 VAR_INX_MQTT_VERSION='1.0-beta'
@@ -67,7 +67,7 @@ if [ -f "node-installer.sh" ]; then
 		echo "$rd"; echo 'Checking Hash of Installer failed...'
 		echo 'Installer has been tampered, Installation aborted for your Security!'
 		echo "Downloaded Installer is deleted!"
-		sudo rm -r node-installer.sh -f
+		sudo rm node-installer.sh -f
 		echo "$xx"; exit;
 	fi
 	sudo rm node-installer.sh -f
@@ -312,15 +312,15 @@ Dashboard() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                             IOTA Mainnet/Devnet                             ║"
-	echo "╟─┬───────────────────┬─┬───────────────┬─┬────────────────┬─┬────────────────╢"
-	echo "║1│       ""$ih""HORNET""$xx""      │2│      ""$ib""BEE""$xx""      │3│   ""$ig""GOSHIMMER""$xx""    │4│      ""$iw""WASP""$xx""      ║"
-	echo "╟─┴───────────────────┴─┴───────────────┴─┴────────────────┴─┴────────────────╢"
+	echo "║           ┌── IOTA Mainnet ──┐                   ┌── IOTA Devnet ──┐        ║"
+	echo "╟─┬─────────────────┬─┬─────────────────┬─┬────────────────┬─┬────────────────╢"
+	echo "║1│      ""$ih""HORNET""$xx""     │2│       ""$ib""BEE""$xx""       │3│    ""$ig""GOSHIMMER""$xx""   │4│      ""$iw""WASP""$xx""      ║"
+	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
 	echo "║                                                                             ║"
-	echo "║                               SHIMMER Testnet                               ║"
-	echo "╟─┬───────────────────┬─┬───────────────┬─┬────────────────┬─┬────────────────╢"
-	echo "║5│       ""$sh""HORNET""$xx""      │6│      ""$sb""BEE""$xx""      │-│       ""$gr""-""$xx""        │8│      ""$sw""WASP""$xx""      ║"
-	echo "╟─┴───────────────────┴─┴───────────────┴─┴────────────────┴─┴────────────────╢"
+	echo "║                                  Shimmer Beta                               ║"
+	echo "╟─┬─────────────────┬─┬─────────────────┬─┬────────────────┬─┬────────────────╢"
+	echo "║5│      ""$sh""HORNET""$xx""     │6│       ""$sb""BEE""$xx""       │7│    ""$gr""WASP-CLI""$xx""    │8│      ""$sw""WASP""$xx""      ║"
+	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
 	echo "║                                                                             ║"
 	echo "║   Status from Docker Container (Nodes): ""$gn""running""$xx"" / ""$rd""stopped""$xx"" / ""$gr""not installed""$xx""   ║"
 	echo "║                                                                             ║"
@@ -677,7 +677,7 @@ SystemMaintenance() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                            1. System Reboot (recommend)                     ║"
+	echo "║                            1. System Restart (recommend)                     ║"
 	echo "║                            X. Maintenance Menu                              ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -690,7 +690,10 @@ SystemMaintenance() {
 
 	read -r -p '> ' n
 	case $n in
-	1) 	echo 'rebooting...'; sleep 3
+	1) 	echo 'restarting...'; sleep 3
+	    echo "$ca"
+	    echo 'System restarted, please reconnect...'
+	    echo "$xx"
 		sudo reboot
 		;;
 	*) clear
