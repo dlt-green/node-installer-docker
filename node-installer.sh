@@ -490,8 +490,7 @@ SubMenuMaintenance() {
 	echo "║                              4. Reset Database                              ║"
 	echo "║                              5. Loading Snapshot                            ║"
 	echo "║                              6. Show Logs                                   ║"
-	echo "║                              7. Deinstall/Remove                            ║"	
-	echo "║                              8. Configuration                               ║"
+	echo "║                              7. Deinstall/Remove                            ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -614,7 +613,7 @@ SubMenuMaintenance() {
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
-	8) echo 'deinstall/remove...'; sleep 3
+	7) echo 'deinstall/remove...'; sleep 3
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   clear
 	   echo "$ca"
