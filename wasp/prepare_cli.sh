@@ -23,12 +23,18 @@ fi
 if ! is_elevated_to_root; then
   if is_parameter_present "--uninstall" $@; then
     echo "Deleting alias in $bashAliases..."
-    sed -i '/alias wasp-cli=/d' "$bashAliases" && echo "  success"
+    sed -i '/# DLT.GREEN WASP-CLI/d' "$bashAliases" && \
+    sed -i '/alias wasp-cli=/d' "$bashAliases" && \
+    echo "  success"
     exit 0
   else
     echo -e "Creating/updating wasp-cli alias in $bashAliases..."
     escapedScriptDir=${scriptDir//\//\\\/}
-    fgrep -q "alias wasp-cli=" "$bashAliases" >/dev/null 2>&1 || echo "alias wasp-cli=" >> "$bashAliases"
+    fgrep -q "alias wasp-cli=" "$bashAliases" >/dev/null 2>&1 || \
+      ( \
+        if [ "$(tail -1 $bashAliases)" != "" ]; then echo "" >> "$bashAliases"; fi && \
+        echo -e "# DLT.GREEN WASP-CLI\nalias wasp-cli=" >> "$bashAliases" \
+      )
     if [ -f "$bashAliases" ]; then sed -i "s/alias wasp-cli=.*/alias wasp-cli=\"${escapedScriptDir}\/wasp-cli-wrapper.sh\"/g" "$bashAliases"; fi
     echo -e "  success\n"
   fi
