@@ -52,7 +52,7 @@ set_config $configPath ".l1.apiaddress"    "\"http://hornet:14265\""
 set_config $configPath ".l1.faucetaddress" "\"http://inx-faucet:8091\""
 
 if [ "$WASP_CLI_WALLET_SEED" != "" ]; then
-  echo -e "  ${OUTPUT_BLUE}Using wallet seed from .env${OUTPUT_RESET}"
+  echo -e "  ${OUTPUT_PURPLE}Using wallet seed from .env${OUTPUT_RESET}"
   set_config $configPath ".wallet.seed" "\"$WASP_CLI_WALLET_SEED\"" "suppress"
 fi
 
@@ -65,7 +65,8 @@ while true; do
 
   if [ "$api" == "" ]; then
     if [ $i -eq 0 ]; then
-      echo -e "  ${OUTPUT_BLUE}Missing WASP_CLI_COMMITTEE_0_* parameters. Defaulting to local node parameters.${OUTPUT_RESET}"
+      echo -e "  ${OUTPUT_PURPLE}Missing WASP_CLI_COMMITTEE_0_* parameters.${OUTPUT_RESET}"
+      echo -e "  ${OUTPUT_PURPLE}Defaulting to local node parameters.${OUTPUT_RESET}"
       api="https://$WASP_HOST:$WASP_API_PORT"
       nanomsg="$WASP_HOST:$WASP_NANO_MSG_PORT"
       peering="$WASP_HOST:$WASP_PEERING_PORT"
