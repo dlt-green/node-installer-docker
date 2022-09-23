@@ -1,9 +1,13 @@
 #!/bin/bash
 set -e
-source ../common/scripts/prepare_docker_functions.sh
-
 scriptDir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 currentDir=$( pwd )
+
+if [ -f ../common/scripts/prepare_docker_functions.sh ]; then
+  source ../common/scripts/prepare_docker_functions.sh
+else
+  source "${scriptDir}/scripts/prepare_docker_functions.sh"
+fi
 
 source $scriptDir/.env
 
