@@ -4,12 +4,12 @@ source ../common/scripts/prepare_docker_functions.sh
 source .env
 shopt -s expand_aliases
 
-scriptDir=$(dirname "$0")
+scriptDir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 dataDir="${WASP_DATA_DIR:-$scriptDir/data}"
 configFilename="wasp-cli.json"
 configPath=$(realpath "${dataDir}/config/$configFilename")
 
-alias wasp-cli="docker run -i --rm -v ${configPath}:/wasp-cli/wasp-cli.json --network ${WASP_LEDGER_NETWORK} dltgreen/wasp-cli:${WASP_VERSION} wasp-cli"
+alias wasp-cli="$scriptDir/wasp-cli-wrapper.sh"
 
 echo -e "${OUTPUT_PURPLE_UNDERLINED}HINT:${OUTPUT_RESET} Press CTRL+C if script hangs. Wasp is a little bit buggy at the moment. Restarting wasp can help at times."
 echo -e ""
