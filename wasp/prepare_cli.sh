@@ -25,7 +25,7 @@ if ! is_elevated_to_root; then
     echo "Deleting alias in $bashAliases..."
     sed -i '/# DLT.GREEN WASP-CLI/d' "$bashAliases" && \
     sed -i '/alias wasp-cli=/d' "$bashAliases" && \
-    sudo rm -f "$configPath"
+    sudo rm -Rf "$configPath"
     echo "  success"
     exit 0
   else
