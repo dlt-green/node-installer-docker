@@ -163,7 +163,7 @@ services:
       - "${HORNET_DATA_DIR:-./data}/indexer/${HORNET_NETWORK:-mainnet}:/app/data"
     command:
       - "--inx.address=hornet:9029"
-      - "--indexer.db.path=/app/data"
+      - "--indexer.db.sqlite.path=/app/data"
       - "--restAPI.bindAddress=inx-indexer:9091"
       - "--prometheus.enabled=true"
       - "--prometheus.bindAddress=inx-indexer:9312"
