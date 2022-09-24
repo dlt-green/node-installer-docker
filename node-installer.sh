@@ -687,7 +687,7 @@ SubMenuWaspCLI() {
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
-	4) clear
+	3) clear
 	   echo "$ca"
 	   echo 'Initialize a new wallet...'
 	   echo "$xx"
@@ -700,7 +700,7 @@ SubMenuWaspCLI() {
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
-	5) clear
+	4) clear
 	   echo "$ca"
 	   echo 'Show the wallet address...'
 	   echo "$xx"
@@ -713,7 +713,7 @@ SubMenuWaspCLI() {
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
-	6) clear
+	5) clear
 	   echo "$ca"
 	   echo 'Show the wallet balance...'
 	   echo "$xx"
