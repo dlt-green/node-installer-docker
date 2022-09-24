@@ -726,6 +726,28 @@ SubMenuWaspCLI() {
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
+	6) clear
+	   if [ -d /var/lib/shimmer-wasp ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+          Key=''
+		  while ! [ "$Key" = 'q' ] && ! [ "$Key" = 'Q' ]
+	      do
+		     clear
+			 echo "$ca"
+			 echo 'Run Wasp-CLI | alias: wasp-cli {commands}...'
+			 echo "$xx"
+			 echo "Set command: (example: $ca""wasp-cli {commands} or {commands}""$xx):"
+		     read -r -p 'Wasp-CLI > ' VAR_RUN_WASP_CLI_CMD
+		     VAR_RUN_WASP_CLI_CMD=$(echo "$VAR_RUN_WASP_CLI_CMD" | sed 's/^wasp-cli//g')
+		     ./wasp-cli-wrapper.sh "$VAR_RUN_WASP_CLI_CMD"
+		     echo "$ca"; read -r -p 'Press [Enter] key for next CLI command... Press [Q] to quit Wasp-CLI... ' Key; echo "$xx"
+	      done
+	   else
+	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+	   fi
+	   SubMenuWaspCLI
+	   ;;
 	7) clear
 	   echo "$ca"
 	   echo 'Help...'
