@@ -47,13 +47,13 @@ IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/down
 IotaGoshimmerHash='9500b1c9db692804dd57209ed761cd2e8e600210afa37600ec8df8d080adc13e'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
 
-IotaWaspHash='aa53c4f64b621f68c9aa4582f0cefbf3598a2b3804585f16f7bdaacb06557c5b'
+IotaWaspHash='5c9f72377950081602fa909c3a4c27eb70756b6e1b1ba622b8a248e5258f5519'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
 ShimmerHornetHash='9a9de6287e312ae11f6db184da604021fffc77a2f469edab40a83bb113601ba4'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='aa53c4f64b621f68c9aa4582f0cefbf3598a2b3804585f16f7bdaacb06557c5b'
+ShimmerWaspHash='5c9f72377950081602fa909c3a4c27eb70756b6e1b1ba622b8a248e5258f5519'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -653,7 +653,7 @@ SubMenuWaspCLI() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 7 ]; then
-	if [ -s "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then echo "$ca""Network/Node: $VAR_DIR | $(./wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi; fi
+	if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi; fi
 	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 	echo ""
 	echo "select menu item: "
@@ -667,7 +667,7 @@ SubMenuWaspCLI() {
 	   echo "$xx"
 	   if [ -d /var/lib/shimmer-wasp ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  ./prepare_cli.sh
+		  if [ -s "./prepare_cli.sh" ]; then ./prepare_cli.sh; else echo "$rd""For using Wasp-CLI you must update Shimmer-Wasp first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
@@ -680,7 +680,7 @@ SubMenuWaspCLI() {
 	   echo "$xx"
 	   if [ -d /var/lib/shimmer-wasp ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  ./wasp-cli-wrapper.sh login
+		  if [ -s "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh login; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
@@ -693,7 +693,7 @@ SubMenuWaspCLI() {
 	   echo "$xx"
 	   if [ -d /var/lib/shimmer-wasp ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  ./wasp-cli-wrapper.sh init
+		  if [ -s "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh init; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
@@ -706,7 +706,7 @@ SubMenuWaspCLI() {
 	   echo "$xx"
 	   if [ -d /var/lib/shimmer-wasp ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  ./wasp-cli-wrapper.sh address
+		  if [ -s "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh address; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
@@ -719,7 +719,7 @@ SubMenuWaspCLI() {
 	   echo "$xx"
 	   if [ -d /var/lib/shimmer-wasp ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  ./wasp-cli-wrapper.sh balance
+		  if [ -s "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh balance; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
@@ -739,7 +739,7 @@ SubMenuWaspCLI() {
 			 echo "Set command: (example: $ca""wasp-cli {commands} or {commands}""$xx):"
 		     read -r -p 'Wasp-CLI > ' VAR_RUN_WASP_CLI_CMD
 		     VAR_RUN_WASP_CLI_CMD=$(echo "$VAR_RUN_WASP_CLI_CMD" | sed 's/^wasp-cli//g')
-		     ./wasp-cli-wrapper.sh "$VAR_RUN_WASP_CLI_CMD"
+			 if [ -s "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh "$VAR_RUN_WASP_CLI_CMD"; else echo ""; echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 		     echo "$ca"; read -r -p 'Press [Enter] key for next CLI command... Press [Q] to quit Wasp-CLI... ' Key; echo "$xx"
 	      done
 	   else
@@ -754,7 +754,7 @@ SubMenuWaspCLI() {
 	   echo "$xx"
 	   if [ -d /var/lib/shimmer-wasp ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  ./wasp-cli-wrapper.sh -h
+		  if [ -s "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh -h; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
@@ -767,7 +767,7 @@ SubMenuWaspCLI() {
 	   echo "$xx"
 	   if [ -d /var/lib/shimmer-wasp ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  ./prepare_cli.sh --uninstall
+		  if [ -s "./prepare_cli.sh" ]; then ./prepare_cli.sh --uninstall; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
