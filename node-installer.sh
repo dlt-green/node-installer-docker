@@ -25,6 +25,7 @@ VAR_INX_POI_VERSION='1.0-beta'
 VAR_INX_DASHBOARD_VERSION='1.0-beta'
 
 lg='\033[1m'
+or='\e[1;33m'
 ca='\e[1;96m'
 rd='\e[1;91m'
 gn='\e[1;92m'
@@ -292,7 +293,8 @@ Dashboard() {
 	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-hornet' 2>/dev/null)" = 'running' ]; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi
 	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-bee'    2>/dev/null)" = 'running' ]; then sb=$gn; elif [ -d /var/lib/shimmer-bee ];    then sb=$rd; else sb=$gr; fi
 	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-wasp'   2>/dev/null)" = 'running' ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ];   then sw=$rd; else sw=$gr; fi
-
+	if [ -s "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then wc=$gn; elif [ -d /var/lib/shimmer-wasp ];   then wc=$or; else wc=$gr; fi
+	
 	VAR_DOMAIN=''
 
 	if [ -s "/var/lib/iota-hornet/.env" ];    then VAR_DOMAIN=$(cat /var/lib/iota-hornet/.env    | grep _HOST | cut -d '=' -f 2); fi
@@ -319,7 +321,7 @@ Dashboard() {
 	echo "║                                                                             ║"
 	echo "║                                  Shimmer Beta                               ║"
 	echo "╟─┬─────────────────┬─┬─────────────────┬─┬────────────────┬─┬────────────────╢"
-	echo "║5│      ""$sh""HORNET""$xx""     │6│       ""$sb""BEE""$xx""       │7│    ""$gr""WASP-CLI""$xx""    │8│      ""$sw""WASP""$xx""      ║"
+	echo "║5│      ""$sh""HORNET""$xx""     │6│       ""$sb""BEE""$xx""       │7│    ""$wc""WASP-CLI""$xx""    │8│      ""$sw""WASP""$xx""      ║"
 	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
 	echo "║                                                                             ║"
 	echo "║   Status from Docker Container (Nodes): ""$gn""running""$xx"" / ""$rd""stopped""$xx"" / ""$gr""not installed""$xx""   ║"
@@ -362,8 +364,8 @@ Dashboard() {
 	   SubMenuMaintenance ;;
 	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-bee'
 	   DashboardHelper ;;
-	7) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-bee'
-	   DashboardHelper ;;
+	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='shimmer-wasp'
+	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=8; VAR_DIR='shimmer-wasp'
 	   SubMenuMaintenance ;;
 
@@ -626,6 +628,130 @@ SubMenuMaintenance() {
 	   echo "$rd""$VAR_DIR removed from your system!""$xx"
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuMaintenance
+	   ;;
+	*) Dashboard ;;
+	esac
+}
+
+SubMenuWaspCLI() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+	echo "║""$ca""$VAR_DOMAIN""$xx""║"
+	echo "║                                                                             ║"
+	echo "║                              1. Install/Prepare Wasp-CLI                    ║"
+	echo "║                              2. Login (Authenticate against a Wasp node)    ║"	
+	echo "║                              3. Run Wasp-CLI | alias: wasp-cli {commands}   ║"	
+	echo "║                              4. Initialize a new wallet                     ║"
+	echo "║                              5. Show the wallet address                     ║"	
+	echo "║                              6. Show the wallet balance                     ║"	
+	echo "║                              7. Help                                        ║"	
+	echo "║                              8. Deinstall/Remove                            ║"
+	echo "║                              X. Management Dashboard                        ║"
+	echo "║                                                                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 7 ]; then
+	if [ -s "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then echo "$ca""Network/Node: $VAR_DIR | $(./wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi; fi
+	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+	echo ""
+	echo "select menu item: "
+	echo ""
+
+	read -r -p '> ' n
+	case $n in
+	1) clear
+	   echo "$ca"
+	   echo 'Install/Prepare Wasp-CLI...'
+	   echo "$xx"
+	   if [ -d /var/lib/shimmer-wasp ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+		  ./prepare_cli.sh
+	   else
+	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	   fi
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuWaspCLI
+	   ;;
+	2) clear
+	   echo "$ca"
+	   echo 'Login (Authenticate against a Wasp node)...'
+	   echo "$xx"
+	   if [ -d /var/lib/shimmer-wasp ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+		  ./wasp-cli-wrapper.sh login
+	   else
+	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	   fi
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuWaspCLI
+	   ;;
+	4) clear
+	   echo "$ca"
+	   echo 'Initialize a new wallet...'
+	   echo "$xx"
+	   if [ -d /var/lib/shimmer-wasp ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+		  ./wasp-cli-wrapper.sh init
+	   else
+	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	   fi
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuWaspCLI
+	   ;;
+	5) clear
+	   echo "$ca"
+	   echo 'Show the wallet address...'
+	   echo "$xx"
+	   if [ -d /var/lib/shimmer-wasp ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+		  ./wasp-cli-wrapper.sh address
+	   else
+	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	   fi
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuWaspCLI
+	   ;;
+	6) clear
+	   echo "$ca"
+	   echo 'Show the wallet balance...'
+	   echo "$xx"
+	   if [ -d /var/lib/shimmer-wasp ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+		  ./wasp-cli-wrapper.sh balance
+	   else
+	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	   fi
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuWaspCLI
+	   ;;
+	7) clear
+	   echo "$ca"
+	   echo 'Help...'
+	   echo "$xx"
+	   if [ -d /var/lib/shimmer-wasp ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+		  ./wasp-cli-wrapper.sh -h
+	   else
+	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	   fi
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuWaspCLI
+	   ;;
+	8) clear
+	   echo "$ca"
+	   echo 'Deinstall/Remove Wasp-CLI...'
+	   echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   if [ -d /var/lib/shimmer-wasp ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+		  ./prepare_cli.sh --uninstall
+	   else
+	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	   fi
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuWaspCLI
 	   ;;
 	*) Dashboard ;;
 	esac
