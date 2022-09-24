@@ -135,10 +135,10 @@ CheckFirewall() {
 				echo "Set custom SSH-Port... $VAR_SSH_PORT/tcp"
 			 fi
 
-			 echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+			 echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 			 echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
 			 sudo ufw enable
-			 echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+			 echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 			 ;;
 		esac
 	fi
@@ -150,7 +150,7 @@ CheckDomain() {
 		echo ""
 	    echo "$rd""Attention! Verification of your specified Domain failed! Installation aborted!""$xx"
 	    echo "$rd""Maybe you entered a wrong Domain or the DNS is not reachable yet?""$xx"
-	    echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	    echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		SubMenuMaintenance
 	else
 	    echo "$gn""Verification of your specified Domain successful""$xx"
@@ -278,7 +278,7 @@ SetCertificateGlobal() {
 	     echo "$rd""There was an Error on getting a Let's Encrypt Certificate!""$xx"
 	     echo "$gn""A default Certificate is now generated only for this Node""$xx"
 	   fi
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   ;;
 	X) ;;
 	esac
@@ -349,7 +349,7 @@ Dashboard() {
 	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker-compose up -d; fi
 	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker-compose up -d; fi
 	   RenameContainer
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   DashboardHelper ;;
 
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
@@ -435,7 +435,7 @@ MainMenu() {
 	   echo 'Firewall Status/Ports:'
 	   echo "$xx"
 	   ufw status numbered 2>/dev/null
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   MainMenu ;;
 	5) SubMenuLicense ;;
 	q|Q) clear; exit ;;
@@ -443,7 +443,7 @@ MainMenu() {
 	   if [ $? -eq 0 ]; then Dashboard; else
   	     echo ""
   	     echo "$rd""Attention! Please install Docker! Loading Dashboard aborted!""$xx"
-	     echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	     echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	     MainMenu
        fi;;
 	esac
@@ -536,7 +536,7 @@ SubMenuMaintenance() {
 
 	   RenameContainer; sleep 3
 
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
 	3) echo 'stopping...'; sleep 3
@@ -555,7 +555,7 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
 	   sleep 3;
 
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
 	4) echo 'resetting...'; sleep 3
@@ -577,7 +577,7 @@ SubMenuMaintenance() {
 
 	   RenameContainer; sleep 3
 
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
 	5) echo 'loading...'; sleep 3
@@ -608,15 +608,15 @@ SubMenuMaintenance() {
 
 	   RenameContainer
 
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
 	6) docker logs -f --tail 300 $VAR_DIR
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
 	7) echo 'deinstall/remove...'; sleep 3
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   clear
 	   echo "$ca"
 	   echo 'Please wait, deinstalling Nodes can take up to 5 minutes...'
@@ -626,7 +626,7 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then rm -r /var/lib/$VAR_DIR; fi
 
 	   echo "$rd""$VAR_DIR removed from your system!""$xx"
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
 	*) Dashboard ;;
@@ -671,7 +671,7 @@ SubMenuWaspCLI() {
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	2) clear
@@ -684,7 +684,7 @@ SubMenuWaspCLI() {
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	3) clear
@@ -697,7 +697,7 @@ SubMenuWaspCLI() {
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	4) clear
@@ -710,7 +710,7 @@ SubMenuWaspCLI() {
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	5) clear
@@ -723,7 +723,7 @@ SubMenuWaspCLI() {
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	6) clear
@@ -758,21 +758,20 @@ SubMenuWaspCLI() {
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	8) clear
 	   echo "$ca"
 	   echo 'Deinstall/Remove Wasp-CLI...'
 	   echo "$xx"
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   if [ -d /var/lib/shimmer-wasp ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  ./prepare_cli.sh --uninstall
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	*) Dashboard ;;
@@ -787,7 +786,7 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -797,7 +796,7 @@ SystemMaintenance() {
 
 	docker system prune
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	clear
 	echo "$ca"
@@ -806,7 +805,7 @@ SystemMaintenance() {
 	docker stop $(docker ps -a -q)
 	docker ps -a -q
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	clear
 	echo "$ca"
@@ -817,7 +816,7 @@ SystemMaintenance() {
 	sudo apt upgrade -y
 	sudo apt-get autoremove -y
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	clear
 	echo ""
@@ -858,7 +857,7 @@ SystemMaintenance() {
 	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker-compose up -d; fi
 	   RenameContainer
 
-	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	   MainMenu ;;
 	esac
@@ -872,7 +871,7 @@ Docker() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	sudo docker ps -a -q >/dev/null 2>&1
 
@@ -918,7 +917,7 @@ Docker() {
 	sudo apt-get update
 	sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	MainMenu
 }
@@ -934,7 +933,7 @@ IotaHornet() {
 	CheckShimmer
 	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
@@ -973,7 +972,7 @@ IotaHornet() {
 	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	CheckConfiguration
 
@@ -1047,7 +1046,7 @@ IotaHornet() {
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	clear
 	echo ""
@@ -1115,7 +1114,7 @@ IotaHornet() {
 	RenameContainer
 
 	echo ""
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -1137,7 +1136,7 @@ IotaHornet() {
 	fi
 	echo ""
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	SubMenuMaintenance
 }
@@ -1153,7 +1152,7 @@ IotaBee() {
 	CheckShimmer
 	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
@@ -1192,7 +1191,7 @@ IotaBee() {
 	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	CheckConfiguration
 
@@ -1261,7 +1260,7 @@ IotaBee() {
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	clear
 	echo ""
@@ -1329,7 +1328,7 @@ IotaBee() {
 	RenameContainer
 
 	echo ""
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -1351,7 +1350,7 @@ IotaBee() {
 	fi
 	echo ""
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	SubMenuMaintenance
 }
@@ -1367,7 +1366,7 @@ IotaWasp() {
 	CheckShimmer
 	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
@@ -1406,7 +1405,7 @@ IotaWasp() {
 	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	CheckConfiguration
 
@@ -1487,7 +1486,7 @@ IotaWasp() {
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	clear
 	echo ""
@@ -1554,7 +1553,7 @@ IotaWasp() {
 	RenameContainer
 
 	echo ""
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -1579,7 +1578,7 @@ IotaWasp() {
 	fi
 	echo ""
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	SubMenuMaintenance
 }
@@ -1595,7 +1594,7 @@ IotaGoshimmer() {
 	CheckShimmer
 	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
@@ -1634,7 +1633,7 @@ IotaGoshimmer() {
 	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	CheckConfiguration
 
@@ -1695,7 +1694,7 @@ IotaGoshimmer() {
 		echo ufw allow '8080/tcp' && ufw allow '8080/tcp'
 	fi
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	clear
 	echo ""
@@ -1756,7 +1755,7 @@ IotaGoshimmer() {
 	RenameContainer
 
 	echo ""
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -1778,7 +1777,7 @@ IotaGoshimmer() {
 	fi
 	echo ""
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	SubMenuMaintenance
 }
@@ -1794,7 +1793,7 @@ ShimmerHornet() {
 	CheckIota
 	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
@@ -1833,7 +1832,7 @@ ShimmerHornet() {
 	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	CheckConfiguration
 
@@ -1922,7 +1921,7 @@ ShimmerHornet() {
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	clear
 	echo ""
@@ -1992,7 +1991,7 @@ ShimmerHornet() {
 	if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 
 	echo ""
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -2018,7 +2017,7 @@ ShimmerHornet() {
 	fi
 	echo ""
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	SubMenuMaintenance
 }
@@ -2034,7 +2033,7 @@ ShimmerWasp() {
 	CheckIota
 	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
@@ -2073,7 +2072,7 @@ ShimmerWasp() {
 	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	CheckConfiguration
 
@@ -2148,7 +2147,7 @@ ShimmerWasp() {
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 	fi
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	clear
 	echo ""
@@ -2213,7 +2212,7 @@ ShimmerWasp() {
 	RenameContainer
 
 	echo ""
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -2238,7 +2237,7 @@ ShimmerWasp() {
 	fi
 	echo ""
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	SubMenuMaintenance
 }
