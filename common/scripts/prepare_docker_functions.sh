@@ -42,11 +42,44 @@ validate_ssl_config () {
 }
 
 elevate_to_root () {
+  echo "Elevating to root privileges..."
   if [[ "$OSTYPE" != "darwin"* && "$EUID" -ne 0 ]]; then
-    echo "Elevating to root privileges..."
-    sudo "$0" "$@"
+    sudo ELEVATED_TO_ROOT="true" "$0" "$@"
     exit $?
+  else
+    echo "  root privileges already granted"
   fi
+}
+
+is_elevated_to_root () {
+  [ "$ELEVATED_TO_ROOT" == "true" ]
+}
+
+is_parameter_present () {
+  local parameterName=$1
+
+  local i=0;
+  for param in "$@"; do
+    if [ $i -ne 0 ] && [[ "$param" == *"$parameterName"* ]]; then
+      true
+      return
+    fi
+    i=$(($i+1))
+  done
+  false
+}
+
+get_parameter_value () {
+  local parameterName=$1
+
+  local i=0;
+  for param in "$@"; do
+    if [ $i -ne 0 ] && [[ "$param" == *"$parameterName"* ]]; then
+      echo $param | cut -d '=' -f 2
+      break
+    fi
+    i=$(($i+1))
+  done
 }
 
 create_docker_network () {

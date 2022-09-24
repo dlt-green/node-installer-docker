@@ -1,9 +1,13 @@
 #!/bin/bash
 set -e
-source ../common/scripts/prepare_docker_functions.sh
-
 scriptDir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 currentDir=$( pwd )
+
+if [ -f ../common/scripts/prepare_docker_functions.sh ]; then
+  source ../common/scripts/prepare_docker_functions.sh
+else
+  source "${scriptDir}/scripts/prepare_docker_functions.sh"
+fi
 
 source $scriptDir/.env
 
@@ -38,7 +42,7 @@ if [ ! $# -eq 0 ] && [ "$1" == "init" ]; then
   print_line 120
   echo -e "${OUTPUT_PURPLE_UNDERLINED}PRESERVE WALLET SEED?${OUTPUT_RESET}"
   echo -e ""
-  echo -e "You seem to have generated a new wallet seed. Would you like to add it to ${scriptDir}/.env"
+  echo -e "You seem to have generated a new wallet seed. Would you like to add/update it in ${scriptDir}/.env"
   echo -e "to preserve it on prepare_cli.sh execution and/or Wasp node update?"
   echo -e ""
   read -p "Proceed? (y/n) " yn
