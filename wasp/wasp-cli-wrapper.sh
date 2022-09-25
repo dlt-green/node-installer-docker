@@ -15,7 +15,7 @@ dataDir="${WASP_DATA_DIR:-${scriptDir}/data}"
 configPath="${dataDir}/config/wasp-cli.json"
 imageTag="dltgreen/wasp-cli:${WASP_VERSION}"
 
-if [ ! -f "${configPath}" ]; then
+if [ ! -f "${configPath}" ] && ! is_parameter_present "-v" $@; then
   (cd "${scriptDir}" && ./prepare_cli.sh >/dev/null)
   echo -e "Initial wasp-cli config created. Continuing..."
   print_line 120
