@@ -16,12 +16,9 @@ configPath="${dataDir}/config/wasp-cli.json"
 imageTag="dltgreen/wasp-cli:${WASP_VERSION}"
 
 if [ ! -f "${configPath}" ]; then
-  echo -e "${OUTPUT_RED}The wasp-cli config is damaged or missing!${OUTPUT_RESET}\n"
-  read -s -r -p "Press [Enter] key to restore config from .env and continue with your command... Press [STRG+C] to cancel... "
+  (cd "${scriptDir}" && ./prepare_cli.sh >/dev/null)
+  echo -e "Initial wasp-cli config created. Continuing..."
   print_line 120
-  (cd "${scriptDir}" && ./prepare_cli.sh)
-  print_line 120
-  echo "> wasp-cli ${@}"
 fi
 
 docker rm -f ${WASP_LEDGER_NETWORK}-wasp.cli &>/dev/null && \
