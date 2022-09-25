@@ -9,11 +9,26 @@ else
   source "${scriptDir}/scripts/prepare_docker_functions.sh"
 fi
 
-source $scriptDir/.env
+source "${scriptDir}/.env"
 
 dataDir="${WASP_DATA_DIR:-${scriptDir}/data}"
 configPath="${dataDir}/config/wasp-cli.json"
 imageTag="dltgreen/wasp-cli:${WASP_VERSION}"
+
+if [ ! -f "${configPath}" ]; then
+  echo -e "${OUTPUT_RED}The wasp-cli config is damaged or missing!${OUTPUT_RESET}\n"
+  read -p "Should it be (re-)created from .env? (y/n) " yn
+  case $yn in
+    y) print_line 120
+       (cd "${scriptDir}" && ./prepare_cli.sh)
+       print_line 120
+       echo "> wasp-cli ${@}"
+       ;;
+    *) echo 'cancelled'
+       exit 255
+       ;;
+  esac
+fi
 
 docker rm -f ${WASP_LEDGER_NETWORK}-wasp.cli &>/dev/null && \
 docker run -it --rm \
@@ -28,10 +43,10 @@ docker run -it --rm \
 
 # convenience actions
 function set_wallet_seed_in_env () {
-  walletSeed=$(read_config "$configPath" ".wallet.seed")
-  if [ "$walletSeed" != "" ]; then
-    sudo fgrep -q "WASP_CLI_WALLET_SEED=" "$scriptDir/.env" >/dev/null 2>&1 || sudo echo "WASP_CLI_WALLET_SEED=" >> "$scriptDir/.env"
-    sudo sed -i "s/WASP_CLI_WALLET_SEED=.*/WASP_CLI_WALLET_SEED=${walletSeed}/g" "$scriptDir/.env"
+  walletSeed=$(read_config "${configPath}" ".wallet.seed")
+  if [ "${walletSeed}" != "" ]; then
+    sudo fgrep -q "WASP_CLI_WALLET_SEED=" "${scriptDir}/.env" >/dev/null 2>&1 || sudo echo "WASP_CLI_WALLET_SEED=" >> "${scriptDir}/.env"
+    sudo sed -i "s/WASP_CLI_WALLET_SEED=.*/WASP_CLI_WALLET_SEED=${walletSeed}/g" "${scriptDir}/.env"
     echo -e "${OUTPUT_GREEN}success${OUTPUT_RESET}"
   else
     echo "${OUTPUT_RED}Wallet seed not found in ${configPath}${OUTPUT_RESET}"
