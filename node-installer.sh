@@ -47,13 +47,13 @@ IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/down
 IotaGoshimmerHash='9500b1c9db692804dd57209ed761cd2e8e600210afa37600ec8df8d080adc13e'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
 
-IotaWaspHash='29cd718db51c73e669ea119bb49d298b6c537f734807a2a53761a95da1cd53ec'
+IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
 ShimmerHornetHash='9a9de6287e312ae11f6db184da604021fffc77a2f469edab40a83bb113601ba4'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='29cd718db51c73e669ea119bb49d298b6c537f734807a2a53761a95da1cd53ec'
+ShimmerWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -663,10 +663,14 @@ SubMenuWaspCLI() {
 	case $n in
 	1) clear
 	   echo "$ca"
-	   echo 'Install/Prepare Wasp-CLI...'
-	   echo "$xx"
+	   echo "Install/Prepare Wasp-CLI...$xx"
+
 	   if [ -d /var/lib/shimmer-wasp ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+	      echo "$fl"; read -r -p 'Press [F] to enable Faucet... Press [ENTER] key to skip... ' F; echo "$xx"
+		  if  [ "$F" = 'f' ] && ! [ "$F" = 'F' ]; then 
+	         fgrep -q "WASP_CLI_FAUCET_ADDRESS" .env || echo "WASP_CLI_FAUCET_ADDRESS=https://faucet.testnet.shimmer.network" >> .env
+		  fi
 		  if [ -f "./prepare_cli.sh" ]; then ./prepare_cli.sh; else echo "$rd""For using Wasp-CLI you must update Shimmer-Wasp first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"

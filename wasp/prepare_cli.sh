@@ -50,7 +50,7 @@ source .env
 echo -e "\nCreating wasp-cli config..."
 rm -Rf "${configPath}" && echo "{}" > "${configPath}"
 set_config "${configPath}" ".l1.apiaddress"    "\"http://hornet:14265\""
-set_config "${configPath}" ".l1.faucetaddress" "\"http://inx-faucet:8091\""
+set_config "${configPath}" ".l1.faucetaddress" "\"${WASP_CLI_FAUCET_ADDRESS:-http://inx-faucet:8091}\""
 
 if [ "${WASP_CLI_WALLET_SEED}" != "" ]; then
   echo -e "  ${OUTPUT_PURPLE}Using wallet seed from .env${OUTPUT_RESET}"
