@@ -17,17 +17,11 @@ imageTag="dltgreen/wasp-cli:${WASP_VERSION}"
 
 if [ ! -f "${configPath}" ]; then
   echo -e "${OUTPUT_RED}The wasp-cli config is damaged or missing!${OUTPUT_RESET}\n"
-  read -p "Should it be (re-)created from .env? (y/n) " yn
-  case $yn in
-    y) print_line 120
-       (cd "${scriptDir}" && ./prepare_cli.sh)
-       print_line 120
-       echo "> wasp-cli ${@}"
-       ;;
-    *) echo 'cancelled'
-       exit 255
-       ;;
-  esac
+  read -s -r -p "Press [Enter] key to restore config from .env and continue with your command... Press [STRG+C] to cancel... "
+  print_line 120
+  (cd "${scriptDir}" && ./prepare_cli.sh)
+  print_line 120
+  echo "> wasp-cli ${@}"
 fi
 
 docker rm -f ${WASP_LEDGER_NETWORK}-wasp.cli &>/dev/null && \
