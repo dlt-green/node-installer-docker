@@ -731,17 +731,27 @@ SubMenuWaspCLI() {
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
           VAR_RUN_WASP_CLI_CMD=''
           echo "$ca"
-          echo "Run Wasp-CLI | alias: wasp-cli {commands}""$xx"
-          echo "$rd""Hint: Quit Wasp-CLI with [q] or [Q]"
-          echo "$xx"		  
-          echo "Set command: (example: $ca""wasp-cli {commands} or {commands}""$xx):"
+          if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
+          echo "$rd""Hint: Quit Wasp-CLI with [q] | Help [-h] | Clear [clear]"
+          echo "$xx"
+          echo "Set command: (example: $ca""'wasp-cli {commands}' or '{commands}'""$xx):"
 		  while ! [ "$VAR_RUN_WASP_CLI_CMD" = 'q' ] && ! [ "$VAR_RUN_WASP_CLI_CMD" = 'Q' ]
 	      do
              echo "$ca"
 		     read -r -p 'Wasp-CLI > ' VAR_RUN_WASP_CLI_CMD
 			 echo "$xx"
 		     VAR_RUN_WASP_CLI_CMD=$(echo "$VAR_RUN_WASP_CLI_CMD" | sed 's/^wasp-cli//g')
-			 if [ -f "./data/config/wasp-cli.json" ] && ! [ "$VAR_RUN_WASP_CLI_CMD" = 'q' ] && ! [ "$VAR_RUN_WASP_CLI_CMD" = 'Q' ]; then ./wasp-cli-wrapper.sh "$VAR_RUN_WASP_CLI_CMD"; else echo ""; echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+			 if [ "$VAR_RUN_WASP_CLI_CMD" = 'clear' ]; then
+			    clear
+			    echo "$ca"
+			    if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
+			    echo "$rd""Hint: Quit Wasp-CLI with [q] or [Q] | Help [-h] | Clear [clear]"
+			    echo "$xx"
+			    echo "Set command: (example: $ca""'wasp-cli {commands}' or '{commands}'""$xx):"
+			 fi
+			 if ! [ "$VAR_RUN_WASP_CLI_CMD" = 'clear' ] && ! [ "$VAR_RUN_WASP_CLI_CMD" = 'q' ] && ! [ "$VAR_RUN_WASP_CLI_CMD" = 'Q' ]; then
+			    if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh "$VAR_RUN_WASP_CLI_CMD"; else echo ""; echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+			 fi
 	      done
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
