@@ -47,13 +47,13 @@ IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/down
 IotaGoshimmerHash='9500b1c9db692804dd57209ed761cd2e8e600210afa37600ec8df8d080adc13e'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
 
-IotaWaspHash='5c9f72377950081602fa909c3a4c27eb70756b6e1b1ba622b8a248e5258f5519'
+IotaWaspHash='29cd718db51c73e669ea119bb49d298b6c537f734807a2a53761a95da1cd53ec'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
 ShimmerHornetHash='9a9de6287e312ae11f6db184da604021fffc77a2f469edab40a83bb113601ba4'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='5c9f72377950081602fa909c3a4c27eb70756b6e1b1ba622b8a248e5258f5519'
+ShimmerWaspHash='29cd718db51c73e669ea119bb49d298b6c537f734807a2a53761a95da1cd53ec'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -729,18 +729,29 @@ SubMenuWaspCLI() {
 	6) clear
 	   if [ -d /var/lib/shimmer-wasp ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-          Key=''
-		  while ! [ "$Key" = 'q' ] && ! [ "$Key" = 'Q' ]
+          VAR_RUN_WASP_CLI_CMD=''
+          echo "$ca"
+          if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
+          echo "$rd""Hint: Quit Wasp-CLI with [q] | Help [-h] | Clear [clear]"
+          echo "$xx"
+          echo "Set command: (example: $ca""'wasp-cli {commands}' or '{commands}'""$xx):"
+		  while ! [ "$VAR_RUN_WASP_CLI_CMD" = 'q' ] && ! [ "$VAR_RUN_WASP_CLI_CMD" = 'Q' ]
 	      do
-		     clear
-			 echo "$ca"
-			 echo 'Run Wasp-CLI | alias: wasp-cli {commands}...'
-			 echo "$xx"
-			 echo "Set command: (example: $ca""wasp-cli {commands} or {commands}""$xx):"
+             echo "$ca"
 		     read -r -p 'Wasp-CLI > ' VAR_RUN_WASP_CLI_CMD
+			 echo "$xx"
 		     VAR_RUN_WASP_CLI_CMD=$(echo "$VAR_RUN_WASP_CLI_CMD" | sed 's/^wasp-cli//g')
-			 if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh "$VAR_RUN_WASP_CLI_CMD"; else echo ""; echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
-		     echo "$ca"; read -r -p 'Press [Enter] key for next CLI command... Press [Q] to quit Wasp-CLI... ' Key; echo "$xx"
+			 if [ "$VAR_RUN_WASP_CLI_CMD" = 'clear' ]; then
+			    clear
+			    echo "$ca"
+			    if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
+			    echo "$rd""Hint: Quit Wasp-CLI with [q] or [Q] | Help [-h] | Clear [clear]"
+			    echo "$xx"
+			    echo "Set command: (example: $ca""'wasp-cli {commands}' or '{commands}'""$xx):"
+			 fi
+			 if ! [ "$VAR_RUN_WASP_CLI_CMD" = 'clear' ] && ! [ "$VAR_RUN_WASP_CLI_CMD" = 'q' ] && ! [ "$VAR_RUN_WASP_CLI_CMD" = 'Q' ]; then
+			    if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh "$VAR_RUN_WASP_CLI_CMD"; else echo ""; echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+			 fi
 	      done
 	   else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
