@@ -74,6 +74,7 @@ wasp-cli is delivered in a docker image. To use it execute the following steps:
 
 | Parameter                           | Description                                                                                                                                                                        |
 | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WASP_CLI_FAUCET_ADDRESS             | Address to faucet (fallback is docker network interal address http://inx-faucet:8091)                                                                                              |
 | WASP_CLI_COMMITTEE_\[0-9\]+_API     | WebAPI url of the node in the committee (e.g. https://host:448)                                                                                                                    |
 | WASP_CLI_COMMITTEE_\[0-9\]+_NANOMSG | Nanomsg url of the node in the committee (e.g. host:5550)                                                                                                                          |
 | WASP_CLI_COMMITTEE_\[0-9\]+_PEERING | Peering url of the node in the committee (e.g. host:4000)                                                                                                                          |
