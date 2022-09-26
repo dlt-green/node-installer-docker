@@ -839,7 +839,7 @@ SystemMaintenance() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                            1. System Restart (recommend)                     ║"
+	echo "║                            1. System Restart (recommend)                    ║"
 	echo "║                            X. Maintenance Menu                              ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -853,8 +853,8 @@ SystemMaintenance() {
 	read -r -p '> ' n
 	case $n in
 	1) 	echo 'restarting...'; sleep 3
-	    echo "$ca"
-	    echo 'System restarted, please reconnect...'
+	    echo "$rd"
+	    echo "System restarted, dont't forget to reconnect and start your Nodes again!"
 	    echo "$xx"
 		sudo reboot
 		;;
