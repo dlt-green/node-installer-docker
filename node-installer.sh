@@ -839,7 +839,7 @@ SystemMaintenance() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                            1. System Restart (recommend)                     ║"
+	echo "║                            1. System Restart (recommend)                    ║"
 	echo "║                            X. Maintenance Menu                              ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
