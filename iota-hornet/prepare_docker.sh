@@ -28,7 +28,7 @@ fi
 prepare_data_dir "$dataDir" "config" "/storage/${HORNET_NETWORK:-mainnet}" "/p2pstore/${HORNET_NETWORK:-mainnet}" "/snapshots/${HORNET_NETWORK:-mainnet}" "letsencrypt"
 
 # Generate config
-extract_file_from_image "dltgreen/iota-hornet" "$HORNET_VERSION" "/app/$configFilenameInContainer" "$configPath"
+extract_file_from_image "gohornet/hornet" "$HORNET_VERSION" "/app/$configFilenameInContainer" "$configPath"
 
 echo "Adapting config with values from .env..."
 set_config $configPath ".p2p.bindMultiAddresses"      "[\"/ip4/0.0.0.0/tcp/${HORNET_GOSSIP_PORT:-15600}\", \"/ip6/::/tcp/${HORNET_GOSSIP_PORT:-15600}\"]"
