@@ -12,6 +12,16 @@ WASP_DEV_BRANCH="develop"
 
 DEVSERVER_PORTDEVSERVER_PORT=8040
 
+prepare_dockerx_builder () {
+  if [ $(docker buildx ls | grep iota-builder) != "" ]; then
+    docker buildx rm iota-builder
+  fi
+  sudo apt-get install -y qemu qemu-user-static
+  docker buildx create --name iota-builder
+  docker buildx use iota-builder
+  docker buildx inspect --bootstrap
+}
+
 build_node () {
   node=$1
   sourceDir=./$node
@@ -72,13 +82,10 @@ build_wasp_image () {
   (cd $BUILD_DIR; git clone https://github.com/iotaledger/wasp.git tmp_wasp; cd tmp_wasp; git checkout $repoTag)
 
   if [ -f $buildDirWasp/Dockerfile ]; then
-    (cd $buildDirWasp; docker build --no-cache -t $imageName .)
+    (cd $buildDirWasp; docker buildx build --platform linux/amd64,linux/arm64 -t $imageName --push .)
   fi
 
-  docker save $imageName > $BUILD_DIR/wasp-$imageTag.tar
   rm -Rf $buildDirWasp
-
-  push_docker_image $imageName
 }
 
 build_wasp-cli_image () {
@@ -96,12 +103,9 @@ build_wasp-cli_image () {
   rm -f $buildDirWaspCli/.dockerignore
   echo .git > $buildDirWaspCli/.dockerignore
   echo .github >> $buildDirWaspCli/.dockerignore
-  (cd $buildDirWaspCli; docker build --no-cache -t $imageName .)
+  (cd $buildDirWaspCli; docker buildx build --platform linux/amd64,linux/arm64 -t $imageName --push .)
 
-  docker save $imageName > $BUILD_DIR/wasp-cli-$imageTag.tar
   rm -Rf $buildDirWaspCli
-
-  push_docker_image $imageName
 }
 
 push_docker_image () {
@@ -291,7 +295,7 @@ NodePackagesMenu() {
 }
 
 BuildManagementMenu() {
-  print_menu "Clean build dir" "Upload build artefacts" "Back"
+  print_menu "Clean build dir" "Upload build artefacts" "Prepare dockerx builder" "Back"
 	read  -p '> ' n
 	case $n in
 	1) print_line
@@ -303,6 +307,11 @@ BuildManagementMenu() {
      upload_build_artefacts
      enter_to_continue
      BuildManagementMenu
+     ;;
+  3) print_line
+     prepare_dockerx_builder
+     enter_to_continue
+     DockerImagesMenu
      ;;
 	*) MainMenu ;;
 	esac
