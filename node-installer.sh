@@ -38,7 +38,7 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum.txt)
 
-IotaHornetHash='a11d0db866a731f105d40a642ad72f6b5b57918ba1366a3f53f29ba21fc1fb05'
+IotaHornetHash='434d5a254e0f8acb69af034edcf0db1b26b59f5562e4d992b1faaf5dacaba6b0'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
 
 IotaBeeHash='a231c786a3fc4deb10eed88623fdd6d29851209ab0b93361eb27f9c7a2f830d3'
@@ -839,7 +839,7 @@ SystemMaintenance() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                            1. System Restart (recommend)                     ║"
+	echo "║                            1. System Restart (recommend)                    ║"
 	echo "║                            X. Maintenance Menu                              ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -853,8 +853,8 @@ SystemMaintenance() {
 	read -r -p '> ' n
 	case $n in
 	1) 	echo 'restarting...'; sleep 3
-	    echo "$ca"
-	    echo 'System restarted, please reconnect...'
+	    echo "$rd"
+	    echo "System restarted, dont't forget to reconnect and start your Nodes again!"
 	    echo "$xx"
 		sudo reboot
 		;;
