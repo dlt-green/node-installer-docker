@@ -853,8 +853,8 @@ SystemMaintenance() {
 	read -r -p '> ' n
 	case $n in
 	1) 	echo 'restarting...'; sleep 3
-	    echo "$ca"
-	    echo 'System restarted, please reconnect...'
+	    echo "$rd"
+	    echo "System restarted, dont't forget to reconnect and start your Nodes again!"
 	    echo "$xx"
 		sudo reboot
 		;;
