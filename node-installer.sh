@@ -36,7 +36,7 @@ xx='\033[0m'
 
 echo "$xx"
 
-InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum.txt)
+InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum_test.txt)
 
 IotaHornetHash='434d5a254e0f8acb69af034edcf0db1b26b59f5562e4d992b1faaf5dacaba6b0'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
