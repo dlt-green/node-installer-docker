@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.9.8"
+VRSN="0.9.9"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -14,15 +14,15 @@ VAR_IOTA_HORNET_VERSION='1.2.1'
 VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
-VAR_SHIMMER_HORNET_VERSION='2.0.0-beta.10'
+VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.2'
 VAR_SHIMMER_WASP_VERSION='0.3.2'
 
-VAR_INX_INDEXER_VERSION='1.0-beta'
-VAR_INX_MQTT_VERSION='1.0-beta'
-VAR_INX_PARTICIPATION_VERSION='1.0-beta'
-VAR_INX_SPAMMER_VERSION='1.0-beta'
-VAR_INX_POI_VERSION='1.0-beta'
-VAR_INX_DASHBOARD_VERSION='1.0-beta'
+VAR_INX_INDEXER_VERSION='1.0-rc'
+VAR_INX_MQTT_VERSION='1.0-rc'
+VAR_INX_PARTICIPATION_VERSION='1.0-rc'
+VAR_INX_SPAMMER_VERSION='1.0-rc'
+VAR_INX_POI_VERSION='1.0-rc'
+VAR_INX_DASHBOARD_VERSION='1.0-rc'
 
 lg='\033[1m'
 or='\e[1;33m'
@@ -57,6 +57,7 @@ ShimmerWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e628
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
+SnapshotShimmerHornet="https://github.com/iotaledger/global-snapshots/raw/main/shimmer/genesis_snapshot.bin"
 
 clear
 if [ -f "node-installer.sh" ]; then 
@@ -319,7 +320,7 @@ Dashboard() {
 	echo "║1│      ""$ih""HORNET""$xx""     │2│       ""$ib""BEE""$xx""       │3│    ""$ig""GOSHIMMER""$xx""   │4│      ""$iw""WASP""$xx""      ║"
 	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
 	echo "║                                                                             ║"
-	echo "║                                  Shimmer Beta                               ║"
+	echo "║           ┌─────────────────── Shimmer Mainnet ──┬─────────────────┐        ║"
 	echo "╟─┬─────────────────┬─┬─────────────────┬─┬────────────────┬─┬────────────────╢"
 	echo "║5│      ""$sh""HORNET""$xx""     │6│       ""$sb""BEE""$xx""       │7│    ""$wc""WASP-CLI""$xx""    │8│      ""$sw""WASP""$xx""      ║"
 	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
@@ -602,6 +603,10 @@ SubMenuMaintenance() {
 	      rm -rf /var/lib/$VAR_DIR/data/peerdb/*
 	      if [ -f /var/lib/$VAR_DIR/data/snapshots/snapshot.bin ]; then cd /var/lib/$VAR_DIR/data/snapshots || SubMenuMaintenance; wget $SnapshotIotaGoshimmer; mv snapshot-latest.bin snapshot.bin; fi
 	   fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
+	   then
+	      if [ -d /var/lib/$VAR_DIR/data/snapshots/mainnet ]; then rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*; cd /var/lib/$VAR_DIR/data/snapshots/mainnet || SubMenuMaintenance; wget $SnapshotShimmerHornet; mv genesis_snapshot.bin full_snapshot.bin; fi
+	   fi
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose up -d; fi
@@ -770,8 +775,15 @@ SubMenuWaspCLI() {
 	   echo "$xx"
 	   if [ -d /var/lib/shimmer-wasp ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh peering info; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
-	   else
+		  if [ -f "./data/config/wasp-cli.json" ]; then
+		     VAR_WASP_CLI_PUBKEY=$(./wasp-cli-wrapper.sh peering info | grep PubKey | tr -s ' ' | cut -d ' ' -f 2)
+		     VAR_WASP_CLI_NETID=$(./wasp-cli-wrapper.sh peering info | grep NetID | tr -s ' ' | cut -d ' ' -f 2)
+
+			echo "PubKey:   " $VAR_WASP_CLI_PUBKEY
+			echo "NetID:    " $VAR_WASP_CLI_NETID
+			
+		  else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+	  else
 	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
