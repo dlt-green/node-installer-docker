@@ -38,23 +38,23 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum.txt)
 
-IotaHornetHash='434d5a254e0f8acb69af034edcf0db1b26b59f5562e4d992b1faaf5dacaba6b0'
+IotaHornetHash='8de32c22aaeec715ce7ba94c5155e55a8f92e75186dfb794597f17233cc3ab6a'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
 
-IotaBeeHash='a231c786a3fc4deb10eed88623fdd6d29851209ab0b93361eb27f9c7a2f830d3'
+IotaBeeHash='93dd7d5dabad249506b7d780ad65ca534be1b11e5de8531fb41111c1ee12b35f'
 IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
 
-IotaGoshimmerHash='9500b1c9db692804dd57209ed761cd2e8e600210afa37600ec8df8d080adc13e'
+IotaGoshimmerHash='00675d98f0b69ef7e4b74d454c421ec21ef4c21b07a7510f4c3e4f12d634846c'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
-IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
+IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_iota.tar.gz"
 
-ShimmerHornetHash='9a9de6287e312ae11f6db184da604021fffc77a2f469edab40a83bb113601ba4'
+ShimmerHornetHash='100296ca0b41b4f4bc6e140f36b9c5b8dcb576cacf0ed42ab9254bcd4f886da1'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
-ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
+ShimmerWaspHash='d03416482d07da7e2540e2b7fc30dbbcf8b3ded5e0f8370018f885d2c309a894'
+ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_shimmer.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 SnapshotShimmerHornet="https://github.com/iotaledger/global-snapshots/raw/main/shimmer/genesis_snapshot.bin"
