@@ -956,7 +956,7 @@ Docker() {
 	echo ""
 
 	sudo apt-get update
-	sudo apt-get install docker-ce docker-ce-cli containerd.io docker compose-plugin docker compose -y
+	sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
