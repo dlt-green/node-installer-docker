@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="0.9.9"
+VRSN="1.0.0"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -15,7 +15,7 @@ VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.2'
-VAR_SHIMMER_WASP_VERSION='0.3.2'
+VAR_SHIMMER_WASP_VERSION='0.3.5'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
 VAR_INX_MQTT_VERSION='1.0-rc'
@@ -38,23 +38,23 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum.txt)
 
-IotaHornetHash='434d5a254e0f8acb69af034edcf0db1b26b59f5562e4d992b1faaf5dacaba6b0'
+IotaHornetHash='8de32c22aaeec715ce7ba94c5155e55a8f92e75186dfb794597f17233cc3ab6a'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
 
-IotaBeeHash='a231c786a3fc4deb10eed88623fdd6d29851209ab0b93361eb27f9c7a2f830d3'
+IotaBeeHash='93dd7d5dabad249506b7d780ad65ca534be1b11e5de8531fb41111c1ee12b35f'
 IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
 
-IotaGoshimmerHash='9500b1c9db692804dd57209ed761cd2e8e600210afa37600ec8df8d080adc13e'
+IotaGoshimmerHash='00675d98f0b69ef7e4b74d454c421ec21ef4c21b07a7510f4c3e4f12d634846c'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
-IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
+IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_iota.tar.gz"
 
-ShimmerHornetHash='9a9de6287e312ae11f6db184da604021fffc77a2f469edab40a83bb113601ba4'
+ShimmerHornetHash='100296ca0b41b4f4bc6e140f36b9c5b8dcb576cacf0ed42ab9254bcd4f886da1'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
-ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
+ShimmerWaspHash='d03416482d07da7e2540e2b7fc30dbbcf8b3ded5e0f8370018f885d2c309a894'
+ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_shimmer.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 SnapshotShimmerHornet="https://github.com/iotaledger/global-snapshots/raw/main/shimmer/genesis_snapshot.bin"
@@ -341,14 +341,14 @@ Dashboard() {
 	   echo "$ca"
 	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
-	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker-compose up -d; fi
-	   if [ -d /var/lib/iota-bee ]; then cd /var/lib/iota-bee || Dashboard; docker-compose up -d; fi
-	   if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || Dashboard; docker-compose up -d; fi
-	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker-compose up -d; fi
-	   if [ -d /var/lib/shimmer-bee ]; then cd /var/lib/shimmer-bee || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker compose up -d; fi
+	   if [ -d /var/lib/iota-bee ]; then cd /var/lib/iota-bee || Dashboard; docker compose up -d; fi
+	   if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || Dashboard; docker compose up -d; fi
+	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker compose up -d; fi
+	   if [ -d /var/lib/shimmer-bee ]; then cd /var/lib/shimmer-bee || Dashboard; docker compose up -d; fi
 	   sleep 5
-	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker-compose up -d; fi
-	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker compose up -d; fi
+	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker compose up -d; fi
 	   RenameContainer
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   DashboardHelper ;;
@@ -531,9 +531,9 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then docker stop shimmer-wasp; fi
 
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 	   rm -rf /var/lib/$VAR_DIR/data/peerdb/*
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose up -d; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
 
 	   RenameContainer; sleep 3
 
@@ -553,7 +553,7 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then docker stop shimmer-wasp; fi
 
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 	   sleep 3;
 
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -565,7 +565,7 @@ SubMenuMaintenance() {
 	   echo 'Please wait, resetting Nodes can take up to 5 minutes...'
 	   echo "$xx"
 
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
 	   rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
 	   rm -rf /var/lib/$VAR_DIR/data/storage/devnet/*
@@ -574,7 +574,7 @@ SubMenuMaintenance() {
 	   rm -rf /var/lib/$VAR_DIR/data/peerdb/*
 	   rm -rf /var/lib/$VAR_DIR/data/waspdb/*
 
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose up -d; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
 
 	   RenameContainer; sleep 3
 
@@ -587,7 +587,7 @@ SubMenuMaintenance() {
 	   echo 'Please wait, loading Snapshots can take up to 5 minutes...'
 	   echo "$xx"
 
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/storage/*
@@ -609,7 +609,7 @@ SubMenuMaintenance() {
 	   fi
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose up -d; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
 
 	   RenameContainer
 
@@ -627,7 +627,7 @@ SubMenuMaintenance() {
 	   echo 'Please wait, deinstalling Nodes can take up to 5 minutes...'
 	   echo "$xx"
 
-	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker-compose down >/dev/null 2>&1; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down >/dev/null 2>&1; fi
 	   if [ -d /var/lib/$VAR_DIR ]; then rm -r /var/lib/$VAR_DIR; fi
 
 	   echo "$rd""$VAR_DIR removed from your system!""$xx"
@@ -888,14 +888,14 @@ SystemMaintenance() {
 	   echo "$ca"
 	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
-	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker-compose up -d; fi
-	   if [ -d /var/lib/iota-bee ]; then cd /var/lib/iota-bee || Dashboard; docker-compose up -d; fi
-	   if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || Dashboard; docker-compose up -d; fi
-	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker-compose up -d; fi
-	   if [ -d /var/lib/shimmer-bee ]; then cd /var/lib/shimmer-bee || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker compose up -d; fi
+	   if [ -d /var/lib/iota-bee ]; then cd /var/lib/iota-bee || Dashboard; docker compose up -d; fi
+	   if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || Dashboard; docker compose up -d; fi
+	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker compose up -d; fi
+	   if [ -d /var/lib/shimmer-bee ]; then cd /var/lib/shimmer-bee || Dashboard; docker compose up -d; fi
 	   sleep 5
-	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker-compose up -d; fi
-	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker-compose up -d; fi
+	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker compose up -d; fi
+	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker compose up -d; fi
 	   RenameContainer
 
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -956,7 +956,7 @@ Docker() {
 	echo ""
 
 	sudo apt-get update
-	sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
+	sudo apt-get install docker-ce docker-ce-cli containerd.io docker compose-plugin docker compose -y
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
@@ -978,7 +978,7 @@ IotaHornet() {
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
 	echo "Check Directory... /var/lib/$VAR_DIR"
@@ -1096,7 +1096,7 @@ IotaHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker-compose pull
+	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
@@ -1106,7 +1106,7 @@ IotaHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		credentials=$(docker-compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
 
 		VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
@@ -1148,7 +1148,7 @@ IotaHornet() {
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
-	docker-compose up -d
+	docker compose up -d
 
 	sleep 3
 
@@ -1197,7 +1197,7 @@ IotaBee() {
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
 	echo "Check Directory... /var/lib/$VAR_DIR"
@@ -1310,7 +1310,7 @@ IotaBee() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker-compose pull
+	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
@@ -1362,7 +1362,7 @@ IotaBee() {
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
-	docker-compose up -d
+	docker compose up -d
 
 	sleep 3
 
@@ -1411,7 +1411,7 @@ IotaWasp() {
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
 	echo "Check Directory... /var/lib/$VAR_DIR"
@@ -1536,7 +1536,7 @@ IotaWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker-compose pull
+	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
@@ -1587,7 +1587,7 @@ IotaWasp() {
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
-	docker-compose up -d
+	docker compose up -d
 
 	sleep 3
 
@@ -1639,7 +1639,7 @@ IotaGoshimmer() {
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
 	echo "Check Directory... /var/lib/$VAR_DIR"
@@ -1744,7 +1744,7 @@ IotaGoshimmer() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker-compose pull
+	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
@@ -1789,7 +1789,7 @@ IotaGoshimmer() {
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
-	docker-compose up -d
+	docker compose up -d
 
 	sleep 3
 
@@ -1838,7 +1838,7 @@ ShimmerHornet() {
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
 	echo "Check Directory... /var/lib/$VAR_DIR"
@@ -1971,7 +1971,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker-compose pull
+	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
@@ -1981,7 +1981,7 @@ ShimmerHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		credentials=$(docker-compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
 
 		VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
@@ -2023,7 +2023,7 @@ ShimmerHornet() {
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
-	docker-compose up -d
+	docker compose up -d
 
 	sleep 3
 
@@ -2078,7 +2078,7 @@ ShimmerWasp() {
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker-compose down >/dev/null 2>&1; fi; fi
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
 	echo "Check Directory... /var/lib/$VAR_DIR"
@@ -2197,7 +2197,7 @@ ShimmerWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker-compose pull
+	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
@@ -2246,7 +2246,7 @@ ShimmerWasp() {
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
-	docker-compose up -d
+	docker compose up -d
 
 	sleep 3
 
@@ -2271,7 +2271,7 @@ ShimmerWasp() {
 		echo " SHIMMER-Wasp API: https://$VAR_HOST:$VAR_SHIMMER_WASP_API_PORT/info"
 		echo " SHIMMER-Wasp peering: $VAR_HOST:$VAR_SHIMMER_WASP_PEERING_PORT"
 		echo " SHIMMER-Wasp nano-msg: $VAR_HOST:$VAR_SHIMMER_WASP_NANO_MSG_PORT"
-		echo " SHIMMER-Wasp ledger-connection/txstream: $VAR_SHIMMER_WASP_LEDGER_CONNECTION"
+		echo " SHIMMER-Wasp ledger-connection/txstream: local to Shimmer-Hornet"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"

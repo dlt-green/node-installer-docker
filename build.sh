@@ -7,7 +7,7 @@ EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore"
 
 NODES="iota-hornet iota-bee iota-goshimmer wasp shimmer-hornet"
 HORNET_VERSION=1.2.1
-WASP_VERSION=0.3.2
+WASP_VERSION=0.3.5
 WASP_DEV_BRANCH="develop"
 
 DEVSERVER_PORTDEVSERVER_PORT=8040
@@ -99,7 +99,9 @@ build_wasp-cli_image () {
   rm -Rf $buildDirWaspCli && mkdir -p $buildDirWaspCli
   (cd $BUILD_DIR; git clone https://github.com/iotaledger/wasp.git tmp_wasp; cd tmp_wasp; git checkout $repoTag)
 
-  patch "$buildDirWaspCli/Dockerfile" < ./wasp-cli/Dockerfile_wasp-cli.diff
+  #patch "$buildDirWaspCli/Dockerfile" < ./wasp-cli/Dockerfile_wasp-cli.diff
+  cp -f "$buildDirWaspCli/Dockerfile" "$buildDirWaspCli/Dockerfile.orig"
+  cp -f ./wasp-cli/Dockerfile "$buildDirWaspCli/Dockerfile"
   rm -f $buildDirWaspCli/.dockerignore
   echo .git > $buildDirWaspCli/.dockerignore
   echo .github >> $buildDirWaspCli/.dockerignore
