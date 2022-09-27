@@ -57,6 +57,7 @@ ShimmerWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e628
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
+SnapshotShimmerHornet="https://github.com/iotaledger/global-snapshots/raw/main/shimmer/genesis_snapshot.bin"
 
 clear
 if [ -f "node-installer.sh" ]; then 
@@ -601,6 +602,10 @@ SubMenuMaintenance() {
 	      rm -rf /var/lib/$VAR_DIR/data/mainnetdb/*
 	      rm -rf /var/lib/$VAR_DIR/data/peerdb/*
 	      if [ -f /var/lib/$VAR_DIR/data/snapshots/snapshot.bin ]; then cd /var/lib/$VAR_DIR/data/snapshots || SubMenuMaintenance; wget $SnapshotIotaGoshimmer; mv snapshot-latest.bin snapshot.bin; fi
+	   fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
+	   then
+	      if [ -d /var/lib/$VAR_DIR/data/snapshots/mainnet ]; then rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*; cd /var/lib/$VAR_DIR/data/snapshots/mainnet || SubMenuMaintenance; wget $SnapshotShimmerHornet; mv genesis_snapshot.bin full_snapshot.bin; fi
 	   fi
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
