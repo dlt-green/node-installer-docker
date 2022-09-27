@@ -37,7 +37,7 @@ services:
       - "traefik.http.routers.webapi.tls=true"
       - "traefik.http.routers.webapi.tls.certresolver=myresolver"
     entrypoint:
-      - "/usr/bin/wasp"
+      - "/app/wasp"
     command:
       - "-c"
       - "/etc/wasp_config.json"
@@ -99,5 +99,5 @@ services:
 
 networks:
   default:
-    external:
-      name: ${WASP_LEDGER_NETWORK}
+    name: ${WASP_LEDGER_NETWORK}
+    external: true

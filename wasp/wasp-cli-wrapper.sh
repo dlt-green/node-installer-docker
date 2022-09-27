@@ -28,7 +28,7 @@ docker run -it --rm \
   --workdir "/workdir" \
   --network "${WASP_LEDGER_NETWORK}" \
   --name "${WASP_LEDGER_NETWORK}-wasp.cli" \
-  --entrypoint "wasp-cli" \
+  --entrypoint "/app/wasp-cli" \
   ${imageTag} \
   -c /etc/wasp-cli.json ${@}
 
