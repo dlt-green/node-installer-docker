@@ -2271,7 +2271,7 @@ ShimmerWasp() {
 		echo " SHIMMER-Wasp API: https://$VAR_HOST:$VAR_SHIMMER_WASP_API_PORT/info"
 		echo " SHIMMER-Wasp peering: $VAR_HOST:$VAR_SHIMMER_WASP_PEERING_PORT"
 		echo " SHIMMER-Wasp nano-msg: $VAR_HOST:$VAR_SHIMMER_WASP_NANO_MSG_PORT"
-		echo " SHIMMER-Wasp ledger-connection/txstream: $VAR_SHIMMER_WASP_LEDGER_CONNECTION"
+		echo " SHIMMER-Wasp ledger-connection/txstream: local to Shimmer-Hornet"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
