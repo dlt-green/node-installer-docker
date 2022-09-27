@@ -10,6 +10,9 @@ services:
         soft: 16384
         hard: 16384
     stop_grace_period: 5m
+    depends_on:
+      traefik:
+        condition: service_started
     tty: true
     working_dir: /app
     ports:
@@ -27,8 +30,8 @@ services:
 
       - "traefik.http.services.hornet.loadbalancer.server.port=14265"
       - "traefik.http.services.hornet.loadbalancer.healthCheck.path=/api/core/v2/info"
-      - "traefik.http.services.hornet.loadbalancer.healthCheck.interval=10s"
-      - "traefik.http.services.hornet.loadbalancer.healthCheck.timeout=3s"
+      - "traefik.http.services.hornet.loadbalancer.healthCheck.interval=15s"
+      - "traefik.http.services.hornet.loadbalancer.healthCheck.timeout=5s"
 
       - "traefik.http.routers.hornet.middlewares=redirect-dashboard"
       - "traefik.http.middlewares.redirect-dashboard.redirectregex.regex=^(https?://[^/]+)/?$$"
@@ -158,6 +161,9 @@ services:
     container_name: shimmer-hornet.inx-indexer
     stop_grace_period: 5m
     restart: unless-stopped
+    depends_on:
+      hornet:
+        condition: service_healthy
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "${HORNET_DATA_DIR:-./data}/indexer/${HORNET_NETWORK:-mainnet}:/app/data"
@@ -173,6 +179,9 @@ services:
     container_name: shimmer-hornet.inx-mqtt
     stop_grace_period: 5m
     restart: unless-stopped
+    depends_on:
+      hornet:
+        condition: service_healthy
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
     command:
@@ -186,6 +195,9 @@ services:
     container_name: shimmer-hornet.inx-participation
     stop_grace_period: 5m
     restart: unless-stopped
+    depends_on:
+      hornet:
+        condition: service_healthy
     ulimits:
       nofile:
         soft: 16384
@@ -203,6 +215,11 @@ services:
     container_name: shimmer-hornet.inx-spammer
     stop_grace_period: 5m
     restart: unless-stopped
+    depends_on:
+      hornet:
+        condition: service_healthy
+      inx-indexer:
+        condition: service_started
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
     command:
@@ -216,6 +233,9 @@ services:
     container_name: shimmer-hornet.inx-poi
     stop_grace_period: 5m
     restart: unless-stopped
+    depends_on:
+      hornet:
+        condition: service_healthy
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
     command:
@@ -227,6 +247,11 @@ services:
     container_name: shimmer-hornet.inx-dashboard
     stop_grace_period: 5m
     restart: unless-stopped
+    depends_on:
+      hornet:
+        condition: service_healthy
+      inx-indexer:
+        condition: service_started
     labels:
       - "proxy.constraint=hornet-${HORNET_NETWORK:-mainnet}"
       - "traefik.enable=true"
@@ -253,5 +278,5 @@ services:
 
 networks:
   default:
-    external:
-      name: shimmer
+    name: shimmer
+    external: true
