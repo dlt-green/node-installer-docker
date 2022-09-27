@@ -206,7 +206,7 @@ print_line () {
 }
 
 start_node () {
-  if [ ! -z "$(docker-compose ps | tail -n +3)" ]; then
+  if [ ! -z "$(docker compose ps | tail -n +3)" ]; then
       read -p "Node is already running. Restart? (y/n) " yn
       case $yn in
         y) stop_node
@@ -218,13 +218,13 @@ start_node () {
   fi
 
   $(dirname "$0")/prepare_docker.sh
-  docker-compose down && docker-compose up -d && docker-compose logs -f
+  docker compose down && docker compose up -d && docker compose logs -f
 }
 
 stop_node () {
-  docker-compose down
+  docker compose down
 }
 
 show_logs () {
-  docker-compose logs -f --tail 1000
+  docker compose logs -f --tail 1000
 }
