@@ -914,7 +914,7 @@ SystemMaintenance() {
 	echo 'Please wait, stopping Nodes can take up to 5 minutes...'
 	echo "$xx"
 	docker stop $(docker ps -a -q)
-	docker ps -a -q
+	docker ps -a -q >/dev/null 2>&1
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
