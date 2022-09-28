@@ -659,6 +659,30 @@ SubMenuConfiguration() {
 	   fi	
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuConfiguration ;;
+	2) clear
+	   echo "$ca"
+	   echo "Manage Proof of Work ...""$xx"
+
+	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
+	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
+	      echo "$fl"; read -r -p 'Press [P] to enable Proof of Work... Press [ENTER] key to disable... ' P; echo "$xx"
+
+		  if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
+		  if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
+
+		  if  [ "$P" = 'p' ] && ! [ "$P" = 'P' ]; then 
+	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; fi
+		  else
+	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; fi	  
+		  fi
+		  ./prepare_docker.sh
+		  if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
+		  RenameContainer		  
+	   else
+	      echo "$rd""Manage Proof of Work is not supportet, aborted! ""$xx"
+	   fi	
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuConfiguration ;;
 SubMenuWaspCLI() {
 	clear
 	echo ""
