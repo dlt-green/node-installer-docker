@@ -641,6 +641,24 @@ SubMenuMaintenance() {
 	esac
 }
 
+SubMenuConfiguration() {
+	1) clear
+	   echo "$ca"
+	   echo "Generate JWT-Token..."
+	   echo "$xx"
+
+	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
+	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
+	      echo "Your JWT-Token for secured API Access is generated:"
+		  salt=$(head -n2 ./data/p2pstore/mainnet/identity.key | tail -n1)
+	      jwt=$(docker compose run --rm hornet tool jwt-api --salt $salt | awk '{ print $5 }') 
+		  echo "$gn"
+		  echo "$jwt""$xx"
+	   else
+	      echo "$rd""Generate JWT-Token is not supportet, aborted! ""$xx"
+	   fi	
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuConfiguration ;;
 SubMenuWaspCLI() {
 	clear
 	echo ""
