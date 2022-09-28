@@ -708,6 +708,10 @@ SubMenuConfiguration() {
 	   fi	
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuConfiguration ;;
+	*) SubMenuMaintenance ;;
+	esac
+}
+
 SubMenuWaspCLI() {
 	clear
 	echo ""
