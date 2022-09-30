@@ -691,17 +691,22 @@ SubMenuConfiguration() {
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
 	      echo "$fl"; read -r -p 'Press [P] to enable Proof of Work... Press [ENTER] key to disable... ' P; echo "$xx"
-
-		  if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
-		  if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
-
+          clear
+	      echo "$ca"; echo 'Please wait, stopping Nodes can take up a while...'; echo "$xx"
+		  if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuConfiguration; docker compose down; fi
+          clear
 		  if  [ "$P" = 'p' ] && ! [ "$P" = 'P' ]; then 
 	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; fi
 		  else
 	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; fi	  
 		  fi
+		  clear
+	      echo "$ca"; echo "$ca"'Please wait, preparing Configuration...'; echo "$xx"
 		  ./prepare_docker.sh
-		  if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
+		  sleep 3
+		  clear
+	      echo "$ca"; echo "$ca"'Please wait, starting Nodes can take up a while...'; echo "$xx"
+		  if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuConfiguration; docker compose up -d; fi
 		  RenameContainer		  
 	   else
 	      echo "$rd""Manage Proof of Work is not supportet, aborted! ""$xx"
@@ -2045,6 +2050,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
+	docker network create shimmer >/dev/null 2>&1
 	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
@@ -2271,6 +2277,7 @@ ShimmerWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
+	docker network create shimmer >/dev/null 2>&1
 	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
