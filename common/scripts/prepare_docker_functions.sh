@@ -200,6 +200,12 @@ get_env_by_name () {
   echo "${!envVariableName:-$defaultValue}"
 }
 
+generate_random_string () {
+  local stringLength=${1:-20}
+
+  cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-$stringLength} | head -n 1
+}
+
 print_line () {
   local columns="$1"
   printf '%*s\n' "${columns:-$(tput cols)}" '' | tr ' ' -
