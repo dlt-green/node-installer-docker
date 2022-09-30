@@ -2045,6 +2045,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
+	docker network create shimmer >/dev/null 2>&1
 	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
@@ -2271,6 +2272,7 @@ ShimmerWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
+	docker network create shimmer >/dev/null 2>&1
 	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
