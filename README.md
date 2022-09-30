@@ -23,7 +23,8 @@ DLT.GREEN Node-Installer ist ein Skript zur Installation von IOTA/Shimmer Nodes 
 ### Wichtig
 Die Konfiguration der Nodes sollte immer über den von DLT.GREEN bereitgestellten Node-Installer erfolgen. Es ist nicht ratsam Veränderungen an den Parametern zu machen, da die eingestellten direkten Parameter bei einem Update nicht berücksichtigt werden und somit zurückgesetzt werden.
 
-### Ein Server oder VPS muss vorhanden sein, bevor mit der Installation begonnen wird.
+### Ein Server oder VPS und eine eigene Domain muss vorhanden sein, bevor mit der Installation begonnen wird.
+Es wird automatisch ein SSL Zertifikat über Let's Encrypt generiert, es kann jedoch auch ein eigenes Zertifikat zugewiesen werden.
 
 #
 
@@ -34,7 +35,7 @@ sudo wget https://github.com/dlt-green/node-installer-docker/releases/latest/dow
 
 ### NODE-INSTALLER ausführen
 
-Mit dem erstmaligen ausführen des Installers wird automatisch ein Alias auf Benutzerebene angelegt, beduetet, dass under dem angemeldeten Benutzer nach dem erstmaligen starten des Installers alternativ dieser Alias verwendet werden kann:
+Mit dem erstmaligen ausführen des Installers wird automatisch ein Alias auf Benutzerebene angelegt, bedeutet, dass under dem angemeldeten Benutzer nach dem erstmaligen starten des Installers alternativ dieser Alias verwendet werden kann:
 
 ```console
 dlt.green
