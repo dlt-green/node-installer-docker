@@ -36,7 +36,7 @@ xx='\033[0m'
 
 echo "$xx"
 
-InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum.txt)
+InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum_test.txt)
 
 IotaHornetHash='ef3622408aaa55f2a50b8e0c16f603175a0d5960f7eb4079143b8bff95a2f456'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet_test.tar.gz"
@@ -689,11 +689,12 @@ SubMenuConfiguration() {
 	   SubMenuConfiguration ;;
 	2) clear
 	   echo "$ca"
-	   echo "Manage Proof of Work ...""$xx"
-
+	   echo "Manage Proof of Work ..."
+	   echo "$fl"
+	   
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
-	      echo "$fl"; read -r -p 'Press [P] to enable Proof of Work... Press [X] key to disable... ' P; echo "$xx"
+	      read -r -p 'Press [P] to enable Proof of Work... Press [X] key to disable... ' P; echo "$xx"
 		  if  [ "$P" = 'p' ] && ! [ "$P" = 'P' ]; then 
 	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; P='P'; fi
 		  fi
