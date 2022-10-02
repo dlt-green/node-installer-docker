@@ -1807,10 +1807,6 @@ IotaGoshimmer() {
 	else
 		if [ -f .env ]; then sed -i "s/GOSHIMMER_VERSION=.*/GOSHIMMER_VERSION=$VAR_IOTA_GOSHIMMER_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
-		echo ""
-		echo "Add http Port for connection cli-wallet..."
-		fgrep -q "GOSHIMMER_WEBAPI_PORT" .env || echo "GOSHIMMER_WEBAPI_PORT=8080" >> .env
-		echo ufw allow '8080/tcp' && ufw allow '8080/tcp'
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
