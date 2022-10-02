@@ -38,11 +38,11 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum.txt)
 
-IotaHornetHash='8de32c22aaeec715ce7ba94c5155e55a8f92e75186dfb794597f17233cc3ab6a'
-IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
+IotaHornetHash='ef3622408aaa55f2a50b8e0c16f603175a0d5960f7eb4079143b8bff95a2f456'
+IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet_test.tar.gz"
 
-IotaBeeHash='93dd7d5dabad249506b7d780ad65ca534be1b11e5de8531fb41111c1ee12b35f'
-IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
+IotaBeeHash='a35e52e23084d937e1cd9a91719e9ce29af590b1816948c373e4d0b175f4ecd0'
+IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee_test.tar.gz"
 
 IotaGoshimmerHash='00675d98f0b69ef7e4b74d454c421ec21ef4c21b07a7510f4c3e4f12d634846c'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
@@ -50,8 +50,8 @@ IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/release
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_iota.tar.gz"
 
-ShimmerHornetHash='100296ca0b41b4f4bc6e140f36b9c5b8dcb576cacf0ed42ab9254bcd4f886da1'
-ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
+ShimmerHornetHash='5ee813e616675cffcd19a585b5e1baf34ac2ed557b4967fa871de9640a5b70ca'
+ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet_test.tar.gz"
 
 ShimmerWaspHash='d03416482d07da7e2540e2b7fc30dbbcf8b3ded5e0f8370018f885d2c309a894'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_shimmer.tar.gz"
