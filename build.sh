@@ -13,13 +13,17 @@ WASP_DEV_BRANCH="develop"
 DEVSERVER_PORTDEVSERVER_PORT=8040
 
 prepare_dockerx_builder () {
-  if [ $(docker buildx ls | grep iota-builder) != "" ]; then
-    docker buildx rm iota-builder
-  fi
+  shutdown_dockerx_builder
   sudo apt-get install -y qemu qemu-user-static
   docker buildx create --name iota-builder
   docker buildx use iota-builder
   docker buildx inspect --bootstrap
+}
+
+shutdown_dockerx_builder () {
+  if [ "$(docker buildx ls | grep iota-builder)" != "" ]; then
+    docker buildx rm iota-builder
+  fi
 }
 
 build_node () {
@@ -82,7 +86,9 @@ build_wasp_image () {
   (cd $BUILD_DIR; git clone https://github.com/iotaledger/wasp.git tmp_wasp; cd tmp_wasp; git checkout $repoTag)
 
   if [ -f $buildDirWasp/Dockerfile ]; then
+    prepare_dockerx_builder
     (cd $buildDirWasp; docker buildx build --platform linux/amd64,linux/arm64 -t $imageName --push .)
+    shutdown_dockerx_builder
   fi
 
   rm -Rf $buildDirWasp
@@ -105,7 +111,10 @@ build_wasp-cli_image () {
   rm -f $buildDirWaspCli/.dockerignore
   echo .git > $buildDirWaspCli/.dockerignore
   echo .github >> $buildDirWaspCli/.dockerignore
+
+  prepare_dockerx_builder
   (cd $buildDirWaspCli; docker buildx build --platform linux/amd64,linux/arm64 -t $imageName --push .)
+  shutdown_dockerx_builder
 
   rm -Rf $buildDirWaspCli
 }
