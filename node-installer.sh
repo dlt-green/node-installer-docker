@@ -674,11 +674,14 @@ SubMenuConfiguration() {
 
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
-	      echo "Your JWT-Token for secured API Access is generated:"
-		  salt=$(head -n2 ./data/p2pstore/mainnet/identity.key | tail -n1)
-	      jwt=$(docker compose run --rm hornet tool jwt-api --salt $salt | awk '{ print $5 }') 
-		  echo "$gn"
-		  echo "$jwt""$xx"
+		  VAR_RESTAPI_SALT=$(cat .env | grep RESTAPI_SALT | cut -d '=' -f 2);
+	      if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""Generate JWT-Token is not supportet, please update your Node! ""$xx"
+		  else
+		     VAR_JWT=$(docker compose run --rm hornet tool jwt-api --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
+		     echo "Your JWT-Token for secured API Access is generated:"
+		     echo "$gn"
+		     echo "$VAR_JWT""$xx"
+		  fi
 	   else
 	      echo "$rd""Generate JWT-Token is not supportet, aborted! ""$xx"
 	   fi	
