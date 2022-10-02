@@ -726,7 +726,6 @@ SubMenuConfiguration() {
 	   
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if [ "$VAR_NODE" = 1 ] || [ "$VAR_NODE" = 2 ] || [ "$VAR_NODE" = 5 ]; then
-	      echo ''
 	      echo "Set the node alias (example: $ca""DLT.GREEN Node""$xx):"
 	      read -r -p '> ' VAR_NODE_ALIAS
 	      echo ''
