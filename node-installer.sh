@@ -1356,8 +1356,6 @@ IotaBee() {
 
 	CheckConfiguration
 
-	VAR_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
-	
 	if [ $VAR_CONF_RESET = 1 ]; then
 
 		clear
@@ -1406,7 +1404,6 @@ IotaBee() {
 		echo "BEE_HTTPS_PORT=$VAR_IOTA_BEE_HTTPS_PORT" >> .env
 		echo "BEE_GOSSIP_PORT=15601" >> .env
 		echo "BEE_AUTOPEERING_PORT=14636" >> .env
-		echo "RESTAPI_SALT=$VAR_SALT" >> .env
 
 		if [ $VAR_CERT = 0 ]
 		then
@@ -1422,7 +1419,6 @@ IotaBee() {
 	else
 		if [ -f .env ]; then sed -i "s/BEE_VERSION=.*/BEE_VERSION=$VAR_IOTA_BEE_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
-		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
