@@ -731,11 +731,11 @@ SubMenuConfiguration() {
 	      echo ''
 	      if [ "$VAR_NODE" = 1 ] || [ "$VAR_NODE" = 5 ]; then  
 		     fgrep -q "HORNET_NODE_ALIAS" .env || echo "HORNET_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
-	         if [ -f .env ]; then sed -i "s/HORNET_NODE_ALIAS=.*/HORNET_NODE_ALIAS=$VAR_NODE_ALIAS/g" .env; fi
+	         if [ -f .env ]; then sed -i "s/HORNET_NODE_ALIAS=.*/HORNET_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
 		  fi
 	      if [ "$VAR_NODE" = 2 ]; then  
 		     fgrep -q "BEE_NODE_ALIAS" .env || echo "BEE_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
-	         if [ -f .env ]; then sed -i "s/BEE_NODE_ALIAS=.*/BEE_NODE_ALIAS=$VAR_NODE_ALIAS/g" .env; fi
+	         if [ -f .env ]; then sed -i "s/BEE_NODE_ALIAS=.*/BEE_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
 		  fi	  
 		  clear
 		  echo "$ca"; echo 'Please wait, preparing Configuration...'; echo "$xx"
