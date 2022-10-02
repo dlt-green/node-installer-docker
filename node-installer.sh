@@ -650,6 +650,7 @@ SubMenuConfiguration() {
 	echo "║                                                                             ║"
 	echo "║                              1. Generate JWT-Token (for secured API Access) ║"
 	echo "║                              2. Manage Proof of Work (if Node supports it)  ║"
+	echo "║                              3. Set Node Alias (Name in Dashboard)          ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -689,7 +690,7 @@ SubMenuConfiguration() {
 	   SubMenuConfiguration ;;
 	2) clear
 	   echo "$ca"
-	   echo "Manage Proof of Work ..."
+	   echo "Manage Proof of Work..."
 	   echo "$fl"
 	   
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
@@ -715,6 +716,38 @@ SubMenuConfiguration() {
 		  fi
 	   else
 	      echo "$rd""Manage Proof of Work is not supportet, aborted!""$xx"
+	   fi	
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuConfiguration ;;
+	3) clear
+	   echo "$ca"
+	   echo "Set Node Alias..."
+	   echo "$xx"
+	   
+	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
+	   if [ "$VAR_NODE" = 1 ] || [ "$VAR_NODE" = 2 ] || [ "$VAR_NODE" = 5 ]; then
+	      echo ''
+	      echo "Set the node alias (example: $ca""DLT.GREEN Node""$xx):"
+	      read -r -p '> ' VAR_NODE_ALIAS
+	      echo ''
+	      if [ "$VAR_NODE" = 1 ] || [ "$VAR_NODE" = 5 ]; then  
+		     fgrep -q "HORNET_NODE_ALIAS" .env || echo "HORNET_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
+	         if [ -f .env ]; then sed -i "s/HORNET_NODE_ALIAS=.*/HORNET_NODE_ALIAS=$VAR_NODE_ALIAS/g" .env; fi
+		  fi
+	      if [ "$VAR_NODE" = 2 ]; then  
+		     fgrep -q "BEE_NODE_ALIAS" .env || echo "BEE_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
+	         if [ -f .env ]; then sed -i "s/BEE_NODE_ALIAS=.*/BEE_NODE_ALIAS=$VAR_NODE_ALIAS/g" .env; fi
+		  fi	  
+		  clear
+		  echo "$ca"; echo 'Please wait, preparing Configuration...'; echo "$xx"
+		  sleep 3
+		  ./prepare_docker.sh
+		  clear
+		  echo "$ca"; echo "Set Node Alias...""$xx"
+		  echo "$gn"; echo 'Node Alias of your Node successfully set'"$xx"
+		  echo "$rd""Please restart your Node for the changes to take effect!""$xx"
+	   else
+	      echo "$rd""Set Node Alias is not supportet, aborted!""$xx"
 	   fi	
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuConfiguration ;;
