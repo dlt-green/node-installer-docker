@@ -691,11 +691,11 @@ SubMenuConfiguration() {
 	2) clear
 	   echo "$ca"
 	   echo "Manage Proof of Work..."
-	   echo "$fl"
+	   echo "$xx""$fl"
 	   
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
-	      read -r -p 'Press [P] to enable Proof of Work... Press [X] key to disable... ' P; echo "$xx"
+		  read -r -p 'Press [P] to enable Proof of Work... Press [X] key to disable... ' P; echo "$xx"
 		  if  [ "$P" = 'p' ] && ! [ "$P" = 'P' ]; then 
 	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; P='P'; fi
 		  fi
@@ -703,13 +703,8 @@ SubMenuConfiguration() {
 	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; P='X'; fi	  
 		  fi
 		  if  [ "$P" = 'P' ] || [ "$P" = 'X' ]; then		  
-		     clear
-	         echo "$ca"; echo 'Please wait, preparing Configuration...'; echo "$xx"
-		     sleep 3
-		     ./prepare_docker.sh
-		     clear
-	         echo "$ca"; echo "Manage Proof of Work ...""$xx"
-	         if  [ "$P" = 'P' ]; then echo "$gn"; echo 'Proof of Work of your Node successfully enabled'"$xx"; else echo "$rd"; echo 'Proof of Work of your Node successfully disabled'"$xx"; fi
+		     ./prepare_docker.sh >/dev/null 2>&1
+	         if  [ "$P" = 'P' ]; then echo "$gn""Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
 	         echo "$rd""Manage Proof of Work not set, aborted!""$xx"
@@ -737,13 +732,8 @@ SubMenuConfiguration() {
 		     fgrep -q "BEE_NODE_ALIAS" .env || echo "BEE_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
 	         if [ -f .env ]; then sed -i "s/BEE_NODE_ALIAS=.*/BEE_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
 		  fi	  
-		  clear
-		  echo "$ca"; echo 'Please wait, preparing Configuration...'; echo "$xx"
-		  sleep 3
-		  ./prepare_docker.sh
-		  clear
-		  echo "$ca"; echo "Set Node Alias...""$xx"
-		  echo "$gn"; echo 'Node Alias of your Node successfully set'"$xx"
+		  ./prepare_docker.sh >/dev/null 2>&1
+		  echo "$gn""Node Alias of your Node successfully set""$xx"
 		  echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 	   else
 	      echo "$rd""Set Node Alias is not supportet, aborted!""$xx"
