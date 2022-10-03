@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="1.0.0"
+VRSN="1.1.0"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -36,13 +36,13 @@ xx='\033[0m'
 
 echo "$xx"
 
-InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum.txt)
+InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum_test.txt)
 
-IotaHornetHash='8de32c22aaeec715ce7ba94c5155e55a8f92e75186dfb794597f17233cc3ab6a'
-IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
+IotaHornetHash='ef3622408aaa55f2a50b8e0c16f603175a0d5960f7eb4079143b8bff95a2f456'
+IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet_test.tar.gz"
 
-IotaBeeHash='93dd7d5dabad249506b7d780ad65ca534be1b11e5de8531fb41111c1ee12b35f'
-IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
+IotaBeeHash='a35e52e23084d937e1cd9a91719e9ce29af590b1816948c373e4d0b175f4ecd0'
+IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee_test.tar.gz"
 
 IotaGoshimmerHash='00675d98f0b69ef7e4b74d454c421ec21ef4c21b07a7510f4c3e4f12d634846c'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
@@ -50,8 +50,8 @@ IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/release
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_iota.tar.gz"
 
-ShimmerHornetHash='100296ca0b41b4f4bc6e140f36b9c5b8dcb576cacf0ed42ab9254bcd4f886da1'
-ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
+ShimmerHornetHash='5ee813e616675cffcd19a585b5e1baf34ac2ed557b4967fa871de9640a5b70ca'
+ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet_test.tar.gz"
 
 ShimmerWaspHash='d03416482d07da7e2540e2b7fc30dbbcf8b3ded5e0f8370018f885d2c309a894'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_shimmer.tar.gz"
@@ -493,7 +493,8 @@ SubMenuMaintenance() {
 	echo "║                              4. Reset Database                              ║"
 	echo "║                              5. Loading Snapshot                            ║"
 	echo "║                              6. Show Logs                                   ║"
-	echo "║                              7. Deinstall/Remove                            ║"
+	echo "║                              7. Configuration                               ║"
+	echo "║                              8. Deinstall/Remove                            ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -620,7 +621,9 @@ SubMenuMaintenance() {
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
-	7) echo 'deinstall/remove...'; sleep 3
+	7) SubMenuConfiguration
+	   ;;
+	8) echo 'deinstall/remove...'; sleep 3
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   clear
 	   echo "$ca"
@@ -635,6 +638,109 @@ SubMenuMaintenance() {
 	   SubMenuMaintenance
 	   ;;
 	*) Dashboard ;;
+	esac
+}
+
+SubMenuConfiguration() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+	echo "║""$ca""$VAR_DOMAIN""$xx""║"
+	echo "║                                                                             ║"
+	echo "║                              1. Generate JWT-Token (for secured API Access) ║"
+	echo "║                              2. Manage Proof of Work (if Node supports it)  ║"
+	echo "║                              3. Set Node Alias (Name in Dashboard)          ║"
+	echo "║                              X. Maintenance Menu                            ║"
+	echo "║                                                                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_HORNET_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_BEE_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_GOSHIMMER_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_WASP_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_HORNET_VERSION""$xx"; fi
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_WASP_VERSION""$xx"; fi
+	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+	echo ""
+	echo "select menu item: "
+	echo ""
+
+	read -r -p '> ' n
+	case $n in
+	1) clear
+	   echo "$ca"
+	   echo "Generate JWT-Token..."
+	   echo "$xx"
+
+	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
+	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
+		  VAR_RESTAPI_SALT=$(cat .env | grep RESTAPI_SALT | cut -d '=' -f 2);
+	      if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""Generate JWT-Token is not supportet, please update your Node! ""$xx"
+		  else
+		     VAR_JWT=$(docker compose run --rm hornet tool jwt-api --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
+		     echo "Your JWT-Token for secured API Access is generated:"
+		     echo "$gn"
+		     echo "$VAR_JWT""$xx"
+		  fi
+	   else
+	      echo "$rd""Generate JWT-Token is not supportet, aborted! ""$xx"
+	   fi	
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuConfiguration ;;
+	2) clear
+	   echo "$ca"
+	   echo "Manage Proof of Work..."
+	   echo "$xx""$fl"
+	   
+	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
+	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
+		  read -r -p 'Press [P] to enable Proof of Work... Press [X] key to disable... ' P; echo "$xx"
+		  if  [ "$P" = 'p' ] && ! [ "$P" = 'P' ]; then 
+	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; P='P'; fi
+		  fi
+		  if  [ "$P" = 'x' ] && ! [ "$P" = 'X' ]; then 		  
+	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; P='X'; fi	  
+		  fi
+		  if  [ "$P" = 'P' ] || [ "$P" = 'X' ]; then		  
+		     ./prepare_docker.sh >/dev/null 2>&1
+	         if  [ "$P" = 'P' ]; then echo "$gn""Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
+	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
+		  else
+	         echo "$rd""Manage Proof of Work not set, aborted!""$xx"
+		  fi
+	   else
+	      echo "$rd""Manage Proof of Work is not supportet, aborted!""$xx"
+	   fi	
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuConfiguration ;;
+	3) clear
+	   echo "$ca"
+	   echo "Set Node Alias..."
+	   echo "$xx"
+	   
+	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
+	   if [ "$VAR_NODE" = 1 ] || [ "$VAR_NODE" = 2 ] || [ "$VAR_NODE" = 5 ]; then
+	      echo "Set the node alias (example: $ca""DLT.GREEN Node""$xx):"
+	      read -r -p '> ' VAR_NODE_ALIAS
+	      echo ''
+	      if [ "$VAR_NODE" = 1 ] || [ "$VAR_NODE" = 5 ]; then  
+		     fgrep -q "HORNET_NODE_ALIAS" .env || echo "HORNET_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
+	         if [ -f .env ]; then sed -i "s/HORNET_NODE_ALIAS=.*/HORNET_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
+		  fi
+	      if [ "$VAR_NODE" = 2 ]; then  
+		     fgrep -q "BEE_NODE_ALIAS" .env || echo "BEE_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
+	         if [ -f .env ]; then sed -i "s/BEE_NODE_ALIAS=.*/BEE_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
+		  fi	  
+		  ./prepare_docker.sh >/dev/null 2>&1
+		  echo "$gn""Node Alias of your Node successfully set""$xx"
+		  echo "$rd""Please restart your Node for the changes to take effect!""$xx"
+	   else
+	      echo "$rd""Set Node Alias is not supportet, aborted!""$xx"
+	   fi	
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuConfiguration ;;
+	*) SubMenuMaintenance ;;
 	esac
 }
 
@@ -844,7 +950,7 @@ SystemMaintenance() {
 	echo 'Please wait, stopping Nodes can take up to 5 minutes...'
 	echo "$xx"
 	docker stop $(docker ps -a -q)
-	docker ps -a -q
+	docker ps -a -q >/dev/null 2>&1
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
@@ -1017,6 +1123,8 @@ IotaHornet() {
 
 	CheckConfiguration
 
+	VAR_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
+
 	if [ $VAR_CONF_RESET = 1 ]; then
 
 		clear
@@ -1070,6 +1178,7 @@ IotaHornet() {
 		echo "HORNET_HTTPS_PORT=$VAR_IOTA_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
+		echo "RESTAPI_SALT=$VAR_SALT" >> .env
 
 		if [ $VAR_CERT = 0 ]
 		then
@@ -1085,6 +1194,7 @@ IotaHornet() {
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_IOTA_HORNET_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
+		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -1728,11 +1838,8 @@ IotaGoshimmer() {
 		fi
 	else
 		if [ -f .env ]; then sed -i "s/GOSHIMMER_VERSION=.*/GOSHIMMER_VERSION=$VAR_IOTA_GOSHIMMER_VERSION/g" .env; fi
+
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
-		echo ""
-		echo "Add http Port for connection cli-wallet..."
-		fgrep -q "GOSHIMMER_WEBAPI_PORT" .env || echo "GOSHIMMER_WEBAPI_PORT=8080" >> .env
-		echo ufw allow '8080/tcp' && ufw allow '8080/tcp'
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -1877,6 +1984,8 @@ ShimmerHornet() {
 
 	CheckConfiguration
 
+	VAR_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
+
 	if [ $VAR_CONF_RESET = 1 ]; then
 
 		clear
@@ -1930,6 +2039,7 @@ ShimmerHornet() {
 		echo "HORNET_HTTPS_PORT=$VAR_SHIMMER_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
+		echo "RESTAPI_SALT=$VAR_SALT" >> .env
 
 		if [ $VAR_CERT = 0 ]
 		then
@@ -1960,6 +2070,7 @@ ShimmerHornet() {
 		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_INX_DASHBOARD_VERSION/g" .env; fi
 
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
+		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -1971,6 +2082,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
+	docker network create shimmer >/dev/null 2>&1
 	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
@@ -2197,6 +2309,7 @@ ShimmerWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
+	docker network create shimmer >/dev/null 2>&1
 	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then

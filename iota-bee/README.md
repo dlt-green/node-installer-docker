@@ -24,6 +24,7 @@ ACME_EMAIL=your-email@example.com
 
 BEE_VERSION=0.3.1
 BEE_HOST=node.your-domain.com
+# BEE_NODE_ALIAS=bee
 # BEE_NETWORK=mainnet
 # BEE_HTTP_PORT=80
 # BEE_HTTPS_PORT=443
@@ -42,6 +43,7 @@ DASHBOARD_SALT=0000000000000000000000000000000000000000000000000000000000000000
 | -------------------- | :-------: | :---------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | BEE_VERSION          |     x     |             | Version of `iotaledger/bee` docker image to use                                                                                                                     |
 | BEE_NETWORK          |           |   mainnet   | Allowed values: `mainnet`, `devnet`                                                                                                                                 |
+| BEE_NODE_ALIAS       |           |     bee     | Node alias                                                                                                                                                          |
 | BEE_HOST             |     x     |             | Host domain name e.g. `bee.dlt.green`                                                                                                                               |
 | BEE_HTTP_PORT        |           |     80      | HTTP port to access dashboard and api. Must be 80 if letsencrypt is used.                                                                                           |
 | BEE_HTTPS_PORT       |           |     443     | HTTPS port to access dashboard and api                                                                                                                              |
