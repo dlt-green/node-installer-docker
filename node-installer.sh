@@ -244,8 +244,10 @@ CheckNodeHealthy() {
 	1) VAR_API="api/v1/info"; OBJ=".data.isHealthy" ;;
 	2) VAR_API="api/v1/info"; OBJ=".data.isHealthy" ;;
 	3) VAR_API="info"; OBJ=".tangleTime.synced" ;;
+	4) VAR_API="info"; OBJ=".Version" ;;
 	5) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
 	6) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
+	8) VAR_API="info"; OBJ=".Version" ;;
 	*) ;;
 	esac
 	VAR_NodeHealthy=$(curl https://${VAR_DOMAIN}:${VAR_PORT}/${VAR_API} --http1.1 -m 2 -s -X GET -H 'Content-Type: application/json' | jq ${OBJ})
@@ -326,7 +328,15 @@ Dashboard() {
 	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	fi
 	if $VAR_NodeHealthy; then ig=$gn; elif [ -d /var/lib/iota-goshimmer ]; then ig=$rd; else ig=$gr; fi	
-	 
+
+	VAR_NODE=4; VAR_NodeHealthy=false; VAR_PORT="9999"
+	if [ -f "/var/lib/iota-wasp/.env" ]; then
+	  VAR_DOMAIN=$(cat /var/lib/iota-wasp/.env | grep _HOST | cut -d '=' -f 2)
+	  VAR_PORT=$(cat "/var/lib/iota-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
+	if ! [ "$VAR_NodeHealthy" = "false" ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ]; then iw=$rd; else iw=$gr; fi	
+ 
 	VAR_NODE=5; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-hornet/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2)
@@ -343,13 +353,15 @@ Dashboard() {
 	fi
 	if $VAR_NodeHealthy; then sb=$gn; elif [ -d /var/lib/shimmer-bee ]; then sb=$rd; else sb=$gr; fi	
 
-	VAR_NODE=4; if [ -s "/var/lib/iota-wasp/.env" ]; then VAR_DOMAIN=$(cat /var/lib/iota-wasp/.env | grep _HOST | cut -d '=' -f 2); fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'iota-wasp' 2>/dev/null)" = 'running' ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ]; then iw=$rd; else iw=$gr; fi
-
 	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then wc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then wc=$or; else wc=$gr; fi
 
-	VAR_NODE=8; if [ -s "/var/lib/shimmer-wasp/.env" ]; then VAR_DOMAIN=$(cat /var/lib/shimmer-wasp/.env | grep _HOST | cut -d '=' -f 2); fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-wasp' 2>/dev/null)" = 'running' ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sw=$rd; else sw=$gr; fi
+	VAR_NODE=8; VAR_NodeHealthy=false; VAR_PORT="9999"
+	if [ -f "/var/lib/shimmer-wasp/.env" ]; then
+	  VAR_DOMAIN=$(cat /var/lib/shimmer-wasp/.env | grep _HOST | cut -d '=' -f 2)
+	  VAR_PORT=$(cat "/var/lib/shimmer-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
+	if ! [ "$VAR_NodeHealthy" = "false" ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sw=$rd; else sw=$gr; fi
 
 	VAR_NODE=0
 
