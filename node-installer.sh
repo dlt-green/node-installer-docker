@@ -386,7 +386,7 @@ Dashboard() {
 	echo "║                                                                             ║"
 	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
 	echo "║                                                                             ║"
-	echo "║       press [S] to start all Nodes, [M] for Maintenance, [Q] to quit        ║"
+	echo "║    [R] Refresh  |  [S] Start all Nodes  |  [M] Maintenance  |  [Q] Quit     ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item:"
@@ -428,7 +428,9 @@ Dashboard() {
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=8; VAR_DIR='shimmer-wasp'
 	   SubMenuMaintenance ;;
-
+	r|R) clear
+	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	   DashboardHelper ;;
 	q|Q) clear; exit ;;
 	*) MainMenu ;;
 	esac
