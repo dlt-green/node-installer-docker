@@ -302,46 +302,45 @@ SetCertificateGlobal() {
 Dashboard() {
 
 	VAR_DOMAIN=''
-	VAR_NodeHealthy=false
-
-	VAR_NODE=1
+	
+	VAR_NODE=1; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/iota-hornet/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/iota-hornet/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/iota-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
-	else VAR_PORT="9999"; fi
-	if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
 	if $VAR_NodeHealthy; then ih=$gn; elif [ -d /var/lib/iota-hornet ]; then ih=$rd; else ih=$gr; fi
 
-	VAR_NODE=2
+	VAR_NODE=2; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/iota-bee/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/iota-bee/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/iota-bee/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
-	else VAR_PORT="9999"; fi
-	if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
 	if $VAR_NodeHealthy; then ib=$gn; elif [ -d /var/lib/iota-bee ]; then ib=$rd; else ib=$gr; fi
 
-	VAR_NODE=3
+	VAR_NODE=3; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/iota-goshimmer/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/iota-goshimmer/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/iota-goshimmer/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
-	else VAR_PORT="9999"; fi
-	if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
 	if $VAR_NodeHealthy; then ig=$gn; elif [ -d /var/lib/iota-goshimmer ]; then ig=$rd; else ig=$gr; fi	
 	 
-	VAR_NODE=5
+	VAR_NODE=5; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-hornet/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/shimmer-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
-	else VAR_PORT="9999"; fi
-	if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi	
 
-	VAR_NODE=6
+	VAR_NODE=6; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-bee/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-bee/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/shimmer-bee/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
-	else VAR_PORT="9999"; fi
-	if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
 	if $VAR_NodeHealthy; then sb=$gn; elif [ -d /var/lib/shimmer-bee ]; then sb=$rd; else sb=$gr; fi	
 
 	VAR_NODE=4; if [ -s "/var/lib/iota-wasp/.env" ]; then VAR_DOMAIN=$(cat /var/lib/iota-wasp/.env | grep _HOST | cut -d '=' -f 2); fi
