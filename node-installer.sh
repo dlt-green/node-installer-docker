@@ -384,7 +384,7 @@ Dashboard() {
 	echo "║5│      ""$sh""HORNET""$xx""     │6│       ""$sb""BEE""$xx""       │7│    ""$wc""WASP-CLI""$xx""    │8│      ""$sw""WASP""$xx""      ║"
 	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
 	echo "║                                                                             ║"
-	echo "║   Status from Docker Container (Nodes): ""$gn""running""$xx"" / ""$rd""stopped""$xx"" / ""$gr""not installed""$xx""   ║"
+	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
 	echo "║                                                                             ║"
 	echo "║       press [S] to start all Nodes, [M] for Maintenance, [Q] to quit        ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
