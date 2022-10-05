@@ -47,7 +47,7 @@ Wenn Sie auf das Bild klicken, sehen Sie <a href="https://www.youtube.com/channe
 
 <div align="center">
       <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">
-      <img src="!https://user-images.githubusercontent.com/89119285/194117362-7270e360-691c-46fd-99a8-fb4d519d7149.png"
+      <img src="https://user-images.githubusercontent.com/89119285/194117362-7270e360-691c-46fd-99a8-fb4d519d7149.png"
       alt="Installation">
       </a>
 </div>
