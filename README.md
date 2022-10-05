@@ -47,8 +47,8 @@ Wenn Sie auf das Bild klicken, sehen Sie <a href="https://www.youtube.com/channe
 
 <div align="center">
       <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">
-      <img src="https://user-images.githubusercontent.com/89119285/184715070-5f8b2f84-06ec-4cc2-af43-8a59cbcb760f.png"
-      alt="Installation IOTA Nodes Hornet/Bee/Goshimmer/Wasp">
+      <img src="https://user-images.githubusercontent.com/89119285/194118055-8e46d349-776c-4d90-89e2-ce92df5c60d6.png"
+      alt="Installation">
       </a>
 </div>
 
