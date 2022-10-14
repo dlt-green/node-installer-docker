@@ -710,8 +710,9 @@ SubMenuConfiguration() {
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                              1. Generate JWT-Token (for secured API Access) ║"
-	echo "║                              2. Manage Proof of Work (if Node supports it)  ║"
-	echo "║                              3. Set Node Alias (Name in Dashboard)          ║"
+	echo "║                              2. Toggle Proof of Work (if Node supports it)  ║"
+	echo "║                              3. Toggle Network (Mainnet/Testnet)            ║"
+	echo "║                              4. Set Node Alias (Name in Dashboard)          ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -751,7 +752,7 @@ SubMenuConfiguration() {
 	   SubMenuConfiguration ;;
 	2) clear
 	   echo "$ca"
-	   echo "Manage Proof of Work..."
+	   echo "Toggle Proof of Work..."
 	   echo "$xx""$fl"
 	   
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
@@ -768,14 +769,40 @@ SubMenuConfiguration() {
 	         if  [ "$P" = 'P' ]; then echo "$gn""Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
-	         echo "$rd""Manage Proof of Work not set, aborted!""$xx"
+	         echo "$rd""Toggle Proof of Work aborted!""$xx"
 		  fi
 	   else
-	      echo "$rd""Manage Proof of Work is not supportet, aborted!""$xx"
+	      echo "$rd""Toggle Proof of Work is not supportet, aborted!""$xx"
 	   fi	
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuConfiguration ;;
 	3) clear
+	   echo "$ca"
+	   echo "Toggle Network..."
+	   echo "$xx""$fl"
+	   
+	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
+	   if ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
+		  read -r -p 'Press [M] to enable Mainnet... Press [T] to enable Testnet... ' N; echo "$xx"
+		  if  [ "$N" = 'm' ] && ! [ "$N" = 'M' ]; then 
+	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=mainnet/g" .env; N='M'; fi
+		  fi
+		  if  [ "$N" = 't' ] && ! [ "$N" = 'T' ]; then 		  
+	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=testnet/g" .env; N='T'; fi	  
+		  fi
+		  if  [ "$N" = 'M' ] || [ "$N" = 'T' ]; then		  
+		     ./prepare_docker.sh >/dev/null 2>&1
+	         if  [ "$N" = 'M' ]; then echo "$gn""Mainnet of your Node successfully enabled""$xx"; else echo "$gn""Testnet of your Node successfully enabled""$xx"; fi
+	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
+		  else
+	         echo "$rd""Toggle Network aborted!""$xx"
+		  fi
+	   else
+	      echo "$rd""Toggle Network is not supportet, aborted!""$xx"
+	   fi	
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuConfiguration ;;
+	4) clear
 	   echo "$ca"
 	   echo "Set Node Alias..."
 	   echo "$xx"
