@@ -664,11 +664,11 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
 	   fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
 	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
 	   fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]
@@ -679,7 +679,7 @@ SubMenuMaintenance() {
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
-	      if [ -d /var/lib/$VAR_DIR/data/snapshots/mainnet ]; then rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*; cd /var/lib/$VAR_DIR/data/snapshots/mainnet || SubMenuMaintenance; wget $SnapshotShimmerHornet; mv genesis_snapshot.bin full_snapshot.bin; fi
+	      if [ -d /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK ]; then rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK/*; cd /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK || SubMenuMaintenance; if [$VAR_HORNET_NETWORK="mainnet"]; then wget $SnapshotShimmerHornet; mv genesis_snapshot.bin full_snapshot.bin; fi; fi
 	   fi
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
