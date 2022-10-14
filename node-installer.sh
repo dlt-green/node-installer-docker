@@ -630,11 +630,22 @@ SubMenuMaintenance() {
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
-	   rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
-	   rm -rf /var/lib/$VAR_DIR/data/storage/devnet/*
-	   rm -rf /var/lib/$VAR_DIR/data/database/*
-	   rm -rf /var/lib/$VAR_DIR/data/mainnetdb/*
-	   rm -rf /var/lib/$VAR_DIR/data/peerdb/*
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
+	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
+	   fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
+	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
+	   fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]
+	   then
+	      rm -rf /var/lib/$VAR_DIR/data/mainnetdb/*
+	      rm -rf /var/lib/$VAR_DIR/data/peerdb/*
+	   fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
+	   then
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_HORNET_NETWORK/*
+	   fi
+
 	   rm -rf /var/lib/$VAR_DIR/data/waspdb/*
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
