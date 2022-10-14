@@ -804,6 +804,7 @@ SubMenuConfiguration() {
 		  fi
 		  if  [ "$N" = 'M' ] || [ "$N" = 'T' ]; then		  
 		     ./prepare_docker.sh >/dev/null 2>&1
+			 VAR_HORNET_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
 	         if  [ "$N" = 'M' ]; then echo "$gn""Mainnet of your Node successfully enabled""$xx"; else echo "$gn""Testnet of your Node successfully enabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
