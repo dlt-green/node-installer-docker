@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="1.0.0"
+VRSN="1.2.0"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -36,13 +36,13 @@ xx='\033[0m'
 
 echo "$xx"
 
-InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum_test.txt)
+InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum.txt)
 
 IotaHornetHash='ef3622408aaa55f2a50b8e0c16f603175a0d5960f7eb4079143b8bff95a2f456'
-IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet_test.tar.gz"
+IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
 
 IotaBeeHash='a35e52e23084d937e1cd9a91719e9ce29af590b1816948c373e4d0b175f4ecd0'
-IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee_test.tar.gz"
+IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
 
 IotaGoshimmerHash='00675d98f0b69ef7e4b74d454c421ec21ef4c21b07a7510f4c3e4f12d634846c'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
@@ -51,7 +51,7 @@ IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_iota.tar.gz"
 
 ShimmerHornetHash='5ee813e616675cffcd19a585b5e1baf34ac2ed557b4967fa871de9640a5b70ca'
-ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet_test.tar.gz"
+ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
 
 ShimmerWaspHash='d03416482d07da7e2540e2b7fc30dbbcf8b3ded5e0f8370018f885d2c309a894'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_shimmer.tar.gz"
@@ -238,6 +238,22 @@ CheckConfiguration() {
 	fi
 }
 
+CheckNodeHealthy() {
+	VAR_NodeHealthy=false
+	case $VAR_NODE in
+	1) VAR_API="api/v1/info"; OBJ=".data.isHealthy" ;;
+	2) VAR_API="api/v1/info"; OBJ=".data.isHealthy" ;;
+	3) VAR_API="info"; OBJ=".tangleTime.synced" ;;
+	4) VAR_API="info"; OBJ=".Version" ;;
+	5) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
+	6) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
+	8) VAR_API="info"; OBJ=".Version" ;;
+	*) ;;
+	esac
+	VAR_NodeHealthy=$(curl https://${VAR_DOMAIN}:${VAR_PORT}/${VAR_API} --http1.1 -m 2 -s -X GET -H 'Content-Type: application/json' | jq ${OBJ})
+	if [ -z $VAR_NodeHealthy ]; then VAR_NodeHealthy=false; fi
+}
+
 SetCertificateGlobal() {
 	clear
 	echo ""
@@ -287,24 +303,67 @@ SetCertificateGlobal() {
 
 Dashboard() {
 
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'iota-hornet'    2>/dev/null)" = 'running' ]; then ih=$gn; elif [ -d /var/lib/iota-hornet ];    then ih=$rd; else ih=$gr; fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'iota-bee'       2>/dev/null)" = 'running' ]; then ib=$gn; elif [ -d /var/lib/iota-bee ];       then ib=$rd; else ib=$gr; fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'iota-goshimmer' 2>/dev/null)" = 'running' ]; then ig=$gn; elif [ -d /var/lib/iota-goshimmer ]; then ig=$rd; else ig=$gr; fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'iota-wasp'      2>/dev/null)" = 'running' ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ];      then iw=$rd; else iw=$gr; fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-hornet' 2>/dev/null)" = 'running' ]; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-bee'    2>/dev/null)" = 'running' ]; then sb=$gn; elif [ -d /var/lib/shimmer-bee ];    then sb=$rd; else sb=$gr; fi
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'shimmer-wasp'   2>/dev/null)" = 'running' ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ];   then sw=$rd; else sw=$gr; fi
-	if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then wc=$gn; elif [ -d /var/lib/shimmer-wasp ];   then wc=$or; else wc=$gr; fi
-	
 	VAR_DOMAIN=''
+	
+	VAR_NODE=1; VAR_NodeHealthy=false; VAR_PORT="9999"
+	if [ -f "/var/lib/iota-hornet/.env" ]; then
+	  VAR_DOMAIN=$(cat /var/lib/iota-hornet/.env | grep _HOST | cut -d '=' -f 2)
+	  VAR_PORT=$(cat "/var/lib/iota-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
+	if $VAR_NodeHealthy; then ih=$gn; elif [ -d /var/lib/iota-hornet ]; then ih=$rd; else ih=$gr; fi
 
-	if [ -s "/var/lib/iota-hornet/.env" ];    then VAR_DOMAIN=$(cat /var/lib/iota-hornet/.env    | grep _HOST | cut -d '=' -f 2); fi
-	if [ -s "/var/lib/iota-bee/.env" ];       then VAR_DOMAIN=$(cat /var/lib/iota-bee/.env       | grep _HOST | cut -d '=' -f 2); fi
-	if [ -s "/var/lib/iota-goshimmer/.env" ]; then VAR_DOMAIN=$(cat /var/lib/iota-goshimmer/.env | grep _HOST | cut -d '=' -f 2); fi
-	if [ -s "/var/lib/iota-wasp/.env" ];      then VAR_DOMAIN=$(cat /var/lib/iota-wasp/.env      | grep _HOST | cut -d '=' -f 2); fi
-	if [ -s "/var/lib/shimmer-hornet/.env" ]; then VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2); fi
-	if [ -s "/var/lib/shimmer-bee/.env" ];    then VAR_DOMAIN=$(cat /var/lib/shimmer-bee/.env    | grep _HOST | cut -d '=' -f 2); fi
-	if [ -s "/var/lib/shimmer-wasp/.env" ];   then VAR_DOMAIN=$(cat /var/lib/shimmer-wasp/.env   | grep _HOST | cut -d '=' -f 2); fi
+	VAR_NODE=2; VAR_NodeHealthy=false; VAR_PORT="9999"
+	if [ -f "/var/lib/iota-bee/.env" ]; then
+	  VAR_DOMAIN=$(cat /var/lib/iota-bee/.env | grep _HOST | cut -d '=' -f 2)
+	  VAR_PORT=$(cat "/var/lib/iota-bee/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
+	if $VAR_NodeHealthy; then ib=$gn; elif [ -d /var/lib/iota-bee ]; then ib=$rd; else ib=$gr; fi
+
+	VAR_NODE=3; VAR_NodeHealthy=false; VAR_PORT="9999"
+	if [ -f "/var/lib/iota-goshimmer/.env" ]; then
+	  VAR_DOMAIN=$(cat /var/lib/iota-goshimmer/.env | grep _HOST | cut -d '=' -f 2)
+	  VAR_PORT=$(cat "/var/lib/iota-goshimmer/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
+	if $VAR_NodeHealthy; then ig=$gn; elif [ -d /var/lib/iota-goshimmer ]; then ig=$rd; else ig=$gr; fi	
+
+	VAR_NODE=4; VAR_NodeHealthy=false; VAR_PORT="9999"
+	if [ -f "/var/lib/iota-wasp/.env" ]; then
+	  VAR_DOMAIN=$(cat /var/lib/iota-wasp/.env | grep _HOST | cut -d '=' -f 2)
+	  VAR_PORT=$(cat "/var/lib/iota-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
+	if ! [ "$VAR_NodeHealthy" = "false" ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ]; then iw=$rd; else iw=$gr; fi	
+ 
+	VAR_NODE=5; VAR_NodeHealthy=false; VAR_PORT="9999"
+	if [ -f "/var/lib/shimmer-hornet/.env" ]; then
+	  VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2)
+	  VAR_PORT=$(cat "/var/lib/shimmer-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
+	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi	
+
+	VAR_NODE=6; VAR_NodeHealthy=false; VAR_PORT="9999"
+	if [ -f "/var/lib/shimmer-bee/.env" ]; then
+	  VAR_DOMAIN=$(cat /var/lib/shimmer-bee/.env | grep _HOST | cut -d '=' -f 2)
+	  VAR_PORT=$(cat "/var/lib/shimmer-bee/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
+	if $VAR_NodeHealthy; then sb=$gn; elif [ -d /var/lib/shimmer-bee ]; then sb=$rd; else sb=$gr; fi	
+
+	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then wc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then wc=$or; else wc=$gr; fi
+
+	VAR_NODE=8; VAR_NodeHealthy=false; VAR_PORT="9999"
+	if [ -f "/var/lib/shimmer-wasp/.env" ]; then
+	  VAR_DOMAIN=$(cat /var/lib/shimmer-wasp/.env | grep _HOST | cut -d '=' -f 2)
+	  VAR_PORT=$(cat "/var/lib/shimmer-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
+	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	fi
+	if ! [ "$VAR_NodeHealthy" = "false" ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sw=$rd; else sw=$gr; fi
+
+	VAR_NODE=0
 
 	PositionCenter "$VAR_DOMAIN"
 	VAR_DOMAIN=$text
@@ -325,9 +384,9 @@ Dashboard() {
 	echo "║5│      ""$sh""HORNET""$xx""     │6│       ""$sb""BEE""$xx""       │7│    ""$wc""WASP-CLI""$xx""    │8│      ""$sw""WASP""$xx""      ║"
 	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
 	echo "║                                                                             ║"
-	echo "║   Status from Docker Container (Nodes): ""$gn""running""$xx"" / ""$rd""stopped""$xx"" / ""$gr""not installed""$xx""   ║"
+	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
 	echo "║                                                                             ║"
-	echo "║       press [S] to start all Nodes, [M] for Maintenance, [Q] to quit        ║"
+	echo "║    [R] Refresh  |  [S] Start all Nodes  |  [M] Maintenance  |  [Q] Quit     ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item:"
@@ -369,7 +428,9 @@ Dashboard() {
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=8; VAR_DIR='shimmer-wasp'
 	   SubMenuMaintenance ;;
-
+	r|R) clear
+	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	   DashboardHelper ;;
 	q|Q) clear; exit ;;
 	*) MainMenu ;;
 	esac
@@ -691,11 +752,11 @@ SubMenuConfiguration() {
 	2) clear
 	   echo "$ca"
 	   echo "Manage Proof of Work..."
-	   echo "$fl"
+	   echo "$xx""$fl"
 	   
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
-	      read -r -p 'Press [P] to enable Proof of Work... Press [X] key to disable... ' P; echo "$xx"
+		  read -r -p 'Press [P] to enable Proof of Work... Press [X] key to disable... ' P; echo "$xx"
 		  if  [ "$P" = 'p' ] && ! [ "$P" = 'P' ]; then 
 	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; P='P'; fi
 		  fi
@@ -703,13 +764,8 @@ SubMenuConfiguration() {
 	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; P='X'; fi	  
 		  fi
 		  if  [ "$P" = 'P' ] || [ "$P" = 'X' ]; then		  
-		     clear
-	         echo "$ca"; echo 'Please wait, preparing Configuration...'; echo "$xx"
-		     sleep 3
-		     ./prepare_docker.sh
-		     clear
-	         echo "$ca"; echo "Manage Proof of Work ...""$xx"
-	         if  [ "$P" = 'P' ]; then echo "$gn"; echo 'Proof of Work of your Node successfully enabled'"$xx"; else echo "$rd"; echo 'Proof of Work of your Node successfully disabled'"$xx"; fi
+		     ./prepare_docker.sh >/dev/null 2>&1
+	         if  [ "$P" = 'P' ]; then echo "$gn""Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
 	         echo "$rd""Manage Proof of Work not set, aborted!""$xx"
@@ -731,19 +787,14 @@ SubMenuConfiguration() {
 	      echo ''
 	      if [ "$VAR_NODE" = 1 ] || [ "$VAR_NODE" = 5 ]; then  
 		     fgrep -q "HORNET_NODE_ALIAS" .env || echo "HORNET_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
-	         if [ -f .env ]; then sed -i "s/HORNET_NODE_ALIAS=.*/HORNET_NODE_ALIAS=$VAR_NODE_ALIAS/g" .env; fi
+	         if [ -f .env ]; then sed -i "s/HORNET_NODE_ALIAS=.*/HORNET_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
 		  fi
 	      if [ "$VAR_NODE" = 2 ]; then  
 		     fgrep -q "BEE_NODE_ALIAS" .env || echo "BEE_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
-	         if [ -f .env ]; then sed -i "s/BEE_NODE_ALIAS=.*/BEE_NODE_ALIAS=$VAR_NODE_ALIAS/g" .env; fi
+	         if [ -f .env ]; then sed -i "s/BEE_NODE_ALIAS=.*/BEE_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
 		  fi	  
-		  clear
-		  echo "$ca"; echo 'Please wait, preparing Configuration...'; echo "$xx"
-		  sleep 3
-		  ./prepare_docker.sh
-		  clear
-		  echo "$ca"; echo "Set Node Alias...""$xx"
-		  echo "$gn"; echo 'Node Alias of your Node successfully set'"$xx"
+		  ./prepare_docker.sh >/dev/null 2>&1
+		  echo "$gn""Node Alias of your Node successfully set""$xx"
 		  echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 	   else
 	      echo "$rd""Set Node Alias is not supportet, aborted!""$xx"
@@ -1356,8 +1407,6 @@ IotaBee() {
 
 	CheckConfiguration
 
-	VAR_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)
-	
 	if [ $VAR_CONF_RESET = 1 ]; then
 
 		clear
@@ -1406,7 +1455,6 @@ IotaBee() {
 		echo "BEE_HTTPS_PORT=$VAR_IOTA_BEE_HTTPS_PORT" >> .env
 		echo "BEE_GOSSIP_PORT=15601" >> .env
 		echo "BEE_AUTOPEERING_PORT=14636" >> .env
-		echo "RESTAPI_SALT=$VAR_SALT" >> .env
 
 		if [ $VAR_CERT = 0 ]
 		then
@@ -1422,7 +1470,6 @@ IotaBee() {
 	else
 		if [ -f .env ]; then sed -i "s/BEE_VERSION=.*/BEE_VERSION=$VAR_IOTA_BEE_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
-		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
