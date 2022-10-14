@@ -769,16 +769,16 @@ SubMenuConfiguration() {
 	   
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
-		  read -r -p 'Press [P] to enable Proof of Work... Press [X] key to disable... ' P; echo "$xx"
-		  if  [ "$P" = 'p' ] && ! [ "$P" = 'P' ]; then 
-	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; P='P'; fi
+		  read -r -p 'Press [P] to enable Proof of Work... Press [X] key to disable... ' K; echo "$xx"
+		  if  [ "$K" = 'p' ] || [ "$K" = 'P' ]; then 
+	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; K='P'; fi
 		  fi
-		  if  [ "$P" = 'x' ] && ! [ "$P" = 'X' ]; then 		  
-	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; P='X'; fi	  
+		  if  [ "$K" = 'x' ] || [ "$K" = 'X' ]; then 		  
+	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; K='X'; fi	  
 		  fi
-		  if  [ "$P" = 'P' ] || [ "$P" = 'X' ]; then		  
+		  if  [ "$K" = 'P' ] || [ "$K" = 'X' ]; then		  
 		     ./prepare_docker.sh >/dev/null 2>&1
-	         if  [ "$P" = 'P' ]; then echo "$gn""Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
+	         if  [ "$K" = 'P' ]; then echo "$gn""Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
 	         echo "$rd""Toggle Proof of Work aborted!""$xx"
@@ -795,17 +795,17 @@ SubMenuConfiguration() {
 	   
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
-		  read -r -p 'Press [M] to enable Mainnet... Press [T] to enable Testnet... ' N; echo "$xx"
-		  if  [ "$N" = 'm' ] && ! [ "$N" = 'M' ]; then 
-	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=mainnet/g" .env; N='M'; fi
+		  read -r -p 'Press [M] to enable Mainnet... Press [T] to enable Testnet... ' K; echo "$xx"
+		  if  [ "$K" = 'm' ] || [ "$K" = 'M' ]; then 
+	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=mainnet/g" .env; K='M'; fi
 		  fi
-		  if  [ "$N" = 't' ] && ! [ "$N" = 'T' ]; then 		  
-	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=testnet/g" .env; N='T'; fi	  
+		  if  [ "$K" = 't' ] || [ "$K" = 'T' ]; then 		  
+	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=testnet/g" .env; K='T'; fi	  
 		  fi
-		  if  [ "$N" = 'M' ] || [ "$N" = 'T' ]; then		  
+		  if  [ "$K" = 'M' ] || [ "$K" = 'T' ]; then		  
 		     ./prepare_docker.sh >/dev/null 2>&1
 			 VAR_HORNET_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
-	         if  [ "$N" = 'M' ]; then echo "$gn""Mainnet of your Node successfully enabled""$xx"; else echo "$gn""Testnet of your Node successfully enabled""$xx"; fi
+	         if  [ "$K" = 'M' ]; then echo "$gn""Mainnet of your Node successfully enabled""$xx"; else echo "$gn""Testnet of your Node successfully enabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
 	         echo "$rd""Toggle Network aborted!""$xx"
