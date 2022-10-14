@@ -2,7 +2,7 @@ version: '3'
 services:
 
   wasp:
-    image: dltgreen/wasp:${WASP_VERSION:?WASP_VERSION is missing}
+    image: ${WASP_IMAGE_REPOSITORY:-iotaledger}/wasp:${WASP_VERSION:?WASP_VERSION is missing}
     container_name: ${WASP_LEDGER_NETWORK:?WASP_LEDGER_NETWORK is missing}-wasp
     restart: unless-stopped
     ulimits:
