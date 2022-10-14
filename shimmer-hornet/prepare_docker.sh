@@ -17,7 +17,7 @@ validate_ssl_config "HORNET_SSL_CERT" "HORNET_SSL_KEY"
 copy_common_assets
 
 # Validate HORNET_NETWORK config
-if [[ ! -z ${HORNET_NETWORK} ]] && [[ "${HORNET_NETWORK}" != "mainnet" ]]; then
+if [[ ! -z ${HORNET_NETWORK} ]] && [[ "${HORNET_NETWORK}" != "mainnet" ]] && [[ "${HORNET_NETWORK}" != "testnet" ]]; then
   echo "Invalid HORNET_NETWORK: ${HORNET_NETWORK}"
   exit 255
 fi
@@ -37,7 +37,13 @@ prepare_data_dir "${dataDir}" \
 create_docker_network "shimmer"
 
 # Generate config
-extract_file_from_image "iotaledger/hornet" "${HORNET_VERSION}" "/app/${configFilenameInContainer}" "${configPath}"
+if [[ -z ${HORNET_NETWORK} ]] || [ "${HORNET_NETWORK}" == "mainnet" ]; then
+  extract_file_from_image "iotaledger/hornet" "${HORNET_VERSION}" "/app/${configFilenameInContainer}" "${configPath}"
+else
+  configUrl="https://github.com/iotaledger/hornet/raw/v${HORNET_VERSION}/config_${HORNET_NETWORK}.json"
+  echo "Downloading ${HORNET_NETWORK} config from ${configUrl}..."
+  curl -L -s -o "${configPath}" "${configUrl}"
+fi
 
 echo "Adapting config with values from .env..."
 set_config "${configPath}" ".node.alias"                  "\"${HORNET_NODE_ALIAS:-HORNET node}\""
