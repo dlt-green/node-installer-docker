@@ -917,7 +917,7 @@ SubMenuWaspCLI() {
 			    clear
 			    echo "$ca"
 			    if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
-			    echo "$rd""Hint: Quit Wasp-CLI with [q] or [Q] | Help [-h] | Clear [clear]"
+			    echo "$rd""Hint: Quit Wasp-CLI with [q] | Help [-h] | Clear [clear]"
 			    echo "$xx"
 			    echo "Set command: (example: $ca""'wasp-cli {commands}' or '{commands}'""$xx):"
 			 fi
