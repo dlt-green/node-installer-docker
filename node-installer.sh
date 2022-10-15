@@ -428,6 +428,11 @@ Dashboard() {
 	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-bee'
 	   DashboardHelper ;;
 	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='shimmer-wasp'
+	   clear
+	   echo "$ca"
+	   echo 'Please wait, checking for Updates...'
+	   echo "$xx"
+	   if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi 
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=8; VAR_DIR='shimmer-wasp'
 	   SubMenuMaintenance ;;
