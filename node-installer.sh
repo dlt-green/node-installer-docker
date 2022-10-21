@@ -451,7 +451,7 @@ Dashboard() {
 	echo "║                                                                             ║"
 	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
 	echo "║                                                                             ║"
-	echo "║    [R] Refresh  |  [S] Start all Nodes  |  [M] Maintenance  |  [Q] Quit     ║"
+	echo "║   [E] Events  [R] Refresh  [S] Start all Nodes  [M] Maintenance  [Q] Quit   ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item:"
@@ -477,8 +477,6 @@ Dashboard() {
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   DashboardHelper ;;
 
-	0) VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
-	   CheckEvents ;;
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
 	   SubMenuMaintenance ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-bee'
@@ -500,6 +498,9 @@ Dashboard() {
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=8; VAR_DIR='shimmer-wasp'
 	   SubMenuMaintenance ;;
+	e|E) clear
+	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	   CheckEvents ;;
 	r|R) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   DashboardHelper ;;
