@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="1.2.0"
+VRSN="1.2.2"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -15,7 +15,7 @@ VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.2'
-VAR_SHIMMER_WASP_VERSION='0.3.5'
+VAR_SHIMMER_WASP_VERSION='0.3.8'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
 VAR_INX_MQTT_VERSION='1.0-rc'
@@ -50,10 +50,10 @@ IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/release
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_iota.tar.gz"
 
-ShimmerHornetHash='5ee813e616675cffcd19a585b5e1baf34ac2ed557b4967fa871de9640a5b70ca'
+ShimmerHornetHash='2dc4b7c7a03cb6c2163cf6895009e8a86e41b65df817065da7571ef43f8d2cac'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='d03416482d07da7e2540e2b7fc30dbbcf8b3ded5e0f8370018f885d2c309a894'
+ShimmerWaspHash='f6c7626105ab11b99091161656dbd09d9ae25a6b811c6e6baf9ea13ebe8d2b94'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_shimmer.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -254,6 +254,12 @@ CheckNodeHealthy() {
 	if [ -z $VAR_NodeHealthy ]; then VAR_NodeHealthy=false; fi
 }
 
+CheckEvents() {
+	echo "$ca"
+	echo "Checking Events..."
+	echo "$xx"
+}
+
 SetCertificateGlobal() {
 	clear
 	echo ""
@@ -341,7 +347,10 @@ Dashboard() {
 	if [ -f "/var/lib/shimmer-hornet/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/shimmer-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
+	  VAR_HORNET_NETWORK=$(cat "/var/lib/shimmer-hornet/.env" | grep HORNET_NETWORK | cut -d '=' -f 2)
 	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	else
+	  VAR_HORNET_NETWORK='mainnet'
 	fi
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi	
 
@@ -379,7 +388,7 @@ Dashboard() {
 	echo "║1│      ""$ih""HORNET""$xx""     │2│       ""$ib""BEE""$xx""       │3│    ""$ig""GOSHIMMER""$xx""   │4│      ""$iw""WASP""$xx""      ║"
 	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
 	echo "║                                                                             ║"
-	echo "║           ┌─────────────────── Shimmer Mainnet ──┬─────────────────┐        ║"
+	echo "║           ┌─────────────────── Shimmer ""$(echo "$VAR_HORNET_NETWORK" | sed 's/.*/\u&/')"" ──┬─────────────────┐        ║"
 	echo "╟─┬─────────────────┬─┬─────────────────┬─┬────────────────┬─┬────────────────╢"
 	echo "║5│      ""$sh""HORNET""$xx""     │6│       ""$sb""BEE""$xx""       │7│    ""$wc""WASP-CLI""$xx""    │8│      ""$sw""WASP""$xx""      ║"
 	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
@@ -412,6 +421,8 @@ Dashboard() {
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   DashboardHelper ;;
 
+	0) VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	   CheckEvents ;;
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
 	   SubMenuMaintenance ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-bee'
@@ -425,6 +436,11 @@ Dashboard() {
 	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-bee'
 	   DashboardHelper ;;
 	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='shimmer-wasp'
+	   clear
+	   echo "$ca"
+	   echo 'Please wait, checking for Updates...'
+	   echo "$xx"
+	   if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi 
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=8; VAR_DIR='shimmer-wasp'
 	   SubMenuMaintenance ;;
@@ -629,11 +645,22 @@ SubMenuMaintenance() {
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
-	   rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
-	   rm -rf /var/lib/$VAR_DIR/data/storage/devnet/*
-	   rm -rf /var/lib/$VAR_DIR/data/database/*
-	   rm -rf /var/lib/$VAR_DIR/data/mainnetdb/*
-	   rm -rf /var/lib/$VAR_DIR/data/peerdb/*
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
+	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
+	   fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
+	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
+	   fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]
+	   then
+	      rm -rf /var/lib/$VAR_DIR/data/mainnetdb/*
+	      rm -rf /var/lib/$VAR_DIR/data/peerdb/*
+	   fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
+	   then
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_HORNET_NETWORK/*
+	   fi
+
 	   rm -rf /var/lib/$VAR_DIR/data/waspdb/*
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
@@ -652,11 +679,11 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
 	   fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/tangle/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
 	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
 	   fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]
@@ -667,7 +694,7 @@ SubMenuMaintenance() {
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
-	      if [ -d /var/lib/$VAR_DIR/data/snapshots/mainnet ]; then rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*; cd /var/lib/$VAR_DIR/data/snapshots/mainnet || SubMenuMaintenance; wget $SnapshotShimmerHornet; mv genesis_snapshot.bin full_snapshot.bin; fi
+	      if [ -d /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK ]; then rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK/*; cd /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK || SubMenuMaintenance; if [$VAR_HORNET_NETWORK="mainnet"]; then wget $SnapshotShimmerHornet; mv genesis_snapshot.bin full_snapshot.bin; fi; fi
 	   fi
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
@@ -710,8 +737,9 @@ SubMenuConfiguration() {
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                              1. Generate JWT-Token (for secured API Access) ║"
-	echo "║                              2. Manage Proof of Work (if Node supports it)  ║"
-	echo "║                              3. Set Node Alias (Name in Dashboard)          ║"
+	echo "║                              2. Toggle Proof of Work (if Node supports it)  ║"
+	echo "║                              3. Toggle Network (Mainnet/Testnet)            ║"
+	echo "║                              4. Set Node Alias (Name in Dashboard)          ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -751,31 +779,58 @@ SubMenuConfiguration() {
 	   SubMenuConfiguration ;;
 	2) clear
 	   echo "$ca"
-	   echo "Manage Proof of Work..."
+	   echo "Toggle Proof of Work..."
 	   echo "$xx""$fl"
 	   
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
-		  read -r -p 'Press [P] to enable Proof of Work... Press [X] key to disable... ' P; echo "$xx"
-		  if  [ "$P" = 'p' ] && ! [ "$P" = 'P' ]; then 
-	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; P='P'; fi
+		  read -r -p 'Press [P] to enable Proof of Work... Press [X] key to disable... ' K; echo "$xx"
+		  if  [ "$K" = 'p' ] || [ "$K" = 'P' ]; then 
+	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; K='P'; fi
 		  fi
-		  if  [ "$P" = 'x' ] && ! [ "$P" = 'X' ]; then 		  
-	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; P='X'; fi	  
+		  if  [ "$K" = 'x' ] || [ "$K" = 'X' ]; then 		  
+	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; K='X'; fi	  
 		  fi
-		  if  [ "$P" = 'P' ] || [ "$P" = 'X' ]; then		  
+		  if  [ "$K" = 'P' ] || [ "$K" = 'X' ]; then		  
 		     ./prepare_docker.sh >/dev/null 2>&1
-	         if  [ "$P" = 'P' ]; then echo "$gn""Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
+	         if  [ "$K" = 'P' ]; then echo "$gn""Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
-	         echo "$rd""Manage Proof of Work not set, aborted!""$xx"
+	         echo "$rd""Toggle Proof of Work aborted!""$xx"
 		  fi
 	   else
-	      echo "$rd""Manage Proof of Work is not supportet, aborted!""$xx"
+	      echo "$rd""Toggle Proof of Work is not supportet, aborted!""$xx"
 	   fi	
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuConfiguration ;;
 	3) clear
+	   echo "$ca"
+	   echo "Toggle Network..."
+	   echo "$xx""$fl"
+	   
+	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
+	   if ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
+		  read -r -p 'Press [M] to enable Mainnet... Press [T] to enable Testnet... ' K; echo "$xx"
+		  if  [ "$K" = 'm' ] || [ "$K" = 'M' ]; then 
+	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=mainnet/g" .env; K='M'; fi
+		  fi
+		  if  [ "$K" = 't' ] || [ "$K" = 'T' ]; then 		  
+	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=testnet/g" .env; K='T'; fi	  
+		  fi
+		  if  [ "$K" = 'M' ] || [ "$K" = 'T' ]; then		  
+		     ./prepare_docker.sh >/dev/null 2>&1
+			 VAR_HORNET_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
+	         if  [ "$K" = 'M' ]; then echo "$gn""Mainnet of your Node successfully enabled""$xx"; else echo "$gn""Testnet of your Node successfully enabled""$xx"; fi
+	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
+		  else
+	         echo "$rd""Toggle Network aborted!""$xx"
+		  fi
+	   else
+	      echo "$rd""Toggle Network is not supportet, aborted!""$xx"
+	   fi	
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuConfiguration ;;
+	4) clear
 	   echo "$ca"
 	   echo "Set Node Alias..."
 	   echo "$xx"
@@ -870,7 +925,7 @@ SubMenuWaspCLI() {
 			    clear
 			    echo "$ca"
 			    if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
-			    echo "$rd""Hint: Quit Wasp-CLI with [q] or [Q] | Help [-h] | Clear [clear]"
+			    echo "$rd""Hint: Quit Wasp-CLI with [q] | Help [-h] | Clear [clear]"
 			    echo "$xx"
 			    echo "Set command: (example: $ca""'wasp-cli {commands}' or '{commands}'""$xx):"
 			 fi
