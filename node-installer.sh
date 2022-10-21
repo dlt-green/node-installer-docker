@@ -254,6 +254,12 @@ CheckNodeHealthy() {
 	if [ -z $VAR_NodeHealthy ]; then VAR_NodeHealthy=false; fi
 }
 
+CheckEvents() {
+	echo "$ca"
+	echo "Checking Events..."
+	echo "$xx"
+}
+
 SetCertificateGlobal() {
 	clear
 	echo ""
@@ -415,6 +421,8 @@ Dashboard() {
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   DashboardHelper ;;
 
+	0) VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	   CheckEvents ;;
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
 	   SubMenuMaintenance ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-bee'
