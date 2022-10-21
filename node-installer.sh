@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="1.2.1"
+VRSN="1.2.2"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -15,7 +15,7 @@ VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.2'
-VAR_SHIMMER_WASP_VERSION='0.3.7'
+VAR_SHIMMER_WASP_VERSION='0.3.8'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
 VAR_INX_MQTT_VERSION='1.0-rc'
@@ -254,6 +254,12 @@ CheckNodeHealthy() {
 	if [ -z $VAR_NodeHealthy ]; then VAR_NodeHealthy=false; fi
 }
 
+CheckEvents() {
+	echo "$ca"
+	echo "Checking Events..."
+	echo "$xx"
+}
+
 SetCertificateGlobal() {
 	clear
 	echo ""
@@ -343,6 +349,8 @@ Dashboard() {
 	  VAR_PORT=$(cat "/var/lib/shimmer-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
 	  VAR_HORNET_NETWORK=$(cat "/var/lib/shimmer-hornet/.env" | grep HORNET_NETWORK | cut -d '=' -f 2)
 	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	else
+	  VAR_HORNET_NETWORK='mainnet'
 	fi
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi	
 
@@ -413,6 +421,8 @@ Dashboard() {
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   DashboardHelper ;;
 
+	0) VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	   CheckEvents ;;
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
 	   SubMenuMaintenance ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-bee'
@@ -426,6 +436,11 @@ Dashboard() {
 	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-bee'
 	   DashboardHelper ;;
 	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='shimmer-wasp'
+	   clear
+	   echo "$ca"
+	   echo 'Please wait, checking for Updates...'
+	   echo "$xx"
+	   if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi 
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=8; VAR_DIR='shimmer-wasp'
 	   SubMenuMaintenance ;;
@@ -910,7 +925,7 @@ SubMenuWaspCLI() {
 			    clear
 			    echo "$ca"
 			    if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
-			    echo "$rd""Hint: Quit Wasp-CLI with [q] or [Q] | Help [-h] | Clear [clear]"
+			    echo "$rd""Hint: Quit Wasp-CLI with [q] | Help [-h] | Clear [clear]"
 			    echo "$xx"
 			    echo "Set command: (example: $ca""'wasp-cli {commands}' or '{commands}'""$xx):"
 			 fi
