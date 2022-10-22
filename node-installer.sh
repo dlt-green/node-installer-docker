@@ -67,8 +67,8 @@ if [ -f "node-installer.sh" ]; then
 
 	if [ "$(shasum -a 256 './node-installer.sh' | cut -d ' ' -f 1)" != "$InstallerHash" ]; then
 		echo "$rd"; echo 'Checking Hash of Installer failed...'
-		echo 'Installer has been tampered, Installation aborted for your Security!'
-		echo "Downloaded Installer is deleted!"
+		echo 'Installer may have been corrupted or tampered during downloading!'
+		echo "Installation aborted for your Security, downloaded Installer has been deleted!"
 		sudo rm node-installer.sh -f
 		echo "$xx"; exit;
 	fi
