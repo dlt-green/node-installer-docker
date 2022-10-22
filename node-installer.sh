@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="1.3.0"
+VRSN="1.3.1"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -257,7 +257,7 @@ CheckNodeHealthy() {
 CheckEvents() {
 	clear
 	echo "$ca"
-	echo "Verify Event Results... Data stored in ./verify-events/*"
+	echo "Verify Event Results..."
 	echo "$xx"
 		
 	VAR_DIR='iota-hornet'
@@ -267,13 +267,20 @@ CheckEvents() {
 	VAR_RESTAPI_SALT=$(cat .env | grep RESTAPI_SALT | cut -d '=' -f 2);
 	if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""IOTA-Hornet: No Salt found!""$xx"
 	else
+	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
+	   echo "https://github.com/iotaledger/participation-events:"
+	   read -r -p '> ' EVENTS
+	   echo ''
+	   
 	   ADDR=$(cat .env | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
 	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
-	   echo "$ca""Address: ""$xx"$ADDR"$ca"" JWT-Token for API Access randomized generated""$xx"
+	   echo "$ca""Address: ""$xx"$ADDR" ($ca""JWT-Token for API Access randomly generated""$xx)"
+	   echo ''
 	   sleep 5
 
+	   if [ -z $EVENTS ]; then 
 	   EVENTS=$(curl https://${ADDR}/api/plugins/participation/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.eventIds')
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.eventIds'); fi
 
 	   for EVENT_ID in $(echo $EVENTS  | tr -d '"[] ' | sed 's/,/ /g'); do
 	      echo "───────────────────────────────────────────────────────────────────────────────"
@@ -294,19 +301,20 @@ CheckEvents() {
 
 	      echo "$ca""Name: ""$xx"$EVENT_NAME"$ca"" Symbol: ""$xx"$EVENT_SYMBOL"$ca"" Status: ""$xx"$EVENT_STATUS
 
-		  if [ $EVENT_STATUS = "ended" ]; then
+	      if [ $EVENT_STATUS = "ended" ]; then
 	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
 	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
 	        $(curl https://${ADDR}/api/plugins/participation/admin/events/${EVENT_ID}/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > ${EVENT_ID})
-			echo ""
+	        echo ""
+	        echo "$xx""Event ID: ""$EVENT_ID"
 	        echo "$gn""Checksum: ""$EVENT_CHECKSUM"
-			EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID})"
+	        EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID})"
 	      else
-		 	echo ""
-	        echo "$rd""Event not ended!""$xx"
-	        unset EVENT_REWARDS
-		  fi
+	        echo ""
+	        echo "$rd""Event not over yet!""$xx"
+	        EVENT_REWARDS='not available'
+	      fi
 		  echo ""
 	      echo "$ca""Milestone index: ""$xx"$EVENT_MILESTONE"$ca"" Total rewards: ""$xx"$EVENT_REWARDS
 		  echo "───────────────────────────────────────────────────────────────────────────────"
