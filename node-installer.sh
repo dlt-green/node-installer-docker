@@ -267,8 +267,10 @@ CheckEvents() {
 	VAR_RESTAPI_SALT=$(cat .env | grep RESTAPI_SALT | cut -d '=' -f 2);
 	if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""IOTA-Hornet: No Salt found!""$xx"
 	else
+	   echo "Event IDs can be found at 'https://github.com/iotaledger/participation-events'"
+	   echo "Event Data will be saved locally under '/var/lib/{network-node}/verify-events'"	   
+	   echo ''
 	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
-	   echo "https://github.com/iotaledger/participation-events:"
 	   read -r -p '> ' EVENTS
 	   echo ''
 	   
