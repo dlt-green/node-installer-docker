@@ -314,7 +314,8 @@ CheckEvents() {
 	        EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID})"
 	      else
 	        echo ""
-	        echo "$rd""Event not over yet!""$xx"
+	        echo "$xx""Event ID: ""$EVENT_ID"	
+	        echo "$rd""Checksum: ""Event not over yet!""$xx"
 	        EVENT_REWARDS='not available'
 	      fi
 	      echo ""
