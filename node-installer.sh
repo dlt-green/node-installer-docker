@@ -317,9 +317,9 @@ CheckEvents() {
 	        echo "$rd""Event not over yet!""$xx"
 	        EVENT_REWARDS='not available'
 	      fi
-		  echo ""
+	      echo ""
 	      echo "$ca""Milestone index: ""$xx"$EVENT_MILESTONE"$ca"" Total rewards: ""$xx"$EVENT_REWARDS
-		  echo "───────────────────────────────────────────────────────────────────────────────"
+	      echo "───────────────────────────────────────────────────────────────────────────────"
 	   done
 	fi
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
