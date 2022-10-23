@@ -250,7 +250,7 @@ CheckNodeHealthy() {
 	8) VAR_API="info"; OBJ=".Version" ;;
 	*) ;;
 	esac
-	VAR_NodeHealthy=$(curl https://${VAR_DOMAIN}:${VAR_PORT}/${VAR_API} --http1.1 -m 2 -s -X GET -H 'Content-Type: application/json' | jq ${OBJ})
+	VAR_NodeHealthy=$(curl https://${VAR_DOMAIN}:${VAR_PORT}/${VAR_API} --http1.1 -m 3 -s -X GET -H 'Content-Type: application/json' | jq ${OBJ} 2>/dev/null)
 	if [ -z $VAR_NodeHealthy ]; then VAR_NodeHealthy=false; fi
 }
 
