@@ -310,8 +310,13 @@ CheckEvents() {
 	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > ${EVENT_ID})
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
-	        echo "$gn""Checksum: ""$(jq -r '.checksum' ${EVENT_ID})"
-	        EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID})"
+	        
+			if [ $(jq '.totalRewards' ${EVENT_ID}) = 'null' ]; then
+	          echo "$gn""Checksum: ""$EVENT_CHECKSUM"          
+			else
+	          echo "$gn""Checksum: ""$(jq -r '.checksum' ${EVENT_ID})"
+	          EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID})"
+			fi
 	      else
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
