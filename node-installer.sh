@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="1.3.3"
+VRSN="1.3.4"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -256,6 +256,10 @@ CheckNodeHealthy() {
 
 CheckEvents() {
 	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo "$ca"
 	echo "Verify Event Results..."
 	echo "$xx"
@@ -301,6 +305,9 @@ CheckEvents() {
 	      EVENT_MILESTONE=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.milestoneIndex')
 
+	      EVENT_QUESTIONS=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.questions')
+
 	      echo "$ca""Name: ""$xx"$EVENT_NAME"$ca"" Symbol: ""$xx"$EVENT_SYMBOL"$ca"" Status: ""$xx"$EVENT_STATUS
 
 	      if [ $EVENT_STATUS = "ended" ]; then
@@ -311,12 +318,16 @@ CheckEvents() {
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
 	        
-			if [ $(jq '.totalRewards' ${EVENT_ID}) = 'null' ]; then
-	          echo "$gn""Checksum: ""$EVENT_CHECKSUM"          
-			else
+	        if [ $(jq '.totalRewards' ${EVENT_ID}) = 'null' ]; then
+			  if [ $EVENT_SYMBOL = 'null' ]; then   
+			    echo "$gn""Checksum: ""$EVENT_CHECKSUM"
+			  else
+			    echo "$rd""Checksum: ""Authentication Error!""$xx"
+			  fi
+	        else
 	          echo "$gn""Checksum: ""$(jq -r '.checksum' ${EVENT_ID})"
 	          EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID})"
-			fi
+	        fi
 	      else
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
