@@ -331,7 +331,7 @@ CheckEvents() {
 	      else
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
-	        echo "$rd""Checksum: ""Event not over yet!""$xx"
+	        echo "$rd""Checksum: ""Event not found or not over yet!""$xx"
 	        EVENT_REWARDS='not available'
 	      fi
 	      echo ""
