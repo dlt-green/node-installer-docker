@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="1.3.4"
+VRSN="1.3.5"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -331,7 +331,7 @@ CheckEvents() {
 	      else
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
-	        echo "$rd""Checksum: ""Event not over yet!""$xx"
+	        echo "$rd""Checksum: ""Event not found or not over yet!""$xx"
 	        EVENT_REWARDS='not available'
 	      fi
 	      echo ""
@@ -886,16 +886,79 @@ SubMenuConfiguration() {
 	echo "║                              2. Toggle Proof of Work (if Node supports it)  ║"
 	echo "║                              3. Toggle Network (Mainnet/Testnet)            ║"
 	echo "║                              4. Set Node Alias (Name in Dashboard)          ║"
+	echo "║                              5. Edit Node Configuration File (.env)         ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_HORNET_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_BEE_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_GOSHIMMER_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_IOTA_WASP_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_HORNET_VERSION""$xx"; fi
-	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then echo "$ca""Network/Node: $VAR_DIR | Version available: $VAR_SHIMMER_WASP_VERSION""$xx"; fi
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || Dashboard; fi
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
+		if [ -f /var/lib/$VAR_DIR/.env ]; then
+			if [ $(cat .env | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_IOTA_HORNET_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep HORNET_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			else
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep HORNET_VERSION | cut -d '=' -f 2)" | available: $VAR_IOTA_HORNET_VERSION""$xx"
+			fi
+		else
+			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_HORNET_VERSION""$xx"
+		fi
+	fi
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
+		if [ -f /var/lib/$VAR_DIR/.env ]; then
+			if [ $(cat .env | grep BEE_VERSION | cut -d '=' -f 2) = $VAR_IOTA_BEE_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep BEE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			else
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep BEE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_BEE_VERSION""$xx"
+			fi
+		else
+			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_BEE_VERSION""$xx"
+		fi
+	fi
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then
+		if [ -f /var/lib/$VAR_DIR/.env ]; then
+			if [ $(cat .env | grep GOSHIMMER_VERSION | cut -d '=' -f 2) = $VAR_IOTA_GOSHIMMER_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			else
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
+			fi
+		else
+			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
+		fi
+	fi
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then
+		if [ -f /var/lib/$VAR_DIR/.env ]; then
+			if [ $(cat .env | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_IOTA_WASP_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			else
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_WASP_VERSION""$xx"
+			fi
+		else
+			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_WASP_VERSION""$xx"
+		fi
+	fi
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
+		if [ -f /var/lib/$VAR_DIR/.env ]; then
+			if [ $(cat .env | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_HORNET_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep HORNET_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			else
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep HORNET_VERSION | cut -d '=' -f 2)" | available: $VAR_SHIMMER_HORNET_VERSION""$xx"
+			fi
+		else
+			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_HORNET_VERSION""$xx"
+		fi
+	fi
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then
+		if [ -f /var/lib/$VAR_DIR/.env ]; then
+			if [ $(cat .env | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_WASP_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			else
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
+			fi
+		else
+			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
+		fi
+	fi
 	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 	echo ""
 	echo "select menu item: "
@@ -999,7 +1062,14 @@ SubMenuConfiguration() {
 		  echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 	   else
 	      echo "$rd""Set Node Alias is not supportet, aborted!""$xx"
-	   fi	
+	   fi
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuConfiguration ;;
+	5) clear
+	   echo "$ca"
+	   echo "Edit Node Configuration File (.env)...""$xx"
+	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
+       if [ -f .env ]; then nano .env; fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuConfiguration ;;
 	*) SubMenuMaintenance ;;
