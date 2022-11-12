@@ -886,6 +886,7 @@ SubMenuConfiguration() {
 	echo "║                              2. Toggle Proof of Work (if Node supports it)  ║"
 	echo "║                              3. Toggle Network (Mainnet/Testnet)            ║"
 	echo "║                              4. Set Node Alias (Name in Dashboard)          ║"
+	echo "║                              5. Edit Node Configuration File (.env)         ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1061,7 +1062,14 @@ SubMenuConfiguration() {
 		  echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 	   else
 	      echo "$rd""Set Node Alias is not supportet, aborted!""$xx"
-	   fi	
+	   fi
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	   SubMenuConfiguration ;;
+	5) clear
+	   echo "$ca"
+	   echo "Edit Node Configuration File (.env)...""$xx"
+	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
+       if [ -f .env ]; then nano .env; fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuConfiguration ;;
 	*) SubMenuMaintenance ;;
