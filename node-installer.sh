@@ -1067,7 +1067,8 @@ SubMenuConfiguration() {
 	   SubMenuConfiguration ;;
 	5) clear
 	   echo "$ca"
-	   echo "Edit Node Configuration File (.env)...""$xx"
+	   echo "Edit Node Configuration File (.env)..."
+	   echo "$xx"
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
        if [ -f .env ]; then
 	      nano .env
