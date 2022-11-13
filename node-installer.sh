@@ -1067,9 +1067,14 @@ SubMenuConfiguration() {
 	   SubMenuConfiguration ;;
 	5) clear
 	   echo "$ca"
-	   echo "Edit Node Configuration File (.env)...""$xx"
+	   echo "Edit Node Configuration File (.env)..."
+	   echo "$xx"
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
-       if [ -f .env ]; then nano .env; fi
+       if [ -f .env ]; then
+	      nano .env
+	      ./prepare_docker.sh >/dev/null 2>&1
+	      echo "$rd""Please restart your Node for the changes to take effect!""$xx"
+       fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
 	   SubMenuConfiguration ;;
 	*) SubMenuMaintenance ;;
