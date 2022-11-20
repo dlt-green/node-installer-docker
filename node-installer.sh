@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VRSN="1.3.5"
+VRSN="v.1.3.6"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -36,25 +36,25 @@ xx='\033[0m'
 
 echo "$xx"
 
-InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/checksum.txt)
+InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
 IotaHornetHash='ef3622408aaa55f2a50b8e0c16f603175a0d5960f7eb4079143b8bff95a2f456'
-IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-hornet.tar.gz"
+IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
 IotaBeeHash='a35e52e23084d937e1cd9a91719e9ce29af590b1816948c373e4d0b175f4ecd0'
-IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-bee.tar.gz"
+IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-bee.tar.gz"
 
 IotaGoshimmerHash='00675d98f0b69ef7e4b74d454c421ec21ef4c21b07a7510f4c3e4f12d634846c'
-IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/iota-goshimmer.tar.gz"
+IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
-IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_iota.tar.gz"
+IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_iota.tar.gz"
 
 ShimmerHornetHash='2dc4b7c7a03cb6c2163cf6895009e8a86e41b65df817065da7571ef43f8d2cac'
-ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/shimmer-hornet.tar.gz"
+ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
 ShimmerWaspHash='f6c7626105ab11b99091161656dbd09d9ae25a6b811c6e6baf9ea13ebe8d2b94'
-ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/v.$VRSN/wasp_shimmer.tar.gz"
+ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_shimmer.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 SnapshotShimmerHornet="https://github.com/iotaledger/global-snapshots/raw/main/shimmer/genesis_snapshot.bin"
@@ -96,7 +96,7 @@ CheckFirewall() {
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 		echo "║                                                                             ║"
 		echo "║$rd            _   _____  _____  _____  _   _  _____  ___  ___   _   _          $xx║"
 		echo "║$rd           / \ |_   _||_   _|| ____|| \ | ||_   _||_ _|/ _ \ | \ | |         $xx║"
@@ -171,7 +171,7 @@ CheckCertificate() {
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 		echo "║""$ca""$VAR_DOMAIN""$xx""║"
 		echo "║                                                                             ║"
 		echo "║                            1. Use existing Certificate                      ║"
@@ -214,7 +214,7 @@ CheckConfiguration() {
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 		echo "║""$ca""$VAR_DOMAIN""$xx""║"
 		echo "║                                                                             ║"
 		echo "║                            1. Reset Configuration (*.env)                   ║"
@@ -258,7 +258,7 @@ CheckEvents() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo "$ca"
 	echo "Verify Event Results..."
@@ -347,7 +347,7 @@ SetCertificateGlobal() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                            1. Update Certificate for all Nodes (recommend)  ║"
@@ -463,7 +463,7 @@ Dashboard() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║           ┌── IOTA Mainnet ──┐                   ┌── IOTA Devnet ──┐        ║"
@@ -536,13 +536,23 @@ Dashboard() {
 	esac
 }
 
+PositionVersion() {
+	text=''
+	window_width=78
+	text_left_width=57
+	text_right_width=2
+	version_with=$(echo "$1" | wc -c)
+	window_left=$(($window_width - $text_left_width - $text_right_width - $version_with))
+	text=$(printf "%*s%s" $window_left)"$1"
+}
+
 PositionCenter() {
 	text=''
 	window_width=78
 	text_with=$(echo "$1" | wc -c)
 	window_left=$(($window_width / 2 - $text_with / 2))
 	window_right=$(($window_width - $text_with - $window_left))
-	text=$(printf "%*s%s" $window_left '' "$text")"$1"$(printf "%*s%s" $window_right '' "$text")
+	text=$(printf "%*s%s" $window_left)"$1"$(printf "%*s%s" $window_right)
 }
 
 DashboardHelper() {
@@ -556,7 +566,7 @@ MainMenu() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                              1. System Updates/Docker Cleanup               ║"
@@ -615,7 +625,7 @@ SubMenuLicense() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                      GNU General Public License v3.0                        ║"
@@ -645,7 +655,7 @@ SubMenuMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                              1. Install/Update                              ║"
@@ -840,7 +850,7 @@ SubMenuMaintenance() {
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
-	      if [ -d /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK ]; then rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK/*; cd /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK || SubMenuMaintenance; if [$VAR_HORNET_NETWORK="mainnet"]; then wget $SnapshotShimmerHornet; mv genesis_snapshot.bin full_snapshot.bin; fi; fi
+	      if [ -d /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK ]; then rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK/*; cd /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK || SubMenuMaintenance; if [ $VAR_HORNET_NETWORK="mainnet" ]; then wget $SnapshotShimmerHornet; mv genesis_snapshot.bin full_snapshot.bin; fi; fi
 	   fi
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
@@ -879,7 +889,7 @@ SubMenuConfiguration() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                              1. Generate JWT-Token (for secured API Access) ║"
@@ -1085,7 +1095,7 @@ SubMenuWaspCLI() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                              1. Install/Prepare Wasp-CLI                    ║"
@@ -1305,7 +1315,7 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                            1. System Restart (recommend)                    ║"
@@ -2757,9 +2767,13 @@ RenameContainer() {
 }
 
 clear
+
+PositionVersion "$VRSN"
+VAR_VRN=$text
+
 echo ""
 echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER            v.$VRSN ║"
+echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 echo "║                                                                             ║"
 echo "║$lg      ____    _      _____         ____   ____    _____   _____   _   _      $xx║"
 echo "║$lg     |  _ \  | |    |_   _|       / ___| |  _ \  | ____| | ____| | \ | |     $xx║"
