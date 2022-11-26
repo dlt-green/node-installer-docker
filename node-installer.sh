@@ -1,6 +1,7 @@
 #!/bin/bash
 
-VRSN="v.1.3.6"
+VRSN="v.1.3.7"
+BUILD=""
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -58,6 +59,8 @@ ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 SnapshotShimmerHornet="https://github.com/iotaledger/global-snapshots/raw/main/shimmer/genesis_snapshot.bin"
+
+if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
 
 clear
 if [ -f "node-installer.sh" ]; then 
