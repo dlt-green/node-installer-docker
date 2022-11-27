@@ -1,0 +1,75 @@
+name: Finish release
+run-name: Finish release [${{ github.event.ref_type == 'branch' && (contains(github.event.ref, 'release/') || contains(github.event.ref, 'hotfix/')) && github.event.ref || 'skipped intentionally - not triggered by deletion of release/hotfix branch' }}]
+
+on: delete
+
+jobs:
+  finish_release:
+    name: Finish release
+    runs-on: ubuntu-latest
+    if: ${{ github.event.ref_type == 'branch' && (contains(github.event.ref, 'release/') || contains(github.event.ref, 'hotfix/')) }}
+    steps:
+      - name: Get release type
+        id: get_release_type
+        run: |
+          if [[ "${{ contains(github.event.ref, 'release/') }}" == "true" ]]; then
+            echo "value=release" >> $GITHUB_OUTPUT
+          else
+            echo "value=hotfix" >> $GITHUB_OUTPUT 
+          fi
+
+      - name: Get release tag name
+        id: get_release_tag_name
+        run: |
+          branchName="${{ github.event.ref }}"
+          tagName=${branchName##*/}
+          echo "value=$tagName" >> $GITHUB_OUTPUT
+
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.CI_TOKEN }}
+
+      - name: Prepare git
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git fetch --all && git pull
+
+      - name: Find open pull requests
+        id: find_open_pull_requests
+        run: |
+          openPullRequests=$(gh pr list --head ${{ steps.get_release_type.outputs.value }}/${{ steps.get_release_tag_name.outputs.value }} --state open --json id -q '.[] | length')
+          if [[ -z "$openPullRequests" ]]; then openPullRequests="0"; fi
+          echo "value=$openPullRequests" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get release title
+        id: get_release_title
+        run: |
+          if [[ '${{ steps.get_release_type.outputs.value }}' == 'release' ]]; then
+            echo "value=Release ${{ steps.get_release_tag_name.outputs.value }}" >> $GITHUB_OUTPUT
+          else
+            echo "value=Hotfix ${{ steps.get_release_tag_name.outputs.value }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Finalize release if no open pull requests
+        id: finalize_release
+        if: ${{ steps.find_open_pull_requests.outputs.value == '0' }}
+        run: |
+          lastPullRequest=$(gh pr list -s closed --limit 1 --base main --head ${{ steps.get_release_type.outputs.value }}/${{ steps.get_release_tag_name.outputs.value }} --json number -q .[0].number)
+          pullRequestState=$(gh pr view $lastPullRequest --json state -q .state)
+          mergeCommit=$(gh pr view $lastPullRequest --json mergeCommit -q .mergeCommit.oid)
+
+          if [[ "$pullRequestState" == "MERGED" ]]; then
+            echo "::notice::Pull request has been merged. Finalizing release."
+            git tag ${{ steps.get_release_tag_name.outputs.value }} $mergeCommit -m "${{ steps.get_release_title.outputs.value }}" --force
+            git push --force origin ${{ steps.get_release_tag_name.outputs.value }}
+            gh release edit ${{ steps.get_release_tag_name.outputs.value }} --prerelease=false --draft=false --latest
+          elif [[ "$pullRequestState" == "CLOSED" ]]; then
+            echo "::notice::Pull request has been closed (unmerged). Deleting release."
+            gh release delete ${{ steps.get_release_tag_name.outputs.value }}
+            git push --delete origin ${{ steps.get_release_tag_name.outputs.value }}
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

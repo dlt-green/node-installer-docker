@@ -15,7 +15,7 @@ configPath=$(realpath "${dataDir}/config/${configFilename}")
 
 # use bashAliases parameter value or fallback to user home
 bashAliases=$(get_parameter_value "--bashAliases" $@)
-if [ "${bashAliases}" == "" ]; then 
+if [ "${bashAliases}" == "" ]; then
   bashAliases=$(realpath  ~/.bash_aliases)
 fi
 

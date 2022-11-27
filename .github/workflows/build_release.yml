@@ -1,0 +1,172 @@
+name: Build release
+run-name: Build release - ${{ github.event.head_commit.message }}
+
+on:
+  push:
+    branches:
+      - dev
+      - 'release/**'
+      - 'hotfix/**'
+
+jobs:
+  build:
+    name: Build release
+    runs-on: ubuntu-latest           
+    steps:
+      - name: Get release type
+        id: get_release_type
+        run: |
+          if [[ "${{ contains(github.event.ref, 'release/') }}" == "true" ]]; then
+            echo "value=release" >> $GITHUB_OUTPUT
+          else
+            echo "value=hotfix" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.ref }}
+          token: ${{ secrets.CI_TOKEN }}
+          fetch-depth: 0
+
+      - name: Prepare git
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git fetch --all && git pull
+
+      - name: Build packages
+        run: |
+          ./build.sh --all
+
+          # temporary fix because we use different wasp versions for iota (older) and shimmer (current)
+          mv ./build/wasp.tar.gz ./build/wasp_shimmer.tar.gz
+          curl -L -o ./build/wasp_iota.tar.gz https://github.com/dlt-green/node-installer-docker/releases/latest/download/wasp_iota.tar.gz
+
+      - name: Set version
+        id: set_version
+        run: |
+          if [ "$(echo ${{ github.event.ref }})" == "refs/heads/dev" ]; then
+            tagName='dev-latest'
+          else
+            tagName='${{ github.event.ref }}'
+            # get everything behind last slash (or all if no slash present)
+            tagName=${tagName##*/}
+          fi
+
+          sed -i "s/^VRSN=.*/VRSN=\"$tagName\"/g" ./node-installer.sh
+          echo "tag_name=$tagName" >> $GITHUB_OUTPUT
+
+      - name: Set timestamp
+        id: set_timestamp
+        run: |
+          timestamp=$(TZ=CET date +%Y%m%d_%H%M%S)
+          sed -i "s/^BUILD=.*/BUILD=\"$timestamp\"/g" ./node-installer.sh
+
+      - name: Generate and update hashes
+        id: generate_and_update_hashes
+        run: |
+          sed -i "s/IotaBeeHash=.*/IotaBeeHash='$(shasum -a 256 ./build/iota-bee.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
+          sed -i "s/IotaGoshimmerHash=.*/IotaGoshimmerHash='$(shasum -a 256 ./build/iota-goshimmer.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
+          sed -i "s/IotaHornetHash=.*/IotaHornetHash='$(shasum -a 256 ./build/iota-hornet.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
+          sed -i "s/IotaWaspHash=.*/IotaWaspHash='$(shasum -a 256 ./build/wasp_iota.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
+          sed -i "s/ShimmerHornetHash=.*/ShimmerHornetHash='$(shasum -a 256 ./build/shimmer-hornet.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
+          sed -i "s/ShimmerWaspHash=.*/ShimmerWaspHash='$(shasum -a 256 ./build/wasp_shimmer.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
+
+          shasum -a 256 ./node-installer.sh | cut -d ' ' -f 1 > ./build/checksum.txt
+
+      - uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: "node-installer.sh;build/*"
+          tag_name: ${{ steps.set_version.outputs.tag_name }}
+          draft: false
+          prerelease: true
+          overwrite: true
+
+      - name: Commit changes on ${{ steps.get_release_type.outputs.value }} branch
+        if: ${{ steps.set_version.outputs.tag_name != 'dev-latest' }}
+        id: commit_changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m 'Update release artifacts [${{ steps.set_version.outputs.tag_name }}] [skip actions]'
+            git push origin ${{ steps.get_release_type.outputs.value }}/${{ steps.set_version.outputs.tag_name }}
+            echo "done=true" >> $GITHUB_OUTPUT
+          else
+            echo "done=false" >> $GITHUB_OUTPUT
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Get release title
+        id: get_release_title
+        run: |
+          if [[ '${{ steps.get_release_type.outputs.value }}' == 'release' ]]; then
+            echo "value=Release ${{ steps.set_version.outputs.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "value=Hotfix ${{ steps.set_version.outputs.tag_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update release tag
+        if: ${{ steps.set_version.outputs.tag_name != 'dev-latest' }}
+        run: |
+          git checkout ${{ github.event.ref }}
+          git tag -a ${{ steps.set_version.outputs.tag_name }} -m "${{ steps.get_release_title.outputs.value }}" --force
+          git push --force origin ${{ steps.set_version.outputs.tag_name }}
+
+      - name: Merge or create pull request from ${{ steps.get_release_type.outputs.value }} branch to dev branch
+        id: merge_or_create_pull_request_to_dev
+        if: ${{ steps.commit_changes.outputs.done == 'true' }}
+        run: |
+          message="Merge back changes from ${{ steps.get_release_type.outputs.value }}/${{ steps.set_version.outputs.tag_name }}"
+
+          git checkout dev && git pull
+          mergeSuccess="true"
+          git merge --no-ff -m "$message" ${{ github.event.ref }} || mergeSuccess="false"
+          
+          if [[ "$mergeSuccess" == "true" ]]; then
+            git push origin dev
+          else
+            openPullRequests=$(gh pr list --base dev --head ${{ steps.get_release_type.outputs.value }}/${{ steps.set_version.outputs.tag_name }} --state open --json id -q '.[] | length')
+            if [[ "$openPullRequests" =~ ^0?$ ]]; then
+              gh pr create \
+                --title "$message" \
+                --head ${{ steps.get_release_type.outputs.value }}/${{ steps.set_version.outputs.tag_name }} \
+                --base dev \
+                --body "This PR merges ${{ steps.get_release_type.outputs.value }}/${{ steps.set_version.outputs.tag_name }} branch back into dev branch."
+            fi
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update release notes
+        id: update_release_notes
+        if: ${{ steps.set_version.outputs.tag_name != 'dev-latest' }}
+        run: |
+          echo "**Changelog**:" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+
+          releasePullRequest=$(gh pr list --base main --head ${{ steps.get_release_type.outputs.value }}/${{ steps.set_version.outputs.tag_name }} --json number -q '.[].number')
+          gh pr view $releasePullRequest --json commits -q '.commits.[] | .authors.[0].email + " " + .oid + " " + .messageHeadline' | grep -v "github-actions\[bot\]" > temp.txt
+          while IFS='' read -r commit || [ -n "${commit}" ]; do
+            commitId=$(echo $commit | cut -d " " -f 2)
+            commitMessage=$(echo $commit | cut -d " " -f 3-)
+
+            if [[ -z "$(git show $commitId | grep 'Merge: ')" ]]; then
+              echo "- $commitMessage ($commitId)" >> CHANGELOG.md
+            fi
+          done < temp.txt
+          rm -f temp.txt
+
+          gh release edit ${{ steps.set_version.outputs.tag_name }} -F CHANGELOG.md
+          rm -f CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set commit status
+        uses: myrotvorets/set-commit-status-action@1.1.5
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          sha: ${{ steps.commit_changes.outputs.sha }}
