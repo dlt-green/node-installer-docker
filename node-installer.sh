@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.1.4.0"
-BUILD="20221127_191445"
+VRSN="v.1.4.1"
+BUILD="20221127_234210"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -39,22 +39,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='bad067316739492a8f2621f89f3c6885564bed93f32f6360c571737e93ba984e'
+IotaHornetHash='abcc8a98e94091813fdb43530ea2f70c459b4beeb84642abf4638acaf62bed7d'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaBeeHash='105a565cc479a15d431db42a12032cc74c165173f9da16460fbefb450f5fe1c6'
+IotaBeeHash='845e21e1055d3cbf670ac408ca29d5e225b23670b02182a1a5014d90305e6ebd'
 IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-bee.tar.gz"
 
-IotaGoshimmerHash='e5fcaeb42debe4a049ec2b55460f6d58bea86d2dd7ea3dc558586f90f0525045'
+IotaGoshimmerHash='4ac3e7001e2b3cff059fb516316880574464cab6b3b1419822d0a1c804650d01'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_iota.tar.gz"
 
-ShimmerHornetHash='8631e2b38871c71e89b111fd49aadca1277b86957671d0aac17cdd2bb407f4a4'
+ShimmerHornetHash='8a0e6ca4b7c5ffc5a29219d8bfec515cce87fa6626269385dc131ceb30aad81a'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='25068e84b5230aa85eb200f11583e95eeebe29214513362f13c08fb8781ebcb3'
+ShimmerWaspHash='a7b526c67d88d95c883e3444a19f8b10f7432a5b0bc6c9aaa3fb273be96405f0'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_shimmer.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -65,7 +65,7 @@ if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
 clear
 if [ -f "node-installer.sh" ]; then 
 
-	fgrep -q "alias dlt.green=" ~/.bash_aliases >/dev/null 2>&1 || (echo "" >> ~/.bash_aliases && echo "# DLT.GREEN Node-Installer-Docker" >> ~/.bash_aliases && echo "alias dlt.green=" >> ~/.bash_aliases)
+	fgrep -q "alias dlt.green=" ~/.bash_aliases >/dev/null 2>&1 || (echo "" >> ~/.bash_aliases && echo "# DLT.GREEN Node-Installer-Docker" >> ~/.bash_aliases && echo "alias dlt.green=" >> ~/.bash_aliases && echo 'alias dlt.green-dev=""' >> ~/.bash_aliases)
 	if [ -f ~/.bash_aliases ]; then sed -i 's/alias dlt.green=.*/alias dlt.green="sudo wget https:\/\/github.com\/dlt-green\/node-installer-docker\/releases\/latest\/download\/node-installer.sh \&\& sudo sh node-installer.sh"/g' ~/.bash_aliases; fi
 
 	if [ "$(shasum -a 256 './node-installer.sh' | cut -d ' ' -f 1)" != "$InstallerHash" ]; then
@@ -587,6 +587,16 @@ MainMenu() {
 
 	read -r -p '> ' n
 	case $n in
+	0) clear
+	   echo "$ca"
+	   echo "Set Alias 'dlt.green-dev' for Pre-Release 'dev-latest':"
+	   echo "$xx"
+	   if [ -f ~/.bash_aliases ]; then sed -i 's/alias dlt.green-dev=.*/alias dlt.green-dev="sudo wget https:\/\/github.com\/dlt-green\/node-installer-docker\/releases\/download\/dev-latest\/node-installer.sh \&\& sudo sh node-installer.sh"/g' ~/.bash_aliases; fi
+	   echo "$gn""Alias set!""$xx"
+	   echo ""
+	   echo "$rd""Attention! Please reconnect so that the alias works!""$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+	   MainMenu ;;
 	1) SystemMaintenance ;;
 	2) Docker ;;
 	3) clear
