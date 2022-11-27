@@ -1,0 +1,92 @@
+name: Prepare release
+run-name: Prepare release [${{ inputs.release_type }}/${{ inputs.tag_name }}]
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Version (v.0.0.0-tag; tag is optional)'
+        required: true
+      release_type:
+        type: choice
+        description: Type of release
+        options:
+        - release
+        - hotfix
+
+jobs:
+  prepare_release:
+    name: Prepare release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get base branch
+        id: get_base_branch
+        run: |
+          if [[ "${{ inputs.release_type == 'release' }}" == "true" ]]; then
+            echo "value=dev" >> $GITHUB_OUTPUT
+          else
+            echo "value=main" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.get_base_branch.outputs.value }}
+          token: ${{ secrets.CI_TOKEN }}
+          fetch-depth: 0
+
+      - name: Prepare git
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git fetch --all && git pull
+
+      - name: Check inputs
+        id: check_inputs
+        run: |
+          versionRegex="^v\.[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9]+)?$"
+          if [[ ! "${{ inputs.tag_name }}" =~ $versionRegex ]]; then
+            echo "::error::Invalid version ${{ inputs.tag_name }} (valid format is v.0.0.0-tag where 0 can be multiple digits and tag is optional and can be -[a-z0-9]+)" && exit 1
+          fi
+
+          if [[ "$(gh release list | grep ${{ inputs.tag_name }}  | tail -n +1  | wc -l)" != "0" ]]; then
+            echo "::error::(Pre-)release or draft ${{ inputs.tag_name }} already exists" && exit 1
+          fi
+
+          if [[ ! -z "$(git branch -a | grep ${{ inputs.release_type }}/${{ inputs.tag_name }})" ]]; then
+            echo "::error::Branch ${{ inputs.release_type }}/${{ inputs.tag_name }} already exists" && exit 1
+          fi
+
+          if [[ ! -z "$(git tag | grep ${{ inputs.tag_name }})" ]]; then
+            echo "::error::Tag ${{ inputs.tag_name }} already exists" && exit 1
+          fi
+
+          if [[ "${{ inputs.release_type }}" == "release" ]] && [[ -z "$(git diff origin/main..origin/dev)" ]]; then
+            echo "::error::There is nothing to release yet (no difference between main and dev)" && exit 1
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create release/hotfix branch and set version
+        run: |
+          git checkout -b ${{ inputs.release_type }}/${{ inputs.tag_name }} ${{ env.BASE_BRANCH }}
+          if [[ "${{ inputs.release_type }}" == "release" ]]; then git merge origin/main || true; fi
+          sed -i "s/^VRSN=.*/VRSN=\"${{ inputs.tag_name }}\"/g" ./node-installer.sh
+          git commit -a -m "Set version to ${{ inputs.tag_name }}" --allow-empty
+          git push origin ${{ inputs.release_type }}/${{ inputs.tag_name }}
+
+      - name: Create pull request from release/hotfix branch to main branch
+        id: create_pull_request_to_main
+        run: |
+          if [[ '${{ inputs.release_type }}' == 'release' ]]; then
+            title='Release ${{ inputs.tag_name }}'
+          else
+            title='Hotfix ${{ inputs.tag_name }}'
+          fi
+
+          gh pr create \
+            --title "$title" \
+            --head ${{ inputs.release_type }}/${{ inputs.tag_name }} \
+            --base main \
+            --body "This PR merges ${{ inputs.release_type }}/${{ inputs.tag_name }} branch into main branch. Closing this pull request finalizes the release."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
