@@ -65,7 +65,7 @@ if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
 clear
 if [ -f "node-installer.sh" ]; then 
 
-	fgrep -q "alias dlt.green=" ~/.bash_aliases >/dev/null 2>&1 || (echo "" >> ~/.bash_aliases && echo "# DLT.GREEN Node-Installer-Docker" >> ~/.bash_aliases && echo "alias dlt.green=" >> ~/.bash_aliases)
+	fgrep -q "alias dlt.green=" ~/.bash_aliases >/dev/null 2>&1 || (echo "" >> ~/.bash_aliases && echo "# DLT.GREEN Node-Installer-Docker" >> ~/.bash_aliases && echo "alias dlt.green=" >> ~/.bash_aliases && echo 'alias dlt.green-dev=""' >> ~/.bash_aliases)
 	if [ -f ~/.bash_aliases ]; then sed -i 's/alias dlt.green=.*/alias dlt.green="sudo wget https:\/\/github.com\/dlt-green\/node-installer-docker\/releases\/latest\/download\/node-installer.sh \&\& sudo sh node-installer.sh"/g' ~/.bash_aliases; fi
 
 	if [ "$(shasum -a 256 './node-installer.sh' | cut -d ' ' -f 1)" != "$InstallerHash" ]; then
@@ -587,6 +587,16 @@ MainMenu() {
 
 	read -r -p '> ' n
 	case $n in
+	0) clear
+	   echo "$ca"
+	   echo "Set Alias 'dlt.green-dev' for Pre-Release 'dev-latest':"
+	   echo "$xx"
+	   if [ -f ~/.bash_aliases ]; then sed -i 's/alias dlt.green-dev=.*/alias dlt.green-dev="sudo wget https:\/\/github.com\/dlt-green\/node-installer-docker\/releases\/download\/dev-latest\/node-installer.sh \&\& sudo sh node-installer.sh"/g' ~/.bash_aliases; fi
+	   echo "$gn""Alias set!""$xx"
+	   echo ""
+	   echo "$rd""Attention! Please reconnect so that the alias works!""$xx"
+	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+	   MainMenu ;;
 	1) SystemMaintenance ;;
 	2) Docker ;;
 	3) clear
