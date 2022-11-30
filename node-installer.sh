@@ -598,7 +598,7 @@ MainMenu() {
 	     if [ -z "$insertLine" ]; then
 	         if [ ! -z "$headerLine" ]; then
 	           insertLine=$(($headerLine))
-	         sed -i "$insertLine a alias dlt.green-dev=\"sudo wget https:\/\/github.com\/dlt-green\/node-installer-docker\/releases\/download\/dev-latest\/node-installer.sh \&\& sudo sh node-installer.sh\"/g" ~/.bash_aliases
+	         sed -i "$insertLine a alias dlt.green-dev=\"sudo wget https:\/\/github.com\/dlt-green\/node-installer-docker\/releases\/download\/dev-latest\/node-installer.sh \&\& sudo sh node-installer.sh\"" ~/.bash_aliases
 	         echo "$gn""Alias set!""$xx"
 	       else
 	         echo "$rd""Error setting Alias!""$xx"
