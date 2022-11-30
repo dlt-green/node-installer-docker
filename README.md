@@ -56,7 +56,7 @@ Wenn Sie auf das Bild klicken, sehen Sie <a href="https://www.youtube.com/channe
 Wenn du Fehler gefunden hast oder Verbesserungsvorschläge für unser Skript hast, erstelle ein Issue auf Github oder wende dich an unser Team in unserem Discord Channel
 
 <b>Verbesserungsvorschläge: <a href="https://github.com/dlt-green/node-installer-docker/issues">Github Issues</a></b><br>
-<b>Kontakt: <a href="https://discord.com/invite/jcjtARQuG2">Discord</a></b>
+<b>Kontakt: <a href="https://discord.gg/XaBnsE5NGb">Discord</a></b>
 
 # Disclaimer
 Bitte beachten, dass die Verwendung dieses Skripts auf eigenes Risiko erfolgt und DLT.GREEN für eventuelle Schäden nicht haftet.
