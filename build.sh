@@ -10,8 +10,6 @@ HORNET_VERSION=1.2.1
 WASP_VERSION=0.3.8
 WASP_DEV_BRANCH="develop"
 
-DEVSERVER_PORTDEVSERVER_PORT=8040
-
 prepare_dockerx_builder () {
   shutdown_dockerx_builder
   sudo apt-get install -y qemu qemu-user-static
@@ -152,33 +150,10 @@ clean_build_dir () {
 
 build_all_nodes () {
   echo "Building all nodes..."
-  print_line
   for node in $NODES; do
-    build_node $node
-    print_line
+    output=$(build_node $node)
+    echo "  * $output"
   done
-  echo "Finished"
-}
-
-start_devserver () {
-  echo "Starting devserver..."
-  docker rm -f devserver >/dev/null 2>&1
-  docker run \
-    -d \
-    --name devserver \
-    -p ${DEVSERVER_PORT}:80 \
-    -v $PWD/build/:/usr/share/caddy/ \
-    caddy:alpine >/dev/null 2>&1
-
-  echo "Listening for changes to rebuild packages..."
-  trap 'echo "" && echo "Stopping devserver..." && docker rm -f devserver >/dev/null 2>&1 && echo "Finished"' SIGINT
-  sudo iwatch \
-    -r \
-    -e create,delete,modify,move \
-    -t ".*\.(sh|yml|md|env)" \
-    -X ".*(assets|data|\.git|build.sh).*" \
-    -c "./build.sh --onmodification '%f'" \
-    .
 }
 
 enter_to_continue () {
@@ -346,15 +321,6 @@ if [ ! $# -eq 0 ]; then
         nodes="all"
         shift
         ;;
-      --devserver)
-        devserver="true"
-        shift
-        ;;
-      --onmodification)
-        modifiedFile="$2"
-        shift
-        shift
-        ;;
       --help)
         shift
         ;;
@@ -371,27 +337,11 @@ if [ ! $# -eq 0 ]; then
 
   set -- "${POSITIONAL_ARGS[@]}"
 
-  if [ ! -z "$modifiedFile" ]; then
-    nodes=$(echo $modifiedFile | cut -d '/' -f 2)
-    if [ $nodes == "common" ]; then
-      nodes="all"
-    elif [[ ! $NODES =~ $nodes ]]; then
-      echo "Nothing to build for modified file: $modifiedFile"
-      exit 0
-    fi
-  fi
-
-  if [ "$devserver" == "true" ]; then start_devserver; fi
   if [ "$clean" == "true" ]; then clean_build_dir; fi
   if [ "$nodes" == "all" ]; then
     build_all_nodes
   else
     for node in ${nodes//,/ }; do
-      if [ -f "$BUILD_DIR/$node.tar.gz" ] && [ "$(date -r $BUILD_DIR/$node.tar.gz)" == "$(date)" ]; then
-        echo "Skipped build of $node.tar.gz (has already been built less than a second ago)"
-        continue
-      fi
-
       build_node $node;
     done
   fi
