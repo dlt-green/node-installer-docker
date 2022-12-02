@@ -152,7 +152,7 @@ jobs:
             commitId=$(echo $commit | cut -d " " -f 2)
             commitMessage=$(echo $commit | cut -d " " -f 3-)
 
-            if [[ -z "$(git show $commitId | grep 'Merge: ')" ]] && [[ ! "$commitMessage" =~ ^\+ ]]; then
+            if [[ -z "$(git show $commitId | grep '^Merge: ')" ]] && [[ ! "$commitMessage" =~ ^\+ ]]; then
               echo "- $commitMessage ($commitId)" >> CHANGELOG.md
             fi
           done < temp.txt
