@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.1.4.4"
-BUILD="20221202_111328"
+VRSN="v.1.4.5"
+BUILD="20221203_145700"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -39,22 +39,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='e2e77d1ebd65ca981c25a939ae27a41a10dd88891f18e82ad16de8f8f234fc65'
+IotaHornetHash='2f4e221d966a4cdbc5f6b5b03e085d055fea7914833bf1e6806f3f6bb4724c23'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaBeeHash='1890b0514a06fd7bdf2bfda201323c0d3a1d84feb7e6519824d45c994c614a05'
+IotaBeeHash='e3303c4f46dcb66c74c7a0633c1cf30f1c0252d82c4be9630d4a5c5e49b828c6'
 IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-bee.tar.gz"
 
-IotaGoshimmerHash='f3ff45bfa6797f9db40cd07583d218415aad255b174d14a7307e78989e4af81b'
+IotaGoshimmerHash='8ff8e93a51b042c23c083218b2fecea4b243faad0831d66d13953a7b775012b4'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_iota.tar.gz"
 
-ShimmerHornetHash='bb6a774a1f6d20fd3f0da43466e406b7fc4afa53a21b2e43b3c491c086529058'
+ShimmerHornetHash='82892e49d16ae29d05295157b8cf1a939f99fe1faea950f0be908b8f09252e1c'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='5db379b7fd5560417c3f10b4e233db6321082ec0dc3b5190bc78022f05d9a8d0'
+ShimmerWaspHash='a30b536c2425b68caaa6932a5644a3a673a03d6d12bf85768b380711ad0eac8a'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_shimmer.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -2093,7 +2093,7 @@ IotaWasp() {
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " IOTA-Wasp Dashboard: https://$VAR_HOST:$VAR_IOTA_WASP_HTTPS_PORT/dashboard"
+		echo " IOTA-Wasp Dashboard: https://$VAR_HOST:$VAR_IOTA_WASP_HTTPS_PORT"
 		echo " IOTA-Wasp Dashboard Username: $VAR_USERNAME"
 		echo " IOTA-Wasp Dashboard Password: <set during install>"
 		echo " IOTA-Wasp API: https://$VAR_HOST:$VAR_IOTA_WASP_API_PORT/info"
@@ -2755,7 +2755,7 @@ ShimmerWasp() {
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " SHIMMER-Wasp Dashboard: https://$VAR_HOST:$VAR_SHIMMER_WASP_HTTPS_PORT/dashboard"
+		echo " SHIMMER-Wasp Dashboard: https://$VAR_HOST:$VAR_SHIMMER_WASP_HTTPS_PORT"
 		echo " SHIMMER-Wasp Dashboard Username: $VAR_USERNAME"
 		echo " SHIMMER-Wasp Dashboard Password: <set during install>"
 		echo " SHIMMER-Wasp API: https://$VAR_HOST:$VAR_SHIMMER_WASP_API_PORT/info"
