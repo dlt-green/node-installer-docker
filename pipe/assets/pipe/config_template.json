@@ -1,0 +1,14 @@
+{
+  "seed": "",
+  "port": 13266,
+  "capabilities": [
+    "PaidStorage"
+  ],
+  "bootstrap_override": [
+    "duqEMkl098NeiRbgZJrE0h_EfJvA5fFwYoYpZ8GPh7iyeBzykiGItIR8YxJ_dAmW@135.181.147.112:13266~duqemkl098neirbg.ion.ooo"
+  ],
+  "storage": {
+    "engine": "FileSystemStore",
+    "storage_directory": "/storage"
+  }
+}

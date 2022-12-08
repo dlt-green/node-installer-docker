@@ -1,0 +1,15 @@
+version: '3'
+services:
+
+  pipe:
+    image: pipe:${PIPE_VERSION:?PIPE_VERSION is missing}
+    container_name: pipe
+    restart: unless-stopped
+    ports:
+      - "${PIPE_PORT:-13266}:${PIPE_PORT:-13266}/tcp"
+    command: [ "-c", "/etc/pipe/config.json" ]
+    volumes:
+      - "./data/config/config.json:/etc/pipe/config.json:ro"
+      - "./data/storage:/storage"
+    environment:
+      - RUST_LOG=${PIPE_LOG_LEVEL:-info}
