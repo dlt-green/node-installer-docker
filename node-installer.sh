@@ -2677,7 +2677,7 @@ ShimmerWasp() {
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
 		VAR_SALT=$(cat .env | grep DASHBOARD_SALT | cut -d '=' -f 2)
 
-		if [ ! -n $VAR_SALT ]; then
+		if [ -n $VAR_SALT ]; then
 		    VAR_PASSWORD=$(cat .env | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
 
 		    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
