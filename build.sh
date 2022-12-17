@@ -7,7 +7,7 @@ EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore"
 
 NODES="iota-hornet iota-bee iota-goshimmer wasp shimmer-hornet"
 HORNET_VERSION=1.2.1
-WASP_VERSION=0.3.8
+WASP_VERSION=0.4.0-alpha.1
 WASP_DEV_BRANCH="develop"
 
 prepare_dockerx_builder () {
