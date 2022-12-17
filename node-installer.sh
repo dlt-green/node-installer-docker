@@ -2638,7 +2638,7 @@ ShimmerWasp() {
 		read -r -p '> ' VAR_USERNAME
 		echo ''
 		echo "Set the dashboard password:"
-		echo "(information: $ca""will be saved as text / don't leave it empty""$xx):"
+		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
 		read -r -p '> ' VAR_PASSWORD
 		echo ''
 
@@ -2697,10 +2697,15 @@ ShimmerWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		VAR_DASHBOARD_PASSWORD=VAR_PASSWORD
+		credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+
+		VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
-		echo "DASHBOARD_PASSWORD=$VAR_PASSWORD" >> .env
+		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
+		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
 	fi
 
 	echo ""
