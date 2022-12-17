@@ -2680,13 +2680,20 @@ ShimmerWasp() {
 		if [ -n $VAR_SALT ]; then
 		    VAR_PASSWORD=$(cat .env | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
 
-		    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
+			if [ -n $VAR_PASSWORD ]; then
+			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
 
-		    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-		    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 
-		    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD==.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
-		    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+			    if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+				
+			    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD==.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
+			    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
+			fi
+			if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		fi
 	fi
 
