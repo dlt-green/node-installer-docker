@@ -2675,6 +2675,19 @@ ShimmerWasp() {
 	else
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
+		VAR_SALT=$(cat .env | grep DASHBOARD_SALT | cut -d '=' -f 2)
+
+		if [ ! -z $VAR_SALT ]; then
+		    VAR_PASSWORD=$(cat .env | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
+
+		    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+
+		    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+
+		    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD==.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
+		    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+		fi
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
