@@ -2689,7 +2689,7 @@ ShimmerWasp() {
 
 			    if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 				
-			    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD==.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
+			    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD=.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
 			    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
 			fi
