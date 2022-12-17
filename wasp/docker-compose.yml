@@ -2,7 +2,7 @@ version: '3'
 services:
 
   wasp:
-    image: ${WASP_IMAGE_REPOSITORY:-iotaledger}/wasp:${WASP_VERSION:?WASP_VERSION is missing}
+    image: iotaledger/wasp:${WASP_VERSION:?WASP_VERSION is missing}
     container_name: ${WASP_LEDGER_NETWORK:?WASP_LEDGER_NETWORK is missing}-wasp
     restart: unless-stopped
     ulimits:
@@ -41,12 +41,15 @@ services:
     command:
       - "-c"
       - "/etc/wasp_config.json"
+      - "-u"
+      - "/etc/wasp_users.json"
     cap_drop:
       - ALL
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "${WASP_DATA_DIR:-./data}/waspdb:/app/waspdb"
       - "${WASP_DATA_DIR:-./data}/config/config.json:/etc/wasp_config.json:ro"
+      - "${WASP_DATA_DIR:-./data}/config/users.json:/etc/wasp_users.json:ro"
     logging:
       driver: "json-file"
       options:
