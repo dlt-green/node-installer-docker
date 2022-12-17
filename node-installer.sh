@@ -2717,10 +2717,16 @@ ShimmerWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
+			
+		if [ -n $VAR_PASSWORD ]; then
+		    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
 
-		VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-		VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+
+		    if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+		fi
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
