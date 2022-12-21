@@ -19,8 +19,7 @@ ACME_EMAIL=your-email@example.com
 # WASP_SSL_KEY=<absolute path to key>
 
 WASP_LEDGER_NETWORK=iota # or shimmer
-# WASP_IMAGE_REPOSITORY=iotaledger
-WASP_VERSION=0.3.0
+WASP_VERSION=0.4.0-alpha.1
 WASP_HOST=node.your-domain.com
 # WASP_HTTP_PORT=80
 # WASP_HTTPS_PORT=443
@@ -28,41 +27,41 @@ WASP_HOST=node.your-domain.com
 # WASP_PEERING_PORT=4000
 # WASP_NANO_MSG_PORT=5550
 # WASP_DATA_DIR=<absolute path to data dir>
-
-WASP_LEDGER_CONNECTION=node.your-domain.com:5000
+# WASP_IDENTITY_PRIVATE_KEY=<optional>
 
 # DASHBOARD_USERNAME=admin
-# DASHBOARD_PASSWORD=****
+DASHBOARD_PASSWORD=<password hash>
+DASHBOARD_SALT=<password salt>
 # WASP_WEBAPI_AUTH_SCHEME=jwt
-# WASP_JWT_DURATION_HOURS=24
+# WASP_JWT_DURATION=24h
 
 # WASP_TRUSTED_NODE_0_NETID=trusted.node:4000
 # WASP_TRUSTED_NODE_0_PUBKEY=<pubkey>
 ```
 
-| Parameter                         | Mandatory |   Default   | Description                                                                                                                                                                             |
-| --------------------------------- | :-------: | :---------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SSL_CONFIG                        |           | letsencrypt | Allowed values: `certs`, `letsencrypt`. Default: `letsencrypt`. If set to certs `WASP_SSL_CERT` and `WASP_SSL_KEY` are used otherwise letsencrypt is used by default.                   |
-| WASP_SSL_CERT                     |    (x)    |             | Absolute path to SSL certificate (mandatory if `SSL_CONFIG=certs`)                                                                                                                      |
-| WASP_SSL_KEY                      |    (x)    |             | Absolute path to SSL private key (mandatory if `SSL_CONFIG=certs`)                                                                                                                      |
-| ACME_EMAIL                        |    (x)    |             | Mail address used to fetch SSL certificate from letsencrypt (mandatory if `SSL_CONFIG` not set or is set to `letsencrypt`).                                                             |
-| WASP_LEDGER_NETWORK               |     x     |             | Network this wasp note belongs to (iota or shimmer)                                                                                                                                     |
-| WASP_IMAGE_REPOSITORY             |           | iotaledger  | Repository of wasp docker image e.g. iotaledger or dltgreen                                                                                                                             |
-| WASP_VERSION                      |     x     |             | Version of `dltgreen/wasp` docker image to use                                                                                                                                          |
-| WASP_HOST                         |     x     |             | Host domain name e.g. `wasp.dlt.green`                                                                                                                                                  |
-| WASP_HTTP_PORT                    |           |     80      | HTTP port to access dashboard. Must be 80 if letsencrypt is used.                                                                                                                       |
-| WASP_HTTPS_PORT                   |           |     443     | HTTPS port to access dashboard                                                                                                                                                          |
-| WASP_API_PORT                     |           |     448     | HTTPS port to access webapi                                                                                                                                                             |
-| WASP_PEERING_PORT                 |           |    4000     | Peering port                                                                                                                                                                            |
-| WASP_NANO_MSG_PORT                |           |    5550     | nano MSG port                                                                                                                                                                           |
-| WASP_DATA_DIR                     |           |    .data    | Directory containing configuration, database etc.                                                                                                                                       |
-| WASP_LEDGER_CONNECTION            |     x     |             | IOTA node url (txstream protocol) to connect to (GoShimmer txstream plugin uses port 5000 by default) WARNING: This parameter has no effect if WASP_LEDGER_NETWORK=shimmer              |
-| DASHBOARD_USERNAME                |           |    admin    | Username to access dashboard                                                                                                                                                            |
-| DASHBOARD_PASSWORD                |     x     |             | Password in clear text (not hashed, so take care!!!)                                                                                                                                    |
-| WASP_WEBAPI_AUTH_SCHEME           |           |     jwt     | Defines scheme of authentication of client with the wasp node e.g. basic or jwt                                                                                                         |
-| WASP_JWT_DURATION_HOURS           |           |     24      | Defines how log jwt tokens are valid (is used for webapi and dashboard)                                                                                                                 |
-| WASP_TRUSTED_NODE_\[0-9\]+_NETID  |           |             | NetId of trusted node (the script `refresh_trusted_nodes.sh` reads all `WASP_TRUSTED_NODE_*` parameters from `.env` and calls `wasp-cli peering trust` to trust the configured nodes.)  |
-| WASP_TRUSTED_NODE_\[0-9\]+_PUBKEY |           |             | Pubkey of trusted node (the script `refresh_trusted_nodes.sh` reads all `WASP_TRUSTED_NODE_*` parameters from `.env` and calls `wasp-cli peering trust` to trust the configured nodes.) |
+| Parameter                         | Mandatory |   Default   | Description                                                                                                                                                                                                        |
+| --------------------------------- | :-------: | :---------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| SSL_CONFIG                        |           | letsencrypt | Allowed values: `certs`, `letsencrypt`. Default: `letsencrypt`. If set to certs `WASP_SSL_CERT` and `WASP_SSL_KEY` are used otherwise letsencrypt is used by default.                                              |
+| WASP_SSL_CERT                     |    (x)    |             | Absolute path to SSL certificate (mandatory if `SSL_CONFIG=certs`)                                                                                                                                                 |
+| WASP_SSL_KEY                      |    (x)    |             | Absolute path to SSL private key (mandatory if `SSL_CONFIG=certs`)                                                                                                                                                 |
+| ACME_EMAIL                        |    (x)    |             | Mail address used to fetch SSL certificate from letsencrypt (mandatory if `SSL_CONFIG` not set or is set to `letsencrypt`).                                                                                        |
+| WASP_LEDGER_NETWORK               |     x     |             | Network this wasp note belongs to (iota or shimmer)                                                                                                                                                                |
+| WASP_VERSION                      |     x     |             | Version of `dltgreen/wasp` docker image to use                                                                                                                                                                     |
+| WASP_HOST                         |     x     |             | Host domain name e.g. `wasp.dlt.green`                                                                                                                                                                             |
+| WASP_HTTP_PORT                    |           |     80      | HTTP port to access dashboard. Must be 80 if letsencrypt is used.                                                                                                                                                  |
+| WASP_HTTPS_PORT                   |           |     443     | HTTPS port to access dashboard                                                                                                                                                                                     |
+| WASP_API_PORT                     |           |     448     | HTTPS port to access webapi                                                                                                                                                                                        |
+| WASP_PEERING_PORT                 |           |    4000     | Peering port                                                                                                                                                                                                       |
+| WASP_NANO_MSG_PORT                |           |    5550     | nano MSG port                                                                                                                                                                                                      |
+| WASP_DATA_DIR                     |           |    .data    | Directory containing configuration, database etc.                                                                                                                                                                  |
+| WASP_IDENTITY_PRIVATE_KEY         |           |             | Private key used to derive the node identity                                                                                                                                                                       |
+| DASHBOARD_USERNAME                |           |    wasp     | Username to access dashboard                                                                                                                                                                                       |
+| DASHBOARD_PASSWORD                |     x     |             | Password hash (can be generated with `docker run --rm -it iotaledger/hornet:2.0-rc tool pwd-hash` or non-interactively with `docker run --rm iotaledger/hornet:2.0-rc tool pwd-hash --json --password <password>`) |
+| DASHBOARD_SALT                    |     x     |             | Password salt (can be generated with `docker run --rm -it iotaledger/hornet:2.0-rc tool pwd-hash` or non-interactively with `docker run --rm iotaledger/hornet:2.0-rc tool pwd-hash --json --password <password>`) |
+| WASP_WEBAPI_AUTH_SCHEME           |           |     jwt     | Defines scheme of authentication of client with the wasp node e.g. basic or jwt                                                                                                                                    |
+| WASP_JWT_DURATION                 |           |     24h     | Defines how log jwt tokens are valid (is used for webapi and dashboard)                                                                                                                                            |
+| WASP_TRUSTED_NODE_\[0-9\]+_NETID  |           |             | NetId of trusted node (the script `refresh_trusted_nodes.sh` reads all `WASP_TRUSTED_NODE_*` parameters from `.env` and calls `wasp-cli peering trust` to trust the configured nodes.)                             |
+| WASP_TRUSTED_NODE_\[0-9\]+_PUBKEY |           |             | Pubkey of trusted node (the script `refresh_trusted_nodes.sh` reads all `WASP_TRUSTED_NODE_*` parameters from `.env` and calls `wasp-cli peering trust` to trust the configured nodes.)                            |
 
 ## wasp-cli
 

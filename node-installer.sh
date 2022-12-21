@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.1.4.5"
-BUILD="20221203_145700"
+VRSN="v.1.4.6"
+BUILD="20221221_211601"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -15,8 +15,8 @@ VAR_IOTA_HORNET_VERSION='1.2.1'
 VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
-VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.2'
-VAR_SHIMMER_WASP_VERSION='0.3.8'
+VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.3'
+VAR_SHIMMER_WASP_VERSION='0.4.0-alpha.1'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
 VAR_INX_MQTT_VERSION='1.0-rc'
@@ -39,22 +39,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='2f4e221d966a4cdbc5f6b5b03e085d055fea7914833bf1e6806f3f6bb4724c23'
+IotaHornetHash='49d1b4547e2a2579a92276e2b14e09e7dad46cde5e584ecb6bada707bf1fa0b0'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaBeeHash='e3303c4f46dcb66c74c7a0633c1cf30f1c0252d82c4be9630d4a5c5e49b828c6'
+IotaBeeHash='a28954411199cd940aebc9f038fe2e51e2364ccd6cfbbcd9254015e967fe6c96'
 IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-bee.tar.gz"
 
-IotaGoshimmerHash='8ff8e93a51b042c23c083218b2fecea4b243faad0831d66d13953a7b775012b4'
+IotaGoshimmerHash='d7a853474885d3322a5b793b9b77e92be47983cdd27fdeab5f56484daaf3edf9'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_iota.tar.gz"
 
-ShimmerHornetHash='82892e49d16ae29d05295157b8cf1a939f99fe1faea950f0be908b8f09252e1c'
+ShimmerHornetHash='f4fdca5c01510a724b026aa49e4ab900ea5b154846134dd2fe992251ead24624'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='a30b536c2425b68caaa6932a5644a3a673a03d6d12bf85768b380711ad0eac8a'
+ShimmerWaspHash='6a9eab5f2c8a23bbe3c428f5a458fddf25e7ba9f96a6c3ae6f6d381ed759bde0'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_shimmer.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -2638,7 +2638,7 @@ ShimmerWasp() {
 		read -r -p '> ' VAR_USERNAME
 		echo ''
 		echo "Set the dashboard password:"
-		echo "(information: $ca""will be saved as text / don't leave it empty""$xx):"
+		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
 		read -r -p '> ' VAR_PASSWORD
 		echo ''
 
@@ -2675,6 +2675,26 @@ ShimmerWasp() {
 	else
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
+		VAR_SALT=$(cat .env | grep DASHBOARD_SALT | cut -d '=' -f 2)
+
+		if [ -z $VAR_SALT ]; then
+		    VAR_PASSWORD=$(cat .env | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
+
+			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
+			if [ -n $VAR_PASSWORD ]; then
+			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+
+			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+
+			    if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+				
+			    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD=.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
+			    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
+			fi
+			if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+		fi
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -2697,10 +2717,21 @@ ShimmerWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		VAR_DASHBOARD_PASSWORD=VAR_PASSWORD
+		if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
+			
+		if [ -n $VAR_PASSWORD ]; then
+		    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+
+		    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+
+		    if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+		fi
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
-		echo "DASHBOARD_PASSWORD=$VAR_PASSWORD" >> .env
+		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
+		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
 	fi
 
 	echo ""
