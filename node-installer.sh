@@ -1345,6 +1345,42 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║           Update global Certificate from Let's Encrypt Certificate          ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	NODES="iota-hornet iota-goshimmer iota-wasp shimmer-hornet shimmer-wasp"
+	CERT=0
+	
+	for NODE in $NODES; do
+	  if [ -f "/var/lib/$NODE/data/letsencrypt/acme.json" ]; then
+	    if [ -d "/var/lib/$NODE" ]; then cd "/var/lib/$NODE" || exit; fi
+	    if [ -f .env ]; then HOST=$(cat .env | grep _HOST | cut -d '=' -f 2); fi
+	    if [ -d "/var/lib/$NODE/data/letsencrypt" ]; then cd "/var/lib/$NODE/data/letsencrypt" || exit; fi
+		if [ -d "/etc/letsencrypt/live/$HOST" ]; then
+	      cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .certificate' | base64 -d > "$HOST.crt"
+	      cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .key' | base64 -d > "$HOST.key"
+	      if [ -s "/var/lib/$NODE/data/letsencrypt/$HOST.crt" ]; then
+	        cp "/var/lib/$NODE/data/letsencrypt/$HOST.crt" "/etc/letsencrypt/live/$HOST/fullchain.pem"
+	        if [ -s "/var/lib/$NODE/data/letsencrypt/$HOST.key" ]; then
+	          cp "/var/lib/$NODE/data/letsencrypt/$HOST.key" "/etc/letsencrypt/live/$HOST/privkey.pem"
+	          echo "$gn""Global Certificate is now updated for all Nodes from $NODE""$xx"
+			  echo "valid until: "$(openssl x509 -in $HOST.crt -noout -enddate | cut -d '=' -f 2)
+			  CERT=$(( CERT + 1 ))
+	        fi
+	      fi
+		fi
+	  fi
+	done
+	
+	if [ $CERT = 0 ]; then echo "$rd""No Let's Encrypt Certificate found, aborted!""$xx"; fi
+	if [ $CERT -gt 1 ]; then echo "$rd"; echo "Misconfiguration with Certificates from your Nodes detected!""$xx"; fi
+	
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+	
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
