@@ -152,12 +152,12 @@ CheckDomain() {
 	if [ "$(dig +short "$1")" != "$(curl -s 'https://ipinfo.io/ip')" ]
 	then
 		echo ""
-	    echo "$rd""Attention! Verification of your specified Domain failed! Installation aborted!""$xx"
+	    echo "$rd""Attention! Verification of your Domain $VAR_HOST failed! Installation aborted!""$xx"
 	    echo "$rd""Maybe you entered a wrong Domain or the DNS is not reachable yet?""$xx"
 	    echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		SubMenuMaintenance
 	else
-	    echo "$gn""Verification of your specified Domain successful""$xx"
+	    echo "$gn""Verification of your Domain $VAR_HOST successful""$xx"
 	fi
 }
 
@@ -1547,36 +1547,71 @@ IotaHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
-		read -r -p '> ' VAR_HOST
+		VAR_HOST=$(cat .env | grep HORNET_HOST= | cut -d '=' -f 2)
+		if [ -z "$VAR_HOST" ]; then
+		  echo "Set domain name (example: $ca""vrom.dlt.green""$xx):"; else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		echo "Set the dashboard port (example: $ca""443""$xx):"
-		read -r -p '> ' VAR_IOTA_HORNET_HTTPS_PORT
-		echo ''
-		echo "Set the pruning size / max. database size (example: $ca""200GB""$xx):"
-		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
-		read -r -p '> ' VAR_IOTA_HORNET_PRUNING_SIZE
-		echo ''
-		echo "Set PoW / proof of work (example: $ca""[P]""$xx):"
-		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_IOTA_HORNET_POW;
+		VAR_IOTA_HORNET_HTTPS_PORT=$(cat .env | grep HORNET_HTTPS_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_HORNET_HTTPS_PORT" ]; then
+		  echo "Set dashboard port (example: $ca""443""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_IOTA_HORNET_HTTPS_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_HTTPS_PORT=$VAR_TMP; fi
+		echo "$gn""Set dashboard port: $VAR_IOTA_HORNET_HTTPS_PORT""$xx"
 
-		if  [ "$VAR_IOTA_HORNET_POW" = 'p' ] || [ "$VAR_IOTA_HORNET_POW" = 'P' ]; then 
-		  echo "$gn""PoW enabled"
+		echo ''
+		VAR_IOTA_HORNET_PRUNING_SIZE=$(cat .env | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_HORNET_PRUNING_SIZE" ]; then
+		  echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_IOTA_HORNET_PRUNING_SIZE""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=$VAR_TMP; fi
+		echo "$gn""Set pruning size: $VAR_IOTA_HORNET_PRUNING_SIZE""$xx"
+
+		echo ''
+		VAR_IOTA_HORNET_POW=$(cat .env | grep HORNET_POW_ENABLED= | cut -d '=' -f 2)		
+		if [ -z "$VAR_IOTA_HORNET_POW" ]; then
+		  echo "Set PoW / proof of work (example: $ca""[P]""$xx):"; else echo "Set PoW / proof of work (config: $ca""$VAR_IOTA_HORNET_POW""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_IOTA_HORNET_POW=$VAR_TMP
+		  if  [ "$VAR_IOTA_HORNET_POW" = 'p' ] || [ "$VAR_IOTA_HORNET_POW" = 'P' ]; then 
+		    VAR_IOTA_HORNET_POW='true'
+		    echo "$gn""Set PoW / proof of work: $VAR_IOTA_HORNET_POW""$xx"
+		  else
+		    VAR_IOTA_HORNET_POW='false'
+		    echo "$rd""Set PoW / proof of work: $VAR_IOTA_HORNET_POW""$xx"
+		  fi
 		else
-		  echo "$rd""PoW disabled"		
+		  echo "$gn""Set PoW / proof of work: $VAR_IOTA_HORNET_POW""$xx"
 		fi
 
-		echo "$xx"
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"
-		read -r -p '> ' VAR_USERNAME
 		echo ''
-		echo "Set the dashboard password:"
-		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
-		read -r -p '> ' VAR_PASSWORD
-		echo ''
+		VAR_USERNAME=$(cat .env | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
+		if [ -z "$VAR_USERNAME" ]; then
+		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; fi
+		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
 
+		echo ''
+		VAR_DASHBOARD_PASSWORD=$(cat .env | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
+		VAR_DASHBOARD_SALT=$(cat .env | grep DASHBOARD_SALT= | cut -d '=' -f 2)
+		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
+		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash ($ca""config""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_PASSWORD=$VAR_TMP
+		  echo "$gn""Set dashboard password: new""$xx"
+		else
+		  VAR_PASSWORD=''
+		  echo "$gn""Set dashboard password: config""$xx"
+		fi
+
+		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		CheckCertificate
 
 		echo ""
@@ -1594,12 +1629,7 @@ IotaHornet() {
 
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_IOTA_HORNET_PRUNING_SIZE" >> .env
-		echo "HORNET_POW_ENABLED=false" >> .env
-
-		if  [ "$VAR_IOTA_HORNET_POW" = 'p' ] || [ "$VAR_IOTA_HORNET_POW" = 'P' ]; then 
-		  if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; fi
-		fi
-
+		echo "HORNET_POW_ENABLED=$VAR_IOTA_HORNET_POW" >> .env
 		echo "HORNET_HTTPS_PORT=$VAR_IOTA_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
@@ -1641,14 +1671,16 @@ IotaHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
-
-		VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-		VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-
+		if [ -n "$VAR_PASSWORD" ]; then
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		fi
+		
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
 	fi
 
 	echo ""
