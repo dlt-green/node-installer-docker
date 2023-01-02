@@ -2452,36 +2452,71 @@ ShimmerHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		echo "Set the domain name (example: $ca""vrom.dlt.builders""$xx):"
-		read -r -p '> ' VAR_HOST
+		VAR_HOST=$(cat .env | grep HORNET_HOST= | cut -d '=' -f 2)
+		if [ -z "$VAR_HOST" ]; then
+		  echo "Set domain name (example: $ca""vrom.dlt.builders""$xx):"; else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		echo "Set the dashboard port (example: $ca""443""$xx):"
-		read -r -p '> ' VAR_SHIMMER_HORNET_HTTPS_PORT
-		echo ''
-		echo "Set the pruning size / max. database size (example: $ca""200GB""$xx):"
-		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
-		read -r -p '> ' VAR_SHIMMER_HORNET_PRUNING_SIZE
-		echo ''
-		echo "Set PoW / proof of work (example: $ca""[P]""$xx):"
-		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_SHIMMER_HORNET_POW;
+		VAR_SHIMMER_HORNET_HTTPS_PORT=$(cat .env | grep HORNET_HTTPS_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_SHIMMER_HORNET_HTTPS_PORT" ]; then
+		  echo "Set dashboard port (example: $ca""443""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_SHIMMER_HORNET_HTTPS_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_HTTPS_PORT=$VAR_TMP; fi
+		echo "$gn""Set dashboard port: $VAR_SHIMMER_HORNET_HTTPS_PORT""$xx"
 
-		if  [ "$VAR_SHIMMER_HORNET_POW" = 'p' ] || [ "$VAR_SHIMMER_HORNET_POW" = 'P' ]; then 
-		  echo "$gn""PoW enabled"
+		echo ''
+		VAR_SHIMMER_HORNET_PRUNING_SIZE=$(cat .env | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		if [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; then
+		  echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$VAR_TMP; fi
+		echo "$gn""Set pruning size: $VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx"
+
+		echo ''
+		VAR_SHIMMER_HORNET_POW=$(cat .env | grep HORNET_POW_ENABLED= | cut -d '=' -f 2)		
+		if [ -z "$VAR_SHIMMER_HORNET_POW" ]; then
+		  echo "Set PoW / proof of work (example: $ca""[P]""$xx):"; else echo "Set PoW / proof of work (config: $ca""$VAR_SHIMMER_HORNET_POW""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_SHIMMER_HORNET_POW=$VAR_TMP
+		  if  [ "$VAR_SHIMMER_HORNET_POW" = 'p' ] || [ "$VAR_SHIMMER_HORNET_POW" = 'P' ]; then 
+		    VAR_SHIMMER_HORNET_POW='true'
+		    echo "$gn""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"
+		  else
+		    VAR_SHIMMER_HORNET_POW='false'
+		    echo "$rd""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"
+		  fi
 		else
-		  echo "$rd""PoW disabled"		
+		  echo "$gn""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"
 		fi
 
-		echo "$xx"
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"
-		read -r -p '> ' VAR_USERNAME
 		echo ''
-		echo "Set the dashboard password:"
-		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
-		read -r -p '> ' VAR_PASSWORD
-		echo ''
+		VAR_USERNAME=$(cat .env | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
+		if [ -z "$VAR_USERNAME" ]; then
+		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; fi
+		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
 
+		echo ''
+		VAR_DASHBOARD_PASSWORD=$(cat .env | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
+		VAR_DASHBOARD_SALT=$(cat .env | grep DASHBOARD_SALT= | cut -d '=' -f 2)
+		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
+		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash ($ca""config""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_PASSWORD=$VAR_TMP
+		  echo "$gn""Set dashboard password: new""$xx"
+		else
+		  VAR_PASSWORD=''
+		  echo "$gn""Set dashboard password: config""$xx"
+		fi
+
+		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		CheckCertificate
 
 		echo ""
@@ -2562,14 +2597,16 @@ ShimmerHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
-
-		VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-		VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-
+		if [ -n "$VAR_PASSWORD" ]; then
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		fi
+		
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
 	fi
 
 	echo ""
@@ -2610,7 +2647,9 @@ ShimmerHornet() {
 
 	RenameContainer
 
-	if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	if [ -n "$VAR_PASSWORD" ]; then
+	  if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	fi
 
 	echo ""
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
