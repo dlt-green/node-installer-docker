@@ -1567,7 +1567,7 @@ IotaHornet() {
 		else
 		  echo "$rd""PoW disabled"		
 		fi
-		
+
 		echo "$xx"
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"
 		read -r -p '> ' VAR_USERNAME
@@ -1595,11 +1595,11 @@ IotaHornet() {
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_IOTA_HORNET_PRUNING_SIZE" >> .env
 		echo "HORNET_POW_ENABLED=false" >> .env
-		
+
 		if  [ "$VAR_IOTA_HORNET_POW" = 'p' ] || [ "$VAR_IOTA_HORNET_POW" = 'P' ]; then 
 		  if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; fi
 		fi
-		
+
 		echo "HORNET_HTTPS_PORT=$VAR_IOTA_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
@@ -2432,9 +2432,16 @@ ShimmerHornet() {
 		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 		read -r -p '> ' VAR_SHIMMER_HORNET_PRUNING_SIZE
 		echo ''
-		echo "Set PoW / proof of work (example: $ca""false""$xx): "
-		read -r -p '> ' VAR_SHIMMER_HORNET_POW
-		echo ''
+		echo "Set PoW / proof of work (example: $ca""[P]""$xx):"
+		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_SHIMMER_HORNET_POW;
+
+		if  [ "$VAR_SHIMMER_HORNET_POW" = 'p' ] || [ "$VAR_SHIMMER_HORNET_POW" = 'P' ]; then 
+		  echo "$gn""PoW enabled"
+		else
+		  echo "$rd""PoW disabled"		
+		fi
+
+		echo "$xx"
 		echo "Set the dashboard username (example: $ca""vrom""$xx):"
 		read -r -p '> ' VAR_USERNAME
 		echo ''
@@ -2460,7 +2467,12 @@ ShimmerHornet() {
 
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_SHIMMER_HORNET_PRUNING_SIZE" >> .env
-		echo "HORNET_POW_ENABLED=$VAR_SHIMMER_HORNET_POW" >> .env
+		echo "HORNET_POW_ENABLED=false" >> .env
+
+		if  [ "$VAR_SHIMMER_HORNET_POW" = 'p' ] || [ "$VAR_SHIMMER_HORNET_POW" = 'P' ]; then 
+		  if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; fi
+		fi
+
 		echo "HORNET_HTTPS_PORT=$VAR_SHIMMER_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
