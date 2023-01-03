@@ -2297,15 +2297,22 @@ IotaGoshimmer() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
-		read -r -p '> ' VAR_HOST
+		VAR_HOST=$(cat .env | grep GOSHIMMER_HOST= | cut -d '=' -f 2)
+		if [ -z "$VAR_HOST" ]; then
+		  echo "Set domain name (example: $ca""vrom.dlt.green""$xx):"; else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		echo "Set the dashboard port (example: $ca""446""$xx):"
-		read -r -p '> ' VAR_IOTA_GOSHIMMER_HTTPS_PORT
-		echo ''
+		VAR_IOTA_GOSHIMMER_HTTPS_PORT=$(cat .env | grep GOSHIMMER_HTTPS_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_GOSHIMMER_HTTPS_PORT" ]; then
+		  echo "Set dashboard port (example: $ca""447""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_IOTA_GOSHIMMER_HTTPS_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_GOSHIMMER_HTTPS_PORT=$VAR_TMP; fi
+		echo "$gn""Set dashboard port: $VAR_IOTA_GOSHIMMER_HTTPS_PORT""$xx"
 
+		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		CheckCertificate
 
 		echo ""
