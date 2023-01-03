@@ -2028,34 +2028,75 @@ IotaWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
-		read -r -p '> ' VAR_HOST
+		VAR_HOST=$(cat .env | grep WASP_HOST= | cut -d '=' -f 2)
+		if [ -z "$VAR_HOST" ]; then
+		  echo "Set domain name (example: $ca""vrom.dlt.green""$xx):"; else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		echo "Set the dashboard port (example: $ca""447""$xx):"
-		read -r -p '> ' VAR_IOTA_WASP_HTTPS_PORT
-		echo ''
-		echo "Set the api port (example: $ca""448""$xx):"
-		read -r -p '> ' VAR_IOTA_WASP_API_PORT
-		echo ''
-		echo "Set the peering port (example: $ca""4000""$xx):"
-		read -r -p '> ' VAR_IOTA_WASP_PEERING_PORT
-		echo ''
-		echo "Set the nano-msg-port (example: $ca""5550""$xx):"
-		read -r -p '> ' VAR_IOTA_WASP_NANO_MSG_PORT
-		echo ''
-		echo "Set the ledger-connection/txstream (example: $ca""127.0.0.1:5000""$xx):"
-		read -r -p '> ' VAR_IOTA_WASP_LEDGER_CONNECTION
-		echo ''
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"
-		read -r -p '> ' VAR_USERNAME
-		echo ''
-		echo "Set the dashboard password:"
-		echo "(information: $ca""will be saved as text / don't leave it empty""$xx):"
-		read -r -p '> ' VAR_PASSWORD
-		echo ''
+		VAR_IOTA_WASP_HTTPS_PORT=$(cat .env | grep WASP_HTTPS_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_WASP_HTTPS_PORT" ]; then
+		  echo "Set dashboard port (example: $ca""447""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_IOTA_WASP_HTTPS_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_HTTPS_PORT=$VAR_TMP; fi
+		echo "$gn""Set dashboard port: $VAR_IOTA_WASP_HTTPS_PORT""$xx"
 
+		echo ''
+		VAR_IOTA_WASP_API_PORT=$(cat .env | grep WASP_API_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_WASP_API_PORT" ]; then
+		  echo "Set api port (example: $ca""448""$xx):"; else echo "Set api port (config: $ca""$VAR_IOTA_WASP_API_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_API_PORT=$VAR_TMP; fi
+		echo "$gn""Set api port: $VAR_IOTA_WASP_API_PORT""$xx"
+
+		echo ''
+		VAR_IOTA_WASP_PEERING_PORT=$(cat .env | grep WASP_PEERING_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_WASP_PEERING_PORT" ]; then
+		  echo "Set peering port (example: $ca""4000""$xx):"; else echo "Set peering port (config: $ca""$VAR_IOTA_WASP_PEERING_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_PEERING_PORT=$VAR_TMP; fi
+		echo "$gn""Set peering port: $VAR_IOTA_WASP_PEERING_PORT""$xx"
+
+		echo ''
+		VAR_IOTA_WASP_NANO_MSG_PORT=$(cat .env | grep WASP_NANO_MSG_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_WASP_NANO_MSG_PORT" ]; then
+		  echo "Set nano-msg-port (example: $ca""5550""$xx):"; else echo "Set nano-msg-port (config: $ca""$VAR_IOTA_WASP_NANO_MSG_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_NANO_MSG_PORT=$VAR_TMP; fi
+		echo "$gn""Set nano-msg-port: $VAR_IOTA_WASP_NANO_MSG_PORT""$xx"
+
+		echo ''
+		VAR_IOTA_WASP_LEDGER_CONNECTION=$(cat .env | grep WASP_LEDGER_CONNECTION= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_WASP_LEDGER_CONNECTION" ]; then
+		  echo "Set ledger-connection/txstream (example: $ca""127.0.0.1:5000""$xx):"; else echo "Set ledger-connection/txstream (config: $ca""$VAR_IOTA_WASP_LEDGER_CONNECTION""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_LEDGER_CONNECTION=$VAR_TMP; fi
+		echo "$gn""Set ledger-connection/txstream: $VAR_IOTA_WASP_LEDGER_CONNECTION""$xx"
+
+		echo ''
+		VAR_USERNAME=$(cat .env | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
+		if [ -z "$VAR_USERNAME" ]; then
+		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; fi
+		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
+
+		echo ''
+		VAR_DASHBOARD_PASSWORD=$(cat .env | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
+		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
+		echo "Set dashboard password / will be saved as text ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as text ($ca""config""$xx)"; echo "to keep config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_PASSWORD=$VAR_TMP
+		  echo "$gn""Set dashboard password: new""$xx"
+		else
+		  VAR_PASSWORD=''
+		  echo "$gn""Set dashboard password: config""$xx"
+		fi		
+
+		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		CheckCertificate
 
 		echo ""
@@ -2113,10 +2154,12 @@ IotaWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		VAR_DASHBOARD_PASSWORD=VAR_PASSWORD
+		if [ -n "$VAR_PASSWORD" ]; then
+		  VAR_DASHBOARD_PASSWORD=VAR_PASSWORD
+		fi
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
-		echo "DASHBOARD_PASSWORD=$VAR_PASSWORD" >> .env
+		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 	fi
 
 	echo ""
