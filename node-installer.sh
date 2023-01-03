@@ -469,14 +469,14 @@ Dashboard() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║           ┌── IOTA Mainnet ──┐                   ┌── IOTA Devnet ──┐        ║"
+	echo "║     IOTA Mainnet        ""$rd""End of Life""$xx""              ┌── IOTA Devnet ──┐        ║"
 	echo "╟─┬─────────────────┬─┬─────────────────┬─┬────────────────┬─┬────────────────╢"
 	echo "║1│      ""$ih""HORNET""$xx""     │2│       ""$ib""BEE""$xx""       │3│    ""$ig""GOSHIMMER""$xx""   │4│      ""$iw""WASP""$xx""      ║"
 	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
 	echo "║                                                                             ║"
 	echo "║           ┌─────────────────── Shimmer ""$(echo "$VAR_HORNET_NETWORK" | sed 's/.*/\u&/')"" ──┬─────────────────┐        ║"
 	echo "╟─┬─────────────────┬─┬─────────────────┬─┬────────────────┬─┬────────────────╢"
-	echo "║5│      ""$sh""HORNET""$xx""     │6│       ""$sb""BEE""$xx""       │7│    ""$wc""WASP-CLI""$xx""    │8│      ""$sw""WASP""$xx""      ║"
+	echo "║5│      ""$sh""HORNET""$xx""     │6│        ""$sb""-""$xx""        │7│    ""$wc""WASP-CLI""$xx""    │8│      ""$sw""WASP""$xx""      ║"
 	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
 	echo "║                                                                             ║"
 	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
@@ -776,7 +776,11 @@ SubMenuMaintenance() {
 	read -r -p '> ' n
 	case $n in
 	1) if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then IotaHornet; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
+	     echo "$rd""IotaBee End of Life (no further development) - please deinstall!""$xx";
+	     echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+	     SubMenuMaintenance	   
+	   fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then IotaGoshimmer; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then IotaWasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then ShimmerHornet; fi
