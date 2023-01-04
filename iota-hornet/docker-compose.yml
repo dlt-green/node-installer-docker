@@ -2,7 +2,7 @@ version: '3'
 services:
 
   hornet:
-    image: iotaledger/hornet:${HORNET_VERSION:?HORNET_VERSION is missing}
+    image: gohornet/hornet:${HORNET_VERSION:?HORNET_VERSION is missing}
     container_name: iota-hornet
     restart: unless-stopped
     ulimits:
