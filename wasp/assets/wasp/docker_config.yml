@@ -1,90 +1,131 @@
 {
-  "inx": {
-    "address": "localhost:9029",
-    "maxConnectionAttempts": 30
-  },
-  "database": {
-    "directory": "waspdb"
+  "app": {
+    "checkForUpdates": true,
+    "shutdown": {
+      "stopGracePeriod": "5m",
+      "log": {
+        "enabled": true,
+        "filePath": "shutdown.log"
+      }
+    }
   },
   "logger": {
-    "level": "debug",
-    "disableCaller": false,
-    "disableStacktrace": true,
+    "level": "info",
+    "disableCaller": true,
+    "disableStacktrace": false,
+    "stacktraceLevel": "panic",
     "encoding": "console",
     "outputPaths": [
-      "stdout",
-      "wasp.log"
+      "stdout"
     ],
     "disableEvents": true
   },
-  "network": {
-    "bindAddress": "0.0.0.0",
-    "externalAddress": "auto"
+  "inx": {
+    "address": "localhost:9029",
+    "maxConnectionAttempts": 30,
+    "targetNetworkName": ""
   },
-  "node": {
-    "disablePlugins": [],
-    "enablePlugins": []
+  "db": {
+    "engine": "rocksdb",
+    "chainState": {
+      "path": "waspdb/chains/data"
+    },
+    "debugSkipHealthCheck": false
   },
-  "users": {
-    "users": {
-      "wasp": {
-        "password": "wasp",
-        "permissions": [
-          "dashboard",
-          "api",
-          "chain.read",
-          "chain.write"
+  "p2p": {
+    "identity": {
+      "privateKey": "",
+      "filePath": "waspdb/identity/identity.key"
+    },
+    "db": {
+      "path": "waspdb/p2pstore"
+    }
+  },
+  "registries": {
+    "chains": {
+      "filePath": "waspdb/chains/chain_registry.json"
+    },
+    "dkShares": {
+      "path": "waspdb/dkshares"
+    },
+    "trustedPeers": {
+      "filePath": "waspdb/trusted_peers.json"
+    },
+    "consensusState": {
+      "path": "waspdb/chains/consensus"
+    }
+  },
+  "peering": {
+    "netID": "0.0.0.0:4000",
+    "port": 4000
+  },
+  "chains": {
+    "broadcastUpToNPeers": 2,
+    "broadcastInterval": "5s",
+    "apiCacheTTL": "5m",
+    "pullMissingRequestsFromCommittee": true
+  },
+  "rawBlocks": {
+    "enabled": false,
+    "directory": "blocks"
+  },
+  "profiling": {
+    "enabled": false,
+    "bindAddress": "0.0.0.0:6060"
+  },
+  "prometheus": {
+    "enabled": true,
+    "bindAddress": "0.0.0.0:2112",
+    "nodeMetrics": true,
+    "nodeConnMetrics": true,
+    "blockWALMetrics": true,
+    "restAPIMetrics": true,
+    "goMetrics": true,
+    "processMetrics": true,
+    "promhttpMetrics": true
+  },
+  "webapi": {
+    "enabled": true,
+    "nodeOwnerAddresses": [],
+    "bindAddress": "0.0.0.0:9090",
+    "debugRequestLoggerEnabled": false,
+    "auth": {
+      "scheme": "jwt",
+      "jwt": {
+        "duration": "24h"
+      },
+      "basic": {
+        "username": "wasp"
+      },
+      "ip": {
+        "whitelist": [
+          "127.0.0.1"
         ]
       }
     }
   },
-  "webapi": {
-    "auth": {
-      "jwt": {
-        "durationHours": 24
-      },
-      "basic": {
-        "username": "wasp"
-      },
-      "ip": {
-        "whitelist": [
-          "127.0.0.1"
-        ]
-      },
-      "scheme": "ip"
-    },
-    "bindAddress": "0.0.0.0:9090"
-  },
-  "dashboard": {
-    "auth": {
-      "jwt": {
-        "durationHours": 24
-      },
-      "basic": {
-        "username": "wasp"
-      },
-      "ip": {
-        "whitelist": [
-          "127.0.0.1"
-        ]
-      },
-      "scheme": "basic"
-    },
-    "bindAddress": "0.0.0.0:7000"
-  },
-  "peering": {
-    "port": 4000,
-    "netid": "0.0.0.0:4000"
-  },
   "nanomsg": {
+    "enabled": true,
     "port": 5550
   },
-  "metrics": {
-    "bindAddress": "0.0.0.0:2112",
-    "enabled": true
-  },
-  "wal": {
-    "directory": "wal",
-    "enabled": true
+  "dashboard": {
+    "enabled": true,
+    "bindAddress": "0.0.0.0:7000",
+    "exploreAddressURL": "",
+    "debugRequestLoggerEnabled": false,
+    "auth": {
+      "scheme": "basic",
+      "jwt": {
+        "duration": "24h"
+      },
+      "basic": {
+        "username": "wasp"
+      },
+      "ip": {
+        "whitelist": [
+          "127.0.0.1"
+        ]
+      }
+    }
   }
 }

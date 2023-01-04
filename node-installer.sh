@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.1.4.4"
-BUILD="20221202_111328"
+VRSN="v.1.4.8"
+BUILD="20230104_170348"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -15,8 +15,8 @@ VAR_IOTA_HORNET_VERSION='1.2.1'
 VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
-VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.2'
-VAR_SHIMMER_WASP_VERSION='0.3.8'
+VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.3'
+VAR_SHIMMER_WASP_VERSION='0.4.0-alpha.2'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
 VAR_INX_MQTT_VERSION='1.0-rc'
@@ -39,22 +39,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='e2e77d1ebd65ca981c25a939ae27a41a10dd88891f18e82ad16de8f8f234fc65'
+IotaHornetHash='b29c157ef60888f60088e4c9b79ab079f68cfdb954632d1a7cda4dff2fb3354e'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaBeeHash='1890b0514a06fd7bdf2bfda201323c0d3a1d84feb7e6519824d45c994c614a05'
+IotaBeeHash='3fc2a51db130e55142a95f9e18058956b1fc1a53d213a50353218a9b8b9a0ca5'
 IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-bee.tar.gz"
 
-IotaGoshimmerHash='f3ff45bfa6797f9db40cd07583d218415aad255b174d14a7307e78989e4af81b'
+IotaGoshimmerHash='176e7ff135b6a4c4a371c77b9328f35136683b1a8d80376d390daf0d3331d37d'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_iota.tar.gz"
 
-ShimmerHornetHash='bb6a774a1f6d20fd3f0da43466e406b7fc4afa53a21b2e43b3c491c086529058'
+ShimmerHornetHash='a236b66750b499c02e43eca9a4f2ed3bf71fb686ff1542e33d8f5562d1a99be7'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='5db379b7fd5560417c3f10b4e233db6321082ec0dc3b5190bc78022f05d9a8d0'
+ShimmerWaspHash='fe1a96cbb689b3be3a4620b63c309076008a2f70d6d212729072577f7541d89f'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_shimmer.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -152,12 +152,12 @@ CheckDomain() {
 	if [ "$(dig +short "$1")" != "$(curl -s 'https://ipinfo.io/ip')" ]
 	then
 		echo ""
-	    echo "$rd""Attention! Verification of your specified Domain failed! Installation aborted!""$xx"
+	    echo "$rd""Attention! Verification of your Domain $VAR_HOST failed! Installation aborted!""$xx"
 	    echo "$rd""Maybe you entered a wrong Domain or the DNS is not reachable yet?""$xx"
 	    echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		SubMenuMaintenance
 	else
-	    echo "$gn""Verification of your specified Domain successful""$xx"
+	    echo "$gn""Verification of your Domain $VAR_HOST successful""$xx"
 	fi
 }
 
@@ -271,7 +271,7 @@ CheckEvents() {
 	
 	cd /var/lib/$VAR_DIR >/dev/null 2>&1 || Dashboard;
 	
-	VAR_RESTAPI_SALT=$(cat .env | grep RESTAPI_SALT | cut -d '=' -f 2);
+	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
 	if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""IOTA-Hornet: No Salt found!""$xx"
 	else
 	   echo "Event IDs can be found at 'https://github.com/iotaledger/participation-events'"
@@ -281,7 +281,7 @@ CheckEvents() {
 	   read -r -p '> ' EVENTS
 	   echo ''
 	   
-	   ADDR=$(cat .env | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
+	   ADDR=$(cat .env 2>/dev/null | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
 	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
 	   echo "$ca""Address: ""$xx"$ADDR" ($ca""JWT-Token for API Access randomly generated""$xx)"
 	   echo ''
@@ -469,14 +469,14 @@ Dashboard() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║           ┌── IOTA Mainnet ──┐                   ┌── IOTA Devnet ──┐        ║"
+	echo "║     IOTA Mainnet        ""$rd""End of Life""$xx""              ┌── IOTA Devnet ──┐        ║"
 	echo "╟─┬─────────────────┬─┬─────────────────┬─┬────────────────┬─┬────────────────╢"
 	echo "║1│      ""$ih""HORNET""$xx""     │2│       ""$ib""BEE""$xx""       │3│    ""$ig""GOSHIMMER""$xx""   │4│      ""$iw""WASP""$xx""      ║"
 	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
 	echo "║                                                                             ║"
 	echo "║           ┌─────────────────── Shimmer ""$(echo "$VAR_HORNET_NETWORK" | sed 's/.*/\u&/')"" ──┬─────────────────┐        ║"
 	echo "╟─┬─────────────────┬─┬─────────────────┬─┬────────────────┬─┬────────────────╢"
-	echo "║5│      ""$sh""HORNET""$xx""     │6│       ""$sb""BEE""$xx""       │7│    ""$wc""WASP-CLI""$xx""    │8│      ""$sw""WASP""$xx""      ║"
+	echo "║5│      ""$sh""HORNET""$xx""     │6│        ""$sb""-""$xx""        │7│    ""$wc""WASP-CLI""$xx""    │8│      ""$sw""WASP""$xx""      ║"
 	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
 	echo "║                                                                             ║"
 	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
@@ -704,10 +704,10 @@ SubMenuMaintenance() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || Dashboard; fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_IOTA_HORNET_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep HORNET_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_IOTA_HORNET_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep HORNET_VERSION | cut -d '=' -f 2)" | available: $VAR_IOTA_HORNET_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2)" | available: $VAR_IOTA_HORNET_VERSION""$xx"
 			fi
 		else
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_HORNET_VERSION""$xx"
@@ -715,10 +715,10 @@ SubMenuMaintenance() {
 	fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env | grep BEE_VERSION | cut -d '=' -f 2) = $VAR_IOTA_BEE_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep BEE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep BEE_VERSION | cut -d '=' -f 2) = $VAR_IOTA_BEE_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep BEE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep BEE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_BEE_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep BEE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_BEE_VERSION""$xx"
 			fi
 		else
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_BEE_VERSION""$xx"
@@ -726,10 +726,10 @@ SubMenuMaintenance() {
 	fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env | grep GOSHIMMER_VERSION | cut -d '=' -f 2) = $VAR_IOTA_GOSHIMMER_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep GOSHIMMER_VERSION | cut -d '=' -f 2) = $VAR_IOTA_GOSHIMMER_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
 			fi
 		else
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
@@ -737,10 +737,10 @@ SubMenuMaintenance() {
 	fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_IOTA_WASP_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_IOTA_WASP_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_WASP_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_WASP_VERSION""$xx"
 			fi
 		else
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_WASP_VERSION""$xx"
@@ -748,10 +748,10 @@ SubMenuMaintenance() {
 	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_HORNET_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep HORNET_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_HORNET_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep HORNET_VERSION | cut -d '=' -f 2)" | available: $VAR_SHIMMER_HORNET_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2)" | available: $VAR_SHIMMER_HORNET_VERSION""$xx"
 			fi
 		else
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_HORNET_VERSION""$xx"
@@ -759,10 +759,10 @@ SubMenuMaintenance() {
 	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_WASP_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_WASP_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
 			fi
 		else
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
@@ -776,7 +776,11 @@ SubMenuMaintenance() {
 	read -r -p '> ' n
 	case $n in
 	1) if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then IotaHornet; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then IotaBee; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
+	     echo "$rd""IotaBee End of Life (no further development) - please deinstall!""$xx";
+	     echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+	     SubMenuMaintenance	   
+	   fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then IotaGoshimmer; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then IotaWasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then ShimmerHornet; fi
@@ -935,10 +939,10 @@ SubMenuConfiguration() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || Dashboard; fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_IOTA_HORNET_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep HORNET_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_IOTA_HORNET_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep HORNET_VERSION | cut -d '=' -f 2)" | available: $VAR_IOTA_HORNET_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2)" | available: $VAR_IOTA_HORNET_VERSION""$xx"
 			fi
 		else
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_HORNET_VERSION""$xx"
@@ -946,10 +950,10 @@ SubMenuConfiguration() {
 	fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env | grep BEE_VERSION | cut -d '=' -f 2) = $VAR_IOTA_BEE_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep BEE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep BEE_VERSION | cut -d '=' -f 2) = $VAR_IOTA_BEE_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep BEE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep BEE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_BEE_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep BEE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_BEE_VERSION""$xx"
 			fi
 		else
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_BEE_VERSION""$xx"
@@ -957,10 +961,10 @@ SubMenuConfiguration() {
 	fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env | grep GOSHIMMER_VERSION | cut -d '=' -f 2) = $VAR_IOTA_GOSHIMMER_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep GOSHIMMER_VERSION | cut -d '=' -f 2) = $VAR_IOTA_GOSHIMMER_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
 			fi
 		else
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
@@ -968,10 +972,10 @@ SubMenuConfiguration() {
 	fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_IOTA_WASP_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_IOTA_WASP_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_WASP_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_WASP_VERSION""$xx"
 			fi
 		else
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_WASP_VERSION""$xx"
@@ -979,10 +983,10 @@ SubMenuConfiguration() {
 	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_HORNET_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep HORNET_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_HORNET_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep HORNET_VERSION | cut -d '=' -f 2)" | available: $VAR_SHIMMER_HORNET_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2)" | available: $VAR_SHIMMER_HORNET_VERSION""$xx"
 			fi
 		else
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_HORNET_VERSION""$xx"
@@ -990,10 +994,10 @@ SubMenuConfiguration() {
 	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_WASP_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_WASP_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
 			fi
 		else
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
@@ -1013,7 +1017,7 @@ SubMenuConfiguration() {
 
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
-		  VAR_RESTAPI_SALT=$(cat .env | grep RESTAPI_SALT | cut -d '=' -f 2);
+		  VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
 	      if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""Generate JWT-Token is not supportet, please update your Node! ""$xx"
 		  else
 		     VAR_JWT=$(docker compose run --rm hornet tool jwt-api --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
@@ -1345,6 +1349,42 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║           Update global Certificate from Let's Encrypt Certificate          ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	NODES="iota-hornet iota-goshimmer iota-wasp shimmer-hornet shimmer-wasp"
+	CERT=0
+	
+	for NODE in $NODES; do
+	  if [ -f "/var/lib/$NODE/data/letsencrypt/acme.json" ]; then
+	    if [ -d "/var/lib/$NODE" ]; then cd "/var/lib/$NODE" || exit; fi
+	    if [ -f .env ]; then HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2); fi
+	    if [ -d "/var/lib/$NODE/data/letsencrypt" ]; then cd "/var/lib/$NODE/data/letsencrypt" || exit; fi
+	    if [ -d "/etc/letsencrypt/live/$HOST" ]; then
+	      cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .certificate' | base64 -d > "$HOST.crt"
+	      cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .key' | base64 -d > "$HOST.key"
+	      if [ -s "/var/lib/$NODE/data/letsencrypt/$HOST.crt" ]; then
+	        cp "/var/lib/$NODE/data/letsencrypt/$HOST.crt" "/etc/letsencrypt/live/$HOST/fullchain.pem"
+	        if [ -s "/var/lib/$NODE/data/letsencrypt/$HOST.key" ]; then
+	          cp "/var/lib/$NODE/data/letsencrypt/$HOST.key" "/etc/letsencrypt/live/$HOST/privkey.pem"
+	          echo "$gn""Global Certificate is now updated for all Nodes from $NODE""$xx"
+	          echo "valid until: "$(openssl x509 -in $HOST.crt -noout -enddate | cut -d '=' -f 2)
+	          CERT=$(( CERT + 1 ))
+	        fi
+	      fi
+	    fi
+	  fi
+	done
+	
+	if [ $CERT = 0 ]; then echo "$rd""No Let's Encrypt Certificate found, aborted!""$xx"; fi
+	if [ $CERT -gt 1 ]; then echo "$rd"; echo "Misconfiguration with Certificates from your Nodes detected!""$xx"; fi
+	
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+	
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
@@ -1511,29 +1551,77 @@ IotaHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
-		read -r -p '> ' VAR_HOST
+		VAR_HOST=$(cat .env 2>/dev/null | grep HORNET_HOST= | cut -d '=' -f 2)
+		if [ -z "$VAR_HOST" ]; then
+		  VAR_HOST=$(echo $VAR_DOMAIN | xargs)
+		  if [ -n "$VAR_HOST" ]; then
+		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global domain press [ENTER]:"
+		  else
+			echo "Set domain name (example: $ca""vrom.dlt.green""$xx):";
+		  fi
+		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		echo "Set the dashboard port (example: $ca""443""$xx):"
-		read -r -p '> ' VAR_IOTA_HORNET_HTTPS_PORT
-		echo ''
-		echo "Set the pruning size / max. database size (example: $ca""200GB""$xx):"
-		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
-		read -r -p '> ' VAR_IOTA_HORNET_PRUNING_SIZE
-		echo ''
-		echo "Set PoW / proof of work (example: $ca""true""$xx): "
-		read -r -p '> ' VAR_IOTA_HORNET_POW
-		echo ''
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"
-		read -r -p '> ' VAR_USERNAME
-		echo ''
-		echo "Set the dashboard password:"
-		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
-		read -r -p '> ' VAR_PASSWORD
-		echo ''
+		VAR_IOTA_HORNET_HTTPS_PORT=$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_HORNET_HTTPS_PORT" ]; then
+		  echo "Set dashboard port (example: $ca""443""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_IOTA_HORNET_HTTPS_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_HTTPS_PORT=$VAR_TMP; fi
+		echo "$gn""Set dashboard port: $VAR_IOTA_HORNET_HTTPS_PORT""$xx"
 
+		echo ''
+		VAR_IOTA_HORNET_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_HORNET_PRUNING_SIZE" ]; then
+		  echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_IOTA_HORNET_PRUNING_SIZE""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=$VAR_TMP; fi
+		echo "$gn""Set pruning size: $VAR_IOTA_HORNET_PRUNING_SIZE""$xx"
+
+		echo ''
+		VAR_IOTA_HORNET_POW=$(cat .env 2>/dev/null | grep HORNET_POW_ENABLED= | cut -d '=' -f 2)		
+		if [ -z "$VAR_IOTA_HORNET_POW" ]; then
+		  echo "Set PoW / proof of work (example: $ca""[P]""$xx):"; else echo "Set PoW / proof of work (config: $ca""$VAR_IOTA_HORNET_POW""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_IOTA_HORNET_POW=$VAR_TMP
+		  if  [ "$VAR_IOTA_HORNET_POW" = 'p' ] || [ "$VAR_IOTA_HORNET_POW" = 'P' ]; then 
+		    VAR_IOTA_HORNET_POW='true'
+		    echo "$gn""Set PoW / proof of work: $VAR_IOTA_HORNET_POW""$xx"
+		  else
+		    VAR_IOTA_HORNET_POW='false'
+		    echo "$rd""Set PoW / proof of work: $VAR_IOTA_HORNET_POW""$xx"
+		  fi
+		else
+		  echo "$gn""Set PoW / proof of work: $VAR_IOTA_HORNET_POW""$xx"
+		fi
+
+		echo ''
+		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
+		if [ -z "$VAR_USERNAME" ]; then
+		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; fi
+		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
+
+		echo ''
+		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
+		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
+		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
+		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_PASSWORD=$VAR_TMP
+		  echo "$gn""Set dashboard password: new""$xx"
+		else
+		  VAR_PASSWORD=''
+		  echo "$gn""Set dashboard password: use existing""$xx"
+		fi
+
+		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		CheckCertificate
 
 		echo ""
@@ -1570,7 +1658,7 @@ IotaHornet() {
 		fi
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_IOTA_HORNET_VERSION/g" .env; fi
-		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
+		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
 
@@ -1593,14 +1681,16 @@ IotaHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
-
-		VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-		VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-
+		if [ -n "$VAR_PASSWORD" ]; then
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		fi
+		
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
 	fi
 
 	echo ""
@@ -1785,7 +1875,7 @@ IotaBee() {
 		fi
 	else
 		if [ -f .env ]; then sed -i "s/BEE_VERSION=.*/BEE_VERSION=$VAR_IOTA_BEE_VERSION/g" .env; fi
-		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
+		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -1948,34 +2038,81 @@ IotaWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
-		read -r -p '> ' VAR_HOST
+		VAR_HOST=$(cat .env 2>/dev/null | grep WASP_HOST= | cut -d '=' -f 2)
+		if [ -z "$VAR_HOST" ]; then
+		  VAR_HOST=$(echo $VAR_DOMAIN | xargs)
+		  if [ -n "$VAR_HOST" ]; then
+		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global domain press [ENTER]:"
+		  else
+			echo "Set domain name (example: $ca""vrom.dlt.green""$xx):";
+		  fi
+		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		echo "Set the dashboard port (example: $ca""447""$xx):"
-		read -r -p '> ' VAR_IOTA_WASP_HTTPS_PORT
-		echo ''
-		echo "Set the api port (example: $ca""448""$xx):"
-		read -r -p '> ' VAR_IOTA_WASP_API_PORT
-		echo ''
-		echo "Set the peering port (example: $ca""4000""$xx):"
-		read -r -p '> ' VAR_IOTA_WASP_PEERING_PORT
-		echo ''
-		echo "Set the nano-msg-port (example: $ca""5550""$xx):"
-		read -r -p '> ' VAR_IOTA_WASP_NANO_MSG_PORT
-		echo ''
-		echo "Set the ledger-connection/txstream (example: $ca""127.0.0.1:5000""$xx):"
-		read -r -p '> ' VAR_IOTA_WASP_LEDGER_CONNECTION
-		echo ''
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"
-		read -r -p '> ' VAR_USERNAME
-		echo ''
-		echo "Set the dashboard password:"
-		echo "(information: $ca""will be saved as text / don't leave it empty""$xx):"
-		read -r -p '> ' VAR_PASSWORD
-		echo ''
+		VAR_IOTA_WASP_HTTPS_PORT=$(cat .env 2>/dev/null | grep WASP_HTTPS_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_WASP_HTTPS_PORT" ]; then
+		  echo "Set dashboard port (example: $ca""447""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_IOTA_WASP_HTTPS_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_HTTPS_PORT=$VAR_TMP; fi
+		echo "$gn""Set dashboard port: $VAR_IOTA_WASP_HTTPS_PORT""$xx"
 
+		echo ''
+		VAR_IOTA_WASP_API_PORT=$(cat .env 2>/dev/null | grep WASP_API_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_WASP_API_PORT" ]; then
+		  echo "Set api port (example: $ca""448""$xx):"; else echo "Set api port (config: $ca""$VAR_IOTA_WASP_API_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_API_PORT=$VAR_TMP; fi
+		echo "$gn""Set api port: $VAR_IOTA_WASP_API_PORT""$xx"
+
+		echo ''
+		VAR_IOTA_WASP_PEERING_PORT=$(cat .env 2>/dev/null | grep WASP_PEERING_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_WASP_PEERING_PORT" ]; then
+		  echo "Set peering port (example: $ca""4000""$xx):"; else echo "Set peering port (config: $ca""$VAR_IOTA_WASP_PEERING_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_PEERING_PORT=$VAR_TMP; fi
+		echo "$gn""Set peering port: $VAR_IOTA_WASP_PEERING_PORT""$xx"
+
+		echo ''
+		VAR_IOTA_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_WASP_NANO_MSG_PORT" ]; then
+		  echo "Set nano-msg-port (example: $ca""5550""$xx):"; else echo "Set nano-msg-port (config: $ca""$VAR_IOTA_WASP_NANO_MSG_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_NANO_MSG_PORT=$VAR_TMP; fi
+		echo "$gn""Set nano-msg-port: $VAR_IOTA_WASP_NANO_MSG_PORT""$xx"
+
+		echo ''
+		VAR_IOTA_WASP_LEDGER_CONNECTION=$(cat .env 2>/dev/null | grep WASP_LEDGER_CONNECTION= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_WASP_LEDGER_CONNECTION" ]; then
+		  echo "Set ledger-connection/txstream (example: $ca""127.0.0.1:5000""$xx):"; else echo "Set ledger-connection/txstream (config: $ca""$VAR_IOTA_WASP_LEDGER_CONNECTION""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_LEDGER_CONNECTION=$VAR_TMP; fi
+		echo "$gn""Set ledger-connection/txstream: $VAR_IOTA_WASP_LEDGER_CONNECTION""$xx"
+
+		echo ''
+		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
+		if [ -z "$VAR_USERNAME" ]; then
+		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; fi
+		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
+
+		echo ''
+		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
+		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
+		echo "Set dashboard password / will be saved as text ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as text (config: $ca""use existing""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_PASSWORD=$VAR_TMP
+		  echo "$gn""Set dashboard password: new""$xx"
+		else
+		  VAR_PASSWORD=''
+		  echo "$gn""Set dashboard password: use existing""$xx"
+		fi		
+
+		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		CheckCertificate
 
 		echo ""
@@ -2011,7 +2148,7 @@ IotaWasp() {
 	else
 		if grep -q 'WASP_LEDGER_NETWORK=' .env; then sed -i "s/WASP_LEDGER_NETWORK=.*/WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK/g" .env; else echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_IOTA_WASP_VERSION/g" .env; fi
-		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
+		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -2033,10 +2170,12 @@ IotaWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		VAR_DASHBOARD_PASSWORD=VAR_PASSWORD
+		if [ -n "$VAR_PASSWORD" ]; then
+		  VAR_DASHBOARD_PASSWORD=$VAR_PASSWORD
+		fi
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
-		echo "DASHBOARD_PASSWORD=$VAR_PASSWORD" >> .env
+		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 	fi
 
 	echo ""
@@ -2093,7 +2232,7 @@ IotaWasp() {
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " IOTA-Wasp Dashboard: https://$VAR_HOST:$VAR_IOTA_WASP_HTTPS_PORT/dashboard"
+		echo " IOTA-Wasp Dashboard: https://$VAR_HOST:$VAR_IOTA_WASP_HTTPS_PORT"
 		echo " IOTA-Wasp Dashboard Username: $VAR_USERNAME"
 		echo " IOTA-Wasp Dashboard Password: <set during install>"
 		echo " IOTA-Wasp API: https://$VAR_HOST:$VAR_IOTA_WASP_API_PORT/info"
@@ -2174,15 +2313,28 @@ IotaGoshimmer() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
-		read -r -p '> ' VAR_HOST
+		VAR_HOST=$(cat .env 2>/dev/null | grep GOSHIMMER_HOST= | cut -d '=' -f 2)
+		if [ -z "$VAR_HOST" ]; then
+		  VAR_HOST=$(echo $VAR_DOMAIN | xargs)
+		  if [ -n "$VAR_HOST" ]; then
+		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global domain press [ENTER]:"
+		  else
+			echo "Set domain name (example: $ca""vrom.dlt.green""$xx):";
+		  fi
+		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		echo "Set the dashboard port (example: $ca""446""$xx):"
-		read -r -p '> ' VAR_IOTA_GOSHIMMER_HTTPS_PORT
-		echo ''
+		VAR_IOTA_GOSHIMMER_HTTPS_PORT=$(cat .env 2>/dev/null >/dev/null 2>&1 | grep GOSHIMMER_HTTPS_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_GOSHIMMER_HTTPS_PORT" ]; then
+		  echo "Set dashboard port (example: $ca""447""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_IOTA_GOSHIMMER_HTTPS_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_GOSHIMMER_HTTPS_PORT=$VAR_TMP; fi
+		echo "$gn""Set dashboard port: $VAR_IOTA_GOSHIMMER_HTTPS_PORT""$xx"
 
+		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		CheckCertificate
 
 		echo ""
@@ -2216,7 +2368,7 @@ IotaGoshimmer() {
 	else
 		if [ -f .env ]; then sed -i "s/GOSHIMMER_VERSION=.*/GOSHIMMER_VERSION=$VAR_IOTA_GOSHIMMER_VERSION/g" .env; fi
 
-		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
+		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -2372,29 +2524,77 @@ ShimmerHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		echo "Set the domain name (example: $ca""vrom.dlt.builders""$xx):"
-		read -r -p '> ' VAR_HOST
+		VAR_HOST=$(cat .env 2>/dev/null | grep HORNET_HOST= | cut -d '=' -f 2)
+		if [ -z "$VAR_HOST" ]; then
+		  VAR_HOST=$(echo $VAR_DOMAIN | xargs)
+		  if [ -n "$VAR_HOST" ]; then
+		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global domain press [ENTER]:"
+		  else
+			echo "Set domain name (example: $ca""vrom.dlt.builders""$xx):";
+		  fi
+		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		echo "Set the dashboard port (example: $ca""443""$xx):"
-		read -r -p '> ' VAR_SHIMMER_HORNET_HTTPS_PORT
-		echo ''
-		echo "Set the pruning size / max. database size (example: $ca""200GB""$xx):"
-		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
-		read -r -p '> ' VAR_SHIMMER_HORNET_PRUNING_SIZE
-		echo ''
-		echo "Set PoW / proof of work (example: $ca""false""$xx): "
-		read -r -p '> ' VAR_SHIMMER_HORNET_POW
-		echo ''
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"
-		read -r -p '> ' VAR_USERNAME
-		echo ''
-		echo "Set the dashboard password:"
-		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
-		read -r -p '> ' VAR_PASSWORD
-		echo ''
+		VAR_SHIMMER_HORNET_HTTPS_PORT=$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_SHIMMER_HORNET_HTTPS_PORT" ]; then
+		  echo "Set dashboard port (example: $ca""443""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_SHIMMER_HORNET_HTTPS_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_HTTPS_PORT=$VAR_TMP; fi
+		echo "$gn""Set dashboard port: $VAR_SHIMMER_HORNET_HTTPS_PORT""$xx"
 
+		echo ''
+		VAR_SHIMMER_HORNET_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		if [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; then
+		  echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$VAR_TMP; fi
+		echo "$gn""Set pruning size: $VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx"
+
+		echo ''
+		VAR_SHIMMER_HORNET_POW=$(cat .env 2>/dev/null | grep HORNET_POW_ENABLED= | cut -d '=' -f 2)		
+		if [ -z "$VAR_SHIMMER_HORNET_POW" ]; then
+		  echo "Set PoW / proof of work (example: $ca""[P]""$xx):"; else echo "Set PoW / proof of work (config: $ca""$VAR_SHIMMER_HORNET_POW""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_SHIMMER_HORNET_POW=$VAR_TMP
+		  if  [ "$VAR_SHIMMER_HORNET_POW" = 'p' ] || [ "$VAR_SHIMMER_HORNET_POW" = 'P' ]; then 
+		    VAR_SHIMMER_HORNET_POW='true'
+		    echo "$gn""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"
+		  else
+		    VAR_SHIMMER_HORNET_POW='false'
+		    echo "$rd""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"
+		  fi
+		else
+		  echo "$gn""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"
+		fi
+
+		echo ''
+		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
+		if [ -z "$VAR_USERNAME" ]; then
+		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; fi
+		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
+
+		echo ''
+		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
+		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
+		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
+		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_PASSWORD=$VAR_TMP
+		  echo "$gn""Set dashboard password: new""$xx"
+		else
+		  VAR_PASSWORD=''
+		  echo "$gn""Set dashboard password: use existing""$xx"
+		fi
+
+		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		CheckCertificate
 
 		echo ""
@@ -2446,7 +2646,7 @@ ShimmerHornet() {
 		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_INX_POI_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_INX_DASHBOARD_VERSION/g" .env; fi
 
-		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
+		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
 
@@ -2470,14 +2670,16 @@ ShimmerHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
-
-		VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-		VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-
+		if [ -n "$VAR_PASSWORD" ]; then
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		fi
+		
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
 	fi
 
 	echo ""
@@ -2518,7 +2720,9 @@ ShimmerHornet() {
 
 	RenameContainer
 
-	if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	if [ -n "$VAR_PASSWORD" ]; then
+	  if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	fi
 
 	echo ""
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -2617,31 +2821,74 @@ ShimmerWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		echo "Set the domain name (example: $ca""vrom.dlt.builders""$xx):"
-		read -r -p '> ' VAR_HOST
+		VAR_HOST=$(cat .env 2>/dev/null | grep WASP_HOST= | cut -d '=' -f 2)
+		if [ -z "$VAR_HOST" ]; then
+		  VAR_HOST=$(echo $VAR_DOMAIN | xargs)
+		  if [ -n "$VAR_HOST" ]; then
+		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global domain press [ENTER]:"
+		  else
+			echo "Set domain name (example: $ca""vrom.dlt.builders""$xx):";
+		  fi
+		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		echo "Set the dashboard port (example: $ca""447""$xx):"
-		read -r -p '> ' VAR_SHIMMER_WASP_HTTPS_PORT
-		echo ''
-		echo "Set the api port (example: $ca""448""$xx):"
-		read -r -p '> ' VAR_SHIMMER_WASP_API_PORT
-		echo ''
-		echo "Set the peering port (example: $ca""4000""$xx):"
-		read -r -p '> ' VAR_SHIMMER_WASP_PEERING_PORT
-		echo ''
-		echo "Set the nano-msg-port (example: $ca""5550""$xx):"
-		read -r -p '> ' VAR_SHIMMER_WASP_NANO_MSG_PORT
-		echo ''
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"
-		read -r -p '> ' VAR_USERNAME
-		echo ''
-		echo "Set the dashboard password:"
-		echo "(information: $ca""will be saved as text / don't leave it empty""$xx):"
-		read -r -p '> ' VAR_PASSWORD
-		echo ''
+		VAR_SHIMMER_WASP_HTTPS_PORT=$(cat .env 2>/dev/null | grep WASP_HTTPS_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_SHIMMER_WASP_HTTPS_PORT" ]; then
+		  echo "Set dashboard port (example: $ca""447""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_SHIMMER_WASP_HTTPS_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_HTTPS_PORT=$VAR_TMP; fi
+		echo "$gn""Set dashboard port: $VAR_SHIMMER_WASP_HTTPS_PORT""$xx"
 
+		echo ''
+		VAR_SHIMMER_WASP_API_PORT=$(cat .env 2>/dev/null | grep WASP_API_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_SHIMMER_WASP_API_PORT" ]; then
+		  echo "Set api port (example: $ca""448""$xx):"; else echo "Set api port (config: $ca""$VAR_SHIMMER_WASP_API_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_API_PORT=$VAR_TMP; fi
+		echo "$gn""Set api port: $VAR_SHIMMER_WASP_API_PORT""$xx"
+
+		echo ''
+		VAR_SHIMMER_WASP_PEERING_PORT=$(cat .env 2>/dev/null | grep WASP_PEERING_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_SHIMMER_WASP_PEERING_PORT" ]; then
+		  echo "Set peering port (example: $ca""4000""$xx):"; else echo "Set peering port (config: $ca""$VAR_SHIMMER_WASP_PEERING_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_PEERING_PORT=$VAR_TMP; fi
+		echo "$gn""Set peering port: $VAR_SHIMMER_WASP_PEERING_PORT""$xx"
+
+		echo ''
+		VAR_SHIMMER_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_SHIMMER_WASP_NANO_MSG_PORT" ]; then
+		  echo "Set nano-msg-port (example: $ca""5550""$xx):"; else echo "Set nano-msg-port (config: $ca""$VAR_SHIMMER_WASP_NANO_MSG_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_NANO_MSG_PORT=$VAR_TMP; fi
+		echo "$gn""Set nano-msg-port: $VAR_SHIMMER_WASP_NANO_MSG_PORT""$xx"
+
+		echo ''
+		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
+		if [ -z "$VAR_USERNAME" ]; then
+		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; fi
+		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
+
+		echo ''
+		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
+		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
+		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
+		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_PASSWORD=$VAR_TMP
+		  echo "$gn""Set dashboard password: new""$xx"
+		else
+		  VAR_PASSWORD=''
+		  echo "$gn""Set dashboard password: use existing""$xx"
+		fi
+
+		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		CheckCertificate
 
 		echo ""
@@ -2674,7 +2921,27 @@ ShimmerWasp() {
 		fi
 	else
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
-		VAR_HOST=$(cat .env | grep _HOST | cut -d '=' -f 2)
+		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
+		VAR_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT | cut -d '=' -f 2)
+
+		if [ -z "$VAR_SALT" ]; then
+		    VAR_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
+
+			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
+			if [ -n "$VAR_PASSWORD" ]; then
+			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+
+			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+
+			    if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+				
+			    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD=.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
+			    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
+			fi
+			if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+		fi
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -2697,10 +2964,18 @@ ShimmerWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		VAR_DASHBOARD_PASSWORD=VAR_PASSWORD
+		if [ -n "$VAR_PASSWORD" ]; then
+		  if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		  if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+		fi
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
-		echo "DASHBOARD_PASSWORD=$VAR_PASSWORD" >> .env
+		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
+		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
 	fi
 
 	echo ""
@@ -2755,7 +3030,7 @@ ShimmerWasp() {
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " SHIMMER-Wasp Dashboard: https://$VAR_HOST:$VAR_SHIMMER_WASP_HTTPS_PORT/dashboard"
+		echo " SHIMMER-Wasp Dashboard: https://$VAR_HOST:$VAR_SHIMMER_WASP_HTTPS_PORT"
 		echo " SHIMMER-Wasp Dashboard Username: $VAR_USERNAME"
 		echo " SHIMMER-Wasp Dashboard Password: <set during install>"
 		echo " SHIMMER-Wasp API: https://$VAR_HOST:$VAR_SHIMMER_WASP_API_PORT/info"

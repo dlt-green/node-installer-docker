@@ -1,28 +1,10 @@
 #!/bin/bash
 set -e
-source ./common/scripts/prepare_docker_functions.sh
 
 BUILD_DIR=./build
 EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore"
 
 NODES="iota-hornet iota-bee iota-goshimmer wasp shimmer-hornet"
-HORNET_VERSION=1.2.1
-WASP_VERSION=0.3.8
-WASP_DEV_BRANCH="develop"
-
-prepare_dockerx_builder () {
-  shutdown_dockerx_builder
-  sudo apt-get install -y qemu qemu-user-static
-  docker buildx create --name iota-builder
-  docker buildx use iota-builder
-  docker buildx inspect --bootstrap
-}
-
-shutdown_dockerx_builder () {
-  if [ "$(docker buildx ls | grep iota-builder)" != "" ]; then
-    docker buildx rm iota-builder
-  fi
-}
 
 build_node () {
   node=$1
@@ -54,83 +36,6 @@ build_node () {
   echo "$node.tar.gz built successfully"
 }
 
-build_hornet_image () {
-  imageName=dltgreen/iota-hornet:$HORNET_VERSION
-  buildDirHornet=$BUILD_DIR/tmp_hornet
-
-  mkdir -p $buildDirHornet
-  #(cd $buildDirHornet; curl -L -o hornet.tar.gz https://github.com/iotaledger/hornet/archive/refs/tags/v${HORNET_VERSION}.tar.gz; tar -xvf hornet.tar.gz --strip 1)
-  (cd $BUILD_DIR; git clone https://github.com/iotaledger/hornet.git tmp_hornet; cd tmp_hornet; git checkout v${HORNET_VERSION})
-
-  if [ -f $buildDirHornet/docker/Dockerfile ]; then
-    (cd $buildDirHornet; docker build --no-cache -f docker/Dockerfile -t $imageName .)
-  fi
-
-  docker save $imageName > $BUILD_DIR/iota-hornet-$HORNET_VERSION.tar
-  rm -Rf $buildDirHornet
-
-  push_docker_image $imageName
-}
-
-build_wasp_image () {
-  local repoTag=$1
-  local name=$2
-  local imageTag=$3
-
-  local imageName=dltgreen/$name:$imageTag
-  local buildDirWasp=$BUILD_DIR/tmp_wasp
-
-  rm -Rf $buildDirWasp && mkdir -p $buildDirWasp
-  (cd $BUILD_DIR; git clone https://github.com/iotaledger/wasp.git tmp_wasp; cd tmp_wasp; git checkout $repoTag)
-
-  if [ -f $buildDirWasp/Dockerfile ]; then
-    prepare_dockerx_builder
-    (cd $buildDirWasp; docker buildx build --platform linux/amd64,linux/arm64 -t $imageName --push .)
-    shutdown_dockerx_builder
-  fi
-
-  rm -Rf $buildDirWasp
-}
-
-build_wasp-cli_image () {
-  local repoTag=$1
-  local name=$2
-  local imageTag=$3
-
-  local imageName=dltgreen/$name:$imageTag
-  local buildDirWaspCli=$BUILD_DIR/tmp_wasp
-
-  rm -Rf $buildDirWaspCli && mkdir -p $buildDirWaspCli
-  (cd $BUILD_DIR; git clone https://github.com/iotaledger/wasp.git tmp_wasp; cd tmp_wasp; git checkout $repoTag)
-
-  #patch "$buildDirWaspCli/Dockerfile" < ./wasp-cli/Dockerfile_wasp-cli.diff
-  cp -f "$buildDirWaspCli/Dockerfile" "$buildDirWaspCli/Dockerfile.orig"
-  cp -f ./wasp-cli/Dockerfile "$buildDirWaspCli/Dockerfile"
-  rm -f $buildDirWaspCli/.dockerignore
-  echo .git > $buildDirWaspCli/.dockerignore
-  echo .github >> $buildDirWaspCli/.dockerignore
-
-  prepare_dockerx_builder
-  (cd $buildDirWaspCli; docker buildx build --platform linux/amd64,linux/arm64 -t $imageName --push .)
-  shutdown_dockerx_builder
-
-  rm -Rf $buildDirWaspCli
-}
-
-push_docker_image () {
-  local imageName=$1
-
-  print_line
-  read -p "Push docker image to dockerhub? (y/n) " yn
-  echo ""
-  case $yn in
-    y) docker push $imageName
-       ;;
-    *) echo "Image has not been pushed"
-       ;;
-  esac
-}
-
 upload_build_artefacts () {
   envFile=$(dirname "$0")/.env
   if [ ! -e "$envFile" ]; then
@@ -159,6 +64,11 @@ build_all_nodes () {
 enter_to_continue () {
   print_line
   echo $fl; read -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo $xx
+}
+
+print_line () {
+  local columns="$1"
+  printf '%*s\n' "${columns:-$(tput cols)}" '' | tr ' ' -
 }
 
 print_menu () {
@@ -204,41 +114,12 @@ print_menu () {
 }
 
 MainMenu() {
-  print_menu "Docker images" "Node packages" "Build management" "Exit"
+  print_menu "Node packages" "Build management" "Exit"
 	read  -p '> ' n
 	case $n in
-	1) DockerImagesMenu ;;
-	2) NodePackagesMenu ;;
-	3) BuildManagementMenu ;;
+	1) NodePackagesMenu ;;
+	2) BuildManagementMenu ;;
 	*) clear; exit ;;
-	esac
-}
-
-DockerImagesMenu() {
-  print_menu "iota-hornet ($HORNET_VERSION)" "wasp ($WASP_VERSION)" "wasp-cli ($WASP_VERSION)" "wasp (dev)" "Back"
-	read  -p '> ' n
-	case $n in
-	1) print_line
-     build_hornet_image
-     enter_to_continue
-     DockerImagesMenu
-     ;;
-	2) print_line
-     build_wasp_image "v$WASP_VERSION" "wasp" "$WASP_VERSION"
-     enter_to_continue
-     DockerImagesMenu
-     ;;
-	3) print_line
-     build_wasp-cli_image "v$WASP_VERSION" "wasp-cli" "$WASP_VERSION"
-     enter_to_continue
-     DockerImagesMenu
-     ;;
-	4) print_line
-     build_wasp_image "$WASP_DEV_BRANCH" "wasp" "dev"
-     enter_to_continue
-     DockerImagesMenu
-     ;;
-	*) MainMenu ;;
 	esac
 }
 
@@ -281,7 +162,7 @@ NodePackagesMenu() {
 }
 
 BuildManagementMenu() {
-  print_menu "Clean build dir" "Upload build artefacts" "Prepare dockerx builder" "Back"
+  print_menu "Clean build dir" "Upload build artefacts" "Back"
 	read  -p '> ' n
 	case $n in
 	1) print_line
@@ -293,11 +174,6 @@ BuildManagementMenu() {
      upload_build_artefacts
      enter_to_continue
      BuildManagementMenu
-     ;;
-  3) print_line
-     prepare_dockerx_builder
-     enter_to_continue
-     DockerImagesMenu
      ;;
 	*) MainMenu ;;
 	esac
