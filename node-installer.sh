@@ -1611,14 +1611,14 @@ IotaHornet() {
 		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
 		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
 		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
-		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash ($ca""config""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "to keep config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_PASSWORD=$VAR_TMP
 		  echo "$gn""Set dashboard password: new""$xx"
 		else
 		  VAR_PASSWORD=''
-		  echo "$gn""Set dashboard password: config""$xx"
+		  echo "$gn""Set dashboard password: use existing""$xx"
 		fi
 
 		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -2102,14 +2102,14 @@ IotaWasp() {
 		echo ''
 		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
 		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
-		echo "Set dashboard password / will be saved as text ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as text ($ca""config""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "Set dashboard password / will be saved as text ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as text (config: $ca""use existing""$xx)"; echo "to keep config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_PASSWORD=$VAR_TMP
 		  echo "$gn""Set dashboard password: new""$xx"
 		else
 		  VAR_PASSWORD=''
-		  echo "$gn""Set dashboard password: config""$xx"
+		  echo "$gn""Set dashboard password: use existing""$xx"
 		fi		
 
 		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -2584,14 +2584,14 @@ ShimmerHornet() {
 		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
 		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
 		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
-		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash ($ca""config""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "to keep config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_PASSWORD=$VAR_TMP
 		  echo "$gn""Set dashboard password: new""$xx"
 		else
 		  VAR_PASSWORD=''
-		  echo "$gn""Set dashboard password: config""$xx"
+		  echo "$gn""Set dashboard password: use existing""$xx"
 		fi
 
 		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -2878,14 +2878,14 @@ ShimmerWasp() {
 		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
 		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
 		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
-		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash ($ca""config""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "to keep config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_PASSWORD=$VAR_TMP
 		  echo "$gn""Set dashboard password: new""$xx"
 		else
 		  VAR_PASSWORD=''
-		  echo "$gn""Set dashboard password: config""$xx"
+		  echo "$gn""Set dashboard password: use existing""$xx"
 		fi
 
 		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
