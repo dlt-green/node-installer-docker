@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - dev
+      - 'feature/**'
       - 'release/**'
       - 'hotfix/**'
 
@@ -13,15 +14,6 @@ jobs:
     name: Build release
     runs-on: ubuntu-latest           
     steps:
-      - name: Get release type
-        id: get_release_type
-        run: |
-          if [[ "${{ contains(github.event.ref, 'release/') }}" == "true" ]]; then
-            echo "value=release" >> $GITHUB_OUTPUT
-          else
-            echo "value=hotfix" >> $GITHUB_OUTPUT
-          fi
-
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.ref }}
@@ -45,8 +37,12 @@ jobs:
       - name: Set version
         id: set_version
         run: |
-          if [ "$(echo ${{ github.event.ref }})" == "refs/heads/dev" ]; then
+          tagName='${{ github.event.ref }}'
+          if [[ "$(echo ${{ github.event.ref }})" == "refs/heads/dev" ]]; then
             tagName='dev-latest'
+          elif [[ "$(echo ${{ github.event.ref }})" =~ ^.*/feature/.*$ ]]; then
+            # get everything behind last slash (or all if no slash present)
+            tagName=${tagName##*/}-latest
           else
             tagName='${{ github.event.ref }}'
             # get everything behind last slash (or all if no slash present)
@@ -84,9 +80,30 @@ jobs:
           prerelease: true
           overwrite: true
 
+      - name: Get release type
+        id: get_release_type
+        run: |
+          if [[ "${{ contains(github.event.ref, 'release/') }}" == "true" ]]; then
+            echo "value=release" >> $GITHUB_OUTPUT
+          elif [[ "${{ contains(github.event.ref, 'hotfix/') }}" == "true" ]]; then
+            echo "value=hotfix" >> $GITHUB_OUTPUT
+          else
+            echo "value=ci" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get release title
+        id: get_release_title
+        if: ${{ steps.get_release_type.outputs.value != 'ci' }}
+        run: |
+          if [[ '${{ steps.get_release_type.outputs.value }}' == 'release' ]]; then
+            echo "value=Release ${{ steps.set_version.outputs.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "value=Hotfix ${{ steps.set_version.outputs.tag_name }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Commit changes on ${{ steps.get_release_type.outputs.value }} branch
-        if: ${{ steps.set_version.outputs.tag_name != 'dev-latest' }}
         id: commit_changes
+        if: ${{ steps.get_release_type.outputs.value != 'ci' }}
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             git add .
@@ -98,17 +115,9 @@ jobs:
           fi
           echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Get release title
-        id: get_release_title
-        run: |
-          if [[ '${{ steps.get_release_type.outputs.value }}' == 'release' ]]; then
-            echo "value=Release ${{ steps.set_version.outputs.tag_name }}" >> $GITHUB_OUTPUT
-          else
-            echo "value=Hotfix ${{ steps.set_version.outputs.tag_name }}" >> $GITHUB_OUTPUT
-          fi
-
       - name: Update release tag
-        if: ${{ steps.set_version.outputs.tag_name != 'dev-latest' }}
+        id: update_release_tag
+        if: ${{ steps.get_release_type.outputs.value != 'ci' }}
         run: |
           git checkout ${{ github.event.ref }}
           git tag -a ${{ steps.set_version.outputs.tag_name }} -m "${{ steps.get_release_title.outputs.value }}" --force
@@ -116,7 +125,7 @@ jobs:
 
       - name: Merge or create pull request from ${{ steps.get_release_type.outputs.value }} branch to dev branch
         id: merge_or_create_pull_request_to_dev
-        if: ${{ steps.commit_changes.outputs.done == 'true' }}
+        if: ${{ steps.get_release_type.outputs.value != 'ci' && steps.commit_changes.outputs.done == 'true' }}
         run: |
           message="Merge back changes from ${{ steps.get_release_type.outputs.value }}/${{ steps.set_version.outputs.tag_name }}"
 
@@ -141,7 +150,7 @@ jobs:
 
       - name: Update release notes
         id: update_release_notes
-        if: ${{ steps.set_version.outputs.tag_name != 'dev-latest' }}
+        if: ${{ steps.get_release_type.outputs.value != 'ci' }}
         run: |
           echo "**Changelog**:" > CHANGELOG.md
           echo "" >> CHANGELOG.md

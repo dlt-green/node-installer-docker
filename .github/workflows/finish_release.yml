@@ -1,5 +1,5 @@
 name: Finish release
-run-name: Finish release [${{ github.event.ref_type == 'branch' && (contains(github.event.ref, 'release/') || contains(github.event.ref, 'hotfix/')) && github.event.ref || 'skipped intentionally - not triggered by deletion of release/hotfix branch' }}]
+run-name: ${{ github.event.ref_type == 'branch' && contains(github.event.ref, 'feature/') && 'Delete feature' || 'Finish' }} release [${{ github.event.ref_type == 'branch' && (contains(github.event.ref, 'release/') || contains(github.event.ref, 'hotfix/') || contains(github.event.ref, 'feature/')) && github.event.ref || 'skipped intentionally - not triggered by deletion of release/hotfix branch' }}]
 
 on: delete
 
@@ -71,5 +71,26 @@ jobs:
             gh release delete ${{ steps.get_release_tag_name.outputs.value }}
             git push --delete origin ${{ steps.get_release_tag_name.outputs.value }}
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  delete_feature_release:
+    name: Delete feature release
+    runs-on: ubuntu-latest
+    if: ${{ github.event.ref_type == 'branch' && contains(github.event.ref, 'feature/') }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.CI_TOKEN }}
+
+      - name: Delete release
+        id: delete_release
+        run: |
+          branchName="${{ github.event.ref }}"
+          tagName=${branchName##*/}-latest
+
+          echo "::notice::Feature branch has been deleted. Deleting corresponding release."
+          gh release delete $tagName
+          git push --delete origin $tagName
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
