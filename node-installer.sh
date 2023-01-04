@@ -1555,11 +1555,11 @@ IotaHornet() {
 		if [ -z "$VAR_HOST" ]; then
 		  VAR_HOST=$(echo $VAR_DOMAIN | xargs)
 		  if [ -n "$VAR_HOST" ]; then
-		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global press [ENTER]:"
+		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global domain press [ENTER]:"
 		  else
 			echo "Set domain name (example: $ca""vrom.dlt.green""$xx):";
 		  fi
-		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to keep config press [ENTER]:"; fi
+		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
@@ -1567,7 +1567,7 @@ IotaHornet() {
 		echo ''
 		VAR_IOTA_HORNET_HTTPS_PORT=$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_IOTA_HORNET_HTTPS_PORT" ]; then
-		  echo "Set dashboard port (example: $ca""443""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_IOTA_HORNET_HTTPS_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set dashboard port (example: $ca""443""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_IOTA_HORNET_HTTPS_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_HTTPS_PORT=$VAR_TMP; fi
 		echo "$gn""Set dashboard port: $VAR_IOTA_HORNET_HTTPS_PORT""$xx"
@@ -1575,7 +1575,7 @@ IotaHornet() {
 		echo ''
 		VAR_IOTA_HORNET_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
 		if [ -z "$VAR_IOTA_HORNET_PRUNING_SIZE" ]; then
-		  echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_IOTA_HORNET_PRUNING_SIZE""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_IOTA_HORNET_PRUNING_SIZE""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=$VAR_TMP; fi
@@ -1584,7 +1584,7 @@ IotaHornet() {
 		echo ''
 		VAR_IOTA_HORNET_POW=$(cat .env 2>/dev/null | grep HORNET_POW_ENABLED= | cut -d '=' -f 2)		
 		if [ -z "$VAR_IOTA_HORNET_POW" ]; then
-		  echo "Set PoW / proof of work (example: $ca""[P]""$xx):"; else echo "Set PoW / proof of work (config: $ca""$VAR_IOTA_HORNET_POW""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set PoW / proof of work (example: $ca""[P]""$xx):"; else echo "Set PoW / proof of work (config: $ca""$VAR_IOTA_HORNET_POW""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_IOTA_HORNET_POW=$VAR_TMP
@@ -1602,7 +1602,7 @@ IotaHornet() {
 		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		if [ -z "$VAR_USERNAME" ]; then
-		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; fi
 		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
@@ -1611,7 +1611,7 @@ IotaHornet() {
 		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
 		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
 		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
-		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_PASSWORD=$VAR_TMP
@@ -2042,11 +2042,11 @@ IotaWasp() {
 		if [ -z "$VAR_HOST" ]; then
 		  VAR_HOST=$(echo $VAR_DOMAIN | xargs)
 		  if [ -n "$VAR_HOST" ]; then
-		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global press [ENTER]:"
+		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global domain press [ENTER]:"
 		  else
 			echo "Set domain name (example: $ca""vrom.dlt.green""$xx):";
 		  fi
-		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to keep config press [ENTER]:"; fi
+		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
@@ -2054,7 +2054,7 @@ IotaWasp() {
 		echo ''
 		VAR_IOTA_WASP_HTTPS_PORT=$(cat .env 2>/dev/null | grep WASP_HTTPS_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_IOTA_WASP_HTTPS_PORT" ]; then
-		  echo "Set dashboard port (example: $ca""447""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_IOTA_WASP_HTTPS_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set dashboard port (example: $ca""447""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_IOTA_WASP_HTTPS_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_HTTPS_PORT=$VAR_TMP; fi
 		echo "$gn""Set dashboard port: $VAR_IOTA_WASP_HTTPS_PORT""$xx"
@@ -2062,7 +2062,7 @@ IotaWasp() {
 		echo ''
 		VAR_IOTA_WASP_API_PORT=$(cat .env 2>/dev/null | grep WASP_API_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_IOTA_WASP_API_PORT" ]; then
-		  echo "Set api port (example: $ca""448""$xx):"; else echo "Set api port (config: $ca""$VAR_IOTA_WASP_API_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set api port (example: $ca""448""$xx):"; else echo "Set api port (config: $ca""$VAR_IOTA_WASP_API_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_API_PORT=$VAR_TMP; fi
 		echo "$gn""Set api port: $VAR_IOTA_WASP_API_PORT""$xx"
@@ -2070,7 +2070,7 @@ IotaWasp() {
 		echo ''
 		VAR_IOTA_WASP_PEERING_PORT=$(cat .env 2>/dev/null | grep WASP_PEERING_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_IOTA_WASP_PEERING_PORT" ]; then
-		  echo "Set peering port (example: $ca""4000""$xx):"; else echo "Set peering port (config: $ca""$VAR_IOTA_WASP_PEERING_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set peering port (example: $ca""4000""$xx):"; else echo "Set peering port (config: $ca""$VAR_IOTA_WASP_PEERING_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_PEERING_PORT=$VAR_TMP; fi
 		echo "$gn""Set peering port: $VAR_IOTA_WASP_PEERING_PORT""$xx"
@@ -2078,7 +2078,7 @@ IotaWasp() {
 		echo ''
 		VAR_IOTA_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_IOTA_WASP_NANO_MSG_PORT" ]; then
-		  echo "Set nano-msg-port (example: $ca""5550""$xx):"; else echo "Set nano-msg-port (config: $ca""$VAR_IOTA_WASP_NANO_MSG_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set nano-msg-port (example: $ca""5550""$xx):"; else echo "Set nano-msg-port (config: $ca""$VAR_IOTA_WASP_NANO_MSG_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_NANO_MSG_PORT=$VAR_TMP; fi
 		echo "$gn""Set nano-msg-port: $VAR_IOTA_WASP_NANO_MSG_PORT""$xx"
@@ -2086,7 +2086,7 @@ IotaWasp() {
 		echo ''
 		VAR_IOTA_WASP_LEDGER_CONNECTION=$(cat .env 2>/dev/null | grep WASP_LEDGER_CONNECTION= | cut -d '=' -f 2)
 		if [ -z "$VAR_IOTA_WASP_LEDGER_CONNECTION" ]; then
-		  echo "Set ledger-connection/txstream (example: $ca""127.0.0.1:5000""$xx):"; else echo "Set ledger-connection/txstream (config: $ca""$VAR_IOTA_WASP_LEDGER_CONNECTION""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set ledger-connection/txstream (example: $ca""127.0.0.1:5000""$xx):"; else echo "Set ledger-connection/txstream (config: $ca""$VAR_IOTA_WASP_LEDGER_CONNECTION""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_LEDGER_CONNECTION=$VAR_TMP; fi
 		echo "$gn""Set ledger-connection/txstream: $VAR_IOTA_WASP_LEDGER_CONNECTION""$xx"
@@ -2094,7 +2094,7 @@ IotaWasp() {
 		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		if [ -z "$VAR_USERNAME" ]; then
-		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; fi
 		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
@@ -2102,7 +2102,7 @@ IotaWasp() {
 		echo ''
 		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
 		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
-		echo "Set dashboard password / will be saved as text ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as text (config: $ca""use existing""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "Set dashboard password / will be saved as text ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as text (config: $ca""use existing""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_PASSWORD=$VAR_TMP
@@ -2317,11 +2317,11 @@ IotaGoshimmer() {
 		if [ -z "$VAR_HOST" ]; then
 		  VAR_HOST=$(echo $VAR_DOMAIN | xargs)
 		  if [ -n "$VAR_HOST" ]; then
-		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global press [ENTER]:"
+		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global domain press [ENTER]:"
 		  else
 			echo "Set domain name (example: $ca""vrom.dlt.green""$xx):";
 		  fi
-		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to keep config press [ENTER]:"; fi
+		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
@@ -2329,7 +2329,7 @@ IotaGoshimmer() {
 		echo ''
 		VAR_IOTA_GOSHIMMER_HTTPS_PORT=$(cat .env 2>/dev/null >/dev/null 2>&1 | grep GOSHIMMER_HTTPS_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_IOTA_GOSHIMMER_HTTPS_PORT" ]; then
-		  echo "Set dashboard port (example: $ca""447""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_IOTA_GOSHIMMER_HTTPS_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set dashboard port (example: $ca""447""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_IOTA_GOSHIMMER_HTTPS_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_IOTA_GOSHIMMER_HTTPS_PORT=$VAR_TMP; fi
 		echo "$gn""Set dashboard port: $VAR_IOTA_GOSHIMMER_HTTPS_PORT""$xx"
@@ -2528,11 +2528,11 @@ ShimmerHornet() {
 		if [ -z "$VAR_HOST" ]; then
 		  VAR_HOST=$(echo $VAR_DOMAIN | xargs)
 		  if [ -n "$VAR_HOST" ]; then
-		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global press [ENTER]:"
+		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global domain press [ENTER]:"
 		  else
 			echo "Set domain name (example: $ca""vrom.dlt.builders""$xx):";
 		  fi
-		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to keep config press [ENTER]:"; fi
+		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
@@ -2540,7 +2540,7 @@ ShimmerHornet() {
 		echo ''
 		VAR_SHIMMER_HORNET_HTTPS_PORT=$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_SHIMMER_HORNET_HTTPS_PORT" ]; then
-		  echo "Set dashboard port (example: $ca""443""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_SHIMMER_HORNET_HTTPS_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set dashboard port (example: $ca""443""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_SHIMMER_HORNET_HTTPS_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_HTTPS_PORT=$VAR_TMP; fi
 		echo "$gn""Set dashboard port: $VAR_SHIMMER_HORNET_HTTPS_PORT""$xx"
@@ -2548,7 +2548,7 @@ ShimmerHornet() {
 		echo ''
 		VAR_SHIMMER_HORNET_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
 		if [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; then
-		  echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$VAR_TMP; fi
@@ -2557,7 +2557,7 @@ ShimmerHornet() {
 		echo ''
 		VAR_SHIMMER_HORNET_POW=$(cat .env 2>/dev/null | grep HORNET_POW_ENABLED= | cut -d '=' -f 2)		
 		if [ -z "$VAR_SHIMMER_HORNET_POW" ]; then
-		  echo "Set PoW / proof of work (example: $ca""[P]""$xx):"; else echo "Set PoW / proof of work (config: $ca""$VAR_SHIMMER_HORNET_POW""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set PoW / proof of work (example: $ca""[P]""$xx):"; else echo "Set PoW / proof of work (config: $ca""$VAR_SHIMMER_HORNET_POW""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_SHIMMER_HORNET_POW=$VAR_TMP
@@ -2575,7 +2575,7 @@ ShimmerHornet() {
 		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		if [ -z "$VAR_USERNAME" ]; then
-		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; fi
 		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
@@ -2584,7 +2584,7 @@ ShimmerHornet() {
 		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
 		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
 		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
-		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_PASSWORD=$VAR_TMP
@@ -2825,11 +2825,11 @@ ShimmerWasp() {
 		if [ -z "$VAR_HOST" ]; then
 		  VAR_HOST=$(echo $VAR_DOMAIN | xargs)
 		  if [ -n "$VAR_HOST" ]; then
-		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global press [ENTER]:"
+		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "to use global domain press [ENTER]:"
 		  else
 			echo "Set domain name (example: $ca""vrom.dlt.builders""$xx):";
 		  fi
-		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to keep config press [ENTER]:"; fi
+		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
 		CheckDomain "$VAR_HOST"
@@ -2837,7 +2837,7 @@ ShimmerWasp() {
 		echo ''
 		VAR_SHIMMER_WASP_HTTPS_PORT=$(cat .env 2>/dev/null | grep WASP_HTTPS_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_SHIMMER_WASP_HTTPS_PORT" ]; then
-		  echo "Set dashboard port (example: $ca""447""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_SHIMMER_WASP_HTTPS_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set dashboard port (example: $ca""447""$xx):"; else echo "Set dashboard port (config: $ca""$VAR_SHIMMER_WASP_HTTPS_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_HTTPS_PORT=$VAR_TMP; fi
 		echo "$gn""Set dashboard port: $VAR_SHIMMER_WASP_HTTPS_PORT""$xx"
@@ -2845,7 +2845,7 @@ ShimmerWasp() {
 		echo ''
 		VAR_SHIMMER_WASP_API_PORT=$(cat .env 2>/dev/null | grep WASP_API_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_SHIMMER_WASP_API_PORT" ]; then
-		  echo "Set api port (example: $ca""448""$xx):"; else echo "Set api port (config: $ca""$VAR_SHIMMER_WASP_API_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set api port (example: $ca""448""$xx):"; else echo "Set api port (config: $ca""$VAR_SHIMMER_WASP_API_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_API_PORT=$VAR_TMP; fi
 		echo "$gn""Set api port: $VAR_SHIMMER_WASP_API_PORT""$xx"
@@ -2853,7 +2853,7 @@ ShimmerWasp() {
 		echo ''
 		VAR_SHIMMER_WASP_PEERING_PORT=$(cat .env 2>/dev/null | grep WASP_PEERING_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_SHIMMER_WASP_PEERING_PORT" ]; then
-		  echo "Set peering port (example: $ca""4000""$xx):"; else echo "Set peering port (config: $ca""$VAR_SHIMMER_WASP_PEERING_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set peering port (example: $ca""4000""$xx):"; else echo "Set peering port (config: $ca""$VAR_SHIMMER_WASP_PEERING_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_PEERING_PORT=$VAR_TMP; fi
 		echo "$gn""Set peering port: $VAR_SHIMMER_WASP_PEERING_PORT""$xx"
@@ -2861,7 +2861,7 @@ ShimmerWasp() {
 		echo ''
 		VAR_SHIMMER_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_SHIMMER_WASP_NANO_MSG_PORT" ]; then
-		  echo "Set nano-msg-port (example: $ca""5550""$xx):"; else echo "Set nano-msg-port (config: $ca""$VAR_SHIMMER_WASP_NANO_MSG_PORT""$xx)"; echo "to keep config press [ENTER]:"; fi
+		  echo "Set nano-msg-port (example: $ca""5550""$xx):"; else echo "Set nano-msg-port (config: $ca""$VAR_SHIMMER_WASP_NANO_MSG_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_NANO_MSG_PORT=$VAR_TMP; fi
 		echo "$gn""Set nano-msg-port: $VAR_SHIMMER_WASP_NANO_MSG_PORT""$xx"
@@ -2869,7 +2869,7 @@ ShimmerWasp() {
 		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		if [ -z "$VAR_USERNAME" ]; then
-		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "Set dashboard username (example: $ca""vrom""$xx):"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; fi
 		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
@@ -2878,7 +2878,7 @@ ShimmerWasp() {
 		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
 		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
 		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
-		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "to keep config press [ENTER]:"; fi
+		echo "Set dashboard password / will be saved as hash ($ca""new""$xx):"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_PASSWORD=$VAR_TMP
