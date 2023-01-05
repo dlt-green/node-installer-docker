@@ -177,14 +177,14 @@ CheckCertificate() {
 		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 		echo "║""$ca""$VAR_DOMAIN""$xx""║"
 		echo "║                                                                             ║"
-		echo "║                            1. Use existing Certificate                      ║"
+		echo "║                            1. Use global Certificate                      ║"
 		echo "║                            X. Generate new Let's Encrypt Certificate        ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 		echo "$rd""Attention! For one Node on your Server (Master-Node, e.g. HORNET)"
 		echo "you must use (X) for getting a Let's Encrypt Certificate,"
-		echo "for all additional installed Nodes use (1) existing Certificate,"
+		echo "for all additional installed Nodes use (1) global Certificate,"
 		echo "then the Node will use the Certificate from the Master-Node""$xx"
 		echo ""
 		echo "select menu item: "
@@ -193,12 +193,12 @@ CheckCertificate() {
 		case $n in
 		1) VAR_CERT=1
 		   rm -rf /var/lib/"$VAR_DIR"/data/letsencrypt/* ;;
-		*) echo "No existing Let's Encrypt Certificate found, generate a new one... "
+		*) echo "No global Let's Encrypt Certificate found, generate a new one... "
 		   VAR_CERT=0
 		   rm -rf /var/lib/"$VAR_DIR"/data/letsencrypt/* ;;
 		esac
 	else
-		echo "No existing Let's Encrypt Certificate found, generate a new one... "
+		echo "No global Let's Encrypt Certificate found, generate a new one... "
 		VAR_CERT=0
 		rm -rf /var/lib/"$VAR_DIR"/data/letsencrypt/*
 	fi
