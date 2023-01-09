@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.1.4.8"
-BUILD="20230104_170348"
+VRSN="v.1.4.9"
+BUILD="20230109_124734"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -11,11 +11,11 @@ VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
 
-VAR_IOTA_HORNET_VERSION='1.2.1'
+VAR_IOTA_HORNET_VERSION='1.2.2'
 VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
-VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.3'
+VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.4'
 VAR_SHIMMER_WASP_VERSION='0.4.0-alpha.2'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
@@ -39,22 +39,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='b29c157ef60888f60088e4c9b79ab079f68cfdb954632d1a7cda4dff2fb3354e'
+IotaHornetHash='24443f109ffdbcbd98b1c98af89118f880d1bab7b71bb96591de32c3d59e40f0'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaBeeHash='3fc2a51db130e55142a95f9e18058956b1fc1a53d213a50353218a9b8b9a0ca5'
+IotaBeeHash='3de0a8335d184d1093be48192fa0d9cd9abf9a4e239fba8c7f3b0767fd3cbf10'
 IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-bee.tar.gz"
 
-IotaGoshimmerHash='176e7ff135b6a4c4a371c77b9328f35136683b1a8d80376d390daf0d3331d37d'
+IotaGoshimmerHash='76f4db8fab4bf17bba2df033370845d8c216a7f631a68f9184ed1a6bce0866d8'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_iota.tar.gz"
 
-ShimmerHornetHash='a236b66750b499c02e43eca9a4f2ed3bf71fb686ff1542e33d8f5562d1a99be7'
+ShimmerHornetHash='2a4d5587d25c5911bea39607c7dcbfd408c459dd4eb81c6ef66b0a863e602dfa'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='fe1a96cbb689b3be3a4620b63c309076008a2f70d6d212729072577f7541d89f'
+ShimmerWaspHash='7299bbd9557155f312ea3076c8117f1dc0de7872cd5c3acb5bf24b115f260e31'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_shimmer.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -177,14 +177,14 @@ CheckCertificate() {
 		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 		echo "║""$ca""$VAR_DOMAIN""$xx""║"
 		echo "║                                                                             ║"
-		echo "║                            1. Use existing Certificate                      ║"
+		echo "║                            1. Use global Certificate                        ║"
 		echo "║                            X. Generate new Let's Encrypt Certificate        ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 		echo "$rd""Attention! For one Node on your Server (Master-Node, e.g. HORNET)"
 		echo "you must use (X) for getting a Let's Encrypt Certificate,"
-		echo "for all additional installed Nodes use (1) existing Certificate,"
+		echo "for all additional installed Nodes use (1) global Certificate,"
 		echo "then the Node will use the Certificate from the Master-Node""$xx"
 		echo ""
 		echo "select menu item: "
@@ -193,12 +193,12 @@ CheckCertificate() {
 		case $n in
 		1) VAR_CERT=1
 		   rm -rf /var/lib/"$VAR_DIR"/data/letsencrypt/* ;;
-		*) echo "No existing Let's Encrypt Certificate found, generate a new one... "
+		*) echo "No global Let's Encrypt Certificate found, generate a new one... "
 		   VAR_CERT=0
 		   rm -rf /var/lib/"$VAR_DIR"/data/letsencrypt/* ;;
 		esac
 	else
-		echo "No existing Let's Encrypt Certificate found, generate a new one... "
+		echo "No global Let's Encrypt Certificate found, generate a new one... "
 		VAR_CERT=0
 		rm -rf /var/lib/"$VAR_DIR"/data/letsencrypt/*
 	fi

@@ -28,7 +28,7 @@ fi
 prepare_data_dir "${dataDir}" "config" "/storage/${HORNET_NETWORK:-mainnet}" "/p2pstore/${HORNET_NETWORK:-mainnet}" "/snapshots/${HORNET_NETWORK:-mainnet}" "letsencrypt"
 
 # Generate config
-extract_file_from_image "gohornet/hornet" "${HORNET_VERSION}" "/app/${configFilenameInContainer}" "${configPath}"
+extract_file_from_image "iotaledger/hornet" "${HORNET_VERSION}" "/app/${configFilenameInContainer}" "${configPath}"
 
 echo "Adapting config with values from .env..."
 set_config "${configPath}" ".node.alias"                  "\"${HORNET_NODE_ALIAS:-HORNET mainnet node}\""
