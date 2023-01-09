@@ -177,7 +177,7 @@ CheckCertificate() {
 		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 		echo "║""$ca""$VAR_DOMAIN""$xx""║"
 		echo "║                                                                             ║"
-		echo "║                            1. Use global Certificate                      ║"
+		echo "║                            1. Use global Certificate                        ║"
 		echo "║                            X. Generate new Let's Encrypt Certificate        ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
