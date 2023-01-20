@@ -2,7 +2,7 @@ version: '3'
 services:
 
   pipe:
-    image: pipe:${PIPE_VERSION:?PIPE_VERSION is missing}
+    image: dltgreen/pipe:${PIPE_VERSION:?PIPE_VERSION is missing}
     container_name: pipe
     restart: unless-stopped
     ports:
