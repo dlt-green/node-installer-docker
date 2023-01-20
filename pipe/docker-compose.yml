@@ -7,9 +7,9 @@ services:
     restart: unless-stopped
     ports:
       - "${PIPE_PORT:-13266}:${PIPE_PORT:-13266}/tcp"
-    command: [ "-c", "/etc/pipe/config.json" ]
+    command: [ "-c", "/etc/pipe/config.yml" ]
     volumes:
-      - "./data/config/config.json:/etc/pipe/config.json:ro"
-      - "./data/storage:/storage"
+      - "${PIPE_DATA_DIR:-./data}/config/config.yml:/etc/pipe/config.yml:ro"
+      - "${PIPE_DATA_DIR:-./data}/storage:/storage"
     environment:
-      - RUST_LOG=${PIPE_LOG_LEVEL:-info}
+      - RUST_LOG=${PIPE_LOG_LEVEL:-debug}

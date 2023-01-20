@@ -4,7 +4,7 @@ set -e
 BUILD_DIR=./build
 EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore"
 
-NODES="iota-hornet iota-bee iota-goshimmer wasp shimmer-hornet"
+NODES="iota-hornet iota-bee iota-goshimmer wasp shimmer-hornet pipe"
 
 build_node () {
   node=$1
@@ -21,9 +21,11 @@ build_node () {
   rsync -a $sourceDir $BUILD_DIR $rsyncExclusions
   
   # common assets
-  mkdir -p $BUILD_DIR/$node/assets
-  rsync -a ./common/assets/* $BUILD_DIR/$node/assets $rsyncExclusions
-  find $BUILD_DIR/$node -type f -name 'prepare_docker.sh' -exec sed -i '/copy_common_assets/d' {} \;
+  if [[ ! -z "$(grep "copy_common_assets" $BUILD_DIR/$node/*.sh)" ]]; then
+    mkdir -p $BUILD_DIR/$node/assets
+    rsync -a ./common/assets/* $BUILD_DIR/$node/assets $rsyncExclusions
+    find $BUILD_DIR/$node -type f -name 'prepare_docker.sh' -exec sed -i '/copy_common_assets/d' {} \;
+  fi
 
   # common scripts
   mkdir -p $BUILD_DIR/$node/scripts
@@ -124,7 +126,7 @@ MainMenu() {
 }
 
 NodePackagesMenu() {
-  print_menu "all" "iota-hornet" "iota-bee" "iota-goshimmer" "shimmer-hornet" "wasp" "Back"
+  print_menu "all" "iota-hornet" "iota-bee" "iota-goshimmer" "shimmer-hornet" "wasp" "pipe" "Back"
 	read  -p '> ' n
 	case $n in
   1) print_line
@@ -154,6 +156,11 @@ NodePackagesMenu() {
      ;;
   6) print_line
      build_node "wasp"
+     enter_to_continue
+	   NodePackagesMenu
+     ;;
+  7) print_line
+     build_node "pipe"
      enter_to_continue
 	   NodePackagesMenu
      ;;

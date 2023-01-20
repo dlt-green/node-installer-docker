@@ -1,5 +1,14 @@
 #!/bin/bash
 set -e
+source ../common/scripts/prepare_docker_functions.sh
+
+elevate_to_root true
+
+scriptDir=$(dirname "${0}")
+dataDir="${PIPE_DATA_DIR:-${scriptDir}/data}"
+
+prepare_data_dir "${dataDir}" "config" "storage" &>/dev/null
+touch "${dataDir}/config/config.yml"
 
 output=$(docker compose run --rm pipe --action=keygen)
 

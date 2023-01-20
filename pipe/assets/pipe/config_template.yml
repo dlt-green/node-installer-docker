@@ -1,0 +1,9 @@
+seed: '<seed>'
+port: <port>
+capabilities:
+  - PaidStorage
+  - Committee
+  <bootstrap_capability>
+storage:
+  engine: FileSystemStore
+  storage_directory: /storage
