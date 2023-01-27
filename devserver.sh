@@ -1,7 +1,7 @@
 #!/bin/bash
 BUILD_DIR=./build
 DEVSERVER_PORT=8040
-NODES="iota-hornet iota-bee iota-goshimmer wasp shimmer-hornet"
+NODES="iota-hornet iota-goshimmer wasp shimmer-hornet"
 
 print_help () {
   echo "This variables must be set in .env"
@@ -57,7 +57,6 @@ prepare_test_installer () {
   sed -i "s/https:\/\/github.com\/dlt-green\/node-installer-docker\/releases\/download\/\$VRSN/http:\/\/localhost:8040/g" "${testInstaller}"
 
   # update checksums
-  sed -i "s/IotaBeeHash=.*/IotaBeeHash='$(shasum -a 256 ./build/iota-bee.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
   sed -i "s/IotaGoshimmerHash=.*/IotaGoshimmerHash='$(shasum -a 256 ./build/iota-goshimmer.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
   sed -i "s/IotaHornetHash=.*/IotaHornetHash='$(shasum -a 256 ./build/iota-hornet.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
   sed -i "s/IotaWaspHash=.*/IotaWaspHash='$(shasum -a 256 ./build/wasp_iota.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
