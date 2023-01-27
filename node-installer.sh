@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.1.5.1"
-BUILD="20230127_124422"
+VRSN="v.1.5.2"
+BUILD="20230127_173711"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -15,7 +15,7 @@ VAR_IOTA_HORNET_VERSION='1.2.2'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.4'
-VAR_SHIMMER_WASP_VERSION='0.4.0-alpha.2'
+VAR_SHIMMER_WASP_VERSION='0.4.0-alpha.4'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
 VAR_INX_MQTT_VERSION='1.0-rc'
@@ -38,19 +38,19 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='c47d175fca8e3c5abd87e482dbf422e8726270f71b7927e2a0c46a7e9ce9b94b'
+IotaHornetHash='5cd287fa9b3e47b798fdd08b822c446f5f5866b906bb2a5d4be8d7d49895ca95'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaGoshimmerHash='22d2fd443e06d9fce00ec7c93a5c6c9199b65c5b28f31b962c02724dacbf89c8'
+IotaGoshimmerHash='ffb09faa4586cfd18824b64788ebdb8cb9a5e10763e19809c5228587566f2e46'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='062d9e1f3011a2f63e3cf77e0cf702602cd818176484a6423ef714c1a85ecb14'
+ShimmerHornetHash='256ac721330dc693f1e96ba6620280dee3b66875b610a86b404f204308ee23d8'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='fbc9b0b2dafc4ebd29a82b6a19815dfec25786a4e6c411ffe5e4cc76c94ea6b7'
+ShimmerWaspHash='60e9fda88b3ef478ebc5138416e49120355920e46d4d61a20d32a84eb837ac39'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
