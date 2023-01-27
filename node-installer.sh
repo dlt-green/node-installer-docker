@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.1.4.8"
-BUILD="20230104_170348"
+VRSN="v.1.5.2"
+BUILD="20230127_173711"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -11,12 +11,11 @@ VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
 
-VAR_IOTA_HORNET_VERSION='1.2.1'
-VAR_IOTA_BEE_VERSION='0.3.1'
+VAR_IOTA_HORNET_VERSION='1.2.2'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
-VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.3'
-VAR_SHIMMER_WASP_VERSION='0.4.0-alpha.2'
+VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.4'
+VAR_SHIMMER_WASP_VERSION='0.4.0-alpha.4'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
 VAR_INX_MQTT_VERSION='1.0-rc'
@@ -39,23 +38,20 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='b29c157ef60888f60088e4c9b79ab079f68cfdb954632d1a7cda4dff2fb3354e'
+IotaHornetHash='5cd287fa9b3e47b798fdd08b822c446f5f5866b906bb2a5d4be8d7d49895ca95'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaBeeHash='3fc2a51db130e55142a95f9e18058956b1fc1a53d213a50353218a9b8b9a0ca5'
-IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-bee.tar.gz"
-
-IotaGoshimmerHash='176e7ff135b6a4c4a371c77b9328f35136683b1a8d80376d390daf0d3331d37d'
+IotaGoshimmerHash='ffb09faa4586cfd18824b64788ebdb8cb9a5e10763e19809c5228587566f2e46'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
-IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_iota.tar.gz"
+IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='a236b66750b499c02e43eca9a4f2ed3bf71fb686ff1542e33d8f5562d1a99be7'
+ShimmerHornetHash='256ac721330dc693f1e96ba6620280dee3b66875b610a86b404f204308ee23d8'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='fe1a96cbb689b3be3a4620b63c309076008a2f70d6d212729072577f7541d89f'
-ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/wasp_shimmer.tar.gz"
+ShimmerWaspHash='60e9fda88b3ef478ebc5138416e49120355920e46d4d61a20d32a84eb837ac39'
+ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 SnapshotShimmerHornet="https://github.com/iotaledger/global-snapshots/raw/main/shimmer/genesis_snapshot.bin"
@@ -82,14 +78,12 @@ if [ "$(id -u)" -ne 0 ]; then echo "$rd" && echo 'Please run DLT.GREEN Automatic
 
 CheckIota() {
 	if [ -s "/var/lib/iota-hornet/.env" ];    then VAR_NETWORK=1; fi
-	if [ -s "/var/lib/iota-bee/.env" ];       then VAR_NETWORK=1; fi
 	if [ -s "/var/lib/iota-goshimmer/.env" ]; then VAR_NETWORK=1; fi
 	if [ -s "/var/lib/iota-wasp/.env" ];      then VAR_NETWORK=1; fi
 }
 
 CheckShimmer() {
 	if [ -s "/var/lib/shimmer-hornet/.env" ]; then VAR_NETWORK=2; fi
-	if [ -s "/var/lib/shimmer-bee/.env" ];    then VAR_NETWORK=2; fi
 	if [ -s "/var/lib/shimmer-wasp/.env" ];   then VAR_NETWORK=2; fi
 }
 
@@ -177,14 +171,14 @@ CheckCertificate() {
 		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 		echo "║""$ca""$VAR_DOMAIN""$xx""║"
 		echo "║                                                                             ║"
-		echo "║                            1. Use existing Certificate                      ║"
+		echo "║                            1. Use global Certificate                        ║"
 		echo "║                            X. Generate new Let's Encrypt Certificate        ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 		echo "$rd""Attention! For one Node on your Server (Master-Node, e.g. HORNET)"
 		echo "you must use (X) for getting a Let's Encrypt Certificate,"
-		echo "for all additional installed Nodes use (1) existing Certificate,"
+		echo "for all additional installed Nodes use (1) global Certificate,"
 		echo "then the Node will use the Certificate from the Master-Node""$xx"
 		echo ""
 		echo "select menu item: "
@@ -193,12 +187,12 @@ CheckCertificate() {
 		case $n in
 		1) VAR_CERT=1
 		   rm -rf /var/lib/"$VAR_DIR"/data/letsencrypt/* ;;
-		*) echo "No existing Let's Encrypt Certificate found, generate a new one... "
+		*) echo "No global Let's Encrypt Certificate found, generate a new one... "
 		   VAR_CERT=0
 		   rm -rf /var/lib/"$VAR_DIR"/data/letsencrypt/* ;;
 		esac
 	else
-		echo "No existing Let's Encrypt Certificate found, generate a new one... "
+		echo "No global Let's Encrypt Certificate found, generate a new one... "
 		VAR_CERT=0
 		rm -rf /var/lib/"$VAR_DIR"/data/letsencrypt/*
 	fi
@@ -245,12 +239,10 @@ CheckNodeHealthy() {
 	VAR_NodeHealthy=false
 	case $VAR_NODE in
 	1) VAR_API="api/v1/info"; OBJ=".data.isHealthy" ;;
-	2) VAR_API="api/v1/info"; OBJ=".data.isHealthy" ;;
+	2) VAR_API="info"; OBJ=".Version" ;;
 	3) VAR_API="info"; OBJ=".tangleTime.synced" ;;
-	4) VAR_API="info"; OBJ=".Version" ;;
 	5) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
-	6) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
-	8) VAR_API="info"; OBJ=".Version" ;;
+	6) VAR_API="info"; OBJ=".Version" ;;
 	*) ;;
 	esac
 	VAR_NodeHealthy=$(curl https://${VAR_DOMAIN}:${VAR_PORT}/${VAR_API} --http1.1 -m 3 -s -X GET -H 'Content-Type: application/json' | jq ${OBJ} 2>/dev/null)
@@ -406,12 +398,12 @@ Dashboard() {
 	if $VAR_NodeHealthy; then ih=$gn; elif [ -d /var/lib/iota-hornet ]; then ih=$rd; else ih=$gr; fi
 
 	VAR_NODE=2; VAR_NodeHealthy=false; VAR_PORT="9999"
-	if [ -f "/var/lib/iota-bee/.env" ]; then
-	  VAR_DOMAIN=$(cat /var/lib/iota-bee/.env | grep _HOST | cut -d '=' -f 2)
-	  VAR_PORT=$(cat "/var/lib/iota-bee/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
+	if [ -f "/var/lib/iota-wasp/.env" ]; then
+	  VAR_DOMAIN=$(cat /var/lib/iota-wasp/.env | grep _HOST | cut -d '=' -f 2)
+	  VAR_PORT=$(cat "/var/lib/iota-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
 	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	fi
-	if $VAR_NodeHealthy; then ib=$gn; elif [ -d /var/lib/iota-bee ]; then ib=$rd; else ib=$gr; fi
+	if ! [ "$VAR_NodeHealthy" = "false" ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ]; then iw=$rd; else iw=$gr; fi	
 
 	VAR_NODE=3; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/iota-goshimmer/.env" ]; then
@@ -421,14 +413,6 @@ Dashboard() {
 	fi
 	if $VAR_NodeHealthy; then ig=$gn; elif [ -d /var/lib/iota-goshimmer ]; then ig=$rd; else ig=$gr; fi	
 
-	VAR_NODE=4; VAR_NodeHealthy=false; VAR_PORT="9999"
-	if [ -f "/var/lib/iota-wasp/.env" ]; then
-	  VAR_DOMAIN=$(cat /var/lib/iota-wasp/.env | grep _HOST | cut -d '=' -f 2)
-	  VAR_PORT=$(cat "/var/lib/iota-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
-	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
-	fi
-	if ! [ "$VAR_NodeHealthy" = "false" ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ]; then iw=$rd; else iw=$gr; fi	
- 
 	VAR_NODE=5; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-hornet/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2)
@@ -441,22 +425,14 @@ Dashboard() {
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi	
 
 	VAR_NODE=6; VAR_NodeHealthy=false; VAR_PORT="9999"
-	if [ -f "/var/lib/shimmer-bee/.env" ]; then
-	  VAR_DOMAIN=$(cat /var/lib/shimmer-bee/.env | grep _HOST | cut -d '=' -f 2)
-	  VAR_PORT=$(cat "/var/lib/shimmer-bee/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
-	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
-	fi
-	if $VAR_NodeHealthy; then sb=$gn; elif [ -d /var/lib/shimmer-bee ]; then sb=$rd; else sb=$gr; fi	
-
-	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then wc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then wc=$or; else wc=$gr; fi
-
-	VAR_NODE=8; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-wasp/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-wasp/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/shimmer-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
 	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	fi
 	if ! [ "$VAR_NodeHealthy" = "false" ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sw=$rd; else sw=$gr; fi
+
+	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then wc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then wc=$or; else wc=$gr; fi
 
 	VAR_NODE=0
 
@@ -469,15 +445,15 @@ Dashboard() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║     IOTA Mainnet        ""$rd""End of Life""$xx""              ┌── IOTA Devnet ──┐        ║"
-	echo "╟─┬─────────────────┬─┬─────────────────┬─┬────────────────┬─┬────────────────╢"
-	echo "║1│      ""$ih""HORNET""$xx""     │2│       ""$ib""BEE""$xx""       │3│    ""$ig""GOSHIMMER""$xx""   │4│      ""$iw""WASP""$xx""      ║"
-	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
+	echo "║           ┌── IOTA Mainnet ──┐           IOTA Research                      ║"
+	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
+	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│  ""$ig""GOSHIMMER""$xx""   │ │4│      -       │ ║"
+	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
-	echo "║           ┌─────────────────── Shimmer ""$(echo "$VAR_HORNET_NETWORK" | sed 's/.*/\u&/')"" ──┬─────────────────┐        ║"
-	echo "╟─┬─────────────────┬─┬─────────────────┬─┬────────────────┬─┬────────────────╢"
-	echo "║5│      ""$sh""HORNET""$xx""     │6│        ""$sb""-""$xx""        │7│    ""$wc""WASP-CLI""$xx""    │8│      ""$sw""WASP""$xx""      ║"
-	echo "╟─┴─────────────────┴─┴─────────────────┴─┴────────────────┴─┴────────────────╢"
+	echo "║           ┌───────── Shimmer ┬ ""$(echo "$VAR_HORNET_NETWORK" | sed 's/.*/\u&/')"" ────────┐                            ║"
+	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
+	echo "║ │5│     ""$sh""HORNET""$xx""     │6│      ""$sw""WASP""$xx""      │7│   ""$wc""WASP-CLI""$xx""   │ │8│      -       │ ║"
+	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
 	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
 	echo "║                                                                             ║"
@@ -496,10 +472,8 @@ Dashboard() {
 	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
 	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/iota-bee ]; then cd /var/lib/iota-bee || Dashboard; docker compose up -d; fi
 	   if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || Dashboard; docker compose up -d; fi
 	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-bee ]; then cd /var/lib/shimmer-bee || Dashboard; docker compose up -d; fi
 	   sleep 5
 	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker compose up -d; fi
 	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker compose up -d; fi
@@ -509,16 +483,17 @@ Dashboard() {
 
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
 	   SubMenuMaintenance ;;
-	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-bee'
+	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-wasp'
 	   SubMenuMaintenance ;;
 	3) VAR_NETWORK=1; VAR_NODE=3; VAR_DIR='iota-goshimmer'
 	   SubMenuMaintenance ;;
-	4) VAR_NETWORK=1; VAR_NODE=4; VAR_DIR='iota-wasp'
-	   SubMenuMaintenance ;;
+	4) clear
+	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	   DashboardHelper ;;
 	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-hornet'
 	   SubMenuMaintenance ;;
-	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-bee'
-	   DashboardHelper ;;
+	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-wasp'
+	   SubMenuMaintenance ;;
 	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='shimmer-wasp'
 	   clear
 	   echo "$ca"
@@ -526,8 +501,9 @@ Dashboard() {
 	   echo "$xx"
 	   if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi 
 	   SubMenuWaspCLI ;;
-	8) VAR_NETWORK=2; VAR_NODE=8; VAR_DIR='shimmer-wasp'
-	   SubMenuMaintenance ;;
+	8) clear
+	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	   DashboardHelper ;;
 	e|E) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   CheckEvents ;;
@@ -671,12 +647,6 @@ SubMenuLicense() {
 
 	read -r -p '> ' n
 	case $n in
-	1) VAR_NODE=1
-	   VAR_DIR='iota-hornet'
-	   MainMenu ;;
-	2) VAR_NODE=2
-	   VAR_DIR='iota-bee'
-	   SubMenuMaintenance ;;
 	*) MainMenu ;;
 	esac
 }
@@ -715,13 +685,13 @@ SubMenuMaintenance() {
 	fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep BEE_VERSION | cut -d '=' -f 2) = $VAR_IOTA_BEE_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep BEE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_IOTA_WASP_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep BEE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_BEE_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_WASP_VERSION""$xx"
 			fi
 		else
-			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_BEE_VERSION""$xx"
+			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_WASP_VERSION""$xx"
 		fi
 	fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then
@@ -735,17 +705,6 @@ SubMenuMaintenance() {
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
 		fi
 	fi
-	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then
-		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_IOTA_WASP_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
-			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_WASP_VERSION""$xx"
-			fi
-		else
-			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_WASP_VERSION""$xx"
-		fi
-	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
 			if [ $(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_HORNET_VERSION ]; then
@@ -757,7 +716,7 @@ SubMenuMaintenance() {
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_HORNET_VERSION""$xx"
 		fi
 	fi
-	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
 			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_WASP_VERSION ]; then
 				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
@@ -776,15 +735,10 @@ SubMenuMaintenance() {
 	read -r -p '> ' n
 	case $n in
 	1) if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then IotaHornet; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
-	     echo "$rd""IotaBee End of Life (no further development) - please deinstall!""$xx";
-	     echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-	     SubMenuMaintenance	   
-	   fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then IotaWasp; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then IotaGoshimmer; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then IotaWasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then ShimmerHornet; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then ShimmerWasp; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then ShimmerWasp; fi
 	   ;;
 	2) echo '(re)starting...'; sleep 3
 	   clear
@@ -793,11 +747,10 @@ SubMenuMaintenance() {
 	   echo "$xx"
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then docker stop shimmer-wasp; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop shimmer-wasp; fi
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 	   rm -rf /var/lib/$VAR_DIR/data/peerdb/*
@@ -815,11 +768,10 @@ SubMenuMaintenance() {
 	   echo "$xx"
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-bee; fi
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then docker stop shimmer-wasp; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop shimmer-wasp; fi
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 	   sleep 3;
@@ -839,7 +791,7 @@ SubMenuMaintenance() {
 	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
 	   fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
 	   fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]
 	   then
@@ -850,8 +802,9 @@ SubMenuMaintenance() {
 	   then
 	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_HORNET_NETWORK/*
 	   fi
-
-	   rm -rf /var/lib/$VAR_DIR/data/waspdb/*
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
+	   fi
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
 
@@ -869,10 +822,6 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
-	   fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
 	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
 	   fi
@@ -950,13 +899,13 @@ SubMenuConfiguration() {
 	fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep BEE_VERSION | cut -d '=' -f 2) = $VAR_IOTA_BEE_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep BEE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_IOTA_WASP_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep BEE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_BEE_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_WASP_VERSION""$xx"
 			fi
 		else
-			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_BEE_VERSION""$xx"
+			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_WASP_VERSION""$xx"
 		fi
 	fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then
@@ -970,17 +919,6 @@ SubMenuConfiguration() {
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
 		fi
 	fi
-	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 4 ]; then
-		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_IOTA_WASP_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
-			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_WASP_VERSION""$xx"
-			fi
-		else
-			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_WASP_VERSION""$xx"
-		fi
-	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
 			if [ $(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_HORNET_VERSION ]; then
@@ -992,7 +930,7 @@ SubMenuConfiguration() {
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_HORNET_VERSION""$xx"
 		fi
 	fi
-	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 8 ]; then
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
 			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_WASP_VERSION ]; then
 				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
@@ -1089,7 +1027,7 @@ SubMenuConfiguration() {
 	   echo "$xx"
 	   
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
-	   if [ "$VAR_NODE" = 1 ] || [ "$VAR_NODE" = 2 ] || [ "$VAR_NODE" = 5 ]; then
+	   if [ "$VAR_NODE" = 1 ] || [ "$VAR_NODE" = 5 ]; then
 	      echo "Set the node alias (example: $ca""DLT.GREEN Node""$xx):"
 	      read -r -p '> ' VAR_NODE_ALIAS
 	      echo ''
@@ -1097,10 +1035,6 @@ SubMenuConfiguration() {
 		     fgrep -q "HORNET_NODE_ALIAS" .env || echo "HORNET_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
 	         if [ -f .env ]; then sed -i "s/HORNET_NODE_ALIAS=.*/HORNET_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
 		  fi
-	      if [ "$VAR_NODE" = 2 ]; then  
-		     fgrep -q "BEE_NODE_ALIAS" .env || echo "BEE_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
-	         if [ -f .env ]; then sed -i "s/BEE_NODE_ALIAS=.*/BEE_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
-		  fi	  
 		  ./prepare_docker.sh >/dev/null 2>&1
 		  echo "$gn""Node Alias of your Node successfully set""$xx"
 		  echo "$rd""Please restart your Node for the changes to take effect!""$xx"
@@ -1412,10 +1346,8 @@ SystemMaintenance() {
 	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
 	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/iota-bee ]; then cd /var/lib/iota-bee || Dashboard; docker compose up -d; fi
 	   if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || Dashboard; docker compose up -d; fi
 	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-bee ]; then cd /var/lib/shimmer-bee || Dashboard; docker compose up -d; fi
 	   sleep 5
 	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker compose up -d; fi
 	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker compose up -d; fi
@@ -1748,220 +1680,6 @@ IotaHornet() {
 		echo " IOTA-Hornet Dashboard Username: $VAR_USERNAME"
 		echo " IOTA-Hornet Dashboard Password: <set during install>"
 		echo " IOTA-Hornet API: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/api/v1/info"
-		echo "═══════════════════════════════════════════════════════════════════════════════"
-	else
-	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
-	fi
-	echo ""
-
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-
-	SubMenuMaintenance
-}
-
-IotaBee() {
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║            DLT.GREEN AUTOMATIC IOTA-BEE INSTALLATION WITH DOCKER            ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	CheckShimmer
-	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
-
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
-
-	echo "Stopping Node... $VAR_DIR"
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
-
-	echo ""
-	echo "Check Directory... /var/lib/$VAR_DIR"
-
-	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
-	cd /var/lib/$VAR_DIR || exit
-
-	echo ""
-	echo "CleanUp Directory... /var/lib/$VAR_DIR"
-
-	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
-
-	echo ""
-	echo "Download Package... install.tar.gz"
-	wget -cO - "$IotaBeePackage" -q > install.tar.gz
-
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaBeeHash" ]; then
-		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
-	else
-		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Package has been tampered, Installation aborted for your Security!'
-		echo "Downloaded Package is deleted!"
-		rm -r install.tar.gz
-		echo "$xx"; exit;
-	fi
-
-	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
-
-	echo "Unpack Package... install.tar.gz"
-	tar -xzf install.tar.gz
-
-	echo "Delete Package... install.tar.gz"
-	rm -r install.tar.gz
-
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-
-	CheckConfiguration
-
-	if [ $VAR_CONF_RESET = 1 ]; then
-
-		clear
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                               Set Parameters                                ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
-
-		echo "Set the domain name (example: $ca""vrom.dlt.green""$xx):"
-		read -r -p '> ' VAR_HOST
-		CheckDomain "$VAR_HOST"
-
-		echo ''
-		echo "Set the dashboard port (example: $ca""440""$xx):"
-		read -r -p '> ' VAR_IOTA_BEE_HTTPS_PORT
-		echo ''
-		echo "Set PoW / proof of work (example: $ca""true""$xx): "
-		read -r -p '> ' VAR_IOTA_BEE_POW
-		echo ''
-		echo "Set the dashboard username (example: $ca""vrom""$xx):"
-		read -r -p '> ' VAR_USERNAME
-		echo ''
-		echo "Set the dashboard password:"
-		echo "(information: $ca""will be saved as hash / don't leave it empty""$xx):"
-		read -r -p '> ' VAR_PASSWORD
-		echo ''
-
-		CheckCertificate
-
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                              Write Parameters                               ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
-
-		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
-		if [ -f .env ]; then rm .env; fi
-
-		echo "BEE_VERSION=$VAR_IOTA_BEE_VERSION" >> .env
-
-		echo "BEE_NETWORK=mainnet" >> .env
-
-		echo "BEE_HOST=$VAR_HOST" >> .env
-		echo "BEE_POW_ENABLED=$VAR_IOTA_BEE_POW" >> .env
-		echo "BEE_HTTPS_PORT=$VAR_IOTA_BEE_HTTPS_PORT" >> .env
-		echo "BEE_GOSSIP_PORT=15601" >> .env
-		echo "BEE_AUTOPEERING_PORT=14636" >> .env
-
-		if [ $VAR_CERT = 0 ]
-		then
-			echo "BEE_HTTP_PORT=80" >> .env
-				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
-			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
-		else
-			echo "BEE_HTTP_PORT=8082" >> .env
-			echo "SSL_CONFIG=certs" >> .env
-			echo "BEE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
-			echo "BEE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
-		fi
-	else
-		if [ -f .env ]; then sed -i "s/BEE_VERSION=.*/BEE_VERSION=$VAR_IOTA_BEE_VERSION/g" .env; fi
-		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
-	fi
-
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                                 Pull Data                                   ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	docker compose pull
-
-	if [ $VAR_CONF_RESET = 1 ]; then
-
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                               Set Creditials                                ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
-
-		credentials=$(./password.sh "$VAR_PASSWORD" | sed -e 's/\r//g')
-
-		VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-		VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-
-		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
-		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
-		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
-	fi
-
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Prepare Docker                                ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
-	./prepare_docker.sh
-
-	if [ $VAR_CONF_RESET = 1 ]; then
-
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                             Configure Firewall                              ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
-
-		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
-
-		echo ufw allow "$VAR_IOTA_BEE_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_BEE_HTTPS_PORT/tcp"
-		echo ufw allow '15601/tcp' && ufw allow '15601/tcp'
-		echo ufw allow '14636/udp' && ufw allow '14636/udp'
-	fi
-
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                                Start IOTA-Bee                               ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
-
-	docker compose up -d
-
-	sleep 3
-
-	RenameContainer
-
-	echo ""
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-
-	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
-
-	clear
-	echo ""
-
-	if [ $VAR_CONF_RESET = 1 ]; then
-
-	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
-	    echo ""
-		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " IOTA-Bee Dashboard: https://$VAR_HOST:$VAR_IOTA_BEE_HTTPS_PORT/dashboard"
-		echo " IOTA-Bee Dashboard Username: $VAR_USERNAME"
-		echo " IOTA-Bee Dashboard Password: <set during install>"
-		echo " IOTA-Bee API: https://$VAR_HOST:$VAR_IOTA_BEE_HTTPS_PORT/api/v1/info"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
@@ -3051,8 +2769,6 @@ ShimmerWasp() {
 RenameContainer() {
 	docker container rename iota-hornet_hornet_1 iota-hornet >/dev/null 2>&1
 	docker container rename iota-hornet_traefik_1 iota-hornet.traefik >/dev/null 2>&1
-	docker container rename iota-bee_bee_1 iota-bee >/dev/null 2>&1
-	docker container rename iota-bee_traefik_1 iota-bee.traefik >/dev/null 2>&1
 	docker container rename iota-goshimmer_goshimmer_1 iota-goshimmer >/dev/null 2>&1
 	docker container rename iota-goshimmer_traefik_1 iota-goshimmer.traefik >/dev/null 2>&1
 	docker container rename iota-wasp_traefik_1 iota-wasp.traefik >/dev/null 2>&1

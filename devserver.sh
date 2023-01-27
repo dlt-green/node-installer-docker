@@ -1,7 +1,7 @@
 #!/bin/bash
 BUILD_DIR=./build
 DEVSERVER_PORT=8040
-NODES="iota-hornet iota-bee iota-goshimmer wasp shimmer-hornet"
+PACKAGE_DIRS="iota-hornet iota-goshimmer iota-wasp shimmer-hornet shimmer-wasp"
 
 print_help () {
   echo "This variables must be set in .env"
@@ -37,9 +37,9 @@ prepare_test_installer () {
   sudo cp -f "${TEST_INSTALLER_DOMAIN_SSL_KEY}" "/etc/letsencrypt/live/${TEST_INSTALLER_DOMAIN}/privkey.pem"
   
   # fake iota-wasp
-  if [[ ! -f "${BUILD_DIR}/wasp_iota.tar.gz" ]]; then
-    mv "${BUILD_DIR}/wasp.tar.gz" "${BUILD_DIR}/wasp_shimmer.tar.gz"
-    curl -L -o "${BUILD_DIR}/wasp_iota.tar.gz" https://github.com/dlt-green/node-installer-docker/releases/latest/download/wasp_iota.tar.gz
+  if [[ ! -f "${BUILD_DIR}/iota-wasp.tar.gz" ]]; then
+    mv "${BUILD_DIR}/wasp.tar.gz" "${BUILD_DIR}/shimmer-wasp.tar.gz"
+    curl -L -o "${BUILD_DIR}/iota-wasp.tar.gz" https://github.com/dlt-green/node-installer-docker/releases/download/v.1.5.0/wasp_iota.tar.gz
   fi
 
   # disable auto-removing of installer script
@@ -57,12 +57,11 @@ prepare_test_installer () {
   sed -i "s/https:\/\/github.com\/dlt-green\/node-installer-docker\/releases\/download\/\$VRSN/http:\/\/localhost:8040/g" "${testInstaller}"
 
   # update checksums
-  sed -i "s/IotaBeeHash=.*/IotaBeeHash='$(shasum -a 256 ./build/iota-bee.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
   sed -i "s/IotaGoshimmerHash=.*/IotaGoshimmerHash='$(shasum -a 256 ./build/iota-goshimmer.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
   sed -i "s/IotaHornetHash=.*/IotaHornetHash='$(shasum -a 256 ./build/iota-hornet.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
-  sed -i "s/IotaWaspHash=.*/IotaWaspHash='$(shasum -a 256 ./build/wasp_iota.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
+  sed -i "s/IotaWaspHash=.*/IotaWaspHash='$(shasum -a 256 ./build/iota-wasp.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
   sed -i "s/ShimmerHornetHash=.*/ShimmerHornetHash='$(shasum -a 256 ./build/shimmer-hornet.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
-  sed -i "s/ShimmerWaspHash=.*/ShimmerWaspHash='$(shasum -a 256 ./build/wasp_shimmer.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
+  sed -i "s/ShimmerWaspHash=.*/ShimmerWaspHash='$(shasum -a 256 ./build/shimmer-wasp.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
 
   shasum -a 256 "${testInstaller}" | cut -d ' ' -f 1 > "${BUILD_DIR}/checksum.txt"
 
@@ -108,9 +107,12 @@ modifiedFile=$1
 
 if [ ! -z "${modifiedFile}" ]; then
   nodes=$(echo ${modifiedFile} | cut -d '/' -f 2)
-  if [ $nodes == "common" ]; then
-    ./build.sh --all
-  elif [[ ! ${NODES} =~ ${nodes} ]]; then
+  if [[ $nodes == "common" ]]; then
+    nodes="all"
+  elif [[ "$nodes" == "wasp" ]]; then
+    # network independent packages
+    nodes="shimmer-wasp"
+  elif [[ ! ${PACKAGE_DIRS} =~ ${nodes} ]]; then
     echo "Nothing to build for modified file: ${modifiedFile}"
     exit 0
   fi
