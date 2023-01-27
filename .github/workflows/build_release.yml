@@ -26,16 +26,8 @@ jobs:
           git config user.email github-actions[bot]@users.noreply.github.com
           git fetch --all && git pull
 
-      - name: Build packages
-        run: |
-          ./build.sh --all
-
-          # temporary fix because we use different wasp versions for iota (older) and shimmer (current)
-          mv ./build/wasp.tar.gz ./build/wasp_shimmer.tar.gz
-          curl -L -o ./build/wasp_iota.tar.gz https://github.com/dlt-green/node-installer-docker/releases/latest/download/wasp_iota.tar.gz
-
-      - name: Set version
-        id: set_version
+      - name: Get release tag name
+        id: get_release_tag_name
         run: |
           tagName='${{ github.event.ref }}'
           if [[ "$(echo ${{ github.event.ref }})" == "refs/heads/dev" ]]; then
@@ -48,25 +40,23 @@ jobs:
             # get everything behind last slash (or all if no slash present)
             tagName=${tagName##*/}
           fi
+          echo "value=$tagName" >> $GITHUB_OUTPUT
 
-          sed -i "s/^VRSN=.*/VRSN=\"$tagName\"/g" ./node-installer.sh
-          echo "tag_name=$tagName" >> $GITHUB_OUTPUT
-
-      - name: Set timestamp
-        id: set_timestamp
+      - name: Build packages
         run: |
+          ./build.sh --all --update-hash
+
+      - name: Update installer
+        id: update_installer
+        run: |
+          # set version
+          sed -i "s/^VRSN=.*/VRSN=\"${{ steps.get_release_tag_name.outputs.value }}\"/g" ./node-installer.sh
+
+          # set timestamp
           timestamp=$(TZ=CET date +%Y%m%d_%H%M%S)
           sed -i "s/^BUILD=.*/BUILD=\"$timestamp\"/g" ./node-installer.sh
 
-      - name: Generate and update hashes
-        id: generate_and_update_hashes
-        run: |
-          sed -i "s/IotaGoshimmerHash=.*/IotaGoshimmerHash='$(shasum -a 256 ./build/iota-goshimmer.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
-          sed -i "s/IotaHornetHash=.*/IotaHornetHash='$(shasum -a 256 ./build/iota-hornet.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
-          sed -i "s/IotaWaspHash=.*/IotaWaspHash='$(shasum -a 256 ./build/wasp_iota.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
-          sed -i "s/ShimmerHornetHash=.*/ShimmerHornetHash='$(shasum -a 256 ./build/shimmer-hornet.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
-          sed -i "s/ShimmerWaspHash=.*/ShimmerWaspHash='$(shasum -a 256 ./build/wasp_shimmer.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
-
+          # generate installer checksum.txt          
           shasum -a 256 ./node-installer.sh | cut -d ' ' -f 1 > ./build/checksum.txt
 
       - uses: xresloader/upload-to-github-release@v1
@@ -74,7 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           file: "node-installer.sh;build/*"
-          tag_name: ${{ steps.set_version.outputs.tag_name }}
+          tag_name: ${{ steps.get_release_tag_name.outputs.value }}
           draft: false
           prerelease: true
           overwrite: true
@@ -95,9 +85,9 @@ jobs:
         if: ${{ steps.get_release_type.outputs.value != 'ci' }}
         run: |
           if [[ '${{ steps.get_release_type.outputs.value }}' == 'release' ]]; then
-            echo "value=Release ${{ steps.set_version.outputs.tag_name }}" >> $GITHUB_OUTPUT
+            echo "value=Release ${{ steps.get_release_tag_name.outputs.value }}" >> $GITHUB_OUTPUT
           else
-            echo "value=Hotfix ${{ steps.set_version.outputs.tag_name }}" >> $GITHUB_OUTPUT
+            echo "value=Hotfix ${{ steps.get_release_tag_name.outputs.value }}" >> $GITHUB_OUTPUT
           fi
 
       - name: Commit changes on ${{ steps.get_release_type.outputs.value }} branch
@@ -106,8 +96,8 @@ jobs:
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             git add .
-            git commit -m 'Update release artifacts [${{ steps.set_version.outputs.tag_name }}] [skip actions]'
-            git push origin ${{ steps.get_release_type.outputs.value }}/${{ steps.set_version.outputs.tag_name }}
+            git commit -m 'Update release artifacts [${{ steps.get_release_tag_name.outputs.value }}] [skip actions]'
+            git push origin ${{ steps.get_release_type.outputs.value }}/${{ steps.get_release_tag_name.outputs.value }}
             echo "done=true" >> $GITHUB_OUTPUT
           else
             echo "done=false" >> $GITHUB_OUTPUT
@@ -119,14 +109,14 @@ jobs:
         if: ${{ steps.get_release_type.outputs.value != 'ci' }}
         run: |
           git checkout ${{ github.event.ref }}
-          git tag -a ${{ steps.set_version.outputs.tag_name }} -m "${{ steps.get_release_title.outputs.value }}" --force
-          git push --force origin ${{ steps.set_version.outputs.tag_name }}
+          git tag -a ${{ steps.get_release_tag_name.outputs.value }} -m "${{ steps.get_release_title.outputs.value }}" --force
+          git push --force origin ${{ steps.get_release_tag_name.outputs.value }}
 
       - name: Merge or create pull request from ${{ steps.get_release_type.outputs.value }} branch to dev branch
         id: merge_or_create_pull_request_to_dev
         if: ${{ steps.get_release_type.outputs.value != 'ci' && steps.commit_changes.outputs.done == 'true' }}
         run: |
-          message="Merge back changes from ${{ steps.get_release_type.outputs.value }}/${{ steps.set_version.outputs.tag_name }}"
+          message="Merge back changes from ${{ steps.get_release_type.outputs.value }}/${{ steps.get_release_tag_name.outputs.value }}"
 
           git checkout dev && git pull
           mergeSuccess="true"
@@ -135,13 +125,13 @@ jobs:
           if [[ "$mergeSuccess" == "true" ]]; then
             git push origin dev
           else
-            openPullRequests=$(gh pr list --base dev --head ${{ steps.get_release_type.outputs.value }}/${{ steps.set_version.outputs.tag_name }} --state open --json id -q '.[] | length')
+            openPullRequests=$(gh pr list --base dev --head ${{ steps.get_release_type.outputs.value }}/${{ steps.get_release_tag_name.outputs.value }} --state open --json id -q '.[] | length')
             if [[ "$openPullRequests" =~ ^0?$ ]]; then
               gh pr create \
                 --title "$message" \
-                --head ${{ steps.get_release_type.outputs.value }}/${{ steps.set_version.outputs.tag_name }} \
+                --head ${{ steps.get_release_type.outputs.value }}/${{ steps.get_release_tag_name.outputs.value }} \
                 --base dev \
-                --body "This PR merges ${{ steps.get_release_type.outputs.value }}/${{ steps.set_version.outputs.tag_name }} branch back into dev branch."
+                --body "This PR merges ${{ steps.get_release_type.outputs.value }}/${{ steps.get_release_tag_name.outputs.value }} branch back into dev branch."
             fi
           fi
         env:
@@ -154,7 +144,7 @@ jobs:
           echo "**Changelog**:" > CHANGELOG.md
           echo "" >> CHANGELOG.md
 
-          releasePullRequest=$(gh pr list --base main --head ${{ steps.get_release_type.outputs.value }}/${{ steps.set_version.outputs.tag_name }} --json number -q '.[].number')
+          releasePullRequest=$(gh pr list --base main --head ${{ steps.get_release_type.outputs.value }}/${{ steps.get_release_tag_name.outputs.value }} --json number -q '.[].number')
           gh pr view $releasePullRequest --json commits -q '.commits.[] | .authors.[0].email + " " + .oid + " " + .messageHeadline' | grep -v "github-actions\[bot\]" > temp.txt
           while IFS='' read -r commit || [ -n "${commit}" ]; do
             commitId=$(echo $commit | cut -d " " -f 2)
@@ -166,7 +156,7 @@ jobs:
           done < temp.txt
           rm -f temp.txt
 
-          gh release edit ${{ steps.set_version.outputs.tag_name }} -F CHANGELOG.md
+          gh release edit ${{ steps.get_release_tag_name.outputs.value }} -F CHANGELOG.md
           rm -f CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
