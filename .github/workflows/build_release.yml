@@ -64,7 +64,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           file: "node-installer.sh;build/*"
-          delete_file: "node-installer.sh;*.tar.gz;checksum.txt"
           tag_name: ${{ steps.get_release_tag_name.outputs.value }}
           draft: false
           prerelease: true
