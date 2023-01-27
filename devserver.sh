@@ -1,7 +1,7 @@
 #!/bin/bash
 BUILD_DIR=./build
 DEVSERVER_PORT=8040
-PACKAGE_DIRS="iota-hornet iota-goshimmer iota-wasp shimmer-hornet shimmer-wasp"
+PACKAGE_DIRS="iota-hornet iota-goshimmer iota-wasp shimmer-hornet shimmer-wasp pipe"
 
 print_help () {
   echo "This variables must be set in .env"
@@ -62,6 +62,7 @@ prepare_test_installer () {
   sed -i "s/IotaWaspHash=.*/IotaWaspHash='$(shasum -a 256 ./build/iota-wasp.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
   sed -i "s/ShimmerHornetHash=.*/ShimmerHornetHash='$(shasum -a 256 ./build/shimmer-hornet.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
   sed -i "s/ShimmerWaspHash=.*/ShimmerWaspHash='$(shasum -a 256 ./build/shimmer-wasp.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
+  sed -i "s/PipeHash=.*/PipeHash='$(shasum -a 256 ./build/pipe.tar.gz | cut -d ' ' -f 1)'/g" "${testInstaller}"
 
   shasum -a 256 "${testInstaller}" | cut -d ' ' -f 1 > "${BUILD_DIR}/checksum.txt"
 
