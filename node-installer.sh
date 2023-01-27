@@ -12,7 +12,6 @@ VAR_NODE=0
 VAR_CONF_RESET=0
 
 VAR_IOTA_HORNET_VERSION='1.2.2'
-VAR_IOTA_BEE_VERSION='0.3.1'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.4'
@@ -41,9 +40,6 @@ InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/relea
 
 IotaHornetHash='99af51e3b7f813da57efddfb7196e8ac21a6e52be170a5b2b122fa98c9ba4c96'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
-
-IotaBeeHash='0f7cb19201d9f20cc4446cd9352b7b0e46ea69a36552716570021247b045ffb3'
-IotaBeePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-bee.tar.gz"
 
 IotaGoshimmerHash='701a8afa551329922a8de9f4715f224a03793e8c3f532255e5f03a8394a5767d'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
