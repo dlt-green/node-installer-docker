@@ -4,7 +4,7 @@ set -e
 BUILD_DIR=./build
 EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore"
 
-NODES="iota-hornet iota-bee iota-goshimmer wasp shimmer-hornet"
+NODES="iota-hornet iota-goshimmer wasp shimmer-hornet"
 
 build_node () {
   node=$1
@@ -124,7 +124,7 @@ MainMenu() {
 }
 
 NodePackagesMenu() {
-  print_menu "all" "iota-hornet" "iota-bee" "iota-goshimmer" "shimmer-hornet" "wasp" "Back"
+  print_menu "all" "iota-hornet" "iota-goshimmer" "shimmer-hornet" "wasp" "Back"
 	read  -p '> ' n
 	case $n in
   1) print_line
@@ -137,22 +137,17 @@ NodePackagesMenu() {
      enter_to_continue
 	   NodePackagesMenu
      ;;
-	3) print_line
-     build_node "iota-bee"
-     enter_to_continue
-	   NodePackagesMenu
-     ;;
-  4) print_line
+  3) print_line
      build_node "iota-goshimmer"
      enter_to_continue
 	   NodePackagesMenu
      ;;
-  5) print_line
+  4) print_line
      build_node "shimmer-hornet"
      enter_to_continue
 	   NodePackagesMenu
      ;;
-  6) print_line
+  5) print_line
      build_node "wasp"
      enter_to_continue
 	   NodePackagesMenu

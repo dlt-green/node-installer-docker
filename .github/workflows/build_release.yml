@@ -5,14 +5,14 @@ on:
   push:
     branches:
       - dev
-      - 'feature/**'
-      - 'release/**'
-      - 'hotfix/**'
+      - "feature/**"
+      - "release/**"
+      - "hotfix/**"
 
 jobs:
   build:
     name: Build release
-    runs-on: ubuntu-latest           
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -61,7 +61,6 @@ jobs:
       - name: Generate and update hashes
         id: generate_and_update_hashes
         run: |
-          sed -i "s/IotaBeeHash=.*/IotaBeeHash='$(shasum -a 256 ./build/iota-bee.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
           sed -i "s/IotaGoshimmerHash=.*/IotaGoshimmerHash='$(shasum -a 256 ./build/iota-goshimmer.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
           sed -i "s/IotaHornetHash=.*/IotaHornetHash='$(shasum -a 256 ./build/iota-hornet.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
           sed -i "s/IotaWaspHash=.*/IotaWaspHash='$(shasum -a 256 ./build/wasp_iota.tar.gz | cut -d ' ' -f 1)'/g" ./node-installer.sh
@@ -132,7 +131,7 @@ jobs:
           git checkout dev && git pull
           mergeSuccess="true"
           git merge --no-ff -m "$message" ${{ github.event.ref }} || mergeSuccess="false"
-          
+
           if [[ "$mergeSuccess" == "true" ]]; then
             git push origin dev
           else
