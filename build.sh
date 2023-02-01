@@ -10,6 +10,10 @@ EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore, .package_fi
 NODES="iota-hornet iota-goshimmer iota-wasp shimmer-hornet shimmer-wasp"
 INSTALLER_SCRIPT="./node-installer.sh"
 
+WASP_CLI_VERSION="0.4.0-alpha.5"
+WASP_CLI_URL_X86="https://github.com/iotaledger/wasp/releases/download/v0.4.0-alpha.5/wasp-cli_${WASP_CLI_VERSION}_Linux_x86_64.tar.gz"
+WASP_CLI_URL_ARM="https://github.com/iotaledger/wasp/releases/download/v0.4.0-alpha.5/wasp-cli_${WASP_CLI_VERSION}_Linux_ARM64.tar.gz"
+
 build_node () {
   local node=$1
   local updateHash=$2
@@ -84,6 +88,47 @@ build_iota_wasp () {
   fi
 
   echo "${node}.tar.gz built successfully ${messageAddition}"
+}
+
+build_wasp_cli_image () {
+  local buildDirWaspCli=${BUILD_DIR}/wasp-cli
+
+  rm -Rf ${buildDirWaspCli}
+  for platform in "amd64" "arm64"; do
+    local url=${WASP_CLI_URL_X86}
+    if [[ "${platform}" == "arm64" ]]; then url=${WASP_CLI_URL_ARM}; fi
+
+     mkdir -p ${buildDirWaspCli}/${platform}
+    (cd ${buildDirWaspCli}/${platform}; curl -o wasp-cli.tar.gz -L ${url} && tar zxvf wasp-cli.tar.gz --strip 1 && rm -f wasp-cli.tar.gz)
+    (cd ${buildDirWaspCli}/${platform}; mkdir ./app && mv wasp-cli ./app)
+  done
+
+  echo "FROM --platform=$BUILDPLATFORM gcr.io/distroless/cc-debian11:nonroot" > ${buildDirWaspCli}/Dockerfile
+  echo "ARG TARGETARCH" >> ${buildDirWaspCli}/Dockerfile
+  echo "COPY --chown=nonroot:nonroot ./\${TARGETARCH}/app  /app" >> ${buildDirWaspCli}/Dockerfile
+  echo "WORKDIR /app" >> ${buildDirWaspCli}/Dockerfile
+  echo "USER nonroot" >> ${buildDirWaspCli}/Dockerfile
+  echo "ENTRYPOINT [\"/app/wasp-cli\"]" >> ${buildDirWaspCli}/Dockerfile
+
+  prepare_dockerx_builder
+  (cd $buildDirWaspCli; docker buildx build --builder iota-builder --platform linux/amd64,linux/arm64 -t dltgreen/wasp-cli:${WASP_CLI_VERSION} .)
+  shutdown_dockerx_builder
+  
+  rm -Rf ${buildDirWaspCli}
+}
+
+prepare_dockerx_builder () {
+  shutdown_dockerx_builder
+  sudo apt-get install -y qemu qemu-user-static
+  docker buildx create --name iota-builder
+  docker buildx use iota-builder
+  docker buildx inspect --bootstrap
+}
+
+shutdown_dockerx_builder () {
+  if [ "$(docker buildx ls | grep iota-builder)" != "" ]; then
+    docker buildx rm iota-builder
+  fi
 }
 
 verify_package_content () {
@@ -222,11 +267,12 @@ print_menu () {
 }
 
 MainMenu() {
-  print_menu "Node packages" "Build management" "Exit"
+  print_menu "Node packages" "Docker images" "Build management" "Exit"
 	read  -p '> ' n
 	case ${n} in
 	1) NodePackagesMenu ;;
-	2) BuildManagementMenu ;;
+	2) DockerImagesMenu ;;
+	3) BuildManagementMenu ;;
 	*) clear; exit ;;
 	esac
 }
@@ -264,6 +310,19 @@ NodePackagesMenu() {
      build_node "shimmer-wasp" "interactive"
      enter_to_continue
 	   NodePackagesMenu
+     ;;
+	*) MainMenu ;;
+	esac
+}
+
+DockerImagesMenu() {
+  print_menu "wasp-cli" "Back"
+	read  -p '> ' n
+	case ${n} in
+  1) print_line
+     build_wasp_cli_image
+     enter_to_continue
+	   DockerImagesMenu
      ;;
 	*) MainMenu ;;
 	esac
