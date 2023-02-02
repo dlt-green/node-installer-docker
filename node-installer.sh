@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.1.5.3"
-BUILD="20230201_201623"
+VRSN="v.1.5.4"
+BUILD="20230202_170706"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -15,7 +15,8 @@ VAR_IOTA_HORNET_VERSION='1.2.2'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.4'
-VAR_SHIMMER_WASP_VERSION='0.4.0-alpha.5'
+VAR_SHIMMER_WASP_VERSION='0.4.0-alpha.6'
+VAR_SHIMMER_WASP_CLI_VERSION='0.4.0-alpha.5'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
 VAR_INX_MQTT_VERSION='1.0-rc'
@@ -38,19 +39,19 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='d47318d88e25712a7284546c924a0528d1e6f470748c37fd576a52b9998d1764'
+IotaHornetHash='ae53751bdce9f3421da7255947cf08287946f48e866f39ead56232748a74a951'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaGoshimmerHash='1379d34299845862b9f66d9cd48cdbfb401e236eb5080f2e31992568f0b9fdd8'
+IotaGoshimmerHash='64413566e28ae6edde178e47fe6c7cce3cc71747c16b43c27f91d05a8819a0b6'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='6f5e31bb89a26487e8bec0e79036029cf166907ff074da5271f56887557f4b0a'
+ShimmerHornetHash='2a694269456efaa74ea859ae95651589b2509ab5311fd438989bf10437c056ed'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='8983f191c2bfd173dbb455790b084bb06a501eed40f6d6a4cd1b00471c74b32e'
+ShimmerWaspHash='d10e00a60b8f642768e503582a6a57c6f7fb29ed9d4f71ede73e59802215b7c6'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -2619,6 +2620,7 @@ ShimmerWasp() {
 		if [ -f .env ]; then rm .env; fi
 
 		echo "WASP_VERSION=$VAR_SHIMMER_WASP_VERSION" >> .env
+		echo "WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION" >> .env
 		echo "WASP_HOST=$VAR_HOST" >> .env
 		echo "WASP_HTTPS_PORT=$VAR_SHIMMER_WASP_HTTPS_PORT" >> .env
 		echo "WASP_API_PORT=$VAR_SHIMMER_WASP_API_PORT" >> .env
@@ -2641,6 +2643,13 @@ ShimmerWasp() {
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		VAR_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT | cut -d '=' -f 2)
+		VAR_CLI=$(cat .env 2>/dev/null | grep WASP_CLI_VERSION | cut -d '=' -f 2)
+
+		if [ -z "$VAR_CLI" ]; then
+		    echo "WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION" >> .env
+		fi
+
+		if [ -f .env ]; then sed -i "s/WASP_CLI_VERSION=.*/WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION/g" .env; fi
 
 		if [ -z "$VAR_SALT" ]; then
 		    VAR_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
