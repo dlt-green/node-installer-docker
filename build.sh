@@ -10,10 +10,6 @@ EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore, .package_fi
 NODES="iota-hornet iota-goshimmer iota-wasp shimmer-hornet shimmer-wasp"
 INSTALLER_SCRIPT="./node-installer.sh"
 
-WASP_CLI_VERSION="0.4.0-alpha.5"
-WASP_CLI_URL_X86="https://github.com/iotaledger/wasp/releases/download/v0.4.0-alpha.5/wasp-cli_${WASP_CLI_VERSION}_Linux_x86_64.tar.gz"
-WASP_CLI_URL_ARM="https://github.com/iotaledger/wasp/releases/download/v0.4.0-alpha.5/wasp-cli_${WASP_CLI_VERSION}_Linux_ARM64.tar.gz"
-
 build_node () {
   local node=$1
   local updateHash=$2
@@ -91,28 +87,37 @@ build_iota_wasp () {
 }
 
 build_wasp_cli_image () {
-  local buildDirWaspCli=${BUILD_DIR}/wasp-cli
+  local version=$1
+  local skipDockerBuilder=${2:-false}
 
+  if [[ "${version}" == "" ]]; then
+    read -p "Which version should be downloaded and built? " version
+  fi
+
+  local waspCliUrlAmd64="https://github.com/iotaledger/wasp/releases/download/v0.4.0-alpha.5/wasp-cli_${version}_Linux_x86_64.tar.gz"
+  local waspCliUrlArm64="https://github.com/iotaledger/wasp/releases/download/v0.4.0-alpha.5/wasp-cli_${version}_Linux_ARM64.tar.gz"
+
+  local buildDirWaspCli=${BUILD_DIR}/wasp-cli
   rm -Rf ${buildDirWaspCli}
   for platform in "amd64" "arm64"; do
-    local url=${WASP_CLI_URL_X86}
-    if [[ "${platform}" == "arm64" ]]; then url=${WASP_CLI_URL_ARM}; fi
+    local url=${waspCliUrlAmd64}
+    if [[ "${platform}" == "arm64" ]]; then url=${waspCliUrlArm64}; fi
 
-     mkdir -p ${buildDirWaspCli}/${platform}
+    mkdir -p ${buildDirWaspCli}/${platform}
     (cd ${buildDirWaspCli}/${platform}; curl -o wasp-cli.tar.gz -L ${url} && tar zxvf wasp-cli.tar.gz --strip 1 && rm -f wasp-cli.tar.gz)
     (cd ${buildDirWaspCli}/${platform}; mkdir ./app && mv wasp-cli ./app)
   done
 
-  echo "FROM --platform=$BUILDPLATFORM gcr.io/distroless/cc-debian11:nonroot" > ${buildDirWaspCli}/Dockerfile
+  echo "FROM gcr.io/distroless/cc-debian11:nonroot" > ${buildDirWaspCli}/Dockerfile
   echo "ARG TARGETARCH" >> ${buildDirWaspCli}/Dockerfile
   echo "COPY --chown=nonroot:nonroot ./\${TARGETARCH}/app  /app" >> ${buildDirWaspCli}/Dockerfile
   echo "WORKDIR /app" >> ${buildDirWaspCli}/Dockerfile
   echo "USER nonroot" >> ${buildDirWaspCli}/Dockerfile
   echo "ENTRYPOINT [\"/app/wasp-cli\"]" >> ${buildDirWaspCli}/Dockerfile
 
-  prepare_dockerx_builder
-  (cd $buildDirWaspCli; docker buildx build --builder iota-builder --platform linux/amd64,linux/arm64 -t dltgreen/wasp-cli:${WASP_CLI_VERSION} .)
-  shutdown_dockerx_builder
+  if [[ "${skipDockerBuilder}" != "true" ]]; then prepare_dockerx_builder; fi
+  (cd $buildDirWaspCli; docker buildx build --platform linux/amd64,linux/arm64 -t dltgreen/wasp-cli:${version} --push .)
+  if [[ "${skipDockerBuilder}" != "true" ]]; then shutdown_dockerx_builder; fi
   
   rm -Rf ${buildDirWaspCli}
 }
@@ -360,6 +365,15 @@ if [ ! $# -eq 0 ]; then
         shift
         shift
         ;;
+      --wasp-cli-image)
+        waspCliImageVersion="$2"
+        shift
+        shift
+        ;;
+      --skip-docker-builder)
+        skipDockerBuilder="true"
+        shift
+        ;;
       --all)
         nodes="all"
         shift
@@ -382,12 +396,17 @@ if [ ! $# -eq 0 ]; then
   set -- "${POSITIONAL_ARGS[@]}"
 
   if [ "${clean}" == "true" ]; then clean_build_dir; fi
+
   if [ "${nodes}" == "all" ]; then
     build_all_nodes ${updateHash:false}
   else
     for node in ${nodes//,/ }; do
-      build_node ${node} ${updateHash:false};
+      build_node ${node} ${updateHash:false}
     done
+  fi
+
+  if [[ "${waspCliImageVersion}" != "" ]]; then
+    build_wasp_cli_image ${waspCliImageVersion} ${skipDockerBuilder};
   fi
 else
   MainMenu
