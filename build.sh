@@ -94,8 +94,8 @@ build_wasp_cli_image () {
     read -p "Which version should be downloaded and built? " version
   fi
 
-  local waspCliUrlAmd64="https://github.com/iotaledger/wasp/releases/download/v0.4.0-alpha.5/wasp-cli_${version}_Linux_x86_64.tar.gz"
-  local waspCliUrlArm64="https://github.com/iotaledger/wasp/releases/download/v0.4.0-alpha.5/wasp-cli_${version}_Linux_ARM64.tar.gz"
+  local waspCliUrlAmd64="https://github.com/iotaledger/wasp/releases/download/v${version}/wasp-cli_${version}_Linux_x86_64.tar.gz"
+  local waspCliUrlArm64="https://github.com/iotaledger/wasp/releases/download/v${version}/wasp-cli_${version}_Linux_ARM64.tar.gz"
 
   local buildDirWaspCli=${BUILD_DIR}/wasp-cli
   rm -Rf ${buildDirWaspCli}
