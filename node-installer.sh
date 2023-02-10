@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.1.5.2"
-BUILD="20230127_173711"
+VRSN="v.1.5.7"
+BUILD="20230203_181845"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -39,19 +39,19 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='5cd287fa9b3e47b798fdd08b822c446f5f5866b906bb2a5d4be8d7d49895ca95'
+IotaHornetHash='2cf023f2d12c7e48d6e2f1a83d5109371871186bc98f77a87411532e51d8b4a6'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaGoshimmerHash='ffb09faa4586cfd18824b64788ebdb8cb9a5e10763e19809c5228587566f2e46'
+IotaGoshimmerHash='36bf553b72ce75411e5724b186bb5fcf4f0b9548565ea74b941be1a61356d8b9'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='256ac721330dc693f1e96ba6620280dee3b66875b610a86b404f204308ee23d8'
+ShimmerHornetHash='f75c370cd8e32d768ef1d7592077f973db74a0a8e58b1fa965b27d1f80e362cb'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='60e9fda88b3ef478ebc5138416e49120355920e46d4d61a20d32a84eb837ac39'
+ShimmerWaspHash='b81a6823c8ce83c634a00a9d087b826cd4ada34d15492eeea8677a65ce109095'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -489,7 +489,7 @@ Dashboard() {
 	3) VAR_NETWORK=1; VAR_NODE=3; VAR_DIR='iota-goshimmer'
 	   SubMenuMaintenance ;;
 	4) VAR_NETWORK=3; VAR_NODE=4; VAR_DIR='pipe'
-	   DashboardHelper ;;
+	   SubMenuMaintenance ;;
 	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-hornet'
 	   SubMenuMaintenance ;;
 	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-wasp'
