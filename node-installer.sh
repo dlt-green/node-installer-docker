@@ -2812,6 +2812,7 @@ RenameContainer() {
 	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
 	docker container rename shimmer-hornet_grafana_1 grafana >/dev/null 2>&1
 	docker container rename shimmer-hornet_prometheus_1 prometheus >/dev/null 2>&1
+	docker container rename pipe_1 pipe >/dev/null 2>&1
 }
 
 clear
