@@ -488,8 +488,7 @@ Dashboard() {
 	   SubMenuMaintenance ;;
 	3) VAR_NETWORK=1; VAR_NODE=3; VAR_DIR='iota-goshimmer'
 	   SubMenuMaintenance ;;
-	4) clear
-	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	4) VAR_NETWORK=3; VAR_NODE=4; VAR_DIR='pipe'
 	   DashboardHelper ;;
 	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-hornet'
 	   SubMenuMaintenance ;;
