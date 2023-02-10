@@ -2793,6 +2793,177 @@ ShimmerWasp() {
 	SubMenuMaintenance
 }
 
+Pipe() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║              DLT.GREEN AUTOMATIC PIPE INSTALLATION WITH DOCKER              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+
+	echo "Stopping Node... $VAR_DIR"
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
+
+	echo ""
+	echo "Check Directory... /var/lib/$VAR_DIR"
+
+	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
+	cd /var/lib/$VAR_DIR || exit
+
+	echo ""
+	echo "CleanUp Directory... /var/lib/$VAR_DIR"
+
+	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
+
+	echo ""
+	echo "Download Package... install.tar.gz"
+	wget -cO - "$PipePackage" -q > install.tar.gz
+
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerHornetHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
+
+	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
+
+	echo "Unpack Package... install.tar.gz"
+	tar -xzf install.tar.gz
+
+	echo "Delete Package... install.tar.gz"
+	rm -r install.tar.gz
+
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+
+	CheckConfiguration
+
+	if [ $VAR_CONF_RESET = 1 ]; then
+
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                               Set Parameters                                ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		VAR_PIPE_PORT=$(cat .env 2>/dev/null | grep PIPE_PORT= | cut -d '=' -f 2)
+		if [ -z "$VAR_PIPE_PORT" ]; then
+		  echo "Set node port (example: $ca""13266""$xx):"; else echo "Set node port (config: $ca""$VAR_PIPE_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_PIPE_PORT=$VAR_TMP; fi
+		echo "$gn""Set node port: $VAR_PIPE_PORT""$xx"
+
+		VAR_SEED=$(cat .env 2>/dev/null | grep PIPE_SEED | cut -d '=' -f 2)
+
+		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                              Write Parameters                               ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+		if [ -f .env ]; then rm .env; fi
+
+		echo "PIPE_VERSION=$VAR_PIPE_VERSION" >> .env
+		echo "PIPE_PORT=$VAR_PIPE_PORT" >> .env
+
+	else
+		if [ -f .env ]; then sed -i "s/PIPE_VERSION=.*/PIPE_VERSION=$VAR_PIPE_VERSION/g" .env; fi
+	fi
+
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                                 Pull Data                                   ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	docker network create pipe >/dev/null 2>&1
+	docker compose pull
+
+	if [ $VAR_CONF_RESET = 1 ]; then
+
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                               Set Creditials                                ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		if [ -n "$VAR_SEED" ]; then
+		  VAR_SEED=$(docker compose run --rm pipe --action=keygen | sed -e 's/\r//g')
+		fi
+		
+		echo "PIPE_SEED=$VAR_SEED" >> .env
+	fi
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Prepare Docker                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+	./prepare_docker.sh
+
+	if [ $VAR_CONF_RESET = 1 ]; then
+
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                             Configure Firewall                              ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		echo ufw allow "$VAR_PIPE_PORT/tcp" && ufw allow "$VAR_PIPE_PORT/tcp"
+	fi
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                                Start Hornet                                 ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+
+	docker compose up -d
+
+	sleep 3
+
+	RenameContainer
+
+	echo ""
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+
+	clear
+	echo ""
+
+	if [ $VAR_CONF_RESET = 1 ]; then
+
+		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+		echo ""
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+		echo " PIPE node-port: $VAR_PIPE_PORT"
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+		echo ""
+	else
+	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	fi
+	echo ""
+
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+
+	SubMenuMaintenance
+}
+
 RenameContainer() {
 	docker container rename iota-hornet_hornet_1 iota-hornet >/dev/null 2>&1
 	docker container rename iota-hornet_traefik_1 iota-hornet.traefik >/dev/null 2>&1
