@@ -727,6 +727,17 @@ SubMenuMaintenance() {
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
 		fi
 	fi
+	if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 4 ]; then
+		if [ -f /var/lib/$VAR_DIR/.env ]; then
+			if [ $(cat .env 2>/dev/null | grep PIPE_VERSION | cut -d '=' -f 2) = $VAR_PIPE_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep PIPE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			else
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep PIPE_VERSION | cut -d '=' -f 2)" | available: $VAR_PIPE_VERSION""$xx"
+			fi
+		else
+			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_PIPE_VERSION""$xx"
+		fi
+	fi
 	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 	echo ""
 	echo "select menu item: "
