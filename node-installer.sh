@@ -2806,7 +2806,7 @@ Pipe() {
 
 	docker login
 
-	if grep -q 'auths": {}' ~/.docker/config.json ; then exit 1; fi
+	if grep -q 'auths": {}' ~/.docker/config.json ; then dashboard; fi
 
 	echo "$xx"
 
