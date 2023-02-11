@@ -2859,8 +2859,8 @@ Pipe() {
 		if [ -n "$VAR_TMP" ]; then VAR_PIPE_PORT=$VAR_TMP; fi
 		echo "$gn""Set node port: $VAR_PIPE_PORT""$xx"
 
-		VAR_SEED=$(cat .env 2>/dev/null | grep PIPE_SEED | cut -d '=' -f 2)
-		VAR_ADDRESS=$(cat .env 2>/dev/null | grep PIPE_ADDRESS | cut -d '=' -f 2)
+		VAR_PIPE_SEED=$(cat .env 2>/dev/null | grep PIPE_SEED | cut -d '=' -f 2)
+		VAR_PIPE_ADDRESS=$(cat .env 2>/dev/null | grep PIPE_ADDRESS | cut -d '=' -f 2)
 		
 		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
@@ -2902,13 +2902,12 @@ Pipe() {
 
 		if [ -n "$VAR_SEED" ]; then
 		  credentials=$(docker compose run --rm pipe --action=keygen)
-		  echo credentials
-		  VAR_SEED=$(echo "$credentials" | grep 'Seed' | cut -d ' ' -f 2 | tr -d '\r')
-		  VAR_ADDRESS=$(echo "$credentials" | grep 'Address' | cut -d ' ' -f 2 | tr -d '\r')
+		  VAR_PIPE_SEED=$(echo "$credentials" | grep 'Seed' | cut -d ' ' -f 2 | tr -d '\r')
+		  VAR_PIPE_ADDRESS=$(echo "$credentials" | grep 'Address' | cut -d ' ' -f 2 | tr -d '\r')
 		fi
 		
-		echo "PIPE_SEED=$VAR_SEED" >> .env
-		echo "PIPE_ADDRESS=$VAR_ADDRESS" >> .env
+		echo "PIPE_SEED=$VAR_PIPE_SEED" >> .env
+		echo "PIPE_ADDRESS=$VAR_PIPE_ADDRESS" >> .env
 	fi
 
 	echo ""
@@ -2957,6 +2956,7 @@ Pipe() {
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo " PIPE node-port: $VAR_PIPE_PORT"
+		echo " PIPE address: $VAR_PIPE_ADDRESS"		
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
