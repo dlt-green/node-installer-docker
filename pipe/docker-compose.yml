@@ -18,4 +18,4 @@ services:
       - "${PIPE_DATA_DIR:-./data/storage}:/data/storage"
       - "${PIPE_DATA_DIR:-./data/node_data}:/data/node_data"
     environment:
-      - RUST_LOG=${PIPE_LOG_LEVEL:-debug}
+      - RUST_LOG=${PIPE_LOG_LEVEL:-info}
