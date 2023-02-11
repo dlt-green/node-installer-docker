@@ -2801,6 +2801,9 @@ Pipe() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
+	docker login
+	echo "$xx"
+
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 	echo "Stopping Node... $VAR_DIR"
@@ -2851,9 +2854,6 @@ Pipe() {
 		echo "║                               Set Parameters                                ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo "$ca"
-
-		docker login
-		echo "$xx"
 
 		VAR_PIPE_PORT=$(cat .env 2>/dev/null | grep PIPE_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_PIPE_PORT" ]; then
