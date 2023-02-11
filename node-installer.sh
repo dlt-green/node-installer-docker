@@ -436,9 +436,12 @@ Dashboard() {
 	  VAR_PORT=$(cat "/var/lib/shimmer-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
 	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	fi
+	
 	if ! [ "$VAR_NodeHealthy" = "false" ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sw=$rd; else sw=$gr; fi
 
 	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then wc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then wc=$or; else wc=$gr; fi
+
+	if [ "$(docker container inspect -f '{{.State.Status}}' 'pipe' 2>/dev/null)" = 'running' ]; then tg=$gn; elif [ -d /var/lib/pipe ]; then tg=$rd; else tg=$gr; fi
 
 	VAR_NODE=0
 
@@ -453,7 +456,7 @@ Dashboard() {
 	echo "║                                                                             ║"
 	echo "║           ┌── IOTA Mainnet ──┐           IOTA Research        Tanglehub     ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
-	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│  ""$ig""GOSHIMMER""$xx""   │ │4│     PIPE     │ ║"
+	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│  ""$ig""GOSHIMMER""$xx""   │ │4│     ""$tg""PIPE""$xx""     │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
 	echo "║           ┌───────── Shimmer ┬ ""$(echo "$VAR_HORNET_NETWORK" | sed 's/.*/\u&/')"" ────────┐                            ║"
