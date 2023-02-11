@@ -2852,6 +2852,8 @@ Pipe() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
+		docker login
+
 		VAR_PIPE_PORT=$(cat .env 2>/dev/null | grep PIPE_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_PIPE_PORT" ]; then
 		  echo "Set node port (example: $ca""13266""$xx):"; else echo "Set node port (config: $ca""$VAR_PIPE_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
@@ -2891,6 +2893,7 @@ Pipe() {
 
 	docker network create pipe >/dev/null 2>&1
 	docker compose pull
+	docker logout
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
