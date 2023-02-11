@@ -2804,7 +2804,18 @@ Pipe() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo "$ca"
 
-	docker login
+	VAR_AUTH=`sudo cat ~/.docker/config.json | jq -r ".auths[].auth"`
+
+	if [ -z $VAR_AUTH ]
+	then
+    	sudo docker login
+    	if [ $? -ne 0 ]
+        	then
+            	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+        	Dashboard
+    	fi
+	fi
+
 	echo "$xx"
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
