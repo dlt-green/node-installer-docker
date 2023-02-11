@@ -2806,14 +2806,7 @@ Pipe() {
 
 	VAR_AUTH=`sudo cat ~/.docker/config.json | jq -r ".auths[].auth"`
 
-	if [ -z $VAR_AUTH ]; then
-    	sudo docker login
-		echo "$fl"
-    	if [ $? -ne 0 ]; then
-            read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-        	Dashboard
-    	fi
-	fi
+	if grep -q 'auths": {}' ~/.docker/config.json ; then exit 1; fi
 
 	echo "$xx"
 
