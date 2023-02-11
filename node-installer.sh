@@ -2902,6 +2902,7 @@ Pipe() {
 
 		if [ -n "$VAR_SEED" ]; then
 		  credentials=$(docker compose run --rm pipe --action=keygen)
+		  echo credentials
 		  VAR_SEED=$(echo "$credentials" | grep 'Seed' | cut -d ' ' -f 2 | tr -d '\r')
 		  VAR_ADDRESS=$(echo "$credentials" | grep 'Address' | cut -d ' ' -f 2 | tr -d '\r')
 		fi
