@@ -272,11 +272,6 @@ NodePackagesMenu() {
      enter_to_continue
 	   NodePackagesMenu
      ;;
-  7) print_line
-     build_node "pipe"
-     enter_to_continue
-	   NodePackagesMenu
-     ;;
 	*) MainMenu ;;
 	esac
 }
