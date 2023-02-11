@@ -2860,7 +2860,7 @@ Pipe() {
 		if [ -z "$VAR_PIPE_PORT" ]; then
 		  echo "Set node port (default: $ca"$VAR_DEFAULT"$xx):"; echo "to use default value press [ENTER]:"; else echo "Set node port (config: $ca""$VAR_PIPE_PORT""$xx)"; echo "to use existing config press [ENTER]:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_PIPE_PORT=$VAR_TMP; elif [ -z "$VAR_PIPE_PORT" ]; then VAR_PIPE_PORT=$VAR_DEFAULT; fi; fi
+		if [ -n "$VAR_TMP" ]; then VAR_PIPE_PORT=$VAR_TMP; elif [ -z "$VAR_PIPE_PORT" ]; then VAR_PIPE_PORT=$VAR_DEFAULT; fi
 		echo "$gn""Set node port: $VAR_PIPE_PORT""$xx"
 
 		VAR_PIPE_SEED=$(cat .env 2>/dev/null | grep PIPE_SEED | cut -d '=' -f 2)
