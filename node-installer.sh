@@ -2821,7 +2821,7 @@ Pipe() {
 	echo "Download Package... install.tar.gz"
 	wget -cO - "$PipePackage" -q > install.tar.gz
 
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerHornetHash" ]; then
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$PipeHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
@@ -2859,8 +2859,9 @@ Pipe() {
 		if [ -n "$VAR_TMP" ]; then VAR_PIPE_PORT=$VAR_TMP; fi
 		echo "$gn""Set node port: $VAR_PIPE_PORT""$xx"
 
-		VAR_SEED=$(cat .env 2>/dev/null | grep PIPE_SEED | cut -d '=' -f 2)
-
+		VAR_PIPE_SEED=$(cat .env 2>/dev/null | grep PIPE_SEED | cut -d '=' -f 2)
+		VAR_PIPE_ADDRESS=$(cat .env 2>/dev/null | grep PIPE_ADDRESS | cut -d '=' -f 2)
+		
 		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
 		echo ""
@@ -2899,11 +2900,14 @@ Pipe() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ -n "$VAR_SEED" ]; then
-		  VAR_SEED=$(docker compose run --rm pipe --action=keygen | sed -e 's/\r//g')
+		if [ -z "$VAR_PIPE_SEED" ]; then
+		  credentials=$(docker compose run --rm pipe --action=keygen)
+		  VAR_PIPE_SEED=$(echo "$credentials" | grep 'Seed' | cut -d ' ' -f 2 | tr -d '\r')
+		  VAR_PIPE_ADDRESS=$(echo "$credentials" | grep 'Address' | cut -d ' ' -f 2 | tr -d '\r')
 		fi
 		
-		echo "PIPE_SEED=$VAR_SEED" >> .env
+		echo "PIPE_SEED=$VAR_PIPE_SEED" >> .env
+		echo "PIPE_ADDRESS=$VAR_PIPE_ADDRESS" >> .env
 	fi
 
 	echo ""
@@ -2928,7 +2932,7 @@ Pipe() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                                Start Hornet                                 ║"
+	echo "║                                 Start PIPE                                  ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -2952,6 +2956,7 @@ Pipe() {
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo " PIPE node-port: $VAR_PIPE_PORT"
+		echo " PIPE address: $VAR_PIPE_ADDRESS"		
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
