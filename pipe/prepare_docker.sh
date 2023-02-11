@@ -25,7 +25,8 @@ fi
 hostIp=$(get_host_ip)
 
 # Generate config
-cp -f $configTemplate $configPath
+rm -Rf "${configPath}"
+cp -f "${configTemplate}" "${configPath}"
 
 echo "Adapting config with values from .env..."
 sed -i "s|<seed>|${PIPE_SEED}|g" "${configPath}" && echo "  .seed: ****"
