@@ -2900,9 +2900,7 @@ Pipe() {
 		echo ""
 
 		if [ -n "$VAR_SEED" ]; then
-		  VAR_SEED=$(docker compose run --rm pipe --action=keygen)
-		  echo $ VAR_SEED
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"	  
+		  VAR_SEED=$(docker compose run --rm pipe --action=keygen | sed -e 's/\r//g')
 		fi
 		
 		echo "PIPE_SEED=$VAR_SEED" >> .env
