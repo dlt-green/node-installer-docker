@@ -2821,7 +2821,7 @@ Pipe() {
 	echo "Download Package... install.tar.gz"
 	wget -cO - "$PipePackage" -q > install.tar.gz
 
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerHornetHash" ]; then
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$PipeHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
