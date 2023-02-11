@@ -247,6 +247,11 @@ get_env_by_name () {
   echo "${!envVariableName:-$defaultValue}"
 }
 
+get_host_ip () {
+  local hostIp=$(dig @resolver1.opendns.com myip.opendns.com +short)
+  echo $hostIp
+}
+
 generate_random_string () {
   local stringLength=${1:-20}
 

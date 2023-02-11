@@ -1,5 +1,0 @@
-  <address>:
-    - connection_type: !WS true
-      data: <dns_and_port>
-    - connection_type: !WS true
-      data: <ip_and_port>

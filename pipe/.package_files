@@ -1,8 +1,6 @@
-./assets/pipe/config_template_bootstrap_override.yml
 ./assets/pipe/config_template.yml
 ./docker-compose.yml
 ./generate_seed.sh
-./get_bootstrap_param.sh
 ./prepare_docker.sh
 ./README.md
 ./scripts/prepare_docker_functions.sh

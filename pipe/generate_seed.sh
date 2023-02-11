@@ -7,8 +7,8 @@ elevate_to_root true
 scriptDir=$(dirname "${0}")
 dataDir="${PIPE_DATA_DIR:-${scriptDir}/data}"
 
-prepare_data_dir "${dataDir}" "config" "storage" &>/dev/null
-touch "${dataDir}/config/config.yml"
+prepare_data_dir "${dataDir}" "node_data" "storage" &>/dev/null
+touch "${dataDir}/config.yml"
 
 output=$(docker compose run --rm pipe --action=keygen)
 
