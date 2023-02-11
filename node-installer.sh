@@ -2804,7 +2804,7 @@ Pipe() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo "$ca"
 
-	VAR_AUTH=`sudo cat ~/.docker/config.json | jq -r ".auths[].auth"`
+	docker login
 
 	if grep -q 'auths": {}' ~/.docker/config.json ; then exit 1; fi
 
