@@ -1530,12 +1530,14 @@ IotaHornet() {
 		echo "$gn""Set dashboard port: $VAR_IOTA_HORNET_HTTPS_PORT""$xx"
 
 		echo ''
-		VAR_IOTA_HORNET_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
-		if [ -z "$VAR_IOTA_HORNET_PRUNING_SIZE" ]; then
-		  echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_IOTA_HORNET_PRUNING_SIZE""$xx)"; echo "to use existing config press [ENTER]:"; fi
-		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=$VAR_TMP; fi
+		while [ -z "$VAR_IOTA_HORNET_PRUNING_SIZE" ]; do
+		  VAR_IOTA_HORNET_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		  if [ -z "$VAR_IOTA_HORNET_PRUNING_SIZE" ]; then
+		    echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_IOTA_HORNET_PRUNING_SIZE""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		  echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		  read -r -p '> ' VAR_TMP
+		  if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=$VAR_TMP; fi
+		done
 		echo "$gn""Set pruning size: $VAR_IOTA_HORNET_PRUNING_SIZE""$xx"
 
 		echo ''
@@ -2313,12 +2315,14 @@ ShimmerHornet() {
 		echo "$gn""Set dashboard port: $VAR_SHIMMER_HORNET_HTTPS_PORT""$xx"
 
 		echo ''
-		VAR_SHIMMER_HORNET_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
-		if [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; then
-		  echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx)"; echo "to use existing config press [ENTER]:"; fi
-		echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$VAR_TMP; fi
+		while [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; do
+		  VAR_SHIMMER_HORNET_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		  if [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; then
+		    echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx)"; echo "to use existing config press [ENTER]:"; fi
+		  echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		  read -r -p '> ' VAR_TMP
+		  if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$VAR_TMP; fi
+		done
 		echo "$gn""Set pruning size: $VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx"
 
 		echo ''
