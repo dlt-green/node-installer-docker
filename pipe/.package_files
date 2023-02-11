@@ -1,0 +1,9 @@
+./assets/pipe/config_template.yml
+./docker-compose.yml
+./generate_seed.sh
+./prepare_docker.sh
+./README.md
+./scripts/prepare_docker_functions.sh
+./show_logs.sh
+./start.sh
+./stop.sh
