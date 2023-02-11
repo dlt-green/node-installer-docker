@@ -2850,9 +2850,10 @@ Pipe() {
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                               Set Parameters                                ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
+		echo "$rd"
 
 		docker login
+		echo "$xx"
 
 		VAR_PIPE_PORT=$(cat .env 2>/dev/null | grep PIPE_PORT= | cut -d '=' -f 2)
 		if [ -z "$VAR_PIPE_PORT" ]; then
