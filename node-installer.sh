@@ -1537,6 +1537,10 @@ IotaHornet() {
 		  echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 		  read -r -p '> ' VAR_TMP
 		  if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=$VAR_TMP; fi
+		  if ! [ -z "${VAR_IOTA_HORNET_PRUNING_SIZE##*B*}" ]; then
+		    VAR_IOTA_HORNET_PRUNING_SIZE=''
+		    echo "$rd""Set pruning size: Please insert with unit!"; echo "$xx"
+		  fi
 		done
 		echo "$gn""Set pruning size: $VAR_IOTA_HORNET_PRUNING_SIZE""$xx"
 
@@ -2322,6 +2326,10 @@ ShimmerHornet() {
 		  echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 		  read -r -p '> ' VAR_TMP
 		  if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$VAR_TMP; fi
+		  if ! [ -z "${VAR_SHIMMER_HORNET_PRUNING_SIZE##*B*}" ]; then
+		    VAR_SHIMMER_HORNET_PRUNING_SIZE=''
+		    echo "$rd""Set pruning size: Please insert with unit!"; echo "$xx"
+		  fi
 		done
 		echo "$gn""Set pruning size: $VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx"
 
