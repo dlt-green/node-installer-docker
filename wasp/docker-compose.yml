@@ -14,7 +14,6 @@ services:
     working_dir: /app
     user: "65532"
     ports:
-      - "${WASP_PEERING_PORT:-4000}:${WASP_PEERING_PORT:-4000}/tcp"
       - "${WASP_PEERING_PORT:-4000}:${WASP_PEERING_PORT:-4000}/udp"
       - "${WASP_NANO_MSG_PORT:-5550}:${WASP_NANO_MSG_PORT:-5550}/tcp"
     labels:
@@ -29,9 +28,9 @@ services:
       - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
 
       - "traefik.http.services.webapi.loadbalancer.server.port=9090"
-      #- "traefik.http.services.webapi.loadbalancer.healthCheck.path=/"
-      #- "traefik.http.services.webapi.loadbalancer.healthCheck.interval=10s"
-      #- "traefik.http.services.webapi.loadbalancer.healthCheck.timeout=3s"
+      - "traefik.http.services.webapi.loadbalancer.healthCheck.path=/info"
+      - "traefik.http.services.webapi.loadbalancer.healthCheck.interval=10s"
+      - "traefik.http.services.webapi.loadbalancer.healthCheck.timeout=3s"
       - "traefik.http.routers.webapi.service=webapi"
       - "traefik.http.routers.webapi.rule=Host(`${WASP_HOST:?WASP_HOST is missing}`)"
       - "traefik.http.routers.webapi.entrypoints=webapisecure"
