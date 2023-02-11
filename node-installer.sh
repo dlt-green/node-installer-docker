@@ -2900,7 +2900,7 @@ Pipe() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ -z "$VAR_SEED" ]; then
+		if [ -z "$VAR_PIPE_SEED" ]; then
 		  credentials=$(docker compose run --rm pipe --action=keygen)
 		  VAR_PIPE_SEED=$(echo "$credentials" | grep 'Seed' | cut -d ' ' -f 2 | tr -d '\r')
 		  VAR_PIPE_ADDRESS=$(echo "$credentials" | grep 'Address' | cut -d ' ' -f 2 | tr -d '\r')
