@@ -486,6 +486,8 @@ Dashboard() {
 	   sleep 5
 	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker compose up -d; fi
 	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker compose up -d; fi
+	   sleep 2
+	   if [ -d /var/lib/pipe ]; then cd /var/lib/pipe || Dashboard; docker compose up -d; fi
 	   RenameContainer
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   DashboardHelper ;;
