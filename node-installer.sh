@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VRSN="v.2.0.0"
-BUILD="20230212_221809"
+BUILD="20230213_190423"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -41,22 +41,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='f8b51d5cf036a524cb43133bef208149f25d6a8b665af6f3ec288dd00cb92832'
+IotaHornetHash='ccde3c5f87f9353ad756c547c38b66cd866f93fdac5794b9c78fb37374067734'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaGoshimmerHash='b0efdad9365b105d726d093105754ae3d2d49c4ed4eee6ff92fc3f8f318f7503'
+IotaGoshimmerHash='2c5ffd91d50d728a774ca6ca4420d8373acbb5a79df71a9e969d736e72fa9ae9'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='cc3b1c817f97494ef94a01d8aa6605b7f2403c609daf575aff8a2cfe05c404ea'
+ShimmerHornetHash='a9c6fe36be605c0a04a30ec9c58135078bf63b5adac7d37c47fbd93f21fc3281'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='8a5baf5f8242968d6521a98befc6623770593b1dff75c275e700d313a7d346ce'
+ShimmerWaspHash='38101fde37612c205eba7d656f54ebd4a5abdbaae45c64b16efda1a538d6e823'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-PipeHash='35643f81fc429b32f994d32b195db7ee83750a47199d7565cd06fef1d65adc5e'
+PipeHash='21145a30412a08c3468fb75be919de198f5cf132f4034fc68fc69b816e4adeb8'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -1621,7 +1621,9 @@ IotaHornet() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "HORNET_HTTP_PORT=80" >> .env
+			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
 			echo "HORNET_HTTP_PORT=8081" >> .env
@@ -1908,7 +1910,9 @@ IotaWasp() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "WASP_HTTP_PORT=80" >> .env
+			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
 			echo "WASP_HTTP_PORT=8084" >> .env
@@ -2129,7 +2133,9 @@ IotaGoshimmer() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "GOSHIMMER_HTTP_PORT=80" >> .env
-			read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			while [ -z "$VAR_ACME_EMAIL" ]; do
+				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
 			echo "GOSHIMMER_HTTP_PORT=8083" >> .env
@@ -2410,7 +2416,9 @@ ShimmerHornet() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "HORNET_HTTP_PORT=80" >> .env
+			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
 			echo "HORNET_HTTP_PORT=8081" >> .env
@@ -2712,7 +2720,9 @@ ShimmerWasp() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "WASP_HTTP_PORT=80" >> .env
+			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
 			echo "WASP_HTTP_PORT=8087" >> .env
