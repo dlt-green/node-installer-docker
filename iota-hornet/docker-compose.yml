@@ -20,7 +20,7 @@ services:
       - "traefik.enable=true"
 
       - "traefik.http.services.hornet.loadbalancer.server.port=8081"
-      - "traefik.http.services.hornet.loadbalancer.healthCheck.path=/api/v1/info"
+      - "traefik.http.services.hornet.loadbalancer.healthCheck.path=/dashboard"
       - "traefik.http.services.hornet.loadbalancer.healthCheck.interval=10s"
       - "traefik.http.services.hornet.loadbalancer.healthCheck.timeout=3s"
       - "traefik.http.routers.hornet.service=hornet"

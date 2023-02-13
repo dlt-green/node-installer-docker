@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.0.0"
-BUILD="20230213_205457"
+VRSN="v.2.0.1"
+BUILD="20230213_212014"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -11,7 +11,7 @@ VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
 
-VAR_IOTA_HORNET_VERSION='1.2.2'
+VAR_IOTA_HORNET_VERSION='1.2.3'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.4'
@@ -41,22 +41,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='e5526a19099330ce59a6e014fd97e883d9d5ae5159d46e33b7a64e57cc02321d'
+IotaHornetHash='a7e1ec6b7e9216039cd1f571598d0548fae3b2310c3d9c44faf275d810424802'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaGoshimmerHash='a188fb1d15f7340605cf93b4d69a0d626193cc7b68e1774679a967f75cccee1a'
+IotaGoshimmerHash='60e24122b6c6fde6d9c6b7892f4b1b944516ee4e464da96d6b837fceeb0fec8d'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='6bf292f0c1a0e1c30289c033790d6b63be86ab75457e549dc531951ecbc25ebc'
+ShimmerHornetHash='e8bafe4ca2f722b6d7228142762e74c80c21f6e8a61b446a1c1e4239b8f7a06f'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='035f7c554e2c4db85a22bc15ac31ed71d9605b3d6407caeca7553fa50071b005'
+ShimmerWaspHash='7bf37b0c5e09c1c1e77618444a15cb779d93adcc4210a142613e9284cddca78e'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-PipeHash='1f2f352594cd3b27e661164efc39f5bed133f7548b60bc2eb6780adb91700e1b'
+PipeHash='f0b4a71a371503a93745fec5a1015d62e58f415ddd906b62096eddb5b510f4d7'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
