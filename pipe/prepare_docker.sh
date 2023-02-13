@@ -21,6 +21,8 @@ if [[ -z ${PIPE_SEED} ]]; then
   exit 255
 fi
 
+create_docker_network "pipe"
+
 # Determine host IP
 hostIp=$(get_host_ip)
 
