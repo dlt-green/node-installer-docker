@@ -2874,6 +2874,10 @@ Pipe() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo "$ca"
 
+	echo "installation is currently only allowed for dlt.green testers,"
+	echo "join our discord and request login data for access"
+	echo ""
+	
 	docker login
 
 	if grep -q 'auths": {}' ~/.docker/config.json ; then 
