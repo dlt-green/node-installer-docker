@@ -1621,7 +1621,9 @@ IotaHornet() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "HORNET_HTTP_PORT=80" >> .env
+			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
 			echo "HORNET_HTTP_PORT=8081" >> .env
@@ -1908,7 +1910,9 @@ IotaWasp() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "WASP_HTTP_PORT=80" >> .env
+			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
 			echo "WASP_HTTP_PORT=8084" >> .env
@@ -2129,7 +2133,9 @@ IotaGoshimmer() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "GOSHIMMER_HTTP_PORT=80" >> .env
-			read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			while [ -z "$VAR_ACME_EMAIL" ]; do
+				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
 			echo "GOSHIMMER_HTTP_PORT=8083" >> .env
@@ -2410,7 +2416,9 @@ ShimmerHornet() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "HORNET_HTTP_PORT=80" >> .env
+			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
 			echo "HORNET_HTTP_PORT=8081" >> .env
@@ -2712,7 +2720,9 @@ ShimmerWasp() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "WASP_HTTP_PORT=80" >> .env
+			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
 			echo "WASP_HTTP_PORT=8087" >> .env
