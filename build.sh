@@ -7,7 +7,7 @@ OUTPUT_RESET='\033[0m'
 BUILD_DIR=./build
 EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore, .package_files"
 
-NODES="iota-hornet iota-goshimmer iota-wasp shimmer-hornet shimmer-wasp"
+NODES="iota-hornet iota-goshimmer iota-wasp shimmer-hornet shimmer-wasp pipe"
 INSTALLER_SCRIPT="./node-installer.sh"
 
 build_node () {
@@ -39,9 +39,11 @@ build_node () {
   if [[ "${dir}" != "${node}" ]]; then mv ${BUILD_DIR}/${dir} ${BUILD_DIR}/${node}; fi
   
   # common assets
-  mkdir -p ${BUILD_DIR}/${node}/assets
-  rsync -a ./common/assets/* ${BUILD_DIR}/${node}/assets ${rsyncExclusions}
-  find ${BUILD_DIR}/${node} -type f -name 'prepare_docker.sh' -exec sed -i '/copy_common_assets/d' {} \;
+  if [[ ! -z "$(grep "copy_common_assets" ${BUILD_DIR}/${node}/*.sh)" ]]; then
+    mkdir -p ${BUILD_DIR}/${node}/assets
+    rsync -a ./common/assets/* ${BUILD_DIR}/${node}/assets ${rsyncExclusions}
+    find ${BUILD_DIR}/${node} -type f -name 'prepare_docker.sh' -exec sed -i '/copy_common_assets/d' {} \;
+  fi
 
   # common scripts
   mkdir -p ${BUILD_DIR}/${node}/scripts
@@ -94,8 +96,8 @@ build_wasp_cli_image () {
     read -p "Which version should be downloaded and built? " version
   fi
 
-  local waspCliUrlAmd64="https://github.com/iotaledger/wasp/releases/download/v0.4.0-alpha.5/wasp-cli_${version}_Linux_x86_64.tar.gz"
-  local waspCliUrlArm64="https://github.com/iotaledger/wasp/releases/download/v0.4.0-alpha.5/wasp-cli_${version}_Linux_ARM64.tar.gz"
+  local waspCliUrlAmd64="https://github.com/iotaledger/wasp/releases/download/v${version}/wasp-cli_${version}_Linux_x86_64.tar.gz"
+  local waspCliUrlArm64="https://github.com/iotaledger/wasp/releases/download/v${version}/wasp-cli_${version}_Linux_ARM64.tar.gz"
 
   local buildDirWaspCli=${BUILD_DIR}/wasp-cli
   rm -Rf ${buildDirWaspCli}
@@ -283,7 +285,7 @@ MainMenu() {
 }
 
 NodePackagesMenu() {
-  print_menu "all" "iota-hornet" "iota-goshimmer" "iota-wasp" "shimmer-hornet" "shimmer-wasp" "Back"
+  print_menu "all" "iota-hornet" "iota-goshimmer" "iota-wasp" "shimmer-hornet" "shimmer-wasp" "pipe" "Back"
 	read  -p '> ' n
 	case ${n} in
   1) print_line
@@ -313,6 +315,11 @@ NodePackagesMenu() {
      ;;
   6) print_line
      build_node "shimmer-wasp" "interactive"
+     enter_to_continue
+	   NodePackagesMenu
+     ;;
+  7) print_line
+     build_node "pipe" "interactive"
      enter_to_continue
 	   NodePackagesMenu
      ;;

@@ -1,0 +1,26 @@
+version: '3'
+services:
+
+  pipe:
+    image: peterwilli/tanglehub-pipe-node:${PIPE_VERSION:?PIPE_VERSION is missing}
+    container_name: pipe
+    restart: unless-stopped
+    ports:
+      - "${PIPE_PORT:-13266}:${PIPE_PORT:-13266}"
+    command:
+      - "-c"
+      - "/data/config.yml"
+      - "--override-port=${PIPE_PORT:-13266}"
+      - "--override-fs-path=/data/storage"
+      - "--override-data-path=/data/node_data"
+    volumes:
+      - "${PIPE_DATA_DIR:-./data}/config.yml:/data/config.yml:ro"
+      - "${PIPE_DATA_DIR:-./data/storage}:/data/storage"
+      - "${PIPE_DATA_DIR:-./data/node_data}:/data/node_data"
+    environment:
+      - RUST_LOG=${PIPE_LOG_LEVEL:-info}
+
+networks:
+  default:
+    name: pipe
+    external: true

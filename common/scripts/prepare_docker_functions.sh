@@ -42,12 +42,14 @@ validate_ssl_config () {
 }
 
 elevate_to_root () {
-  echo "Elevating to root privileges..."
+  local quiet=$1
+
+  if [ "${quiet}" != "true" ]; then echo "Elevating to root privileges..."; fi
   if [[ "$OSTYPE" != "darwin"* && "$EUID" -ne 0 ]]; then
     sudo ELEVATED_TO_ROOT="true" "$0" "$@"
     exit $?
   else
-    echo "  root privileges already granted"
+    if [ "${quiet}" != "true" ]; then echo "  root privileges already granted"; fi
   fi
 }
 
@@ -173,6 +175,29 @@ set_config () {
   jq "$jsonPath=$value" "$configPath" > "$configPath.tmp" && mv "$configPath.tmp" "$configPath"
 }
 
+set_array_config () {
+  local configPath="$1"
+  local jsonPath="$2"
+  local values="$3"
+  local delimiter="$4"
+  local outputCfg="$5"
+
+  i=0
+  for value in $(echo $values | sed "s/$delimiter/ /g"); do
+    set_config "${configPath}" "$jsonPath[${i}]" "${value}" "$outputCfg"
+    i=$((i+1))
+  done
+}
+
+set_array_config_from_numbered_env () {
+  local configPath="$1"
+  local jsonPath="$2"
+  local pattern="$3" # string containing env name pattern with <> as placeholder for number; starting from 0
+  local outputCfg="$4"
+
+  set_array_config "${configPath}" "${jsonPath}" "$(get_numbered_env_as_csv ${pattern} ' ')" " " "${outputCfg}"
+}
+
 set_config_if_field_exists () {
   local configPath="$1"
   local jsonPath="$2"
@@ -194,10 +219,37 @@ set_config_if_present_in_env () {
   if [ ! -z "${!envVariableName}" ]; then set_config "$configPath" "$jsonPath" "${!envVariableName:-$defaultValue}" "$outputCfg"; else echo "  $jsonPath: $defaultValue (default)"; fi
 }
 
+get_numbered_env_as_csv () {
+  local pattern="$1" # string containing env name pattern with <> as placeholder for number; starting from 0
+  local delimiter="${2:-,}"
+
+  csv=""
+  i=0
+  while true; do
+    variableName=$(echo $pattern | sed "s/<>/${i}/g")
+    value=$(get_env_by_name "$variableName")
+    if [ "${value}" == "" ]; then
+      break
+    elif [ ${i} -eq 0 ]; then
+      csv="\"$value\""
+    else
+      csv="$csv$delimiter\"$value\""
+    fi
+    i=$((i+1))
+  done
+
+  echo "$csv"
+}
+
 get_env_by_name () {
   local envVariableName="$1"
   local defaultValue="$2"
   echo "${!envVariableName:-$defaultValue}"
+}
+
+get_host_ip () {
+  local hostIp=$(dig @resolver1.opendns.com myip.opendns.com +short)
+  echo $hostIp
 }
 
 generate_random_string () {
