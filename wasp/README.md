@@ -73,13 +73,13 @@ wasp-cli is delivered in a docker image. To use it execute the following steps:
 4. Try to execute `wasp-cli login` and use wasp credentials to authenticate with API
 5. Eventually run `./refresh_trusted_nodes.sh` to trust configured nodes. See `WASP_TRUSTED_NODE_* ` in the table above for further information.
 
-| Parameter                           | Description                                                                                                                                                                        |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| WASP_CLI_FAUCET_ADDRESS             | Address to faucet (fallback is docker network interal address http://inx-faucet:8091)                                                                                              |
-| WASP_CLI_COMMITTEE_\[0-9\]+_API     | WebAPI url of the node in the committee (e.g. https://host:448)                                                                                                                    |
-| WASP_CLI_COMMITTEE_\[0-9\]+_NANOMSG | Nanomsg url of the node in the committee (e.g. host:5550)                                                                                                                          |
-| WASP_CLI_COMMITTEE_\[0-9\]+_PEERING | Peering url of the node in the committee (e.g. host:4000)                                                                                                                          |
-| WASP_CLI_WALLET_SEED                | Wallet seed to be used with wasp-cli. This parameter is optional: If specified the seed will be automatically inserted in generated wasp-cli config on `prepare_cli.sh` execution. |
+| Parameter                   | Default | Description                                                                                                                                                                        |
+| --------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WASP_CLI_FAUCET_ADDRESS     |         | Address to faucet (fallback is docker network interal address http://inx-faucet:8091)                                                                                              |
+| WASP_CLI_COMMITTEE_\[0-9\]+ |         | WebAPI url of the node in the committee (e.g. https://host:448)                                                                                                                    |
+| WASP_CLI_WALLET_SEED        |         | Wallet seed to be used with wasp-cli. This parameter is optional: If specified the seed will be automatically inserted in generated wasp-cli config on `prepare_cli.sh` execution. |
+| WASP_CLI_CHAIN_NAME         | mychain | Chain name                                                                                                                                                                         |
+| WASP_CLI_CHAIN              |         | Address of chain; if missing, no chain is added to config                                                                                                                          |
 
 **Important hints:**
 - The WASP_CLI_COMMITTEE_* parameters must be numbered in ascending order and without gaps starting from 0 or 1 respectively. If committee member 0 is not configured the information of the local node is used automatically.

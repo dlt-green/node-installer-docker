@@ -52,6 +52,11 @@ rm -Rf "${configPath}" && echo "{}" > "${configPath}"
 set_config "${configPath}" ".l1.apiaddress"    "\"http://hornet:14265\""
 set_config "${configPath}" ".l1.faucetaddress" "\"${WASP_CLI_FAUCET_ADDRESS:-http://inx-faucet:8091}\""
 
+if [[ ! -z "${WASP_CLI_CHAIN}" ]]; then
+  set_config "${configPath}" ".chain" "\"${WASP_CLI_CHAIN_NAME:-mychain}\""
+  set_config "${configPath}" ".chains[\"${WASP_CLI_CHAIN_NAME:-mychain}\"]" "\"${WASP_CLI_CHAIN}\""
+fi
+
 if [ "${WASP_CLI_WALLET_SEED}" != "" ]; then
   echo -e "  ${OUTPUT_PURPLE}Using wallet seed from .env${OUTPUT_RESET}"
   set_config "${configPath}" ".wallet.seed" "\"${WASP_CLI_WALLET_SEED}\"" "suppress"
@@ -60,30 +65,19 @@ fi
 echo -e "\nConfiguring committee..."
 i=0
 while true; do
-  api=$(get_env_by_name "WASP_CLI_COMMITTEE_${i}_API")
-  nanomsg=$(get_env_by_name "WASP_CLI_COMMITTEE_${i}_NANOMSG")
-  peering=$(get_env_by_name "WASP_CLI_COMMITTEE_${i}_PEERING")
+  waspUrl=$(get_env_by_name "WASP_CLI_COMMITTEE_${i}")
 
-  if [ "${api}" == "" ]; then
+  if [ "${waspUrl}" == "" ]; then
     if [ ${i} -eq 0 ]; then
-      echo -e "  ${OUTPUT_PURPLE}Missing WASP_CLI_COMMITTEE_0_* parameters.${OUTPUT_RESET}"
-      echo -e "  ${OUTPUT_PURPLE}Defaulting to local node parameters.${OUTPUT_RESET}"
-      api="https://${WASP_HOST}:${WASP_API_PORT}"
-      nanomsg="${WASP_HOST}:${WASP_NANO_MSG_PORT}"
-      peering="${WASP_HOST}:${WASP_PEERING_PORT}"
+      echo -e "  ${OUTPUT_PURPLE}Missing WASP_CLI_COMMITTEE_0 parameter.${OUTPUT_RESET}"
+      echo -e "  ${OUTPUT_PURPLE}Defaulting to local node.${OUTPUT_RESET}"
+      waspUrl="https://${WASP_HOST}:${WASP_API_PORT}"
     else
       break
     fi
   fi
 
-  if [ "${api}" == "" ] || [ "${nanomsg}" == "" ] || [ "${peering}" == "" ]; then
-      echo -e "  ${OUTPUT_RED}Missing one of WASP_CLI_COMMITTEE_${i}_API, WASP_CLI_COMMITTEE_${i}_NANOMSG or WASP_CLI_COMMITTEE_${i}_PEERING.${OUTPUT_RESET}"
-      exit 255
-  else
-    set_config "${configPath}" ".wasp[\"${i}\"].api" "\"${api}\""
-    set_config "${configPath}" ".wasp[\"${i}\"].nanomsg" "\"${nanomsg}\""
-    set_config "${configPath}" ".wasp[\"${i}\"].peering" "\"${peering}\""
-  fi
+  set_config "${configPath}" ".wasp[\"${i}\"]" "\"${waspUrl}\""
   i=$((i+1))
 done
 
