@@ -28,7 +28,7 @@ services:
       - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
 
       - "traefik.http.services.webapi.loadbalancer.server.port=9090"
-      - "traefik.http.services.webapi.loadbalancer.healthCheck.path=/info"
+      - "traefik.http.services.webapi.loadbalancer.healthCheck.path=/health"
       - "traefik.http.services.webapi.loadbalancer.healthCheck.interval=10s"
       - "traefik.http.services.webapi.loadbalancer.healthCheck.timeout=3s"
       - "traefik.http.routers.webapi.service=webapi"
