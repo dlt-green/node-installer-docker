@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.0.5"
-BUILD="20230215_215117"
+VRSN="v.2.0.6"
+BUILD="20230215_221130"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -41,22 +41,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='3883718b09d55a1f85d0c3bf5abd876a47a66ef1ff404618636356cd31184789'
+IotaHornetHash='432cef8c88c236a9e9550adcf72e5bed462366cf58f7a07f4199040359f831e2'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaGoshimmerHash='2dd1b145731a5a8c4f8f37daf0b5500326be3041d519503a4ea5150c7c8451b0'
+IotaGoshimmerHash='624d3218a2f4a75e3fee86c4333b524982586581e3db1478a544c05dd0024af7'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='2f19a37c201985fd94d0426e7dd657fc8e6e4774f4f184cb779d13d7ab0f76a8'
+ShimmerHornetHash='a82783215c8827d5e4bc6dac51580b7d986a8320f9aecc0aeb96f4e0dd4cb831'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='7eb042374a2835cfc3d3b0030e9418e3111e693f9821f8e7e9ae42f28c1a502b'
+ShimmerWaspHash='e7f5cdf2dbb0e5f76d3c7f728862143f619a0478020de7149cdd7347ce3c4fbf'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-PipeHash='efb2698a977b436327990cf10e62c99f06ad0360d07925280f051503faa37605'
+PipeHash='1b56157a774b01dc460ea22a1f6b9bdab2570af1e65944e632059d9cc39b8610'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -3099,7 +3099,7 @@ echo "║$lg     | |_| | | |___   | |    _   | |_| | |  _ <  | |___  | |___  | |
 echo "║$lg     |____/  |_____|  |_|   (_)   \____| |_| \_\ |_____| |_____| |_| \_|     $xx║"
 echo "║                                                                             ║"
 echo "║                                                                             ║"
-echo "║                         for IOTA and SHIMMER Nodes                          ║"
+echo "║                  for IOTA/Shimmer and Tanglehub/PIPE Nodes                  ║"
 echo "║                                                                             ║"
 echo "║                                 loading...                                  ║"
 echo "║                                                                             ║"
