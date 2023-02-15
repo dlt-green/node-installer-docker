@@ -248,7 +248,7 @@ CheckNodeHealthy() {
 	2) VAR_API="info"; OBJ=".Version" ;;
 	3) VAR_API="info"; OBJ=".tangleTime.synced" ;;
 	5) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
-	6) VAR_API="info"; OBJ=".Version" ;;
+	6) VAR_API="node/version"; OBJ=".version" ;;
 	*) ;;
 	esac
 	VAR_NodeHealthy=$(curl https://${VAR_DOMAIN}:${VAR_PORT}/${VAR_API} --http1.1 -m 3 -s -X GET -H 'Content-Type: application/json' | jq ${OBJ} 2>/dev/null)
