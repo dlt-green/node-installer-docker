@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.0.3"
-BUILD="20230214_191416"
+VRSN="v.2.0.4"
+BUILD="20230215_190851"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -15,8 +15,8 @@ VAR_IOTA_HORNET_VERSION='1.2.4'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.4'
-VAR_SHIMMER_WASP_VERSION='0.4.0-alpha.8'
-VAR_SHIMMER_WASP_CLI_VERSION='0.4.0-alpha.5'
+VAR_SHIMMER_WASP_VERSION='0.5.0-alpha.6'
+VAR_SHIMMER_WASP_CLI_VERSION='0.5.0-alpha.6'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
 VAR_INX_MQTT_VERSION='1.0-rc'
@@ -41,22 +41,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='faffb5d797f116291e454aef1d91e814c71ed71d1018b7b5876a70563ba5ef2b'
+IotaHornetHash='ab176e67cb7e0d6c21ccfc9f633039c71431d8594a8bde331ab232bca19bec25'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaGoshimmerHash='6e927532d4a3a058ee69626170a445da02ea1dfc1b717e6283add6f180c2d547'
+IotaGoshimmerHash='763e3a80456b329581f178d668baba639b2493abcbe50454144f061f6ac281ff'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='99c8a685f66a1c10d44804dbd87cc473eb56850adfa9c5997cc0ac72e9942665'
+ShimmerHornetHash='6ed88a9773ee20084591a088fe3cbf71e9b075f1cb4b4d43d0dc296604cd7409'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='5f09e5e493e5c44216dd806ea7a7870ecd4107419cfeb14ba2a765c4fe0cc7da'
+ShimmerWaspHash='98d4f8606dd5df6b3a55d6aef89546ae5a554067ffacafad47eaf138d7cb739b'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-PipeHash='1c4900a902638cf83f9e3d6396175621475f6ac396b30201385daf095a684de2'
+PipeHash='a5f7f9de6545fdec387dbc74078dbbabaef70b6c3ee36e57528b921667ae57a0'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -248,7 +248,7 @@ CheckNodeHealthy() {
 	2) VAR_API="info"; OBJ=".Version" ;;
 	3) VAR_API="info"; OBJ=".tangleTime.synced" ;;
 	5) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
-	6) VAR_API="info"; OBJ=".Version" ;;
+	6) VAR_API="node/version"; OBJ=".version" ;;
 	*) ;;
 	esac
 	VAR_NodeHealthy=$(curl https://${VAR_DOMAIN}:${VAR_PORT}/${VAR_API} --http1.1 -m 3 -s -X GET -H 'Content-Type: application/json' | jq ${OBJ} 2>/dev/null)
