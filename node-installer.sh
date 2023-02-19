@@ -16,6 +16,7 @@ VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.4'
 VAR_SHIMMER_WASP_VERSION='0.5.0-alpha.8'
+VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.3'
 VAR_SHIMMER_WASP_CLI_VERSION='0.5.0-alpha.8'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
@@ -2709,6 +2710,7 @@ ShimmerWasp() {
 		if [ -f .env ]; then rm .env; fi
 
 		echo "WASP_VERSION=$VAR_SHIMMER_WASP_VERSION" >> .env
+		echo "WASP_DASHBOARD_VERSION=$VAR_SHIMMER_WASP_DASHBOARD_VERSION" >> .env
 		echo "WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION" >> .env
 		echo "WASP_HOST=$VAR_HOST" >> .env
 		echo "WASP_HTTPS_PORT=$VAR_SHIMMER_WASP_HTTPS_PORT" >> .env
@@ -2733,14 +2735,20 @@ ShimmerWasp() {
 	else
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
+		VAR_DASHBOARD_VERSION=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		VAR_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT | cut -d '=' -f 2)
 		VAR_CLI=$(cat .env 2>/dev/null | grep WASP_CLI_VERSION | cut -d '=' -f 2)
+
+		if [ -z "$VAR_DASHBOARD_VERSION" ]; then
+		    echo "WASP_DASHBOARD_VERSION=$VAR_SHIMMER_WASP_DASHBOARD_VERSION" >> .env
+		fi
 
 		if [ -z "$VAR_CLI" ]; then
 		    echo "WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION" >> .env
 		fi
 
 		if [ -f .env ]; then sed -i "s/WASP_CLI_VERSION=.*/WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/WASP_DASHBOARD_VERSION=.*/WASP_DASHBOARD_VERSION=$VAR_SHIMMER_WASP_DASHBOARD_VERSION/g" .env; fi
 
 		if [ -z "$VAR_SALT" ]; then
 		    VAR_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
