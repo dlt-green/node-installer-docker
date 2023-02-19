@@ -21,17 +21,11 @@ services:
       - "proxy.constraint=wasp"
       - "traefik.enable=true"
 
-      - "traefik.http.services.dashboard.loadbalancer.server.port=7000"
-      - "traefik.http.routers.dashboard.service=dashboard"
-      - "traefik.http.routers.dashboard.rule=Host(`${WASP_HOST:?WASP_HOST is missing}`)"
-      - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.tls=true"
-      - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
-
       - "traefik.http.services.webapi.loadbalancer.server.port=9090"
       - "traefik.http.services.webapi.loadbalancer.healthCheck.path=/health"
       - "traefik.http.services.webapi.loadbalancer.healthCheck.interval=10s"
       - "traefik.http.services.webapi.loadbalancer.healthCheck.timeout=3s"
+
       - "traefik.http.routers.webapi.service=webapi"
       - "traefik.http.routers.webapi.rule=Host(`${WASP_HOST:?WASP_HOST is missing}`)"
       - "traefik.http.routers.webapi.entrypoints=webapisecure"
@@ -54,7 +48,51 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "500m"
+        max-size: "100m"
+
+  wasp-dashboard:
+    image: iotaledger/wasp-dashboard:${WASP_DASHBOARD_VERSION:?WASP_DASHBOARD_VERSION is missing}
+    container_name: ${WASP_LEDGER_NETWORK:?WASP_LEDGER_NETWORK is missing}-wasp.dashboard
+    stop_grace_period: 1m
+    restart: unless-stopped
+    depends_on:
+      wasp:
+        condition: service_started
+    labels:
+      - "proxy.constraint=wasp"
+      - "traefik.enable=true"
+
+      - "traefik.http.services.dashboard.loadbalancer.server.port=80"
+
+      # redirect requests to '/' to '/wasp/dashboard'
+      - "traefik.http.routers.dashboard-redirect.service=dashboard"
+      - "traefik.http.routers.dashboard-redirect.rule=Host(`${WASP_HOST:?WASP_HOST is missing}`) && Path(`/`)"
+      - "traefik.http.routers.dashboard-redirect.entrypoints=websecure"
+      - "traefik.http.routers.dashboard-redirect.tls=true"
+      - "traefik.http.routers.dashboard-redirect.tls.certresolver=myresolver"
+      - "traefik.http.routers.dashboard-redirect.middlewares=dashboard-redirect"
+      - "traefik.http.middlewares.dashboard-redirect.redirectregex.regex=.*"
+      - "traefik.http.middlewares.dashboard-redirect.redirectregex.replacement=https://${WASP_HOST:?WASP_HOST is missing}:${WASP_HTTPS_PORT:-447}/wasp/dashboard"
+
+      # handle requests to '/wasp/dashboard'
+      - "traefik.http.routers.dashboard.service=dashboard"
+      - "traefik.http.routers.dashboard.rule=Host(`${WASP_HOST:?WASP_HOST is missing}`) && (Path(`/wasp/dashboard`) || PathPrefix(`/wasp/dashboard/`))"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
+      - "traefik.http.routers.dashboard.middlewares=rewrite-wasp-dashboard,cors-headers"
+      - "traefik.http.middlewares.rewrite-wasp-dashboard.stripprefix.prefixes=/wasp/dashboard"
+      - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.cors-headers.headers.accesscontrolalloworiginlist=https://${WASP_HOST:?WASP_HOST is missing}:${WASP_API_PORT:-448}"
+      - "traefik.http.middlewares.cors-headers.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.cors-headers.headers.addvaryheader=true"
+    environment:
+      - WASP_API_URL=https://${WASP_HOST:?WASP_HOST is missing}:${WASP_API_PORT:-448}
+      - L1_API_URL=http://hornet:9029
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
 
   ##################################################################
   #  Reverse Proxy and SSL                                         #
@@ -77,6 +115,7 @@ services:
       - "--entrypoints.web.transport.respondingTimeouts.writeTimeout=10"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.transport.respondingTimeouts.readTimeout=10"
       - "--entrypoints.websecure.transport.respondingTimeouts.writeTimeout=10"
@@ -99,7 +138,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "200m"
+        max-size: "100m"
 
 networks:
   default:
