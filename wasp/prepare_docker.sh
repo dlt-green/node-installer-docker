@@ -28,7 +28,7 @@ prepare_data_dir "${dataDir}" "config" "waspdb"
 create_docker_network "${WASP_LEDGER_NETWORK}"
 
 # Generate config
-cp assets/wasp/docker_config.yml "${configPath}"
+cp assets/wasp/docker_config.json "${configPath}"
 
 echo "Adapting config with values from .env..."
 sed -i 's|"waspdb/|"/app/waspdb/|g' "${configPath}"

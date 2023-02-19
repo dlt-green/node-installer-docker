@@ -1,4 +1,5 @@
 .env
 build
 data
-assets
+*/assets/traefik/certs
+*/assets/traefik/tls_config.yml
