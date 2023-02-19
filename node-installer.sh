@@ -1223,7 +1223,7 @@ SubMenuWaspCLI() {
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then
 		     VAR_WASP_CLI_PUBKEY=$(./wasp-cli-wrapper.sh peering info | grep PubKey | tr -s ' ' | cut -d ' ' -f 2)
-		     VAR_WASP_CLI_PEERING_URL=$(./wasp-cli-wrapper.sh peering info | grep peeringURL | tr -s ' ' | cut -d ' ' -f 2)
+		     VAR_WASP_CLI_PEERING_URL=$(./wasp-cli-wrapper.sh peering info | grep PeeringURL | tr -s ' ' | cut -d ' ' -f 2)
 
 			echo "PubKey:     " $VAR_WASP_CLI_PUBKEY
 			echo "PeeringURL: " $VAR_WASP_CLI_PEERING_URL
