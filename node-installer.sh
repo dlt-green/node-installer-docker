@@ -1223,10 +1223,10 @@ SubMenuWaspCLI() {
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then
 		     VAR_WASP_CLI_PUBKEY=$(./wasp-cli-wrapper.sh peering info | grep PubKey | tr -s ' ' | cut -d ' ' -f 2)
-		     VAR_WASP_CLI_NETID=$(./wasp-cli-wrapper.sh peering info | grep NetID | tr -s ' ' | cut -d ' ' -f 2)
+		     VAR_WASP_CLI_PEERING_URL=$(./wasp-cli-wrapper.sh peering info | grep peeringURL | tr -s ' ' | cut -d ' ' -f 2)
 
-			echo "PubKey:   " $VAR_WASP_CLI_PUBKEY
-			echo "NetID:    " $VAR_WASP_CLI_NETID
+			echo "PubKey:     " $VAR_WASP_CLI_PUBKEY
+			echo "PeeringURL: " $VAR_WASP_CLI_PEERING_URL
 			
 		  else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	  else
