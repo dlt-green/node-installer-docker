@@ -28,7 +28,7 @@ prepare_data_dir "${dataDir}" "config" "waspdb"
 create_docker_network "${WASP_LEDGER_NETWORK}"
 
 # Generate config
-cp assets/wasp/docker_config.yml "${configPath}"
+cp assets/wasp/docker_config.json "${configPath}"
 
 echo "Adapting config with values from .env..."
 sed -i 's|"waspdb/|"/app/waspdb/|g' "${configPath}"
@@ -40,7 +40,6 @@ set_config "${configPath}" ".peering.netID"                 "\"${WASP_HOST}:${WA
 set_config "${configPath}" ".webapi.auth.scheme"            "\"${WASP_WEBAPI_AUTH_SCHEME:-jwt}\""
 set_config "${configPath}" ".webapi.auth.jwt.duration"      "\"${WASP_JWT_DURATION:-24h}\""
 set_config "${configPath}" ".webapi.auth.basic.username"    "\"${DASHBOARD_USERNAME:-wasp}\""
-#set_config "${configPath}" ".webapi.ip.whitelist"           "..." # TODO
 set_config "${configPath}" ".nanomsg.port"                  "${WASP_NANO_MSG_PORT:-5550}"
 set_config "${configPath}" ".dashboard.auth.scheme"         "\"${WASP_DASHBOARD_AUTH_SCHEME:-basic}\""
 set_config "${configPath}" ".dashboard.auth.basic.username" "\"${DASHBOARD_USERNAME:-wasp}\""
@@ -50,6 +49,6 @@ echo "Configure users defined in .env..."
 echo "{}" > "${usersConfigPath}"
 set_config "${usersConfigPath}" ".users.users[\"${DASHBOARD_USERNAME:-wasp}\"].passwordHash" "\"${DASHBOARD_PASSWORD}\"" "secret"
 set_config "${usersConfigPath}" ".users.users[\"${DASHBOARD_USERNAME:-wasp}\"].passwordSalt" "\"${DASHBOARD_SALT}\"" "secret"
-set_config "${usersConfigPath}" ".users.users[\"${DASHBOARD_USERNAME:-wasp}\"].permissions"  "[\"dashboard\", \"api\", \"chain.read\", \"chain.write\"]"
+set_config "${usersConfigPath}" ".users.users[\"${DASHBOARD_USERNAME:-wasp}\"].permissions"  "[\"write\"]"
 
 echo "Finished"
