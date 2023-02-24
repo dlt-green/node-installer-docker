@@ -69,9 +69,7 @@ services:
       - "traefik.http.routers.dashboard-redirect.entrypoints=websecure"
       - "traefik.http.routers.dashboard-redirect.tls=true"
       - "traefik.http.routers.dashboard-redirect.tls.certresolver=myresolver"
-      - "traefik.http.routers.dashboard-redirect.middlewares=dashboard-redirect"
-      - "traefik.http.middlewares.dashboard-redirect.redirectregex.regex=.*"
-      - "traefik.http.middlewares.dashboard-redirect.redirectregex.replacement=https://${WASP_HOST:?WASP_HOST is missing}:${WASP_HTTPS_PORT:-447}/wasp/dashboard"
+      - "traefik.http.routers.dashboard-redirect.middlewares=security-headers,dashboard-redirect"
 
       # handle requests to '/wasp/dashboard'
       - "traefik.http.routers.dashboard.service=dashboard"
@@ -79,9 +77,14 @@ services:
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.tls=true"
       - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
+      - "traefik.http.routers.dashboard.middlewares=security-headers,rewrite-wasp-dashboard"
 
-      - "traefik.http.routers.dashboard.middlewares=rewrite-wasp-dashboard,security-headers"
+      # middlewares
+      - "traefik.http.middlewares.dashboard-redirect.redirectregex.regex=.*"
+      - "traefik.http.middlewares.dashboard-redirect.redirectregex.replacement=https://${WASP_HOST:?WASP_HOST is missing}:${WASP_HTTPS_PORT:-447}/wasp/dashboard"
+
       - "traefik.http.middlewares.rewrite-wasp-dashboard.stripprefix.prefixes=/wasp/dashboard"
+
       - "traefik.http.middlewares.security-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
       - "traefik.http.middlewares.security-headers.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${WASP_HOST:?WASP_HOST is missing}:${WASP_HTTPS_PORT:-447}"
       - "traefik.http.middlewares.security-headers.headers.accesscontrolmaxage=100"
