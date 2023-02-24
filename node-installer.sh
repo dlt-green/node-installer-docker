@@ -15,9 +15,9 @@ VAR_IOTA_HORNET_VERSION='1.2.4'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.4'
-VAR_SHIMMER_WASP_VERSION='0.5.0-alpha.8'
+VAR_SHIMMER_WASP_VERSION='0.5.0-alpha.11'
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.3'
-VAR_SHIMMER_WASP_CLI_VERSION='0.5.0-alpha.8'
+VAR_SHIMMER_WASP_CLI_VERSION='0.5.0-alpha.11'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
 VAR_INX_MQTT_VERSION='1.0-rc'
@@ -2763,9 +2763,10 @@ ShimmerWasp() {
 			if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		fi
 
-		$VAR_SHIMMER_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT | cut -d '=' -f 2)
+		VAR_SHIMMER_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT | cut -d '=' -f 2)
 		WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT)
-		if [ -n "$WASP_NANO_MSG_PORT" ]; then grep -v $WASP_NANO_MSG_PORT .env > tmp.env; mv tmp.env .env; fi
+		if [ -n "$WASP_NANO_MSG_PORT" ]; then grep -v "$WASP_NANO_MSG_PORT" .env > tmp.env; mv tmp.env .env; fi
+		DeleteFirewallPort "$VAR_SHIMMER_WASP_NANO_MSG_PORT"
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -2824,8 +2825,6 @@ ShimmerWasp() {
 		echo ufw allow "$VAR_SHIMMER_WASP_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_HTTPS_PORT/tcp"
 		echo ufw allow "$VAR_SHIMMER_WASP_API_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_API_PORT/tcp"
 		echo ufw allow "$VAR_SHIMMER_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_PEERING_PORT/tcp"
-		echo ufw allow "$VAR_SHIMMER_WASP_NANO_MSG_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_NANO_MSG_PORT/tcp"
-		DeleteFirewallPort "$VAR_SHIMMER_WASP_NANO_MSG_PORT"
 	fi
 
 	echo ""
@@ -3122,6 +3121,7 @@ sleep 3
 sudo apt-get install curl jq expect dnsutils ufw -y -qq >/dev/null 2>&1
 
 CheckFirewall
+DeleteFirewallPort "440"
 
 docker --version | grep "Docker version" >/dev/null 2>&1
 if [ $? -eq 0 ]
