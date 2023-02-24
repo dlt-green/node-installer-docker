@@ -2660,15 +2660,6 @@ ShimmerWasp() {
 		echo "$gn""Set peering port: $VAR_SHIMMER_WASP_PEERING_PORT""$xx"
 
 		echo ''
-		VAR_SHIMMER_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT= | cut -d '=' -f 2)
-		VAR_DEFAULT='5550';
-		if [ -z "$VAR_SHIMMER_WASP_NANO_MSG_PORT" ]; then
-		  echo "Set nano-msg-port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set nano-msg-port (config: $ca""$VAR_SHIMMER_WASP_NANO_MSG_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_NANO_MSG_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_WASP_NANO_MSG_PORT" ]; then VAR_SHIMMER_WASP_NANO_MSG_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set nano-msg-port: $VAR_SHIMMER_WASP_NANO_MSG_PORT""$xx"
-
-		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-10} | head -n 1 | tr '[:upper:]' '[:lower:]');
 		if [ -z "$VAR_USERNAME" ]; then
@@ -2716,7 +2707,6 @@ ShimmerWasp() {
 		echo "WASP_HTTPS_PORT=$VAR_SHIMMER_WASP_HTTPS_PORT" >> .env
 		echo "WASP_API_PORT=$VAR_SHIMMER_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_SHIMMER_WASP_PEERING_PORT" >> .env
-		echo "WASP_NANO_MSG_PORT=$VAR_SHIMMER_WASP_NANO_MSG_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 
 		if [ $VAR_CERT = 0 ]
@@ -2768,6 +2758,10 @@ ShimmerWasp() {
 			fi
 			if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		fi
+
+		$VAR_SHIMMER_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT | cut -d '=' -f 2)
+		WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT)
+		if [ -n "$WASP_NANO_MSG_PORT" ]; then grep -v $WASP_NANO_MSG_PORT .env > tmp.env; mv tmp.env .env; fi
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -2827,6 +2821,7 @@ ShimmerWasp() {
 		echo ufw allow "$VAR_SHIMMER_WASP_API_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_API_PORT/tcp"
 		echo ufw allow "$VAR_SHIMMER_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_PEERING_PORT/tcp"
 		echo ufw allow "$VAR_SHIMMER_WASP_NANO_MSG_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_NANO_MSG_PORT/tcp"
+		DeleteFirewallPort "$VAR_SHIMMER_WASP_NANO_MSG_PORT"
 	fi
 
 	echo ""
@@ -2861,7 +2856,6 @@ ShimmerWasp() {
 		echo " SHIMMER-Wasp Dashboard Password: <set during install>"
 		echo " SHIMMER-Wasp API: https://$VAR_HOST:$VAR_SHIMMER_WASP_API_PORT/info"
 		echo " SHIMMER-Wasp peering: $VAR_HOST:$VAR_SHIMMER_WASP_PEERING_PORT"
-		echo " SHIMMER-Wasp nano-msg: $VAR_HOST:$VAR_SHIMMER_WASP_NANO_MSG_PORT"
 		echo " SHIMMER-Wasp ledger-connection/txstream: local to Shimmer-Hornet"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
