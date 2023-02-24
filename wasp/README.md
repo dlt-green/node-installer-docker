@@ -25,7 +25,6 @@ WASP_HOST=node.your-domain.com
 # WASP_HTTPS_PORT=443
 # WASP_API_PORT=448
 # WASP_PEERING_PORT=4000
-# WASP_NANO_MSG_PORT=5550
 # WASP_DATA_DIR=<absolute path to data dir>
 # WASP_IDENTITY_PRIVATE_KEY=<optional>
 
@@ -53,7 +52,6 @@ DASHBOARD_SALT=<password salt>
 | WASP_HTTPS_PORT                   |           |     443     | HTTPS port to access dashboard                                                                                                                                                                                     |
 | WASP_API_PORT                     |           |     448     | HTTPS port to access webapi                                                                                                                                                                                        |
 | WASP_PEERING_PORT                 |           |    4000     | Peering port                                                                                                                                                                                                       |
-| WASP_NANO_MSG_PORT                |           |    5550     | nano MSG port                                                                                                                                                                                                      |
 | WASP_DATA_DIR                     |           |    .data    | Directory containing configuration, database etc.                                                                                                                                                                  |
 | WASP_IDENTITY_PRIVATE_KEY         |           |             | Private key used to derive the node identity                                                                                                                                                                       |
 | DASHBOARD_USERNAME                |           |    wasp     | Username to access dashboard                                                                                                                                                                                       |
