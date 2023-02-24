@@ -70,7 +70,7 @@
   },
   "wal": {
     "enabled": true,
-    "directory": "wal"
+    "path": "waspdb/wal"
   },
   "profiling": {
     "enabled": false,
@@ -115,9 +115,5 @@
       "maxBodyLength": "2M"
     },
     "debugRequestLoggerEnabled": false
-  },
-  "nanomsg": {
-    "enabled": true,
-    "port": 5550
   }
 }

@@ -16,7 +16,6 @@ services:
     ports:
       - "${WASP_PEERING_PORT:-4000}:${WASP_PEERING_PORT:-4000}/tcp"
       - "${WASP_PEERING_PORT:-4000}:${WASP_PEERING_PORT:-4000}/udp"
-      - "${WASP_NANO_MSG_PORT:-5550}:${WASP_NANO_MSG_PORT:-5550}/tcp"
     labels:
       - "proxy.constraint=wasp"
       - "traefik.enable=true"

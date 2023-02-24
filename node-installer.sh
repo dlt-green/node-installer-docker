@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.1.0"
-BUILD="20230219_191007"
+VRSN="v.2.1.1"
+BUILD="20230224_102928"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -15,9 +15,9 @@ VAR_IOTA_HORNET_VERSION='1.2.4'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.4'
-VAR_SHIMMER_WASP_VERSION='0.5.0-alpha.8'
+VAR_SHIMMER_WASP_VERSION='0.5.0-alpha.11'
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.3'
-VAR_SHIMMER_WASP_CLI_VERSION='0.5.0-alpha.8'
+VAR_SHIMMER_WASP_CLI_VERSION='0.5.0-alpha.11'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
 VAR_INX_MQTT_VERSION='1.0-rc'
@@ -42,22 +42,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='69cdd08619739e632bbf650db4e2d16ba1c6f95609ef63674ce4bc91f5d86dc1'
+IotaHornetHash='007a1143eea5b5da30af43b19abdd5418b9f46d2b63f42844710649947961ccf'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaGoshimmerHash='02b867ac0c98441fb38363b3f0adb06c150319c6eb2cb048418c582aae2a92b4'
+IotaGoshimmerHash='18ef6d53acc790be3fd208ebeeb59696ad7b92829bf600409abb392c2d3fa096'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='31b5a5029ae312997a7b4d51caea2d5cf1b977821fd0791dcbb30ba45640e908'
+ShimmerHornetHash='0ce640dd39f711386a155ccbd8a0408ec429c795af6bfedfe47993690f07a83a'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='e48f695cebaf957d2dc5b2f6ff7d2b51bdcecd1c86d31c8044f29484dad2b9c1'
+ShimmerWaspHash='bcf4c40952a8c255cf02d1a76795d5f16976b12ea0e2d16734dd22af9d5dd24e'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-PipeHash='574448fc031d1dd113000d3de761f398dc6aee9ac3f7c4a1aa739dc08fd63cce'
+PipeHash='4d39ef984186500e91faf2341eda4b2a43d8346b91eb5d011de145cc8b188ec3'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -147,6 +147,10 @@ CheckFirewall() {
 			 ;;
 		esac
 	fi
+}
+
+DeleteFirewallPort() {
+	while true; do n=$(ufw status numbered | grep "$1" | head -n 1 | awk -F"[][]" '{print $2}');[ "$n" != "" ] || break; yes | ufw delete $n; done;
 }
 
 CheckDomain() {
@@ -2660,15 +2664,6 @@ ShimmerWasp() {
 		echo "$gn""Set peering port: $VAR_SHIMMER_WASP_PEERING_PORT""$xx"
 
 		echo ''
-		VAR_SHIMMER_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT= | cut -d '=' -f 2)
-		VAR_DEFAULT='5550';
-		if [ -z "$VAR_SHIMMER_WASP_NANO_MSG_PORT" ]; then
-		  echo "Set nano-msg-port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set nano-msg-port (config: $ca""$VAR_SHIMMER_WASP_NANO_MSG_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_NANO_MSG_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_WASP_NANO_MSG_PORT" ]; then VAR_SHIMMER_WASP_NANO_MSG_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set nano-msg-port: $VAR_SHIMMER_WASP_NANO_MSG_PORT""$xx"
-
-		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-10} | head -n 1 | tr '[:upper:]' '[:lower:]');
 		if [ -z "$VAR_USERNAME" ]; then
@@ -2716,7 +2711,6 @@ ShimmerWasp() {
 		echo "WASP_HTTPS_PORT=$VAR_SHIMMER_WASP_HTTPS_PORT" >> .env
 		echo "WASP_API_PORT=$VAR_SHIMMER_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_SHIMMER_WASP_PEERING_PORT" >> .env
-		echo "WASP_NANO_MSG_PORT=$VAR_SHIMMER_WASP_NANO_MSG_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 
 		if [ $VAR_CERT = 0 ]
@@ -2768,6 +2762,11 @@ ShimmerWasp() {
 			fi
 			if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		fi
+
+		VAR_SHIMMER_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT | cut -d '=' -f 2)
+		WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT)
+		if [ -n "$WASP_NANO_MSG_PORT" ]; then grep -v "$WASP_NANO_MSG_PORT" .env > tmp.env; mv tmp.env .env; fi
+		DeleteFirewallPort "$VAR_SHIMMER_WASP_NANO_MSG_PORT"
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -2826,7 +2825,6 @@ ShimmerWasp() {
 		echo ufw allow "$VAR_SHIMMER_WASP_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_HTTPS_PORT/tcp"
 		echo ufw allow "$VAR_SHIMMER_WASP_API_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_API_PORT/tcp"
 		echo ufw allow "$VAR_SHIMMER_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_PEERING_PORT/tcp"
-		echo ufw allow "$VAR_SHIMMER_WASP_NANO_MSG_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_NANO_MSG_PORT/tcp"
 	fi
 
 	echo ""
@@ -2861,7 +2859,6 @@ ShimmerWasp() {
 		echo " SHIMMER-Wasp Dashboard Password: <set during install>"
 		echo " SHIMMER-Wasp API: https://$VAR_HOST:$VAR_SHIMMER_WASP_API_PORT/info"
 		echo " SHIMMER-Wasp peering: $VAR_HOST:$VAR_SHIMMER_WASP_PEERING_PORT"
-		echo " SHIMMER-Wasp nano-msg: $VAR_HOST:$VAR_SHIMMER_WASP_NANO_MSG_PORT"
 		echo " SHIMMER-Wasp ledger-connection/txstream: local to Shimmer-Hornet"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
@@ -3124,6 +3121,7 @@ sleep 3
 sudo apt-get install curl jq expect dnsutils ufw -y -qq >/dev/null 2>&1
 
 CheckFirewall
+DeleteFirewallPort "440"
 
 docker --version | grep "Docker version" >/dev/null 2>&1
 if [ $? -eq 0 ]
