@@ -149,6 +149,10 @@ CheckFirewall() {
 	fi
 }
 
+DeleteFirewallPort() {
+	while true; do n=$(ufw status numbered | grep "$1" | head -n 1 | awk -F"[][]" '{print $2}');[ "$n" != "" ] || break; yes | ufw delete $n; done;
+}
+
 CheckDomain() {
 	if [ "$(dig +short "$1")" != "$(curl -s 'https://ipinfo.io/ip')" ]
 	then
