@@ -83,7 +83,7 @@ services:
       - "traefik.http.routers.dashboard.middlewares=rewrite-wasp-dashboard,security-headers"
       - "traefik.http.middlewares.rewrite-wasp-dashboard.stripprefix.prefixes=/wasp/dashboard"
       - "traefik.http.middlewares.security-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
-      - "traefik.http.middlewares.security-headers.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${WASP_HOST:?WASP_HOST is missing}"
+      - "traefik.http.middlewares.security-headers.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${WASP_HOST:?WASP_HOST is missing}:${WASP_HTTPS_PORT:-447}"
       - "traefik.http.middlewares.security-headers.headers.accesscontrolmaxage=100"
       - "traefik.http.middlewares.security-headers.headers.addvaryheader=true"
       - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
