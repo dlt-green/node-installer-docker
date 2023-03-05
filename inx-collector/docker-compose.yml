@@ -1,0 +1,128 @@
+version: '3'
+services:
+
+  inx-collector:
+    container_name: shimmer.inx-collector
+    image: giordyfish/inx-collector:${INX_COLLECTOR_VERSION:?INX_COLLECTOR_VERSION is missing}
+    stop_grace_period: 5m
+    restart: unless-stopped
+    depends_on:
+      minio:
+        condition: service_started
+    labels:
+      - "proxy.constraint=inx-collector-${INX_COLLECTOR_LEDGER_NETWORK}"
+      - "traefik.enable=true"
+
+      - "traefik.http.services.inx-collector.loadbalancer.server.port=9030"
+
+      - "traefik.http.routers.inx-collector.service=inx-collector"
+      - "traefik.http.routers.inx-collector.rule=Host(`${INX_COLLECTOR_HOST:?INX_COLLECTOR_HOST is missing}`)"
+      - "traefik.http.routers.inx-collector.entrypoints=websecure"
+      - "traefik.http.routers.inx-collector.tls=true"
+      - "traefik.http.routers.inx-collector.tls.certresolver=myresolver"
+    volumes:
+      - "${INX_COLLECTOR_DATA_DIR:-./data}/config/config-${INX_COLLECTOR_LEDGER_NETWORK}.json:/app/config.json:ro"
+    command: [ "--config", "/app/config.json" ]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+
+  ##################################################################
+  #  Storage                                                       #
+  ##################################################################
+
+  minio:
+    container_name: ${INX_COLLECTOR_LEDGER_NETWORK}-inx-collector.minio
+    image: bitnami/minio:2023.2.27
+    stop_grace_period: 5m
+    restart: unless-stopped
+    profiles:
+      - local-storage
+    user: "65532"
+    environment:
+      - MINIO_ROOT_USER=${INX_COLLECTOR_MINIO_USER:?INX_COLLECTOR_MINIO_USER is missing}
+      - MINIO_ROOT_PASSWORD=${INX_COLLECTOR_MINIO_PASSWORD:?INX_COLLECTOR_MINIO_PASSWORD is missing}
+    volumes:
+      - ./data/storage:/data
+    labels:
+      - "proxy.constraint=inx-collector-${INX_COLLECTOR_LEDGER_NETWORK}"
+      - "traefik.enable=true"
+
+      - "traefik.http.services.minio.loadbalancer.server.port=9001"
+      - "traefik.http.services.minio.loadbalancer.healthCheck.path=/health/live"
+      - "traefik.http.services.minio.loadbalancer.healthCheck.interval=10s"
+      - "traefik.http.services.minio.loadbalancer.healthCheck.timeout=3s"
+
+      - "traefik.http.routers.minio.service=minio"
+      - "traefik.http.routers.minio.rule=Host(`${INX_COLLECTOR_HOST:?INX_COLLECTOR_HOST is missing}`)"
+      - "traefik.http.routers.minio.entrypoints=miniosecure"
+      - "traefik.http.routers.minio.tls=true"
+      - "traefik.http.routers.minio.tls.certresolver=myresolver"
+
+      # middlewares
+      - "traefik.http.routers.minio.middlewares=security-headers"
+      - "traefik.http.middlewares.security-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.security-headers.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${INX_COLLECTOR_HOST:?INX_COLLECTOR_HOST is missing}:${INX_COLLECTOR_MINIO_PORT:-450}"
+      - "traefik.http.middlewares.security-headers.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.security-headers.headers.addvaryheader=true"
+      - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+
+  ##################################################################
+  #  Reverse Proxy and SSL                                         #
+  ##################################################################
+
+  traefik:
+    image: traefik:v2.9.8
+    container_name: ${INX_COLLECTOR_LEDGER_NETWORK:?INX_COLLECTOR_LEDGER_NETWORK is missing}-inx-collector.traefik
+    restart: unless-stopped
+    env_file:
+      - .env
+    command:
+      - "--log.level=WARN"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.constraints=Label(`proxy.constraint`,`inx-collector-${INX_COLLECTOR_LEDGER_NETWORK}`)"
+
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.transport.respondingTimeouts.readTimeout=10"
+      - "--entrypoints.web.transport.respondingTimeouts.writeTimeout=10"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.transport.respondingTimeouts.readTimeout=10"
+      - "--entrypoints.websecure.transport.respondingTimeouts.writeTimeout=10"
+
+      - "--entrypoints.miniosecure.address=:450"
+      - "--entrypoints.miniosecure.transport.respondingTimeouts.readTimeout=10"
+      - "--entrypoints.miniosecure.transport.respondingTimeouts.writeTimeout=10"
+
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL:-}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "${INX_COLLECTOR_HTTP_PORT:-80}:80/tcp"
+      - "${INX_COLLECTOR_HTTPS_PORT:-443}:443/tcp"
+      - "${INX_COLLECTOR_MINIO_PORT:-450}:450/tcp"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "${INX_COLLECTOR_DATA_DIR:-./data}/letsencrypt:/letsencrypt"
+      - "./assets/traefik:/etc/traefik/dynamic:ro"
+      - "${INX_COLLECTOR_SSL_CERT:-./assets/traefik/certs/fake.cert}:/certs/domain.cert:ro"
+      - "${INX_COLLECTOR_SSL_KEY:-./assets/traefik/certs/fake.key}:/certs/domain.key:ro"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+
+networks:
+  default:
+    name: ${INX_COLLECTOR_LEDGER_NETWORK}
+    external: true

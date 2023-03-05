@@ -44,7 +44,7 @@ validate_ssl_config () {
 elevate_to_root () {
   local quiet=$1
 
-  if [ "${quiet}" != "true" ]; then echo "Elevating to root privileges..."; fi
+  if [ "${quiet}" != "true" ] && [ "${ELEVATED_TO_ROOT}" != "true" ]; then echo "Elevating to root privileges..."; fi
   if [[ "$OSTYPE" != "darwin"* && "$EUID" -ne 0 ]]; then
     sudo ELEVATED_TO_ROOT="true" "$0" "$@"
     exit $?
