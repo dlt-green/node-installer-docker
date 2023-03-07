@@ -112,7 +112,8 @@
       "timeout": "30s",
       "readTimeout": "10s",
       "writeTimeout": "10s",
-      "maxBodyLength": "2M"
+      "maxBodyLength": "2M",
+      "maxTopicSubscriptionsPerClient": 0
     },
     "debugRequestLoggerEnabled": false
   }
