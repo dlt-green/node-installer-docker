@@ -40,7 +40,7 @@ create_docker_network "shimmer"
 if [[ -z ${HORNET_NETWORK} ]] || [ "${HORNET_NETWORK}" == "mainnet" ]; then
   extract_file_from_image "iotaledger/hornet" "${HORNET_VERSION}" "/app/${configFilenameInContainer}" "${configPath}"
 else
-  configUrl="https://github.com/iotaledger/hornet/raw/v${HORNET_VERSION}/config_${HORNET_NETWORK}.json"
+  configUrl="https://raw.githubusercontent.com/iotaledger/node-docker-setup/main/stardust/config_testnet.json"
   echo "Downloading ${HORNET_NETWORK} config from ${configUrl}..."
   curl -L -s -o "${configPath}" "${configUrl}"
 fi
