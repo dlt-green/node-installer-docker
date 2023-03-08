@@ -1,7 +1,6 @@
 ./assets/traefik/certs/fake.cert
 ./assets/traefik/certs/fake.key
 ./assets/traefik/tls_config.yml
-./assets/wasp/docker_config.json
 ./docker-compose.yml
 ./prepare_cli.sh
 ./prepare_docker.sh
