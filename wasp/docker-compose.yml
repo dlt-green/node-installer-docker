@@ -14,8 +14,7 @@ services:
     working_dir: /app
     user: "65532"
     ports:
-      - "${WASP_PEERING_PORT:-4000}:${WASP_PEERING_PORT:-4000}/tcp"
-      - "${WASP_PEERING_PORT:-4000}:${WASP_PEERING_PORT:-4000}/udp"
+      - "${WASP_PEERING_PORT:-4000}:${WASP_PEERING_PORT:-4000}"
     labels:
       - "proxy.constraint=wasp"
       - "traefik.enable=true"
