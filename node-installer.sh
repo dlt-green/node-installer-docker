@@ -54,7 +54,7 @@ IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/dow
 ShimmerHornetHash='f33544cbceee365267cfc1b58f3a89fc9ae013955a1e5115886cda471cf395eb'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='12fd362d06f44519e2953fd4116c6520600890dca0af42fdd0b8afa0e3ea8545'
+ShimmerWaspHash='936dc92841cde962429f7464ab2087560737387ad4f164f86b706e37bd0d695c'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
 PipeHash='4569dbaae66808c8ab72e9217298e679e96e6c545dfd46a5a6d3bd0c01de33e1'
