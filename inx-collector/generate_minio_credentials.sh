@@ -59,7 +59,7 @@ if [[ ! -z "${output}" ]]; then
     echo -e "Parameters:"
     echo -e ""
     echo -e "  --clear-access-keys   clear all existing access keys before creating the new one"
-    echo -e "  --force               create a new access key (existing access key(s) will not be touched and can be deleted via minio console)"
+    echo -e "  --force               create a new access key (existing access key(s) will not be touched and can be deleted via minio dashboard)"
     echo -e ""
     echo -e "Existing access key(s):"
     echo "${output}" | while read accessKey; do echo -e "  * ${accessKey}"; done
