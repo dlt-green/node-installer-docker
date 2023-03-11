@@ -146,8 +146,6 @@ CheckFirewall() {
 			 echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 			 ;;
 		esac
-	else
-		if [ -f /etc/default/docker ]; then sed -i 's/.*DOCKER_OPTS=.*/DOCKER_OPTS="--iptables=false"/g' /etc/default/docker; fi
 	fi
 }
 
