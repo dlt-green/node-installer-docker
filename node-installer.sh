@@ -26,7 +26,7 @@ VAR_INX_SPAMMER_VERSION='1.0-rc'
 VAR_INX_POI_VERSION='1.0-rc'
 VAR_INX_DASHBOARD_VERSION='1.0-rc'
 
-VAR_PIPE_VERSION='0.5'
+VAR_PIPE_VERSION='0.7'
 
 lg='\033[1m'
 or='\e[1;33m'
@@ -151,6 +151,33 @@ CheckFirewall() {
 
 DeleteFirewallPort() {
 	while true; do n=$(ufw status numbered | grep "$1" | head -n 1 | awk -F"[][]" '{print $2}');[ "$n" != "" ] || break; yes | ufw delete $n; done;
+}
+
+FormatToBytes() {
+	unset bytes;
+	if [ -n "$1" ]; then
+		unit=$(echo "$1" | sed -e 's/[^a-zA-Z_]//g' | tr '[:lower:]' '[:upper:]');
+		value=$(echo "$1" | sed -e "s/$unit//g");
+		
+		case $unit in
+		KB) bytes=$(echo "$value*1024" | bc);;
+		MB) bytes=$(echo "$value*1024*1024" | bc);;
+		GB) bytes=$(echo "$value*1024*1024*1024" | bc);;
+		TB) bytes=$(echo "$value*1024*1024*1024*1024" | bc);;
+		PB) bytes=$(echo "$value*1024*1024*1024*1024*1024" | bc);;
+		*) bytes=$value;;
+		esac
+	else
+		bytes=0;
+	fi
+}
+
+FormatFromBytes() {
+	unset fbytes;
+	if [ -n "$1" ]; then
+		fbytes=$(numfmt --to iec --format "%8f" $1)B;
+		fbytes=$(echo $fbytes | sed 's/ *$//g');
+	fi
 }
 
 CheckDomain() {
@@ -1535,11 +1562,30 @@ IotaHornet() {
 		echo "$gn""Set dashboard port: $VAR_IOTA_HORNET_HTTPS_PORT""$xx"
 
 		echo ''
+		FormatToBytes $(cat /var/lib/shimmer-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		if [ -z "$bytes" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=0; else VAR_SHIMMER_HORNET_PRUNING_SIZE=$bytes; fi
+		FormatToBytes $(cat /var/lib/pipe/.env 2>/dev/null | grep PIPE_MAX_STORAGE= | cut -d '=' -f 2)
+		if [ -z "$bytes" ]; then VAR_PIPE_MAX_STORAGE=0; else VAR_PIPE_MAX_STORAGE=$bytes; fi
+		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
+		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi		
+		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
+		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi			
+		FormatToBytes "$(df -h /var/lib/$VAR_DIR | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
+		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi	
+		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_SHIMMER_HORNET_PRUNING_SIZE-$VAR_PIPE_MAX_STORAGE)*9/10" | bc)
+		RESERVED_SPACE=$(echo "($VAR_SHIMMER_HORNET_PRUNING_SIZE+$VAR_PIPE_MAX_STORAGE)" | bc)
+		FormatFromBytes $RESERVED_SPACE; RESERVED_SPACE=$fbytes
+		if [ $((`echo "$VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE < $CALCULATED_SPACE" | bc`)) -eq 1 ]; then CALCULATED_SPACE=$(echo "($VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE)" | bc); fi
+		FormatFromBytes $CALCULATED_SPACE; CALCULATED_SPACE=$fbytes
+
+		unset VAR_IOTA_HORNET_PRUNING_SIZE
 		while [ -z "$VAR_IOTA_HORNET_PRUNING_SIZE" ]; do
 		  VAR_IOTA_HORNET_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
 		  if [ -z "$VAR_IOTA_HORNET_PRUNING_SIZE" ]; then
-		    echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_IOTA_HORNET_PRUNING_SIZE""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		  echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		    echo "Set pruning size / max. storage size (calculated: $ca"$CALCULATED_SPACE"$xx)"; else echo "Set pruning size / max. storage size (config: $ca""$VAR_IOTA_HORNET_PRUNING_SIZE""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		  echo "$rd""Available diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		  echo "$rd""Reserved diskspace through pruning by other nodes: ""$RESERVED_SPACE""$xx"
+		  echo "$ca""Calculated pruning size for HORNET (with 10% buffer): ""$CALCULATED_SPACE""$xx"
 		  read -r -p '> ' VAR_TMP
 		  if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=$VAR_TMP; fi
 		  if ! [ -z "${VAR_IOTA_HORNET_PRUNING_SIZE##*B*}" ]; then
@@ -2330,11 +2376,30 @@ ShimmerHornet() {
 		echo "$gn""Set dashboard port: $VAR_SHIMMER_HORNET_HTTPS_PORT""$xx"
 
 		echo ''
+		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		if [ -z "$bytes" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=0; else VAR_IOTA_HORNET_PRUNING_SIZE=$bytes; fi
+		FormatToBytes $(cat /var/lib/pipe/.env 2>/dev/null | grep PIPE_MAX_STORAGE= | cut -d '=' -f 2)
+		if [ -z "$bytes" ]; then VAR_PIPE_MAX_STORAGE=0; else VAR_PIPE_MAX_STORAGE=$bytes; fi
+		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
+		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi		
+		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
+		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi			
+		FormatToBytes "$(df -h /var/lib/$VAR_DIR | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
+		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi	
+		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_IOTA_HORNET_PRUNING_SIZE-$VAR_PIPE_MAX_STORAGE)*9/10" | bc)
+		RESERVED_SPACE=$(echo "($VAR_IOTA_HORNET_PRUNING_SIZE+$VAR_PIPE_MAX_STORAGE)" | bc)
+		FormatFromBytes $RESERVED_SPACE; RESERVED_SPACE=$fbytes
+		if [ $((`echo "$VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE < $CALCULATED_SPACE" | bc`)) -eq 1 ]; then CALCULATED_SPACE=$(echo "($VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE)" | bc); fi
+		FormatFromBytes $CALCULATED_SPACE; CALCULATED_SPACE=$fbytes
+
+		unset VAR_SHIMMER_HORNET_PRUNING_SIZE
 		while [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; do
 		  VAR_SHIMMER_HORNET_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
 		  if [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; then
-		    echo "Set pruning size / max. database size (example: $ca""200GB""$xx):"; else echo "Set pruning size / max. database size (config: $ca""$VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		  echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		    echo "Set pruning size / max. storage size (calculated: $ca"$CALCULATED_SPACE"$xx)"; else echo "Set pruning size / max. storage size (config: $ca""$VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		  echo "$rd""Available diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		  echo "$rd""Reserved diskspace through pruning by other nodes: ""$RESERVED_SPACE""$xx"
+		  echo "$ca""Calculated pruning size for HORNET (with 10% buffer): ""$CALCULATED_SPACE""$xx"
 		  read -r -p '> ' VAR_TMP
 		  if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$VAR_TMP; fi
 		  if ! [ -z "${VAR_SHIMMER_HORNET_PRUNING_SIZE##*B*}" ]; then
@@ -2872,25 +2937,25 @@ ShimmerWasp() {
 }
 
 Pipe() {
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║              DLT.GREEN AUTOMATIC PIPE INSTALLATION WITH DOCKER              ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo "$ca"
+#	clear
+#	echo ""
+#	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+#	echo "║              DLT.GREEN AUTOMATIC PIPE INSTALLATION WITH DOCKER              ║"
+#	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+#	echo "$ca"
 
-	echo "installation is currently only allowed for dlt.green testers,"
-	echo "join our discord and request login data for access"
-	echo ""
+#	echo "installation is currently only allowed for dlt.green testers,"
+#	echo "join our discord and request login data for access"
+#	echo ""
 	
-	docker login
+#	docker login
 
-	if grep -q 'auths": {}' ~/.docker/config.json ; then 
-		echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-		Dashboard
-	fi
+#	if grep -q 'auths": {}' ~/.docker/config.json ; then 
+#		echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+#		Dashboard
+#	fi
 
-	echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+#	echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -2955,6 +3020,40 @@ Pipe() {
 		if [ -n "$VAR_TMP" ]; then VAR_PIPE_PORT=$VAR_TMP; elif [ -z "$VAR_PIPE_PORT" ]; then VAR_PIPE_PORT=$VAR_DEFAULT; fi
 		echo "$gn""Set node port: $VAR_PIPE_PORT""$xx"
 
+		echo ''
+		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		if [ -z "$bytes" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=0; else VAR_IOTA_HORNET_PRUNING_SIZE=$bytes; fi
+		FormatToBytes $(cat /var/lib/shimmer-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		if [ -z "$bytes" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=0; else VAR_SHIMMER_HORNET_PRUNING_SIZE=$bytes; fi
+		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
+		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi		
+		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
+		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi			
+		FormatToBytes "$(df -h /var/lib/$VAR_DIR | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
+		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi	
+		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_IOTA_HORNET_PRUNING_SIZE-$VAR_SHIMMER_HORNET_PRUNING_SIZE)*9/10" | bc)
+		RESERVED_SPACE=$(echo "($VAR_IOTA_HORNET_PRUNING_SIZE+$VAR_SHIMMER_HORNET_PRUNING_SIZE)" | bc)
+		FormatFromBytes $RESERVED_SPACE; RESERVED_SPACE=$fbytes
+		if [ $((`echo "$VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE < $CALCULATED_SPACE" | bc`)) -eq 1 ]; then CALCULATED_SPACE=$(echo "($VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE)" | bc); fi
+		FormatFromBytes $CALCULATED_SPACE; CALCULATED_SPACE=$fbytes
+
+		unset VAR_PIPE_MAX_STORAGE
+		while [ -z "$VAR_PIPE_MAX_STORAGE" ]; do
+		  VAR_PIPE_MAX_STORAGE=$(cat .env 2>/dev/null | grep PIPE_MAX_STORAGE= | cut -d '=' -f 2)
+		  if [ -z "$VAR_PIPE_MAX_STORAGE" ]; then
+		    echo "Set pruning size / max. storage size (calculated: $ca"$CALCULATED_SPACE"$xx)"; else echo "Set pruning size / max. storage size (config: $ca""$VAR_PIPE_MAX_STORAGE""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		  echo "$rd""Available diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+		  echo "$rd""Reserved diskspace through pruning by other nodes: ""$RESERVED_SPACE""$xx"
+		  echo "$ca""Calculated pruning size for PIPE (with 10% buffer): ""$CALCULATED_SPACE""$xx"
+		  read -r -p '> ' VAR_TMP
+		  if [ -n "$VAR_TMP" ]; then VAR_PIPE_MAX_STORAGE=$VAR_TMP; fi
+		  if ! [ -z "${VAR_PIPE_MAX_STORAGE##*B*}" ]; then
+		    VAR_PIPE_MAX_STORAGE=''
+		    echo "$rd""Set pruning size: Please insert with unit!"; echo "$xx"
+		  fi
+		done
+		echo "$gn""Set pruning size: $VAR_PIPE_MAX_STORAGE""$xx"
+
 		VAR_PIPE_SEED=$(cat .env 2>/dev/null | grep PIPE_SEED | cut -d '=' -f 2)
 		VAR_PIPE_ADDRESS=$(cat .env 2>/dev/null | grep PIPE_ADDRESS | cut -d '=' -f 2)
 		
@@ -2971,6 +3070,7 @@ Pipe() {
 
 		echo "PIPE_VERSION=$VAR_PIPE_VERSION" >> .env
 		echo "PIPE_PORT=$VAR_PIPE_PORT" >> .env
+		echo "PIPE_MAX_STORAGE=$VAR_PIPE_MAX_STORAGE" >> .env
 
 	else
 		if [ -f .env ]; then sed -i "s/PIPE_VERSION=.*/PIPE_VERSION=$VAR_PIPE_VERSION/g" .env; fi
@@ -3118,7 +3218,7 @@ echo "> $gn""$InstallerHash""$xx"
 
 sleep 3
 
-sudo apt-get install curl jq expect dnsutils ufw -y -qq >/dev/null 2>&1
+sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 CheckFirewall
 DeleteFirewallPort "440"
