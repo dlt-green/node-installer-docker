@@ -57,7 +57,7 @@ ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/release
 ShimmerWaspHash='71b2a977819e9ca32411f33914d3cb2ad1946d5db6a44f1a5f0423da68d43cc9'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-PipeHash='c5579aa42b5c50585af791f8a3adf69c9ad336b0549934d94c2139eab31cf246'
+PipeHash='7f089ffc379ba1a0f1b7109caca04b34a24feaad485f47ba3a5470052e772a44'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
