@@ -3187,7 +3187,7 @@ Pipe() {
 
 	docker network create pipe >/dev/null 2>&1
 	docker compose pull
-	docker logout
+#	docker logout
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
