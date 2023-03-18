@@ -16,6 +16,7 @@ PIPE_SEED=0000000000000000000000000000000000000000000000000000000000000000000000
 # PIPE_MNEMONIC_PHRASE="latin duck enhance glove fire render rubber rural rice hover economy advice member faith dash piano kite host yard glove captain color hotel blade"
 # PIPE_ADDRESS=<node_address>
 # PIPE_PORT=13266
+# PIPE_MAX_STORAGE=64GB
 # PIPE_LOG_LEVEL=info
 ```
 
@@ -27,4 +28,11 @@ PIPE_SEED=0000000000000000000000000000000000000000000000000000000000000000000000
 | PIPE_ADDRESS         |           |         | Node address (not necessary to start node; can be generated with `generate_seed.sh` or `docker compose run --rm pipe --action=keygen`)                 |
 | PIPE_SEED            |     x     |         | Node seed (can be generated with `generate_seed.sh` or `docker compose run --rm pipe --action=keygen`)                                                 |
 | PIPE_MNEMONIC_PHRASE |           |         | Node seed as mnemonic phrase (not necessary to start node; can be generated with `generate_seed.sh` or `docker compose run --rm pipe --action=keygen`) |
+| PIPE_MAX_STORAGE     |           |  64GB   | Max storage pipe will use; oldest data will be purged first if storage limit is reached                                                                |
 | PIPE_LOG_LEVEL       |           |  info   | Log level; Allowed values: `error`, `warn`, `info`, `debug`, `trace`                                                                                   |
+
+## Scripts
+
+| Script                              | Description                                                             |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| `scripts/get_available_versions.sh` | Prints all tags/versions available for image `docker.tanglehub.eu:pipe` |
