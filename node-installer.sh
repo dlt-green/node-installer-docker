@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.2.0"
-BUILD="20230319_000833"
+VRSN="v.2.1.6"
+BUILD="20230316_001308"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -61,7 +61,6 @@ PipeHash='ac59590381739564293a8666082f82e045fde8472bc0d1ed443c20fcc554d71d'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
-SnapshotShimmerHornet="https://github.com/iotaledger/global-snapshots/raw/main/shimmer/genesis_snapshot.bin"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
 
@@ -984,7 +983,8 @@ SubMenuMaintenance() {
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
-	      if [ -d /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK ]; then rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK/*; cd /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK || SubMenuMaintenance; if [ $VAR_HORNET_NETWORK="mainnet" ]; then wget $SnapshotShimmerHornet; mv genesis_snapshot.bin full_snapshot.bin; fi; fi
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK/*		  
 	   fi
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
