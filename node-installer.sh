@@ -1630,6 +1630,7 @@ IotaHornet() {
 		echo "$gn""Set dashboard port: $VAR_IOTA_HORNET_HTTPS_PORT""$xx"
 
 		echo ''
+		unset VAR_IOTA_HORNET_PRUNING_SIZE
 		while [ -z "$VAR_IOTA_HORNET_PRUNING_SIZE" ]; do
 		  VAR_IOTA_HORNET_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
 		  if [ -z "$VAR_IOTA_HORNET_PRUNING_SIZE" ]; then
@@ -1721,6 +1722,7 @@ IotaHornet() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "HORNET_HTTP_PORT=80" >> .env
+			unset VAR_ACME_EMAIL
 			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 			done
@@ -2010,6 +2012,7 @@ IotaWasp() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "WASP_HTTP_PORT=80" >> .env
+			unset VAR_ACME_EMAIL
 			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 			done
@@ -2233,6 +2236,7 @@ IotaGoshimmer() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "GOSHIMMER_HTTP_PORT=80" >> .env
+			unset VAR_ACME_EMAIL
 			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 			done
@@ -2425,6 +2429,7 @@ ShimmerHornet() {
 		echo "$gn""Set dashboard port: $VAR_SHIMMER_HORNET_HTTPS_PORT""$xx"
 
 		echo ''
+		unset VAR_SHIMMER_HORNET_PRUNING_SIZE
 		while [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; do
 		  VAR_SHIMMER_HORNET_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
 		  if [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; then
@@ -2516,6 +2521,7 @@ ShimmerHornet() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "HORNET_HTTP_PORT=80" >> .env
+			unset VAR_ACME_EMAIL
 			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 			done
@@ -2811,6 +2817,7 @@ ShimmerWasp() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "WASP_HTTP_PORT=80" >> .env
+			unset VAR_ACME_EMAIL
 			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 			done
