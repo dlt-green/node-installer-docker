@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.1.5"
-BUILD="20230308_194549"
+VRSN="v.2.1.6"
+BUILD="20230316_001308"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -42,22 +42,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='0710c9e98c5751936199f22e09dd28fcf85d7dec8bd68515d2f01c9561560bd6'
+IotaHornetHash='39e7a38c20ae54bbde750f971348b911c8382e604c4c73498d3517db961ad8c4'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaGoshimmerHash='38500662545b6f2a07a74549a50e5f4ce2858d9cbda7d94f1f15209b4866177b'
+IotaGoshimmerHash='e829ce403713829d5cf46e6b81035948ae31df210395c0b47f126bfbedb29ed2'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='d84d8f0abf2fd68cd6296f998487c173d53c64e1125e034e0f6c87fa375a2753'
+ShimmerHornetHash='79c75f1b3b1307159ba33f921cd88bcba02c801ed05f1023715ac08038ff1d07'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='71b2a977819e9ca32411f33914d3cb2ad1946d5db6a44f1a5f0423da68d43cc9'
+ShimmerWaspHash='b37199f30d6f2a0d069b41103eeb84c4d25c8103abfd0f60c7f44e66db00511f'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-PipeHash='7f089ffc379ba1a0f1b7109caca04b34a24feaad485f47ba3a5470052e772a44'
+PipeHash='2c78f8ca64b52d7dcb397222bb90d12b832b6925d599da2ce21e60834d61d442'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -287,7 +287,7 @@ CheckNodeHealthy() {
 	if [ -z $VAR_NodeHealthy ]; then VAR_NodeHealthy=false; fi
 }
 
-CheckEvents() {
+CheckEventsIota() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -304,8 +304,9 @@ CheckEvents() {
 	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
 	if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""IOTA-Hornet: No Salt found!""$xx"
 	else
-	   echo "Event IDs can be found at 'https://github.com/iotaledger/participation-events'"
-	   echo "Event Data will be saved locally under '/var/lib/{network-node}/verify-events'"	   
+	   echo "Event IDs can be found at:"
+	   echo 'https://github.com/iotaledger/participation-events'
+	   echo "Event Data will be saved locally under '/var/lib/iota-hornet/verify-events'"	   
 	   echo ''
 	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
 	   read -r -p '> ' EVENTS
@@ -369,6 +370,98 @@ CheckEvents() {
 	      fi
 	      echo ""
 	      echo "$ca""Milestone index: ""$xx"$EVENT_MILESTONE"$ca"" Total rewards: ""$xx"$EVENT_REWARDS
+	      echo "───────────────────────────────────────────────────────────────────────────────"
+	   done
+	fi
+	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel...' W; echo "$xx"
+	Dashboard
+}
+
+CheckEventsShimmer() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo "$ca"
+	echo "Verify Event Results..."
+	echo "$xx"
+		
+	VAR_DIR='shimmer-hornet'
+	
+	cd /var/lib/$VAR_DIR >/dev/null 2>&1 || Dashboard;
+	
+	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
+	if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""Shimmer-Hornet: No Salt found!""$xx"
+	else
+	   echo "Event IDs can be found at:"
+	   echo "'https://github.com/iota-community/Shimmer-governance-participation-events'"
+	   echo "Event Data will be saved locally under '/var/lib/shimmer-hornet/verify-events'"	   
+	   echo ''
+	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
+	   read -r -p '> ' EVENTS
+	   echo ''
+	   
+	   ADDR=$(cat .env 2>/dev/null | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
+	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
+	   echo "$ca""Address: ""$xx"$ADDR" ($ca""JWT-Token for API Access randomly generated""$xx)"
+	   echo ''
+	   sleep 5
+
+	   if [ -z $EVENTS ]; then 
+	   EVENTS=$(curl https://${ADDR}/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
+
+	   for EVENT_ID in $(echo $EVENTS  | tr -d '"[] ' | sed 's/,/ /g'); do
+	      echo "───────────────────────────────────────────────────────────────────────────────"
+	      EVENT_NAME=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.name')
+
+	      EVENT_SYMBOL=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.payload.symbol')
+
+	      EVENT_STATUS=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.status')
+
+	      EVENT_CHECKSUM=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.checksum')
+
+	      EVENT_MILESTONE=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.milestoneIndex')
+
+	      EVENT_QUESTIONS=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.questions')
+
+	      echo "$ca""Name: ""$xx"$EVENT_NAME
+		  echo "$ca""Status: ""$xx"$EVENT_STATUS"$ca"" Milestone index: ""$xx"$EVENT_MILESTONE
+
+	      if [ $EVENT_STATUS = "ended" ]; then
+	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
+	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
+	        $(curl https://${ADDR}/api/participation/v1/admin/events/${EVENT_ID}/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > ${EVENT_ID})
+	        echo ""
+	        echo "$xx""Event ID: ""$EVENT_ID"
+	        
+	        if [ $(jq '.totalRewards' ${EVENT_ID}) = 'null' ]; then
+			  if [ $EVENT_SYMBOL = 'null' ]; then
+			    echo "$gn""Checksum: ""$EVENT_CHECKSUM"
+				$($EVENT_QUESTIONS > ${EVENT_ID})
+			  else
+			    echo "$rd""Checksum: ""Authentication Error!""$xx"
+			  fi
+	        else
+	          echo "$gn""Checksum: ""$(jq -r '.checksum' ${EVENT_ID})"
+	        fi
+	        EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID})"
+	      else
+	        echo ""
+	        echo "$xx""Event ID: ""$EVENT_ID"
+	        echo "$rd""Checksum: ""Event not found or not over yet!""$xx"
+	        EVENT_REWARDS='not available'
+	      fi
+	      echo ""
+	      echo "$ca""Total rewards: ""$xx"$EVENT_REWARDS"$ca"" Symbol: ""$xx"$EVENT_SYMBOL
 	      echo "───────────────────────────────────────────────────────────────────────────────"
 	   done
 	fi
@@ -548,7 +641,9 @@ Dashboard() {
 	   DashboardHelper ;;
 	e|E) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
-	   CheckEvents ;;
+	   if [ -d "/var/lib/iota-hornet" ]; then CheckEventsIota; fi
+	   if [ -d "/var/lib/shimmer-hornet" ]; then CheckEventsShimmer; fi
+	   ;;
 	r|R) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   DashboardHelper ;;
@@ -1672,6 +1767,7 @@ IotaHornet() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "HORNET_HTTP_PORT=80" >> .env
+			unset VAR_ACME_EMAIL
 			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 			done
@@ -1961,6 +2057,7 @@ IotaWasp() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "WASP_HTTP_PORT=80" >> .env
+			unset VAR_ACME_EMAIL
 			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 			done
@@ -2184,6 +2281,7 @@ IotaGoshimmer() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "GOSHIMMER_HTTP_PORT=80" >> .env
+			unset VAR_ACME_EMAIL
 			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 			done
@@ -2486,6 +2584,7 @@ ShimmerHornet() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "HORNET_HTTP_PORT=80" >> .env
+			unset VAR_ACME_EMAIL
 			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 			done
@@ -2781,6 +2880,7 @@ ShimmerWasp() {
 		if [ $VAR_CERT = 0 ]
 		then
 			echo "WASP_HTTP_PORT=80" >> .env
+			unset VAR_ACME_EMAIL
 			while [ -z "$VAR_ACME_EMAIL" ]; do
 				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
 			done
