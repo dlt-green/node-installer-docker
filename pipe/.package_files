@@ -3,6 +3,7 @@
 ./generate_seed.sh
 ./prepare_docker.sh
 ./README.md
+./scripts/get_available_versions.sh
 ./scripts/prepare_docker_functions.sh
 ./show_logs.sh
 ./start.sh
