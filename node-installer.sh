@@ -3037,25 +3037,25 @@ ShimmerWasp() {
 }
 
 Pipe() {
-#	clear
-#	echo ""
-#	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-#	echo "║              DLT.GREEN AUTOMATIC PIPE INSTALLATION WITH DOCKER              ║"
-#	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-#	echo "$ca"
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║              DLT.GREEN AUTOMATIC PIPE INSTALLATION WITH DOCKER              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo "$ca"
 
-#	echo "installation is currently only allowed for dlt.green testers,"
-#	echo "join our discord and request login data for access"
-#	echo ""
+	echo "installation is currently only allowed for dlt.green testers,"
+	echo "join our discord and request login data for access"
+	echo ""
 	
-#	docker login
+	docker login
 
-#	if grep -q 'auths": {}' ~/.docker/config.json ; then 
-#		echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-#		Dashboard
-#	fi
+	if grep -q 'auths": {}' ~/.docker/config.json ; then 
+		echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+		Dashboard
+	fi
 
-#	echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+	echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -3187,7 +3187,7 @@ Pipe() {
 
 	docker network create pipe >/dev/null 2>&1
 	docker compose pull
-#	docker logout
+	docker logout
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
