@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VRSN="v.2.2.0"
-BUILD="20230320_203718"
+BUILD="20230320_204330"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -42,22 +42,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='65ec604c947aee97713465229bb45bc731ae541fef179f022fa5ca00885c9576'
+IotaHornetHash='00ba952d762e73859ca7cd3230769ce3e690dd9be286d8637ae2590ec9f29f73'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaGoshimmerHash='b1eb0dc7e38152ef347ac0cf56f3dc1e7a9c0d614f30e96379935aacabc8f4f2'
+IotaGoshimmerHash='9f3bd8e6b881c9110b86820eca9956cd4f202dd3445a4cbefcf4b0046e915959'
 IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='f07a0a3881a158602892f49d059ffe2383793547907158512429a4998fb1a528'
+ShimmerHornetHash='e4ccb695eed18fc0bfee17a8df4412bad884eddfac8b064d6ece06de451c5b0e'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='c1ad658ec57dd45550f1f131e0642470620c6631283a9d57cbe23b9541cb1f48'
+ShimmerWaspHash='0bcbc7fc812f949502764204f8375365d775f9902dd0ce31da4e81e3e72991c1'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-PipeHash='24559356b6ceb664fcce6d23b8e5a3ad3c016ca45b56f09c801a5947b1c17129'
+PipeHash='a66c03b4cf20eef9be3e5a6b1d400d1963cbfddb0542fb359708bae9ee4f6e99'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
 
 SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
@@ -3037,25 +3037,25 @@ ShimmerWasp() {
 }
 
 Pipe() {
-#	clear
-#	echo ""
-#	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-#	echo "║              DLT.GREEN AUTOMATIC PIPE INSTALLATION WITH DOCKER              ║"
-#	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-#	echo "$ca"
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║              DLT.GREEN AUTOMATIC PIPE INSTALLATION WITH DOCKER              ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo "$ca"
 
-#	echo "installation is currently only allowed for dlt.green testers,"
-#	echo "join our discord and request login data for access"
-#	echo ""
+	echo "installation is currently only allowed for dlt.green testers,"
+	echo "join our discord and request login data for access"
+	echo ""
 	
-#	docker login
+	docker login
 
-#	if grep -q 'auths": {}' ~/.docker/config.json ; then 
-#		echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-#		Dashboard
-#	fi
+	if grep -q 'auths": {}' ~/.docker/config.json ; then 
+		echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+		Dashboard
+	fi
 
-#	echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+	echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -3187,7 +3187,7 @@ Pipe() {
 
 	docker network create pipe >/dev/null 2>&1
 	docker compose pull
-#	docker logout
+	docker logout
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
