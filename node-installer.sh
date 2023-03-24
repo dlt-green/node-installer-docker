@@ -15,9 +15,9 @@ VAR_IOTA_HORNET_VERSION='1.2.4'
 VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.5'
-VAR_SHIMMER_WASP_VERSION='0.6.0-alpha.1'
-VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.5'
-VAR_SHIMMER_WASP_CLI_VERSION='0.6.0-alpha.1'
+VAR_SHIMMER_WASP_VERSION='0.6.0-alpha.2'
+VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.7'
+VAR_SHIMMER_WASP_CLI_VERSION='0.6.0-alpha.2'
 
 VAR_INX_INDEXER_VERSION='1.0-rc'
 VAR_INX_MQTT_VERSION='1.0-rc'
@@ -279,7 +279,7 @@ CheckNodeHealthy() {
 	2) VAR_API="info"; OBJ=".Version" ;;
 	3) VAR_API="info"; OBJ=".tangleTime.synced" ;;
 	5) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
-	6) VAR_API="node/version"; OBJ=".version" ;;
+	6) VAR_API="v1/node/version"; OBJ=".version" ;;
 	*) ;;
 	esac
 	VAR_NodeHealthy=$(curl https://${VAR_DOMAIN}:${VAR_PORT}/${VAR_API} --http1.1 -m 3 -s -X GET -H 'Content-Type: application/json' | jq ${OBJ} 2>/dev/null)
