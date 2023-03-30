@@ -444,15 +444,15 @@ CheckEventsShimmer() {
 	        
 	        if [ $(jq '.totalRewards' ${EVENT_ID}) = 'null' ]; then
 			  if [ $EVENT_SYMBOL = 'null' ]; then
-			    echo "$gn""Checksum: ""$EVENT_CHECKSUM"
-				$($EVENT_QUESTIONS > ${EVENT_ID})
+			    echo "$gn""Checksum: ""$EVENT_CHECKSUM""$xx"
+				if [ -n "$EVENT_QUESTIONS" ]; then echo "$EVENT_QUESTIONS" > "${EVENT_ID}"; fi
 			  else
 			    echo "$rd""Checksum: ""Authentication Error!""$xx"
 			  fi
 	        else
 	          echo "$gn""Checksum: ""$(jq -r '.checksum' ${EVENT_ID})"
 	        fi
-	        EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID})"
+	        EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID} 2>/dev/null)"
 	      else
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
