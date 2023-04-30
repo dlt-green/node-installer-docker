@@ -3,7 +3,7 @@ services:
 
   inx-chronicle:
     container_name: ${INX_CHRONICLE_LEDGER_NETWORK:?INX_CHRONICLE_LEDGER_NETWORK is missing}-inx-chronicle
-    image: iotaledger/inx-chronicle:${INX_CHRONICLE_VERSION:?INX_CHRONICLE_VERSION is missing}
+    image: dltgreen/inx-chronicle:${INX_CHRONICLE_VERSION:?INX_CHRONICLE_VERSION is missing}
     stop_grace_period: 5m
     restart: unless-stopped
     user: "65532"
