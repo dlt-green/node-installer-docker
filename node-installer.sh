@@ -870,12 +870,12 @@ SubMenuMaintenance() {
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 9 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
 			if [ $(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_CHRONICLE_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_CHRONICLE_VERSION""$xx"
+				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_CHRONICLE_VERSION""$xx"
 			fi
 		else
-			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_CHRONICLE_VERSION""$xx"
+			echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | available: v.$VAR_SHIMMER_CHRONICLE_VERSION""$xx"
 		fi
 	fi
 	if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 4 ]; then
