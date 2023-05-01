@@ -46,6 +46,7 @@ INX_CHRONICLE_INFLUXDB_TOKEN=<secret_token>
 INX_CHRONICLE_JWT_SALT=<salt>
 INX_CHRONICLE_JWT_PASSWORD=<secret>
 # INX_CHRONICLE_JWT_EXPIRATION=72h
+# INX_CHRONICLE_SYNC_START=1
 
 INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=<secret>
 ```
@@ -72,4 +73,5 @@ INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=<secret>
 | INX_CHRONICLE_JWT_SALT               |     x     |             | Salt for JWT generation (restricted API access)                                                                                                                                         |
 | INX_CHRONICLE_JWT_PASSWORD           |     x     |             | Password to fetch JWT token via `/login` (`POST` request with body `{"password": "<secret>"}`)                                                                                          |
 | INX_CHRONICLE_JWT_EXPIRATION         |           |     72h     | Expiration period for JWT token                                                                                                                                                         |
+| INX_CHRONICLE_SYNC_START             |           |      1      | Lowest milestone index to sync from                                                                                                                                                     |
 | INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD |     x     |             | Password for user `admin` on grafana                                                                                                                                                    |
