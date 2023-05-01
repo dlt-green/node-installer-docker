@@ -59,7 +59,7 @@ ShimmerWaspHash='58dd10a7f11ce2c81349de7d47169d50a2e9c1f8e064aa9ca9a370bbcfde308
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
 ShimmerChronicleHash='c98b549c476c26f7535b8f342311cbdafcfc8ba0b9fca9c6ede0642a2cb98b28'
-ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/inx-chronicle-latest/inx-chronicle.tar.gz"
+ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/inx-chronicle-latest/shimmer-chronicle.tar.gz"
 
 PipeHash='774a6bb09220cd7e14a21a5420917fa2f34504460359c74c9ae690afc5816f7f'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
@@ -3174,10 +3174,10 @@ ShimmerChronicle() {
 		VAR_SHIMMER_CHRONICLE_HTTPS_PORT=$(cat .env 2>/dev/null | grep INX_CHRONICLE_HTTPS_PORT= | cut -d '=' -f 2)
 		VAR_DEFAULT='449';
 		if [ -z "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT" ]; then
-		  echo "Set dashboard port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set dashboard port (config: $ca""$VAR_SHIMMER_CHRONICLE_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		  echo "Set https port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set https port (config: $ca""$VAR_SHIMMER_CHRONICLE_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT" ]; then VAR_SHIMMER_CHRONICLE_HTTPS_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set dashboard port: $VAR_SHIMMER_CHRONICLE_HTTPS_PORT""$xx"
+		echo "$gn""Set https port: $VAR_SHIMMER_CHRONICLE_HTTPS_PORT""$xx"
 
 		echo ''
 		VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME=$(cat .env 2>/dev/null | grep INX_CHRONICLE_MONGODB_USERNAME= | cut -d '=' -f 2)
@@ -3367,8 +3367,22 @@ ShimmerChronicle() {
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " SHIMMER-CHRONICLE Dashboard: https://$VAR_HOST:$VAR_SHIMMER_SHIMMER-CHRONICLE_HTTPS_PORT"
-		echo " SHIMMER-CHRONICLE ledger-connection/txstream: local to Shimmer-Hornet"
+		echo "domain name: $VAR_HOST"
+		echo "https port:  $VAR_SHIMMER_CHRONICLE_HTTPS_PORT"
+	    echo "-------------------------------------------------------------------------------"
+		echo "MongoDB username: $VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME"
+		echo "MongoDB password: $VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD"
+	    echo "-------------------------------------------------------------------------------"
+		echo "InfluxDB username: $VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME"
+		echo "InfluxDB password: $VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD"
+		echo "InfluxDB token:    $VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN"
+	    echo "-------------------------------------------------------------------------------"
+		echo "JWT salt:     $VAR_SHIMMER_CHRONICLE_JWT_SALT"
+		echo "JWT password: $VAR_SHIMMER_CHRONICLE_JWT_PASSWORD"
+	    echo "-------------------------------------------------------------------------------"
+		echo "grafana password: $VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD"
+	    echo "-------------------------------------------------------------------------------"
+		echo "ledger-connection/txstream: local to shimmer-hornet"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
