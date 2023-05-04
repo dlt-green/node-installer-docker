@@ -3037,7 +3037,7 @@ echo "║$lg     | |_| | | |___   | |    _   | |_| | |  _ <  | |___  | |___  | |
 echo "║$lg     |____/  |_____|  |_|   (_)   \____| |_| \_\ |_____| |_____| |_| \_|     $xx║"
 echo "║                                                                             ║"
 echo "║                                                                             ║"
-echo "║                  for IOTA/Shimmer and Tanglehub/PIPE Nodes                  ║"
+echo "║                 for IOTA/Shimmer and Chunk Works/PIPE Nodes                 ║"
 echo "║                                                                             ║"
 echo "║                                 loading...                                  ║"
 echo "║                                                                             ║"
