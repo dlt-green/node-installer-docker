@@ -3056,6 +3056,9 @@ sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 CheckFirewall
 DeleteFirewallPort "446"
 
+if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || SubMenuMaintenance; docker compose down >/dev/null 2>&1; fi
+if [ -d /var/lib/iota-goshimmer ]; then rm -r /var/lib/iota-goshimmer; fi
+
 docker --version | grep "Docker version" >/dev/null 2>&1
 if [ $? -eq 0 ]
 	then
