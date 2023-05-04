@@ -12,7 +12,6 @@ VAR_NODE=0
 VAR_CONF_RESET=0
 
 VAR_IOTA_HORNET_VERSION='1.2.4'
-VAR_IOTA_GOSHIMMER_VERSION='0.9.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.5'
 VAR_SHIMMER_WASP_VERSION='0.6.1-alpha.12'
@@ -45,9 +44,6 @@ InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/relea
 IotaHornetHash='7d1b07636e82439122840ecd07fe65ee09d379d0241a289fdcef64d8b4229eae'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaGoshimmerHash='89488c50f16598aac05a894d8104c87dc2be651fc9524c84a9a4c3815633731e'
-IotaGoshimmerPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-goshimmer.tar.gz"
-
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
@@ -59,8 +55,6 @@ ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/
 
 PipeHash='2aa4786e6bc006a508c2bba2ed912b48ee3a1804a4cc66dca4f9a4b250386be4'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
-
-SnapshotIotaGoshimmer="https://dbfiles-goshimmer.s3.eu-central-1.amazonaws.com/snapshots/nectar/snapshot-latest.bin"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
 
@@ -84,7 +78,6 @@ if [ "$(id -u)" -ne 0 ]; then echo "$rd" && echo 'Please run DLT.GREEN Automatic
 
 CheckIota() {
 	if [ -s "/var/lib/iota-hornet/.env" ];    then VAR_NETWORK=1; fi
-	if [ -s "/var/lib/iota-goshimmer/.env" ]; then VAR_NETWORK=1; fi
 	if [ -s "/var/lib/iota-wasp/.env" ];      then VAR_NETWORK=1; fi
 }
 
@@ -535,14 +528,6 @@ Dashboard() {
 	fi
 	if ! [ "$VAR_NodeHealthy" = "false" ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ]; then iw=$rd; else iw=$gr; fi	
 
-	VAR_NODE=3; VAR_NodeHealthy=false; VAR_PORT="9999"
-	if [ -f "/var/lib/iota-goshimmer/.env" ]; then
-	  VAR_DOMAIN=$(cat /var/lib/iota-goshimmer/.env | grep _HOST | cut -d '=' -f 2)
-	  VAR_PORT=$(cat "/var/lib/iota-goshimmer/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
-	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
-	fi
-	if $VAR_NodeHealthy; then ig=$gn; elif [ -d /var/lib/iota-goshimmer ]; then ig=$rd; else ig=$gr; fi	
-
 	VAR_NODE=5; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-hornet/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2)
@@ -578,9 +563,9 @@ Dashboard() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║           ┌── IOTA Mainnet ──┐           IOTA Research        Tanglehub     ║"
+	echo "║           ┌── IOTA Mainnet ──┐                               Chunk Works    ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
-	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│  ""$ig""GOSHIMMER""$xx""   │ │4│     ""$tg""PIPE""$xx""     │ ║"
+	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│      -       │ │4│     ""$tg""PIPE""$xx""     │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
 	echo "║           ┌───────── Shimmer ┬ ""$(echo "$VAR_HORNET_NETWORK" | sed 's/.*/\u&/')"" ────────┐                            ║"
@@ -605,7 +590,6 @@ Dashboard() {
 	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
 	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || Dashboard; docker compose up -d; fi
 	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker compose up -d; fi
 	   sleep 5
 	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker compose up -d; fi
@@ -620,8 +604,9 @@ Dashboard() {
 	   SubMenuMaintenance ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-wasp'
 	   SubMenuMaintenance ;;
-	3) VAR_NETWORK=1; VAR_NODE=3; VAR_DIR='iota-goshimmer'
-	   SubMenuMaintenance ;;
+	3) clear
+	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	   DashboardHelper ;;
 	4) VAR_NETWORK=3; VAR_NODE=4; VAR_DIR='pipe'
 	   SubMenuMaintenance ;;
 	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-hornet'
@@ -830,17 +815,6 @@ SubMenuMaintenance() {
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_WASP_VERSION""$xx"
 		fi
 	fi
-	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then
-		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep GOSHIMMER_VERSION | cut -d '=' -f 2) = $VAR_IOTA_GOSHIMMER_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
-			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
-			fi
-		else
-			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
-		fi
-	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
 			if [ $(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_HORNET_VERSION ]; then
@@ -883,7 +857,6 @@ SubMenuMaintenance() {
 	case $n in
 	1) if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then IotaHornet; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then IotaWasp; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then IotaGoshimmer; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then ShimmerHornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then ShimmerWasp; fi
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 4 ]; then Pipe; fi
@@ -896,7 +869,6 @@ SubMenuMaintenance() {
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-wasp; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop shimmer-wasp; fi
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 4 ]; then docker stop pipe; fi
@@ -918,7 +890,6 @@ SubMenuMaintenance() {
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-wasp; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then docker stop iota-goshimmer; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop shimmer-wasp; fi
 	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 4 ]; then docker stop pipe; fi
@@ -942,11 +913,6 @@ SubMenuMaintenance() {
 	   fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
-	   fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]
-	   then
-	      rm -rf /var/lib/$VAR_DIR/data/mainnetdb/*
-	      rm -rf /var/lib/$VAR_DIR/data/peerdb/*
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
@@ -974,12 +940,6 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
 	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
-	   fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]
-	   then
-	      rm -rf /var/lib/$VAR_DIR/data/mainnetdb/*
-	      rm -rf /var/lib/$VAR_DIR/data/peerdb/*
-	      if [ -f /var/lib/$VAR_DIR/data/snapshots/snapshot.bin ]; then cd /var/lib/$VAR_DIR/data/snapshots || SubMenuMaintenance; wget $SnapshotIotaGoshimmer; mv snapshot-latest.bin snapshot.bin; fi
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
@@ -1057,17 +1017,6 @@ SubMenuConfiguration() {
 			fi
 		else
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_WASP_VERSION""$xx"
-		fi
-	fi
-	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ]; then
-		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep GOSHIMMER_VERSION | cut -d '=' -f 2) = $VAR_IOTA_GOSHIMMER_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
-			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep GOSHIMMER_VERSION | cut -d '=' -f 2)" | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
-			fi
-		else
-			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_IOTA_GOSHIMMER_VERSION""$xx"
 		fi
 	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
@@ -1438,7 +1387,7 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	NODES="iota-hornet iota-goshimmer iota-wasp shimmer-hornet shimmer-wasp"
+	NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp"
 	CERT=0
 	
 	for NODE in $NODES; do
@@ -1497,7 +1446,6 @@ SystemMaintenance() {
 	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
 	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || Dashboard; docker compose up -d; fi
 	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker compose up -d; fi
 	   sleep 5
 	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker compose up -d; fi
@@ -2163,219 +2111,6 @@ IotaWasp() {
 		echo " IOTA-Wasp nano-msg: $VAR_HOST:$VAR_IOTA_WASP_NANO_MSG_PORT"
 		echo " IOTA-Wasp ledger-connection/txstream: $VAR_IOTA_WASP_LEDGER_CONNECTION"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-	else
-	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
-	fi
-	echo ""
-
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-
-	SubMenuMaintenance
-}
-
-IotaGoshimmer() {
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║         DLT.GREEN AUTOMATIC IOTA-GOSHIMMER INSTALLATION WITH DOCKER         ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	CheckShimmer
-	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
-
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
-
-	echo "Stopping Node... $VAR_DIR"
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
-
-	echo ""
-	echo "Check Directory... /var/lib/$VAR_DIR"
-
-	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
-	cd /var/lib/$VAR_DIR || exit
-
-	echo ""
-	echo "CleanUp Directory... /var/lib/$VAR_DIR"
-
-	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
-
-	echo ""
-	echo "Download Package... install.tar.gz"
-	wget -cO - "$IotaGoshimmerPackage" -q > install.tar.gz
-
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$IotaGoshimmerHash" ]; then
-		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
-	else
-		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Package has been tampered, Installation aborted for your Security!'
-		echo "Downloaded Package is deleted!"
-		rm -r install.tar.gz
-		echo "$xx"; exit;
-	fi
-
-	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
-
-	echo "Unpack Package... install.tar.gz"
-	tar -xzf install.tar.gz
-
-	echo "Delete Package... install.tar.gz"
-	rm -r install.tar.gz
-
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-
-	CheckConfiguration
-
-	if [ $VAR_CONF_RESET = 1 ]; then
-
-		clear
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                               Set Parameters                                ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
-
-		VAR_HOST=$(cat .env 2>/dev/null | grep GOSHIMMER_HOST= | cut -d '=' -f 2)
-		if [ -z "$VAR_HOST" ]; then
-		  VAR_HOST=$(echo $VAR_DOMAIN | xargs)
-		  if [ -n "$VAR_HOST" ]; then
-		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "Press [Enter] to use global domain:"
-		  else
-			echo "Set domain name (example: $ca""vrom.dlt.green""$xx):";
-		  fi
-		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
-		CheckDomain "$VAR_HOST"
-
-		echo ''
-		VAR_IOTA_GOSHIMMER_HTTPS_PORT=$(cat .env 2>/dev/null >/dev/null 2>&1 | grep GOSHIMMER_HTTPS_PORT= | cut -d '=' -f 2)
-		VAR_DEFAULT='446';
-		if [ -z "$VAR_IOTA_GOSHIMMER_HTTPS_PORT" ]; then
-		  echo "Set dashboard port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set dashboard port (config: $ca""$VAR_IOTA_GOSHIMMER_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_IOTA_GOSHIMMER_HTTPS_PORT=$VAR_TMP;  elif [ -z "$VAR_IOTA_GOSHIMMER_HTTPS_PORT" ]; then VAR_IOTA_GOSHIMMER_HTTPS_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set dashboard port: $VAR_IOTA_GOSHIMMER_HTTPS_PORT""$xx"
-
-		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-		CheckCertificate
-
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                              Write Parameters                               ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
-
-		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
-		if [ -f .env ]; then rm .env; fi
-
-		echo "GOSHIMMER_VERSION=$VAR_IOTA_GOSHIMMER_VERSION" >> .env
-
-		echo "GOSHIMMER_HOST=$VAR_HOST" >> .env
-		echo "GOSHIMMER_HTTPS_PORT=$VAR_IOTA_GOSHIMMER_HTTPS_PORT" >> .env
-		echo "GOSHIMMER_GOSSIP_PORT=14666" >> .env
-		echo "GOSHIMMER_AUTOPEERING_PORT=14646" >> .env
-		echo "GOSHIMMER_WEBAPI_PORT=8080" >> .env
-
-		if [ $VAR_CERT = 0 ]
-		then
-			echo "GOSHIMMER_HTTP_PORT=80" >> .env
-			unset VAR_ACME_EMAIL
-			while [ -z "$VAR_ACME_EMAIL" ]; do
-				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
-			done
-			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
-		else
-			echo "GOSHIMMER_HTTP_PORT=8083" >> .env
-			echo "SSL_CONFIG=certs" >> .env
-			echo "GOSHIMMER_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
-			echo "GOSHIMMER_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
-		fi
-	else
-		if [ -f .env ]; then sed -i "s/GOSHIMMER_VERSION=.*/GOSHIMMER_VERSION=$VAR_IOTA_GOSHIMMER_VERSION/g" .env; fi
-
-		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
-	fi
-
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                                 Pull Data                                   ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	docker compose pull
-
-	if [ $VAR_CONF_RESET = 1 ]; then
-
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                            No Creditials Needed                             ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
-	fi
-
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Prepare Docker                                ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
-	./prepare_docker.sh
-
-	if [ $VAR_CONF_RESET = 1 ]; then
-
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                             Configure Firewall                              ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
-
-		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
-
-		echo ufw allow "$VAR_IOTA_GOSHIMMER_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_GOSHIMMER_HTTPS_PORT/tcp"
-		echo ufw allow '14666/tcp' && ufw allow '14666/tcp'
-		echo ufw allow '14646/udp' && ufw allow '14646/udp'
-		echo ufw allow '5000/tcp' && ufw allow '5000/tcp'
-		echo ufw allow '8080/tcp' && ufw allow '8080/tcp'
-	fi
-
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                              Start Goshimmer                                ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
-
-	docker compose up -d
-
-	sleep 3
-
-	RenameContainer
-
-	echo ""
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-
-	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
-
-	clear
-	echo ""
-
-	if [ $VAR_CONF_RESET = 1 ]; then
-
-		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
-		echo ""
-		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " IOTA-Goshimmer Dashboard: https://$VAR_HOST:$VAR_IOTA_GOSHIMMER_HTTPS_PORT/dashboard"
-		echo " IOTA-Goshimmer API: https://$VAR_HOST:$VAR_IOTA_GOSHIMMER_HTTPS_PORT/info"
-		echo " IOTA-Goshimmer API HTTP Port (for cli-wallet): 8080"
-		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo ""
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
 	fi
@@ -3269,8 +3004,6 @@ Pipe() {
 RenameContainer() {
 	docker container rename iota-hornet_hornet_1 iota-hornet >/dev/null 2>&1
 	docker container rename iota-hornet_traefik_1 iota-hornet.traefik >/dev/null 2>&1
-	docker container rename iota-goshimmer_goshimmer_1 iota-goshimmer >/dev/null 2>&1
-	docker container rename iota-goshimmer_traefik_1 iota-goshimmer.traefik >/dev/null 2>&1
 	docker container rename iota-wasp_traefik_1 iota-wasp.traefik >/dev/null 2>&1
 	docker container rename iota-wasp_wasp_1 iota-wasp >/dev/null 2>&1
 	docker container rename shimmer-hornet_hornet_1 shimmer-hornet >/dev/null 2>&1
@@ -3321,7 +3054,6 @@ sleep 3
 sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 CheckFirewall
-DeleteFirewallPort "440"
 
 docker --version | grep "Docker version" >/dev/null 2>&1
 if [ $? -eq 0 ]
