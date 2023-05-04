@@ -3054,6 +3054,7 @@ sleep 3
 sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 CheckFirewall
+DeleteFirewallPort "446"
 
 docker --version | grep "Docker version" >/dev/null 2>&1
 if [ $? -eq 0 ]
