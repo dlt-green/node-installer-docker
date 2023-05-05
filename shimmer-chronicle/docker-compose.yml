@@ -29,7 +29,7 @@ services:
       - "--inx-url=http://hornet:9029"
       - "--inx-sync-start=${INX_CHRONICLE_SYNC_START:-1}"
       - "--api-port=8042"
-      - "--mongodb-conn-str=mongodb://${INX_CHRONICLE_MONGODB_USERNAME:-mongodb}:${INX_CHRONICLE_MONGODB_PASSWORD:?NX_CHRONICLE_MONGODB_PASSWORD is missing}@mongodb:27017"
+      - "--mongodb-conn-str=mongodb://mongodb:27017"
       - "--mongodb-database-name=${INX_CHRONICLE_LEDGER_NETWORK:?INX_CHRONICLE_LEDGER_NETWORK is missing}"
       - "--influxdb-url=http://influxdb:8086"
       - "--influxdb-username=${INX_CHRONICLE_INFLUXDB_USERNAME:-influxdb}"
@@ -57,9 +57,6 @@ services:
     stop_grace_period: 5m
     restart: unless-stopped
     user: "65532"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${INX_CHRONICLE_MONGODB_USERNAME:-mongodb}
-      - MONGO_INITDB_ROOT_PASSWORD=${INX_CHRONICLE_MONGODB_PASSWORD:?INX_CHRONICLE_MONGODB_PASSWORD is missing}
     volumes:
       - ${INX_CHRONICLE_DATA_DIR:-./data}/mongodb/${INX_CHRONICLE_NETWORK:-mainnet}:/data/db
     command: [ "--quiet", "--logpath", "/dev/null" ]
@@ -192,8 +189,6 @@ services:
       - ME_CONFIG_MONGODB_PORT=27017
       - ME_CONFIG_OPTIONS_READONLY=true
       - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=${INX_CHRONICLE_MONGODB_USERNAME:-mongodb}
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=${INX_CHRONICLE_MONGODB_PASSWORD:?INX_CHRONICLE_MONGODB_PASSWORD is missing}
       - ME_CONFIG_SITE_BASEURL=/mongodb/
       - ME_CONFIG_BASICAUTH_USERNAME=${INX_CHRONICLE_MONGODB_USERNAME:-mongodb}
       - ME_CONFIG_BASICAUTH_PASSWORD=${INX_CHRONICLE_MONGODB_PASSWORD:?INX_CHRONICLE_MONGODB_PASSWORD is missing}
@@ -239,8 +234,6 @@ services:
     environment:
       - INFLUXDB_USERNAME=${INX_CHRONICLE_INFLUXDB_USERNAME:-influxdb}
       - INFLUXDB_PASSWORD=${INX_CHRONICLE_INFLUXDB_PASSWORD:?INX_CHRONICLE_INFLUXDB_PASSWORD is missing}
-      - MONGODB_USERNAME=${INX_CHRONICLE_MONGODB_USERNAME:-mongodb}
-      - MONGODB_PASSWORD=${INX_CHRONICLE_MONGODB_PASSWORD:?NX_CHRONICLE_MONGODB_PASSWORD is missing}
     logging:
       driver: "json-file"
       options:
