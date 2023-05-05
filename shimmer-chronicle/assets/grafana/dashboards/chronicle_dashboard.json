@@ -404,8 +404,8 @@
         },
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "PBFA97CFB590B2093"
+                "type": "influxdb",
+                "uid": "P951FEA4DE68E13C5"
             },
             "fieldConfig": {
                 "defaults": {
@@ -482,23 +482,36 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "PBFA97CFB590B2093"
+                        "type": "influxdb",
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "editorMode": "code",
-                    "expr": "mongodb_dbstats_totalSize{database=\"chronicle\"}",
-                    "legendFormat": "{{ database }}",
-                    "range": true,
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mongodb_db_stats\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"data_size\" or r[\"_field\"] == \"storage_size\")\r\n  |> filter(fn: (r) => r[\"db_name\"] == \"shimmer\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\r\n  |> yield(name: \"last\")",
                     "refId": "A"
                 }
             ],
             "title": "MongoDB Database Size",
+            "transformations": [
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(data_size.*)",
+                        "renamePattern": "Data Size"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(storage_size.*)",
+                        "renamePattern": "Storage Size"
+                    }
+                }
+            ],
             "type": "timeseries"
         },
         {
             "datasource": {
-                "type": "prometheus",
-                "uid": "PBFA97CFB590B2093"
+                "type": "influxdb",
+                "uid": "P951FEA4DE68E13C5"
             },
             "fieldConfig": {
                 "defaults": {
@@ -565,7 +578,7 @@
                     "calcs": [],
                     "displayMode": "list",
                     "placement": "bottom",
-                    "showLegend": true
+                    "showLegend": false
                 },
                 "tooltip": {
                     "mode": "single",
@@ -575,170 +588,15 @@
             "targets": [
                 {
                     "datasource": {
-                        "type": "prometheus",
-                        "uid": "PBFA97CFB590B2093"
+                        "type": "influxdb",
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "editorMode": "code",
-                    "expr": "mongodb_dbstats_indexSize{database=\"chronicle\"}",
-                    "hide": false,
-                    "legendFormat": "Total database: {{ database }}",
-                    "range": true,
-                    "refId": "D"
-                },
-                {
-                    "datasource": {
-                        "type": "prometheus",
-                        "uid": "PBFA97CFB590B2093"
-                    },
-                    "editorMode": "code",
-                    "expr": "mongodb_collstats_storageStats_indexSizes_ledger_update_index",
-                    "legendFormat": "Ledger Update Index",
-                    "range": true,
-                    "refId": "A"
-                },
-                {
-                    "datasource": {
-                        "type": "prometheus",
-                        "uid": "PBFA97CFB590B2093"
-                    },
-                    "editorMode": "code",
-                    "expr": "mongodb_collstats_storageStats_indexSizes_output_spent_index",
-                    "hide": false,
-                    "legendFormat": "{{ collection }}",
-                    "range": true,
-                    "refId": "B"
-                },
-                {
-                    "datasource": {
-                        "type": "prometheus",
-                        "uid": "PBFA97CFB590B2093"
-                    },
-                    "editorMode": "code",
-                    "expr": "mongodb_collstats_storageStats_indexSizes_block_referenced_index",
-                    "hide": false,
-                    "legendFormat": "Referenced Block Index",
-                    "range": true,
-                    "refId": "C"
-                },
-                {
-                    "datasource": {
-                        "type": "prometheus",
-                        "uid": "PBFA97CFB590B2093"
-                    },
-                    "editorMode": "code",
-                    "expr": "mongodb_collstats_storageStats_indexSizes_output_booked_milestone_index",
-                    "hide": false,
-                    "legendFormat": "Output Booked Index",
-                    "range": true,
-                    "refId": "E"
-                },
-                {
-                    "datasource": {
-                        "type": "prometheus",
-                        "uid": "PBFA97CFB590B2093"
-                    },
-                    "editorMode": "code",
-                    "expr": "mongodb_collstats_storageStats_indexSizes_id",
-                    "hide": false,
-                    "legendFormat": "Id Index: {{ collection }}",
-                    "range": true,
-                    "refId": "F"
-                }
-            ],
-            "title": "MongoDB Index Info",
-            "type": "timeseries"
-        },
-        {
-            "datasource": {
-                "type": "prometheus",
-                "uid": "PBFA97CFB590B2093"
-            },
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "palette-classic"
-                    },
-                    "custom": {
-                        "axisCenteredZero": false,
-                        "axisColorMode": "text",
-                        "axisLabel": "",
-                        "axisPlacement": "auto",
-                        "barAlignment": 0,
-                        "drawStyle": "line",
-                        "fillOpacity": 0,
-                        "gradientMode": "none",
-                        "hideFrom": {
-                            "legend": false,
-                            "tooltip": false,
-                            "viz": false
-                        },
-                        "lineInterpolation": "linear",
-                        "lineWidth": 1,
-                        "pointSize": 5,
-                        "scaleDistribution": {
-                            "type": "linear"
-                        },
-                        "showPoints": "auto",
-                        "spanNulls": false,
-                        "stacking": {
-                            "group": "A",
-                            "mode": "none"
-                        },
-                        "thresholdsStyle": {
-                            "mode": "off"
-                        }
-                    },
-                    "mappings": [],
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                            {
-                                "color": "green",
-                                "value": null
-                            },
-                            {
-                                "color": "red",
-                                "value": 80
-                            }
-                        ]
-                    },
-                    "unit": "decbytes"
-                },
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 0,
-                "y": 24
-            },
-            "id": 13,
-            "options": {
-                "legend": {
-                    "calcs": [],
-                    "displayMode": "list",
-                    "placement": "bottom",
-                    "showLegend": true
-                },
-                "tooltip": {
-                    "mode": "single",
-                    "sort": "none"
-                }
-            },
-            "targets": [
-                {
-                    "datasource": {
-                        "type": "prometheus",
-                        "uid": "PBFA97CFB590B2093"
-                    },
-                    "editorMode": "code",
-                    "expr": "mongodb_collstats_storageStats_size{database=\"chronicle\"}",
-                    "legendFormat": "{{ collection }}",
-                    "range": true,
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"mongodb_db_stats\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"index_size\")\r\n  |> filter(fn: (r) => r[\"db_name\"] == \"shimmer\")\r\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\r\n  |> yield(name: \"last\")",
                     "refId": "A"
                 }
             ],
-            "title": "Chronicle Mongo Database Size",
+            "title": "MongoDB Index Size",
+            "transformations": [],
             "type": "timeseries"
         }
     ],
@@ -750,7 +608,7 @@
         "list": []
     },
     "time": {
-        "from": "now-15m",
+        "from": "now-30m",
         "to": "now"
     },
     "timepicker": {},

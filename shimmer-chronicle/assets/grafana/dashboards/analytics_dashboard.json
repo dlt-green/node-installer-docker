@@ -861,7 +861,7 @@
         {
             "datasource": {
                 "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
+                "uid": "P951FEA4DE68E13C5"
             },
             "description": "",
             "fieldConfig": {
@@ -929,7 +929,7 @@
                     "calcs": [],
                     "displayMode": "list",
                     "placement": "bottom",
-                    "showLegend": true
+                    "showLegend": false
                 },
                 "tooltip": {
                     "mode": "multi",
@@ -938,51 +938,12 @@
             },
             "targets": [
                 {
-                    "alias": "Number of Booked SMR Tokens",
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "$aggregation_interval"
-                            ],
-                            "type": "time"
-                        },
-                        {
-                            "params": [
-                                "null"
-                            ],
-                            "type": "fill"
-                        }
-                    ],
-                    "measurement": "stardust_base_token_activity",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "booked_amount"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    " / 1000000"
-                                ],
-                                "type": "math"
-                            }
-                        ]
-                    ],
-                    "tags": []
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_base_token_activity\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"booked_amount\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000}))\r\n  |> aggregateWindow(every: ${aggregation_interval}, fn: sum, createEmpty: false)\r\n  |> yield(name: \"sum\")",
+                    "refId": "A"
                 }
             ],
             "title": "SMR Tokens Booked/$aggregation_interval",
@@ -991,7 +952,7 @@
         {
             "datasource": {
                 "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
+                "uid": "P951FEA4DE68E13C5"
             },
             "fieldConfig": {
                 "defaults": {
@@ -1058,7 +1019,7 @@
                     "calcs": [],
                     "displayMode": "list",
                     "placement": "bottom",
-                    "showLegend": true
+                    "showLegend": false
                 },
                 "tooltip": {
                     "mode": "multi",
@@ -1067,51 +1028,12 @@
             },
             "targets": [
                 {
-                    "alias": "Number of Transferred SMR Tokens",
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "$aggregation_interval"
-                            ],
-                            "type": "time"
-                        },
-                        {
-                            "params": [
-                                "null"
-                            ],
-                            "type": "fill"
-                        }
-                    ],
-                    "measurement": "stardust_base_token_activity",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "transferred_amount"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    " / 1000000"
-                                ],
-                                "type": "math"
-                            }
-                        ]
-                    ],
-                    "tags": []
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_base_token_activity\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"transferred_amount\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000}))\r\n  |> aggregateWindow(every: ${aggregation_interval}, fn: sum, createEmpty: false)\r\n  |> yield(name: \"sum\")",
+                    "refId": "A"
                 }
             ],
             "title": "SMR Tokens Transferred/$aggregation_interval",
@@ -1211,7 +1133,7 @@
         {
             "datasource": {
                 "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
+                "uid": "P951FEA4DE68E13C5"
             },
             "fieldConfig": {
                 "defaults": {
@@ -1277,7 +1199,7 @@
                     "calcs": [],
                     "displayMode": "list",
                     "placement": "bottom",
-                    "showLegend": true
+                    "showLegend": false
                 },
                 "tooltip": {
                     "mode": "single",
@@ -1286,39 +1208,12 @@
             },
             "targets": [
                 {
-                    "alias": "Addresses",
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "1d"
-                            ],
-                            "type": "time"
-                        }
-                    ],
-                    "measurement": "stardust_daily_active_addresses",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "last"
-                            }
-                        ]
-                    ],
-                    "tags": []
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_active_addresses\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"count\")\r\n  |> aggregateWindow(every: 1d, fn: last, createEmpty: false)\r\n  |> yield(name: \"last\")",
+                    "refId": "A"
                 }
             ],
             "title": "Number of Daily Active Addresses",
@@ -1340,7 +1235,7 @@
         {
             "datasource": {
                 "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
+                "uid": "P951FEA4DE68E13C5"
             },
             "description": "",
             "fieldConfig": {
@@ -1417,114 +1312,51 @@
             },
             "targets": [
                 {
-                    "alias": "$col",
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "$aggregation_interval"
-                            ],
-                            "type": "time"
-                        },
-                        {
-                            "params": [
-                                "null"
-                            ],
-                            "type": "fill"
-                        }
-                    ],
-                    "measurement": "stardust_output_activity",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "alias_created_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "Created"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "alias_governor_changed_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "Governor Changed"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "alias_state_changed_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "State Changed"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "alias_destroyed_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "Destroyed"
-                                ],
-                                "type": "alias"
-                            }
-                        ]
-                    ],
-                    "tags": []
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_output_activity\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"alias_created_count\" or r[\"_field\"] == \"alias_governor_changed_count\" or r[\"_field\"] == \"alias_state_changed_count\" or r[\"_field\"] == \"alias_destroyed_count\")\r\n  |> aggregateWindow(every: ${aggregation_interval}, fn: sum, createEmpty: false)\r\n  |> yield(name: \"sum\")",
+                    "refId": "A"
                 }
             ],
             "title": "Alias Activity Counts/$aggregation_interval",
+            "transformations": [
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*created.*)",
+                        "renamePattern": "Created"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*destroyed.*)",
+                        "renamePattern": "Destroyed"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*state_changed.*)",
+                        "renamePattern": "State Changed"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*governor_changed.*)",
+                        "renamePattern": "Governor Changed"
+                    }
+                }
+            ],
             "type": "timeseries"
         },
         {
             "datasource": {
                 "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
+                "uid": "P951FEA4DE68E13C5"
             },
             "description": "",
             "fieldConfig": {
@@ -1601,96 +1433,44 @@
             },
             "targets": [
                 {
-                    "alias": "$col",
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "$aggregation_interval"
-                            ],
-                            "type": "time"
-                        },
-                        {
-                            "params": [
-                                "null"
-                            ],
-                            "type": "fill"
-                        }
-                    ],
-                    "measurement": "stardust_output_activity",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "nft_created_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "Created"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "nft_transferred_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "Transferred"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "nft_destroyed_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "Destroyed"
-                                ],
-                                "type": "alias"
-                            }
-                        ]
-                    ],
-                    "tags": []
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_output_activity\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"nft_created_count\" or r[\"_field\"] == \"nft_destroyed_count\" or r[\"_field\"] == \"nft_transferred_count\")\r\n  |> aggregateWindow(every: ${aggregation_interval}, fn: sum, createEmpty: false)\r\n  |> yield(name: \"sum\")",
+                    "refId": "A"
                 }
             ],
             "title": "NFT Activity Counts/$aggregation_interval",
+            "transformations": [
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*created.*)",
+                        "renamePattern": "Created"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*destroyed.*)",
+                        "renamePattern": "Destroyed"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*transferred.*)",
+                        "renamePattern": "Transferred"
+                    }
+                }
+            ],
             "type": "timeseries"
         },
         {
             "datasource": {
                 "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
+                "uid": "P951FEA4DE68E13C5"
             },
             "description": "",
             "fieldConfig": {
@@ -1767,96 +1547,44 @@
             },
             "targets": [
                 {
-                    "alias": "$col",
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "$aggregation_interval"
-                            ],
-                            "type": "time"
-                        },
-                        {
-                            "params": [
-                                "null"
-                            ],
-                            "type": "fill"
-                        }
-                    ],
-                    "measurement": "stardust_output_activity",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "foundry_created_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "Created"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "foundry_transferred_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "Transferred"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "foundry_destroyed_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "Destroyed"
-                                ],
-                                "type": "alias"
-                            }
-                        ]
-                    ],
-                    "tags": []
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_output_activity\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"foundry_created_count\" or r[\"_field\"] == \"foundry_destroyed_count\" or r[\"_field\"] == \"foundry_transferred_count\")\r\n  |> aggregateWindow(every: ${aggregation_interval}, fn: sum, createEmpty: false)\r\n  |> yield(name: \"sum\")",
+                    "refId": "A"
                 }
             ],
             "title": "Foundry Activity Counts/$aggregation_interval",
+            "transformations": [
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*created.*)",
+                        "renamePattern": "Created"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*destroyed.*)",
+                        "renamePattern": "Destroyed"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*transferred.*)",
+                        "renamePattern": "Transferred"
+                    }
+                }
+            ],
             "type": "timeseries"
         },
         {
             "datasource": {
                 "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
+                "uid": "P951FEA4DE68E13C5"
             },
             "fieldConfig": {
                 "defaults": {
@@ -1917,7 +1645,7 @@
                 "x": 12,
                 "y": 52
             },
-            "id": 68,
+            "id": 70,
             "options": {
                 "legend": {
                     "calcs": [],
@@ -1932,242 +1660,58 @@
             },
             "targets": [
                 {
-                    "alias": "$col",
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "$aggregation_interval"
-                            ],
-                            "type": "time"
-                        },
-                        {
-                            "params": [
-                                "null"
-                            ],
-                            "type": "fill"
-                        }
-                    ],
-                    "measurement": "stardust_transaction_size_distribution",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "query": "SELECT last(\"input_0\"), last(\"input_1\"), last(\"input_2\"), last(\"input_3\"), last(\"input_4\"), last(\"input_5\"), last(\"input_6\"), last(\"input_7\"), last(\"input_small\"), last(\"input_medium\"), last(\"input_large\"), last(\"input_huge\") FROM \"stardust_transaction_size_distribution\" WHERE $timeFilter GROUP BY time($aggregation_interval) fill(null)",
-                    "rawQuery": false,
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "input_1"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "1"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "input_2"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "2"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "input_3"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "3"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "input_4"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "4"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "input_5"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "5"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "input_6"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "6"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "input_7"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "7"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "input_small"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "[8..16)"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "input_medium"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "[16..32)"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "input_large"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "[32..64)"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "input_huge"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "[64..128)"
-                                ],
-                                "type": "alias"
-                            }
-                        ]
-                    ],
-                    "tags": []
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_transaction_size_distribution\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"input_0\" or r[\"_field\"] == \"input_1\" or r[\"_field\"] == \"input_2\" or r[\"_field\"] == \"input_3\" or r[\"_field\"] == \"input_4\" or r[\"_field\"] == \"input_5\" or r[\"_field\"] == \"input_6\" or r[\"_field\"] == \"input_7\" or r[\"_field\"] == \"input_huge\" or r[\"_field\"] == \"input_large\" or r[\"_field\"] == \"input_medium\" or r[\"_field\"] == \"input_small\")\r\n  |> aggregateWindow(every: ${aggregation_interval}, fn: last, createEmpty: true)\r\n  |> yield(name: \"last\")",
+                    "refId": "A"
                 }
             ],
             "title": "Transaction Distribution by Consumed Outputs /${aggregation_interval}",
+            "transformations": [
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "input_(.*)",
+                        "renamePattern": "$1"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "small",
+                        "renamePattern": "[8..16)"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "medium",
+                        "renamePattern": "[16..32)"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "large",
+                        "renamePattern": "[32..64)"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "huge",
+                        "renamePattern": "[64..128)"
+                    }
+                }
+            ],
             "type": "timeseries"
         },
         {
             "datasource": {
                 "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
+                "uid": "P951FEA4DE68E13C5"
             },
             "fieldConfig": {
                 "defaults": {
@@ -2243,236 +1787,52 @@
             },
             "targets": [
                 {
-                    "alias": "$col",
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "$aggregation_interval"
-                            ],
-                            "type": "time"
-                        },
-                        {
-                            "params": [
-                                "null"
-                            ],
-                            "type": "fill"
-                        }
-                    ],
-                    "measurement": "stardust_transaction_size_distribution",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "query": "SELECT last(\"output_1\"), last(\"output_2\"), last(\"output_3\"), last(\"output_4\"), last(\"output_5\"), last(\"output_6\"), last(\"output_7\"), last(\"output_small\"), last(\"output_medium\"), last(\"output_large\"), last(\"output_huge\") FROM \"stardust_transaction_size_distribution\" WHERE $timeFilter GROUP BY time($aggregation_interval) fill(null)",
-                    "rawQuery": false,
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "output_1"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "1"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "output_2"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "2"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "output_3"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "3"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "output_4"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "4"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "output_5"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "5"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "output_6"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "6"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "output_7"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "7"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "output_small"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "[8..16)"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "output_medium"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "[16..32)"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "output_large"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "[32..64)"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "output_huge"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "sum"
-                            },
-                            {
-                                "params": [
-                                    "[64..128)"
-                                ],
-                                "type": "alias"
-                            }
-                        ]
-                    ],
-                    "tags": []
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_transaction_size_distribution\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"output_0\" or r[\"_field\"] == \"output_1\" or r[\"_field\"] == \"output_2\" or r[\"_field\"] == \"output_3\" or r[\"_field\"] == \"output_4\" or r[\"_field\"] == \"output_5\" or r[\"_field\"] == \"output_6\" or r[\"_field\"] == \"output_7\" or r[\"_field\"] == \"output_huge\" or r[\"_field\"] == \"output_large\" or r[\"_field\"] == \"output_medium\" or r[\"_field\"] == \"output_small\")\r\n  |> aggregateWindow(every: ${aggregation_interval}, fn: last, createEmpty: true)\r\n  |> yield(name: \"last\")",
+                    "refId": "A"
                 }
             ],
             "title": "Transaction Distribution by Created Outputs /${aggregation_interval}",
+            "transformations": [
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "output_(.*)",
+                        "renamePattern": "$1"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "small",
+                        "renamePattern": "[8..16)"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "medium",
+                        "renamePattern": "[16..32)"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "large",
+                        "renamePattern": "[32..64)"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "huge",
+                        "renamePattern": "[64..128)"
+                    }
+                }
+            ],
             "type": "timeseries"
         },
         {
@@ -2491,7 +1851,7 @@
         {
             "datasource": {
                 "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
+                "uid": "P951FEA4DE68E13C5"
             },
             "fieldConfig": {
                 "defaults": {
@@ -2567,96 +1927,44 @@
             },
             "targets": [
                 {
-                    "alias": "$col Unlock Conditions",
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "$aggregation_interval"
-                            ],
-                            "type": "time"
-                        },
-                        {
-                            "params": [
-                                "null"
-                            ],
-                            "type": "fill"
-                        }
-                    ],
-                    "measurement": "stardust_unlock_conditions",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "timelock_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "last"
-                            },
-                            {
-                                "params": [
-                                    "Timelock"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "storage_deposit_return_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "last"
-                            },
-                            {
-                                "params": [
-                                    "Storage Deposit Return"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "expiration_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "last"
-                            },
-                            {
-                                "params": [
-                                    "Expiration"
-                                ],
-                                "type": "alias"
-                            }
-                        ]
-                    ],
-                    "tags": []
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_unlock_conditions\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"timelock_count\" or r[\"_field\"] == \"storage_deposit_return_count\" or r[\"_field\"] == \"expiration_count\")\r\n  |> aggregateWindow(every: ${aggregation_interval}, fn: last, createEmpty: true)\r\n  |> yield(name: \"last\")",
+                    "refId": "A"
                 }
             ],
             "title": "Number of Unlock Conditions by Type",
+            "transformations": [
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*expiration.*)",
+                        "renamePattern": "Expiration"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*storage_deposit_return.*)",
+                        "renamePattern": "Storage Deposit Return"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*timelock.*)",
+                        "renamePattern": "Timelock"
+                    }
+                }
+            ],
             "type": "timeseries"
         },
         {
             "datasource": {
                 "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
+                "uid": "P951FEA4DE68E13C5"
             },
             "fieldConfig": {
                 "defaults": {
@@ -2732,108 +2040,128 @@
             },
             "targets": [
                 {
-                    "alias": "$col Unlock Conditions",
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "$aggregation_interval"
-                            ],
-                            "type": "time"
-                        },
-                        {
-                            "params": [
-                                "null"
-                            ],
-                            "type": "fill"
-                        }
-                    ],
-                    "measurement": "stardust_unlock_conditions",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "timelock_amount"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "last"
-                            },
-                            {
-                                "params": [
-                                    " / 1000000"
-                                ],
-                                "type": "math"
-                            },
-                            {
-                                "params": [
-                                    "Timelock"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "storage_deposit_return_amount"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "last"
-                            },
-                            {
-                                "params": [
-                                    " / 1000000"
-                                ],
-                                "type": "math"
-                            },
-                            {
-                                "params": [
-                                    "Storage Deposit Return"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "expiration_amount"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "last"
-                            },
-                            {
-                                "params": [
-                                    " / 1000000"
-                                ],
-                                "type": "math"
-                            },
-                            {
-                                "params": [
-                                    "Expiration"
-                                ],
-                                "type": "alias"
-                            }
-                        ]
-                    ],
-                    "tags": []
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_unlock_conditions\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"expiration_amount\" or r[\"_field\"] == \"storage_deposit_return_amount\" or r[\"_field\"] == \"timelock_amount\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000}))\r\n  |> aggregateWindow(every: ${aggregation_interval}, fn: last, createEmpty: true)\r\n  |> yield(name: \"last\")",
+                    "refId": "A"
                 }
             ],
             "title": "Tokens Held by Outputs with Unlock Conditions",
+            "transformations": [
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*expiration.*)",
+                        "renamePattern": "Expiration"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*storage_deposit_return.*)",
+                        "renamePattern": "Storage Deposit Return"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*timelock.*)",
+                        "renamePattern": "Timelock"
+                    }
+                }
+            ],
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "influxdb",
+                "uid": "P951FEA4DE68E13C5"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "drawStyle": "line",
+                        "fillOpacity": 15,
+                        "gradientMode": "opacity",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "lineInterpolation": "stepBefore",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    },
+                    "unit": "SMR"
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 77
+            },
+            "id": 64,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": false
+                },
+                "tooltip": {
+                    "mode": "multi",
+                    "sort": "desc"
+                }
+            },
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "influxdb",
+                        "uid": "P951FEA4DE68E13C5"
+                    },
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_unlock_conditions\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"storage_deposit_return_inner_amount\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000}))\r\n  |> aggregateWindow(every: ${aggregation_interval}, fn: last, createEmpty: false)\r\n  |> yield(name: \"last\")",
+                    "refId": "A"
+                }
+            ],
+            "title": "Amount in Storage Deposit Return Unlock Condition",
             "type": "timeseries"
         },
         {
@@ -2842,7 +2170,7 @@
                 "h": 1,
                 "w": 24,
                 "x": 0,
-                "y": 77
+                "y": 85
             },
             "id": 31,
             "panels": [],
@@ -2852,7 +2180,7 @@
         {
             "datasource": {
                 "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
+                "uid": "P951FEA4DE68E13C5"
             },
             "description": "Tokens from the genesis snapshot that have not been claimed yet.",
             "fieldConfig": {
@@ -2912,7 +2240,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 78
+                "y": 86
             },
             "id": 33,
             "options": {
@@ -2920,7 +2248,7 @@
                     "calcs": [],
                     "displayMode": "list",
                     "placement": "bottom",
-                    "showLegend": true
+                    "showLegend": false
                 },
                 "tooltip": {
                     "mode": "single",
@@ -2929,51 +2257,12 @@
             },
             "targets": [
                 {
-                    "alias": "Unclaimed Tokens",
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "$aggregation_interval"
-                            ],
-                            "type": "time"
-                        },
-                        {
-                            "params": [
-                                "null"
-                            ],
-                            "type": "fill"
-                        }
-                    ],
-                    "measurement": "stardust_unclaimed_rewards",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "unclaimed_amount"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "last"
-                            },
-                            {
-                                "params": [
-                                    " / 1000000"
-                                ],
-                                "type": "math"
-                            }
-                        ]
-                    ],
-                    "tags": []
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_unclaimed_rewards\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"unclaimed_amount\")\r\n  |> map(fn: (r) => ({r with _value: r._value / 1000000}))\r\n  |> aggregateWindow(every: ${aggregation_interval}, fn: last, createEmpty: false)\r\n  |> yield(name: \"last\")",
+                    "refId": "A"
                 }
             ],
             "title": "Unclaimed Tokens",
@@ -2982,7 +2271,7 @@
         {
             "datasource": {
                 "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
+                "uid": "P951FEA4DE68E13C5"
             },
             "description": "",
             "fieldConfig": {
@@ -3043,7 +2332,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 78
+                "y": 86
             },
             "id": 36,
             "options": {
@@ -3051,7 +2340,7 @@
                     "calcs": [],
                     "displayMode": "list",
                     "placement": "bottom",
-                    "showLegend": true
+                    "showLegend": false
                 },
                 "tooltip": {
                     "mode": "multi",
@@ -3060,45 +2349,12 @@
             },
             "targets": [
                 {
-                    "alias": "Unclaimed outputs",
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "$aggregation_interval"
-                            ],
-                            "type": "time"
-                        },
-                        {
-                            "params": [
-                                "null"
-                            ],
-                            "type": "fill"
-                        }
-                    ],
-                    "measurement": "stardust_unclaimed_rewards",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "unclaimed_count"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "last"
-                            }
-                        ]
-                    ],
-                    "tags": []
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_unclaimed_rewards\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"unclaimed_count\")\r\n  |> aggregateWindow(every: ${aggregation_interval}, fn: last, createEmpty: false)\r\n  |> yield(name: \"last\")",
+                    "refId": "A"
                 }
             ],
             "title": "Number of Unclaimed Shimmer Genesis Outputs",
@@ -3110,7 +2366,7 @@
                 "h": 1,
                 "w": 24,
                 "x": 0,
-                "y": 86
+                "y": 94
             },
             "id": 29,
             "panels": [],
@@ -3120,7 +2376,7 @@
         {
             "datasource": {
                 "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
+                "uid": "P951FEA4DE68E13C5"
             },
             "fieldConfig": {
                 "defaults": {
@@ -3179,7 +2435,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 0,
-                "y": 87
+                "y": 95
             },
             "id": 39,
             "options": {
@@ -3196,72 +2452,31 @@
             },
             "targets": [
                 {
-                    "alias": "$col Bytes",
                     "datasource": {
                         "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
+                        "uid": "P951FEA4DE68E13C5"
                     },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "$aggregation_interval"
-                            ],
-                            "type": "time"
-                        },
-                        {
-                            "params": [
-                                "null"
-                            ],
-                            "type": "fill"
-                        }
-                    ],
-                    "measurement": "stardust_ledger_size",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "total_key_bytes"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "last"
-                            },
-                            {
-                                "params": [
-                                    "Key"
-                                ],
-                                "type": "alias"
-                            }
-                        ],
-                        [
-                            {
-                                "params": [
-                                    "total_data_bytes"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "last"
-                            },
-                            {
-                                "params": [
-                                    "Data"
-                                ],
-                                "type": "alias"
-                            }
-                        ]
-                    ],
-                    "tags": []
+                    "query": "from(bucket: \"chronicle\")\r\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\r\n  |> filter(fn: (r) => r[\"_measurement\"] == \"stardust_ledger_size\")\r\n  |> filter(fn: (r) => r[\"_field\"] == \"total_key_bytes\" or r[\"_field\"] == \"total_data_bytes\")\r\n  |> aggregateWindow(every: ${aggregation_interval}, fn: last, createEmpty: false)\r\n  |> yield(name: \"last\")",
+                    "refId": "A"
                 }
             ],
             "title": "Ledger Size",
+            "transformations": [
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*data.*)",
+                        "renamePattern": "Data"
+                    }
+                },
+                {
+                    "id": "renameByRegex",
+                    "options": {
+                        "regex": "(.*key.*)",
+                        "renamePattern": "Key"
+                    }
+                }
+            ],
             "type": "timeseries"
         },
         {
@@ -3326,7 +2541,7 @@
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 87
+                "y": 95
             },
             "id": 41,
             "options": {
@@ -3353,135 +2568,6 @@
             ],
             "title": "Total Storage Deposit",
             "transformations": [],
-            "type": "timeseries"
-        },
-        {
-            "datasource": {
-                "type": "influxdb",
-                "uid": "PE5723DBC504634E6"
-            },
-            "fieldConfig": {
-                "defaults": {
-                    "color": {
-                        "mode": "palette-classic"
-                    },
-                    "custom": {
-                        "axisCenteredZero": false,
-                        "axisColorMode": "text",
-                        "axisLabel": "",
-                        "axisPlacement": "auto",
-                        "barAlignment": 0,
-                        "drawStyle": "line",
-                        "fillOpacity": 15,
-                        "gradientMode": "opacity",
-                        "hideFrom": {
-                            "legend": false,
-                            "tooltip": false,
-                            "viz": false
-                        },
-                        "lineInterpolation": "stepBefore",
-                        "lineWidth": 1,
-                        "pointSize": 5,
-                        "scaleDistribution": {
-                            "type": "linear"
-                        },
-                        "showPoints": "auto",
-                        "spanNulls": false,
-                        "stacking": {
-                            "group": "A",
-                            "mode": "none"
-                        },
-                        "thresholdsStyle": {
-                            "mode": "off"
-                        }
-                    },
-                    "mappings": [],
-                    "thresholds": {
-                        "mode": "absolute",
-                        "steps": [
-                            {
-                                "color": "green",
-                                "value": null
-                            },
-                            {
-                                "color": "red",
-                                "value": 80
-                            }
-                        ]
-                    },
-                    "unit": "SMR"
-                },
-                "overrides": []
-            },
-            "gridPos": {
-                "h": 8,
-                "w": 12,
-                "x": 0,
-                "y": 95
-            },
-            "id": 64,
-            "options": {
-                "legend": {
-                    "calcs": [],
-                    "displayMode": "list",
-                    "placement": "bottom",
-                    "showLegend": true
-                },
-                "tooltip": {
-                    "mode": "multi",
-                    "sort": "desc"
-                }
-            },
-            "targets": [
-                {
-                    "alias": "Return Amount",
-                    "datasource": {
-                        "type": "influxdb",
-                        "uid": "PE5723DBC504634E6"
-                    },
-                    "groupBy": [
-                        {
-                            "params": [
-                                "$aggregation_interval"
-                            ],
-                            "type": "time"
-                        },
-                        {
-                            "params": [
-                                "null"
-                            ],
-                            "type": "fill"
-                        }
-                    ],
-                    "measurement": "stardust_unlock_conditions",
-                    "orderByTime": "ASC",
-                    "policy": "default",
-                    "refId": "A",
-                    "resultFormat": "time_series",
-                    "select": [
-                        [
-                            {
-                                "params": [
-                                    "storage_deposit_return_inner_amount"
-                                ],
-                                "type": "field"
-                            },
-                            {
-                                "params": [],
-                                "type": "last"
-                            },
-                            {
-                                "params": [
-                                    " / 1000000"
-                                ],
-                                "type": "math"
-                            }
-                        ]
-                    ],
-                    "tags": []
-                }
-            ],
-            "title": "Amount in Storage Deposit Return Unlock Condition",
             "type": "timeseries"
         }
     ],
@@ -3567,6 +2653,6 @@
     "timezone": "",
     "title": "Analytics",
     "uid": "w6B8aUI4z",
-    "version": 8,
+    "version": 1,
     "weekStart": ""
 }
