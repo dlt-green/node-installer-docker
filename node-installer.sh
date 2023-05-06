@@ -55,7 +55,7 @@ ShimmerWaspHash='461de120653ced777da07292a63e358fa1be625471acbde97fc3325af3404a2
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
 ShimmerChronicleHash='06360eb7386fc452a970f8189555450d7f7f57fe96f7bc180d5667dcdd72ff84'
-ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/inx-chronicle-latest/shimmer-chronicle.tar.gz"
+ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 PipeHash='95639cab5b3d29c51814706a45e2a7da947c99da975d317adeee44cd7228bacb'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
