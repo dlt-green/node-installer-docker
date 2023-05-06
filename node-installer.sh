@@ -561,6 +561,11 @@ Dashboard() {
 	PositionCenter "$VAR_DOMAIN"
 	VAR_DOMAIN=$text
 
+	ix=$gr
+	if [ "$(docker container inspect -f '{{.State.Status}}' shimmer-plugins'.inx-chronicle' 2>/dev/null)" = 'running' ]; then
+	  if [ ix != $rd ]; then ix=$gn; fi
+	elif [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then ix=$rd; else ix=$gr; fi
+
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -574,7 +579,7 @@ Dashboard() {
 	echo "║                                                                             ║"
 	echo "║           ┌──────────────────┬ Shimmer ""$(echo "$VAR_HORNET_NETWORK" | sed 's/.*/\u&/')"" ┬──────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
-	echo "║ │5│     ""$sh""HORNET""$xx""     │6│      ""$sw""WASP""$xx""      │7│   ""$wc""WASP-CLI""$xx""   │ │8│    PLUGINS   │ ║"
+	echo "║ │5│     ""$sh""HORNET""$xx""     │6│      ""$sw""WASP""$xx""      │7│   ""$wc""WASP-CLI""$xx""   │ │8│    ""$ix""PLUGINS""$xx""   │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
 	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
@@ -1000,13 +1005,16 @@ SubMenuMaintenance() {
 }
 
 SubMenuPlugins() {
+
+
+	if [ "$(docker container inspect -f '{{.State.Status}}' $VAR_DIR'.inx-chronicle' 2>/dev/null)" = 'running' ]; then ixc=$gn; elif [ -d /var/lib/$VAR_DIR/inx-chronicle ]; then ixc=$rd; else ixc=$gr; fi
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                              1. INX-CHRONICLE                               ║"
+	echo "║                              1. ""$ixc""INX-CHRONICLE""$xx""                               ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -3381,6 +3389,10 @@ RenameContainer() {
 	docker container rename shimmer-inx-chronicle.traefik shimmer-plugins.inx-chronicle.traefik >/dev/null 2>&1
 	docker container rename shimmer-inx-chronicle.influxdb shimmer-plugins.inx-chronicle.influxdb >/dev/null 2>&1
 	docker container rename shimmer-inx-chronicle.mongo shimmer-plugins.inx-chronicle.mongo >/dev/null 2>&1
+	docker container rename shimmer-inx-chronicle.mongo-express shimmer-plugins.inx-chronicle.mongo-express >/dev/null 2>&1
+	docker container rename shimmer-inx-chronicle.grafana shimmer-plugins.inx-chronicle.grafana >/dev/null 2>&1
+	docker container rename shimmer-inx-chronicle.telegraf shimmer-plugins.inx-chronicle.telegraf >/dev/null 2>&1
+	
 }
 
 clear
