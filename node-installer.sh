@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.3.1"
-BUILD="20230506_204020"
+VRSN="v.2.3.2"
+BUILD="20230506_204812"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -42,22 +42,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='e93ae40d2e5b7f80df18c3f3f8ed3c48f40003e78ec98822a006b8b151686c2d'
+IotaHornetHash='580e5d29390b2717af01a6e49afa628d4309cd33dae8d69c530de04bfd320f92'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='0fe5feeae2c47824cc87a8aa0eed272c02bc7b79c19a9034c65417380a4658b9'
+ShimmerHornetHash='a3eb5c9726b0d50c43cfbb036411d929d83ff758a8ef2fc32288d2d9e78deab8'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='461de120653ced777da07292a63e358fa1be625471acbde97fc3325af3404a2f'
+ShimmerWaspHash='b1615d662a2d178e8d0a597efa0f7cbc8d9e1201756dcbb9434b3fbcb9aafabe'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='06360eb7386fc452a970f8189555450d7f7f57fe96f7bc180d5667dcdd72ff84'
-ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/inx-chronicle-latest/shimmer-chronicle.tar.gz"
+ShimmerChronicleHash='5e9e27234934255f7cdcf8d83518d2d488828ffdc5daea11cb7e72bd48cf2c55'
+ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
-PipeHash='95639cab5b3d29c51814706a45e2a7da947c99da975d317adeee44cd7228bacb'
+PipeHash='ac25b8916f05afaca430f861462ae8070c1fb0b7ed839dec3be6153271ed4790'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
