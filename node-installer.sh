@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.3.2"
-BUILD="20230506_204812"
+VRSN="v.2.3.3"
+BUILD="20230506_222719"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -42,22 +42,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='580e5d29390b2717af01a6e49afa628d4309cd33dae8d69c530de04bfd320f92'
+IotaHornetHash='3c24f839ed66fe668de9e8d17ae0d1198e152716a2f2811fbf22483ac5e20216'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='a3eb5c9726b0d50c43cfbb036411d929d83ff758a8ef2fc32288d2d9e78deab8'
+ShimmerHornetHash='8c45604fabd56cb6523c1c7b132c1869abdc7eb005d632c73b06c1ce95540335'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='b1615d662a2d178e8d0a597efa0f7cbc8d9e1201756dcbb9434b3fbcb9aafabe'
+ShimmerWaspHash='3205fac394ed88112c7aac77bfd9cc2e6f8bd1907dcf572e66a2d025dfcf652b'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='5e9e27234934255f7cdcf8d83518d2d488828ffdc5daea11cb7e72bd48cf2c55'
+ShimmerChronicleHash='365a3361f4035ee252ea1028ed6d89921ed4bd843f22d0e8239593c54df4a777'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
-PipeHash='ac25b8916f05afaca430f861462ae8070c1fb0b7ed839dec3be6153271ed4790'
+PipeHash='79268e03bf3a51680740acbd85aa798a55d728a0a9a5804e0e75c6a16d1552a9'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -3241,9 +3241,12 @@ Pipe() {
 		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi		
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
 		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi			
-		FormatToBytes "$(df -h /var/lib/$VAR_DIR | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
+		FormatToBytes "$(du -hsb /var/lib/$VAR_DIR | tail -1 | sed 's/\t/ /g' | cut -d ' ' -f 1)B"
 		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi	
-		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_IOTA_HORNET_PRUNING_SIZE-$VAR_SHIMMER_HORNET_PRUNING_SIZE)*9/10" | bc)
+		FormatToBytes "$(du -hsb /var/lib/shimmer-plugins | tail -1 | sed 's/\t/ /g' | cut -d ' ' -f 1)B"
+		if [ -z "$bytes" ]; then VAR_SHIMMER_PLUGINS_SIZE=0; else VAR_SHIMMER_PLUGINS_SIZE=$bytes; fi
+
+		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_IOTA_HORNET_PRUNING_SIZE-$VAR_SHIMMER_HORNET_PRUNING_SIZE-$VAR_SHIMMER_PLUGINS_SIZE)*9/10" | bc)
 		RESERVED_SPACE=$(echo "($VAR_IOTA_HORNET_PRUNING_SIZE+$VAR_SHIMMER_HORNET_PRUNING_SIZE)" | bc)
 		FormatFromBytes $RESERVED_SPACE; RESERVED_SPACE=$fbytes
 		if [ $((`echo "$VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE < $CALCULATED_SPACE" | bc`)) -eq 1 ]; then CALCULATED_SPACE=$(echo "($VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE)" | bc); fi
