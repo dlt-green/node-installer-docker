@@ -27,6 +27,8 @@ fi
 
 prepare_data_dir "${dataDir}" "config" "/storage/${HORNET_NETWORK:-mainnet}" "/p2pstore/${HORNET_NETWORK:-mainnet}" "/snapshots/${HORNET_NETWORK:-mainnet}" "letsencrypt"
 
+create_docker_network "iota"
+
 # Generate config
 extract_file_from_image "iotaledger/hornet" "${HORNET_VERSION}" "/app/${configFilenameInContainer}" "${configPath}"
 
