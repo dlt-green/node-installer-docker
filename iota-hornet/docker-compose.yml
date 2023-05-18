@@ -100,3 +100,8 @@ services:
       driver: "json-file"
       options:
         max-size: "200m"
+
+networks:
+  default:
+    name: iota
+    external: true
