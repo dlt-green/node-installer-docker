@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VRSN="v.2.4.0"
-BUILD="20230805_204533"
+BUILD="20230805_205440"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -42,22 +42,22 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='d6f01e6cace8d2df64ee2c1c7abc59d0487c9ff7ea4a2e6020ebd36ff8e2f527'
+IotaHornetHash='509e73d31b983ea0d4cc499bd1eea937ea84ea5ba12b6aae1c4dff392c0e3795'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
 IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='b59aa5276333bee67f089f4459909a5852bba8787bb5c2374ab5d21a014b42cb'
+ShimmerHornetHash='8a4912e9b03d37d87b6bd76bc792888f5319c226f583ae28ffc8aac798fe753e'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='4629ef1b8e008033793a101ed193bff3a5d5878afb1b533a3ec44ad2a7c580dd'
+ShimmerWaspHash='9e604e11232d67c96791fa0a86535f2e3f5d51ad0c42257ba021d6cb645ab95e'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='1a6c97de852fbee56ad9aaee45538ac48aca0377007a6ffd4f902eb3aba8c8a7'
+ShimmerChronicleHash='a3e2bb1900e4dbbb58adce4ddea10f2d2db345b503a6640f68a29887949de335'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
-PipeHash='4d2c35dd2d7fe5d7dca13d8f886849e0476cae32cb37185a115cf605dea0874a'
+PipeHash='169da04c50e87920b40fa747fd42c310f3104db517b2138684a9fed69b002d7d'
 PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -2415,7 +2415,7 @@ ShimmerHornet() {
 
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_INX_MQTT_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$INX_INDEXER_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_MQTT_VERSION=.*/INX_MQTT_VERSION=$VAR_INX_MQTT_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_PARTICIPATION_VERSION=.*/INX_PARTICIPATION_VERSION=$VAR_INX_PARTICIPATION_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_SPAMMER_VERSION=.*/INX_SPAMMER_VERSION=$VAR_INX_SPAMMER_VERSION/g" .env; fi
