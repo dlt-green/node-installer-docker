@@ -2415,7 +2415,7 @@ ShimmerHornet() {
 
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$INX_INDEXER_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_INX_INDEXER_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_MQTT_VERSION=.*/INX_MQTT_VERSION=$VAR_INX_MQTT_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_PARTICIPATION_VERSION=.*/INX_PARTICIPATION_VERSION=$VAR_INX_PARTICIPATION_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_SPAMMER_VERSION=.*/INX_SPAMMER_VERSION=$VAR_INX_SPAMMER_VERSION/g" .env; fi
