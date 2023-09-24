@@ -7,7 +7,7 @@ OUTPUT_RESET='\033[0m'
 BUILD_DIR=./build
 EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore, .package_files"
 
-NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-chronicle pipe"
+NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-chronicle"
 INSTALLER_SCRIPT="./node-installer.sh"
 
 build_node () {
