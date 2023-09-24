@@ -43,6 +43,7 @@ set_config "${configPath}" ".webapi.auth.scheme"            "\"${WASP_WEBAPI_AUT
 set_config "${configPath}" ".webapi.auth.jwt.duration"      "\"${WASP_JWT_DURATION:-24h}\""
 set_config "${configPath}" ".webapi.auth.basic.username"    "\"${DASHBOARD_USERNAME:-wasp}\""
 set_config "${configPath}" ".prometheus.bindAddress"        "\"0.0.0.0:9312\""
+set_config "${configPath}" ".db.debugSkipHealthCheck"       "false"
 
 echo "Configure users defined in .env..."
 echo "{}" > "${usersConfigPath}"
