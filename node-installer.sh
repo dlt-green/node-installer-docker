@@ -554,8 +554,6 @@ Dashboard() {
 
 	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then wc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then wc=$or; else wc=$gr; fi
 
-	if [ "$(docker container inspect -f '{{.State.Status}}' 'pipe' 2>/dev/null)" = 'running' ]; then tg=$gn; elif [ -d /var/lib/pipe ]; then tg=$rd; else tg=$gr; fi
-
 	VAR_NODE=0
 
 	PositionCenter "$VAR_DOMAIN"
@@ -574,7 +572,7 @@ Dashboard() {
 	echo "║                                                                             ║"
 	echo "║           ┌── IOTA Mainnet ──┐                                              ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
-	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│      -       │ │4│     -     │ ║"
+	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│      -       │ │4│      -       │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
 	echo "║           ┌──────────────────┬ Shimmer ""$(echo "$VAR_HORNET_NETWORK" | sed 's/.*/\u&/')"" ┬──────────────────┐         ║"
@@ -604,8 +602,6 @@ Dashboard() {
 	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker compose up -d; fi
 	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker compose up -d; fi
 	   if [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then cd /var/lib/shimmer-plugins/inx-chronicle || Dashboard; docker compose up -d; fi
-	   sleep 2
-	   if [ -d /var/lib/pipe ]; then cd /var/lib/pipe || Dashboard; docker compose up -d; fi
 	   RenameContainer
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   DashboardHelper ;;
@@ -858,17 +854,6 @@ SubMenuMaintenance() {
 			echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | available: v.$VAR_SHIMMER_CHRONICLE_VERSION""$xx"
 		fi
 	fi
-	if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 4 ]; then
-		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep PIPE_VERSION | cut -d '=' -f 2) = $VAR_PIPE_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep PIPE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
-			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep PIPE_VERSION | cut -d '=' -f 2)" | available: $VAR_PIPE_VERSION""$xx"
-			fi
-		else
-			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_PIPE_VERSION""$xx"
-		fi
-	fi
 	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 	echo ""
 	echo "select menu item: "
@@ -881,7 +866,6 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then ShimmerHornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then ShimmerWasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 9 ]; then ShimmerChronicle; fi
-	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 4 ]; then Pipe; fi
 	   ;;
 	2) echo '(re)starting...'; sleep 3
 	   clear
@@ -894,7 +878,6 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop shimmer-wasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 9 ]; then docker stop shimmer-plugins.inx-chronicle; fi
-	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 4 ]; then docker stop pipe; fi
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 	   rm -rf /var/lib/$VAR_DIR/data/peerdb/*
@@ -916,7 +899,6 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop shimmer-wasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 9 ]; then docker stop shimmer-plugins.inx-chronicle; fi
-	   if [ "$VAR_NETWORK" = 3 ] && [ "$VAR_NODE" = 4 ]; then docker stop pipe; fi
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 	   sleep 3;
@@ -1683,16 +1665,14 @@ IotaHornet() {
 		echo ''
 		FormatToBytes $(cat /var/lib/shimmer-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
 		if [ -z "$bytes" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=0; else VAR_SHIMMER_HORNET_PRUNING_SIZE=$bytes; fi
-		FormatToBytes $(cat /var/lib/pipe/.env 2>/dev/null | grep PIPE_MAX_STORAGE= | cut -d '=' -f 2)
-		if [ -z "$bytes" ]; then VAR_PIPE_MAX_STORAGE=0; else VAR_PIPE_MAX_STORAGE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
 		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi		
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
 		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi			
 		FormatToBytes "$(df -h /var/lib/$VAR_DIR | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
 		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi	
-		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_SHIMMER_HORNET_PRUNING_SIZE-$VAR_PIPE_MAX_STORAGE)*9/10" | bc)
-		RESERVED_SPACE=$(echo "($VAR_SHIMMER_HORNET_PRUNING_SIZE+$VAR_PIPE_MAX_STORAGE)" | bc)
+		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_SHIMMER_HORNET_PRUNING_SIZE)*9/10" | bc)
+		RESERVED_SPACE=$(echo "($VAR_SHIMMER_HORNET_PRUNING_SIZE)" | bc)
 		FormatFromBytes $RESERVED_SPACE; RESERVED_SPACE=$fbytes
 		if [ $((`echo "$VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE < $CALCULATED_SPACE" | bc`)) -eq 1 ]; then CALCULATED_SPACE=$(echo "($VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE)" | bc); fi
 		FormatFromBytes $CALCULATED_SPACE; CALCULATED_SPACE=$fbytes
@@ -2287,16 +2267,14 @@ ShimmerHornet() {
 		echo ''
 		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
 		if [ -z "$bytes" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=0; else VAR_IOTA_HORNET_PRUNING_SIZE=$bytes; fi
-		FormatToBytes $(cat /var/lib/pipe/.env 2>/dev/null | grep PIPE_MAX_STORAGE= | cut -d '=' -f 2)
-		if [ -z "$bytes" ]; then VAR_PIPE_MAX_STORAGE=0; else VAR_PIPE_MAX_STORAGE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
 		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi		
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
 		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi			
 		FormatToBytes "$(df -h /var/lib/$VAR_DIR | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
 		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi	
-		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_IOTA_HORNET_PRUNING_SIZE-$VAR_PIPE_MAX_STORAGE)*9/10" | bc)
-		RESERVED_SPACE=$(echo "($VAR_IOTA_HORNET_PRUNING_SIZE+$VAR_PIPE_MAX_STORAGE)" | bc)
+		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_IOTA_HORNET_PRUNING_SIZE)*9/10" | bc)
+		RESERVED_SPACE=$(echo "($VAR_IOTA_HORNET_PRUNING_SIZE)" | bc)
 		FormatFromBytes $RESERVED_SPACE; RESERVED_SPACE=$fbytes
 		if [ $((`echo "$VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE < $CALCULATED_SPACE" | bc`)) -eq 1 ]; then CALCULATED_SPACE=$(echo "($VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE)" | bc); fi
 		FormatFromBytes $CALCULATED_SPACE; CALCULATED_SPACE=$fbytes
@@ -3209,9 +3187,9 @@ sleep 3
 sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 CheckFirewall
-DeleteFirewallPort "446"
+DeleteFirewallPort "13266"
 
-if [ -d /var/lib/pipe ]; then VAR_PIPE_PORT=$(cat .env 2>/dev/null | grep PIPE_PORT= | cut -d '=' -f 2)
+if [ -d /var/lib/pipe ]; then VAR_PIPE_PORT=$(cat .env 2>/dev/null | grep PIPE_PORT= | cut -d '=' -f 2); fi
 if [ -d /var/lib/pipe ]; then cd /var/lib/pipe || SubMenuMaintenance; docker compose down >/dev/null 2>&1; fi
 if [ -d /var/lib/pipe ]; then rm -r /var/lib/pipe; fi
 
