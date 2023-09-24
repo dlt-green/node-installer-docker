@@ -3148,239 +3148,6 @@ ShimmerChronicle() {
 	SubMenuMaintenance
 }
 
-Pipe() {
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║              DLT.GREEN AUTOMATIC PIPE INSTALLATION WITH DOCKER              ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo "$ca"
-
-	echo "installation is currently only allowed for dlt.green testers,"
-	echo "join our discord and request login data for access"
-	echo ""
-	
-	docker login
-
-	if grep -q 'auths": {}' ~/.docker/config.json ; then 
-		echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-		Dashboard
-	fi
-
-	echo "$xx""$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║              DLT.GREEN AUTOMATIC PIPE INSTALLATION WITH DOCKER              ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	echo "Stopping Node... $VAR_DIR"
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
-
-	echo ""
-	echo "Check Directory... /var/lib/$VAR_DIR"
-
-	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
-	cd /var/lib/$VAR_DIR || exit
-
-	echo ""
-	echo "CleanUp Directory... /var/lib/$VAR_DIR"
-
-	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
-
-	echo ""
-	echo "Download Package... install.tar.gz"
-	wget -cO - "$PipePackage" -q > install.tar.gz
-
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$PipeHash" ]; then
-		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
-	else
-		echo "$rd"; echo 'Checking Hash of Package failed...'
-		echo 'Package has been tampered, Installation aborted for your Security!'
-		echo "Downloaded Package is deleted!"
-		rm -r install.tar.gz
-		echo "$xx"; exit;
-	fi
-
-	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
-
-	echo "Unpack Package... install.tar.gz"
-	tar -xzf install.tar.gz
-
-	echo "Delete Package... install.tar.gz"
-	rm -r install.tar.gz
-
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-
-	CheckConfiguration
-
-	if [ $VAR_CONF_RESET = 1 ]; then
-
-		clear
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                               Set Parameters                                ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
-
-		VAR_PIPE_PORT=$(cat .env 2>/dev/null | grep PIPE_PORT= | cut -d '=' -f 2)
-		VAR_DEFAULT='13266';
-		if [ -z "$VAR_PIPE_PORT" ]; then
-		  echo "Set node port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set node port (config: $ca""$VAR_PIPE_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_PIPE_PORT=$VAR_TMP; elif [ -z "$VAR_PIPE_PORT" ]; then VAR_PIPE_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set node port: $VAR_PIPE_PORT""$xx"
-
-		echo ''
-		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
-		if [ -z "$bytes" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=0; else VAR_IOTA_HORNET_PRUNING_SIZE=$bytes; fi
-		FormatToBytes $(cat /var/lib/shimmer-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
-		if [ -z "$bytes" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=0; else VAR_SHIMMER_HORNET_PRUNING_SIZE=$bytes; fi
-		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
-		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi		
-		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
-		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi			
-		FormatToBytes "$(du -hsb /var/lib/$VAR_DIR | tail -1 | sed 's/\t/ /g' | cut -d ' ' -f 1)B"
-		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi	
-		FormatToBytes "$(du -hsb /var/lib/shimmer-plugins | tail -1 | sed 's/\t/ /g' | cut -d ' ' -f 1)B"
-		if [ -z "$bytes" ]; then VAR_SHIMMER_PLUGINS_SIZE=0; else VAR_SHIMMER_PLUGINS_SIZE=$bytes; fi
-
-		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_IOTA_HORNET_PRUNING_SIZE-$VAR_SHIMMER_HORNET_PRUNING_SIZE-$VAR_SHIMMER_PLUGINS_SIZE)*9/10" | bc)
-		RESERVED_SPACE=$(echo "($VAR_IOTA_HORNET_PRUNING_SIZE+$VAR_SHIMMER_HORNET_PRUNING_SIZE)" | bc)
-		FormatFromBytes $RESERVED_SPACE; RESERVED_SPACE=$fbytes
-		if [ $((`echo "$VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE < $CALCULATED_SPACE" | bc`)) -eq 1 ]; then CALCULATED_SPACE=$(echo "($VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE)" | bc); fi
-		FormatFromBytes $CALCULATED_SPACE; CALCULATED_SPACE=$fbytes
-
-		unset VAR_PIPE_MAX_STORAGE
-		while [ -z "$VAR_PIPE_MAX_STORAGE" ]; do
-		  VAR_PIPE_MAX_STORAGE=$(cat .env 2>/dev/null | grep PIPE_MAX_STORAGE= | cut -d '=' -f 2)
-		  if [ -z "$VAR_PIPE_MAX_STORAGE" ]; then
-		    echo "Set pruning size / max. storage size (calculated: $ca"$CALCULATED_SPACE"$xx)"; else echo "Set pruning size / max. storage size (config: $ca""$VAR_PIPE_MAX_STORAGE""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		  echo "$rd""Available diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
-		  echo "$rd""Reserved diskspace through pruning by other nodes: ""$RESERVED_SPACE""$xx"
-		  echo "$ca""Calculated pruning size for PIPE (with 10% buffer): ""$CALCULATED_SPACE""$xx"
-		  read -r -p '> ' VAR_TMP
-		  if [ -n "$VAR_TMP" ]; then VAR_PIPE_MAX_STORAGE=$VAR_TMP; fi
-		  if ! [ -z "${VAR_PIPE_MAX_STORAGE##*B*}" ]; then
-		    VAR_PIPE_MAX_STORAGE=''
-		    echo "$rd""Set pruning size: Please insert with unit!"; echo "$xx"
-		  fi
-		done
-		echo "$gn""Set pruning size: $VAR_PIPE_MAX_STORAGE""$xx"
-
-		VAR_PIPE_SEED=$(cat .env 2>/dev/null | grep PIPE_SEED | cut -d '=' -f 2)
-		VAR_PIPE_ADDRESS=$(cat .env 2>/dev/null | grep PIPE_ADDRESS | cut -d '=' -f 2)
-		
-		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                              Write Parameters                               ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
-
-		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
-		if [ -f .env ]; then rm .env; fi
-
-		echo "PIPE_VERSION=$VAR_PIPE_VERSION" >> .env
-		echo "PIPE_PORT=$VAR_PIPE_PORT" >> .env
-		echo "PIPE_MAX_STORAGE=$VAR_PIPE_MAX_STORAGE" >> .env
-
-	else
-		if [ -f .env ]; then sed -i "s/PIPE_VERSION=.*/PIPE_VERSION=$VAR_PIPE_VERSION/g" .env; fi
-	fi
-
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                                 Pull Data                                   ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	docker network create pipe >/dev/null 2>&1
-	docker compose pull
-	docker logout
-
-	if [ $VAR_CONF_RESET = 1 ]; then
-
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                               Set Creditials                                ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
-
-		if [ -z "$VAR_PIPE_SEED" ]; then
-		  credentials=$(docker compose run --rm pipe --action=keygen)
-		  VAR_PIPE_SEED=$(echo "$credentials" | grep 'Seed' | cut -d ' ' -f 2 | tr -d '\r')
-		  VAR_PIPE_ADDRESS=$(echo "$credentials" | grep 'Address' | cut -d ' ' -f 2 | tr -d '\r')
-		fi
-		
-		echo "PIPE_SEED=$VAR_PIPE_SEED" >> .env
-		echo "PIPE_ADDRESS=$VAR_PIPE_ADDRESS" >> .env
-	fi
-
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                               Prepare Docker                                ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
-	./prepare_docker.sh
-
-	if [ $VAR_CONF_RESET = 1 ]; then
-
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                             Configure Firewall                              ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
-
-		echo ufw allow "$VAR_PIPE_PORT/tcp" && ufw allow "$VAR_PIPE_PORT/tcp"
-	fi
-
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                                 Start PIPE                                  ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
-
-	docker compose up -d
-
-	sleep 3
-
-	RenameContainer
-
-	echo ""
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-
-	clear
-	echo ""
-
-	if [ $VAR_CONF_RESET = 1 ]; then
-
-		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
-		echo ""
-		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " PIPE node-port: $VAR_PIPE_PORT"
-		echo " PIPE address: $VAR_PIPE_ADDRESS"		
-		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo ""
-	else
-	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
-	fi
-	echo ""
-
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
-
-	SubMenuMaintenance
-}
-
 RenameContainer() {
 	docker container rename iota-hornet_hornet_1 iota-hornet >/dev/null 2>&1
 	docker container rename iota-hornet_traefik_1 iota-hornet.traefik >/dev/null 2>&1
@@ -3398,7 +3165,6 @@ RenameContainer() {
 	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
 	docker container rename shimmer-hornet_grafana_1 grafana >/dev/null 2>&1
 	docker container rename shimmer-hornet_prometheus_1 prometheus >/dev/null 2>&1
-	docker container rename pipe_1 pipe >/dev/null 2>&1
 	docker container rename shimmer-inx-chronicle shimmer-plugins.inx-chronicle >/dev/null 2>&1
 	docker container rename shimmer-inx-chronicle.traefik shimmer-plugins.inx-chronicle.traefik >/dev/null 2>&1
 	docker container rename shimmer-inx-chronicle.influxdb shimmer-plugins.inx-chronicle.influxdb >/dev/null 2>&1
@@ -3425,7 +3191,7 @@ echo "║$lg     | |_| | | |___   | |    _   | |_| | |  _ <  | |___  | |___  | |
 echo "║$lg     |____/  |_____|  |_|   (_)   \____| |_| \_\ |_____| |_____| |_| \_|     $xx║"
 echo "║                                                                             ║"
 echo "║                                                                             ║"
-echo "║                 for IOTA/Shimmer and Chunk Works/PIPE Nodes                 ║"
+echo "║                          for IOTA/Shimmer Nodes                             ║"
 echo "║                                                                             ║"
 echo "║                                 loading...                                  ║"
 echo "║                                                                             ║"
@@ -3444,8 +3210,6 @@ sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 CheckFirewall
 DeleteFirewallPort "446"
 
-if [ -d /var/lib/iota-goshimmer ]; then cd /var/lib/iota-goshimmer || SubMenuMaintenance; docker compose down >/dev/null 2>&1; fi
-if [ -d /var/lib/iota-goshimmer ]; then rm -r /var/lib/iota-goshimmer; fi
 
 docker --version | grep "Docker version" >/dev/null 2>&1
 if [ $? -eq 0 ]
