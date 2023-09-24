@@ -285,7 +285,7 @@ MainMenu() {
 }
 
 NodePackagesMenu() {
-  print_menu "all" "iota-hornet" "iota-goshimmer" "iota-wasp" "shimmer-hornet" "shimmer-wasp" "shimmer-chronicle" "pipe" "Back"
+  print_menu "all" "iota-hornet" "iota-goshimmer" "iota-wasp" "shimmer-hornet" "shimmer-wasp" "shimmer-chronicle" "Back"
 	read  -p '> ' n
 	case ${n} in
   1) print_line
@@ -320,11 +320,6 @@ NodePackagesMenu() {
      ;;
   7) print_line
      build_node "shimmer-chronicle" "interactive"
-     enter_to_continue
-	   NodePackagesMenu
-     ;;
-  8) print_line
-     build_node "pipe" "interactive"
      enter_to_continue
 	   NodePackagesMenu
      ;;
