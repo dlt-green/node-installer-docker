@@ -26,8 +26,6 @@ VAR_INX_SPAMMER_VERSION='1.0-rc'
 VAR_INX_POI_VERSION='1.0-rc'
 VAR_INX_DASHBOARD_VERSION='1.0-rc'
 
-VAR_PIPE_VERSION='0.7'
-
 lg='\033[1m'
 or='\e[1;33m'
 ca='\e[1;96m'
@@ -56,9 +54,6 @@ ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/
 
 ShimmerChronicleHash='ab73f96670535938b5db4f6bdddf7cc5dfce4189a4312e74b8b095010481a834'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
-
-PipeHash='20f1cd54e1eb6771ab4ff7a90afc3eea76868803884c46a40882a31140c6b0ac'
-PipePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/pipe.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
 
