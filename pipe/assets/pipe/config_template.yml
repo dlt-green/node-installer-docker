@@ -1,9 +1,0 @@
-seed: <seed>
-capabilities:
-  - PaidStorage
-  - Committee
-host: <host>
-port: <port>
-storage:
-  engine: FileSystemStore
-  storage_directory: /data/storage
