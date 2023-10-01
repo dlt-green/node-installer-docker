@@ -11,17 +11,17 @@ VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
 
-VAR_IOTA_HORNET_VERSION='1.2.8'
+VAR_IOTA_HORNET_VERSION='2.0.0'
 VAR_IOTA_WASP_VERSION='1.0.0-rc.4'
 VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
 VAR_IOTA_WASP_CLI_VERSION='1.0.0-rc.4'
 
-VAR_IOTA_INX_INDEXER_VERSION='1.0-rc'
-VAR_IOTA_INX_MQTT_VERSION='1.0-rc'
-VAR_IOTA_INX_PARTICIPATION_VERSION='1.0-rc'
-VAR_IOTA_INX_SPAMMER_VERSION='1.0-rc'
-VAR_IOTA_INX_POI_VERSION='1.0-rc'
-VAR_IOTA_INX_DASHBOARD_VERSION='1.0-rc'
+VAR_IOTA_INX_INDEXER_VERSION='1.0'
+VAR_IOTA_INX_MQTT_VERSION='1.0'
+VAR_IOTA_INX_PARTICIPATION_VERSION='1.0'
+VAR_IOTA_INX_SPAMMER_VERSION='1.0'
+VAR_IOTA_INX_POI_VERSION='1.0'
+VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
 
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
 VAR_SHIMMER_WASP_VERSION='1.0.0-rc.4'
@@ -582,7 +582,7 @@ Dashboard() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║           ┌──────────────────┬  IOTA  ""$(echo "$VAR_IOTA_HORNET_NETWORK" | sed 's/.*/\u&/')""  ┬──────────────────┐         ║"
+	echo "║           ┌──────────────────┬  IOTA Stardust  ┬──────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
 	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│   ""$ic""WASP-CLI""$xx""   │ │4│      -       │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
@@ -1251,7 +1251,7 @@ SubMenuWaspCLI() {
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ] || [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 7 ]; then
+	if [ "$VAR_NODE" = 3 ] || [ "$VAR_NODE" = 7 ]; then
 	if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi; fi
 	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 	echo ""
@@ -1266,7 +1266,7 @@ SubMenuWaspCLI() {
 
 	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		     if  [ "$VAR_NETWORK" = 2; then
+		     if  [ "$VAR_NETWORK" = 2 ]; then
 		        echo "$fl"; read -r -p 'Press [F] to enable Faucet... Press [ENTER] key to skip... ' F; echo "$xx"
 		        if  [ "$F" = 'f' ] && ! [ "$F" = 'F' ]; then 
 	               fgrep -q "WASP_CLI_FAUCET_ADDRESS" .env || echo "WASP_CLI_FAUCET_ADDRESS=https://faucet.testnet.shimmer.network" >> .env
@@ -1681,8 +1681,8 @@ IotaHornet() {
 		echo "$gn""Set dashboard port: $VAR_IOTA_HORNET_HTTPS_PORT""$xx"
 
 		echo ''
-		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
-		if [ -z "$bytes" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=0; else VAR_IOTA_HORNET_PRUNING_SIZE=$bytes; fi
+		FormatToBytes $(cat /var/lib/shimmer-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		if [ -z "$bytes" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=0; else VAR_SHIMMER_HORNET_PRUNING_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
 		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi		
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
