@@ -13,18 +13,26 @@ VAR_CONF_RESET=0
 
 VAR_IOTA_HORNET_VERSION='1.2.8'
 VAR_IOTA_WASP_VERSION='0.2.5'
+
+VAR_IOTA_INX_INDEXER_VERSION='1.0-rc'
+VAR_IOTA_INX_MQTT_VERSION='1.0-rc'
+VAR_IOTA_INX_PARTICIPATION_VERSION='1.0-rc'
+VAR_IOTA_INX_SPAMMER_VERSION='1.0-rc'
+VAR_IOTA_INX_POI_VERSION='1.0-rc'
+VAR_IOTA_INX_DASHBOARD_VERSION='1.0-rc'
+
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
 VAR_SHIMMER_WASP_VERSION='1.0.0-rc.4'
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
 VAR_SHIMMER_WASP_CLI_VERSION='1.0.0-rc.4'
 VAR_SHIMMER_CHRONICLE_VERSION='1.0.0-rc.1'
 
-VAR_INX_INDEXER_VERSION='1.0-rc'
-VAR_INX_MQTT_VERSION='1.0-rc'
-VAR_INX_PARTICIPATION_VERSION='1.0-rc'
-VAR_INX_SPAMMER_VERSION='1.0-rc'
-VAR_INX_POI_VERSION='1.0-rc'
-VAR_INX_DASHBOARD_VERSION='1.0-rc'
+VAR_SHIMMER_INX_INDEXER_VERSION='1.0-rc'
+VAR_SHIMMER_INX_MQTT_VERSION='1.0-rc'
+VAR_SHIMMER_INX_PARTICIPATION_VERSION='1.0-rc'
+VAR_SHIMMER_INX_SPAMMER_VERSION='1.0-rc'
+VAR_SHIMMER_INX_POI_VERSION='1.0-rc'
+VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0-rc'
 
 lg='\033[1m'
 or='\e[1;33m'
@@ -310,49 +318,51 @@ CheckEventsIota() {
 	   sleep 5
 
 	   if [ -z $EVENTS ]; then 
-	   EVENTS=$(curl https://${ADDR}/api/plugins/participation/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.eventIds'); fi
+	   EVENTS=$(curl https://${ADDR}/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
 
 	   for EVENT_ID in $(echo $EVENTS  | tr -d '"[] ' | sed 's/,/ /g'); do
 	      echo "───────────────────────────────────────────────────────────────────────────────"
-	      EVENT_NAME=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.name')
+	      EVENT_NAME=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.name')
 
-	      EVENT_SYMBOL=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.payload.symbol')
+	      EVENT_SYMBOL=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.payload.symbol')
 
-	      EVENT_STATUS=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.status')
+	      EVENT_STATUS=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.status')
 
-	      EVENT_CHECKSUM=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.checksum')
+	      EVENT_CHECKSUM=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.checksum')
 
-	      EVENT_MILESTONE=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.milestoneIndex')
+	      EVENT_MILESTONE=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.milestoneIndex')
 
-	      EVENT_QUESTIONS=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.questions')
+	      EVENT_QUESTIONS=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.questions')
 
-	      echo "$ca""Name: ""$xx"$EVENT_NAME"$ca"" Symbol: ""$xx"$EVENT_SYMBOL"$ca"" Status: ""$xx"$EVENT_STATUS
+	      echo "$ca""Name: ""$xx"$EVENT_NAME
+		  echo "$ca""Status: ""$xx"$EVENT_STATUS"$ca"" Milestone index: ""$xx"$EVENT_MILESTONE
 
 	      if [ $EVENT_STATUS = "ended" ]; then
 	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
 	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
-	        $(curl https://${ADDR}/api/plugins/participation/admin/events/${EVENT_ID}/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	        $(curl https://${ADDR}/api/participation/v1/admin/events/${EVENT_ID}/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > ${EVENT_ID})
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
 	        
 	        if [ $(jq '.totalRewards' ${EVENT_ID}) = 'null' ]; then
 			  if [ $EVENT_SYMBOL = 'null' ]; then
-			    echo "$gn""Checksum: ""$EVENT_CHECKSUM"
+			    echo "$gn""Checksum: ""$EVENT_CHECKSUM""$xx"
+				if [ -n "$EVENT_QUESTIONS" ]; then echo "$EVENT_QUESTIONS" > "${EVENT_ID}"; fi
 			  else
 			    echo "$rd""Checksum: ""Authentication Error!""$xx"
 			  fi
 	        else
 	          echo "$gn""Checksum: ""$(jq -r '.checksum' ${EVENT_ID})"
 	        fi
-	        EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID})"
+	        EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID} 2>/dev/null)"
 	      else
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
@@ -360,7 +370,7 @@ CheckEventsIota() {
 	        EVENT_REWARDS='not available'
 	      fi
 	      echo ""
-	      echo "$ca""Milestone index: ""$xx"$EVENT_MILESTONE"$ca"" Total rewards: ""$xx"$EVENT_REWARDS
+	      echo "$ca""Total rewards: ""$xx"$EVENT_REWARDS"$ca"" Symbol: ""$xx"$EVENT_SYMBOL
 	      echo "───────────────────────────────────────────────────────────────────────────────"
 	   done
 	fi
@@ -515,7 +525,10 @@ Dashboard() {
 	if [ -f "/var/lib/iota-hornet/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/iota-hornet/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/iota-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
+	  VAR_IOTA_HORNET_NETWORK=$(cat "/var/lib/iota-hornet/.env" | grep HORNET_NETWORK | cut -d '=' -f 2)
 	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	else
+	  VAR_IOTA_HORNET_NETWORK='mainnet'
 	fi
 	if $VAR_NodeHealthy; then ih=$gn; elif [ -d /var/lib/iota-hornet ]; then ih=$rd; else ih=$gr; fi
 
@@ -531,10 +544,10 @@ Dashboard() {
 	if [ -f "/var/lib/shimmer-hornet/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/shimmer-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
-	  VAR_HORNET_NETWORK=$(cat "/var/lib/shimmer-hornet/.env" | grep HORNET_NETWORK | cut -d '=' -f 2)
+	  VAR_SHIMMER_HORNET_NETWORK=$(cat "/var/lib/shimmer-hornet/.env" | grep HORNET_NETWORK | cut -d '=' -f 2)
 	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	else
-	  VAR_HORNET_NETWORK='mainnet'
+	  VAR_SHIMMER_HORNET_NETWORK='mainnet'
 	fi
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi	
 
@@ -565,12 +578,12 @@ Dashboard() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║           ┌── IOTA Mainnet ──┐                                              ║"
+	echo "║           ┌──────────────────┬  IOTA  ""$(echo "$VAR_IOTA_HORNET_NETWORK" | sed 's/.*/\u&/')""  ┬──────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
 	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│      -       │ │4│      -       │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
-	echo "║           ┌──────────────────┬ Shimmer ""$(echo "$VAR_HORNET_NETWORK" | sed 's/.*/\u&/')"" ┬──────────────────┐         ║"
+	echo "║           ┌──────────────────┬ Shimmer ""$(echo "$VAR_SHIMMER_HORNET_NETWORK" | sed 's/.*/\u&/')"" ┬──────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
 	echo "║ │5│     ""$sh""HORNET""$xx""     │6│      ""$sw""WASP""$xx""      │7│   ""$wc""WASP-CLI""$xx""   │ │8│    ""$ix""PLUGINS""$xx""   │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
@@ -917,7 +930,7 @@ SubMenuMaintenance() {
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
@@ -944,8 +957,8 @@ SubMenuMaintenance() {
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_HORNET_NETWORK/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK/*		  
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_SHIMMER_HORNET_NETWORK/*		  
 	   fi
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
@@ -1161,7 +1174,7 @@ SubMenuConfiguration() {
 		  fi
 		  if  [ "$K" = 'M' ] || [ "$K" = 'T' ]; then		  
 		     ./prepare_docker.sh >/dev/null 2>&1
-			 VAR_HORNET_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
+			 VAR_SHIMMER_HORNET_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
 	         if  [ "$K" = 'M' ]; then echo "$gn""Mainnet of your Node successfully enabled""$xx"; else echo "$gn""Testnet of your Node successfully enabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
@@ -1658,8 +1671,8 @@ IotaHornet() {
 		echo "$gn""Set dashboard port: $VAR_IOTA_HORNET_HTTPS_PORT""$xx"
 
 		echo ''
-		FormatToBytes $(cat /var/lib/shimmer-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
-		if [ -z "$bytes" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=0; else VAR_SHIMMER_HORNET_PRUNING_SIZE=$bytes; fi
+		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		if [ -z "$bytes" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=0; else VAR_IOTA_HORNET_PRUNING_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
 		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi		
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
@@ -1737,7 +1750,7 @@ IotaHornet() {
 		    VAR_PASSWORD=''
 		    echo "$gn""Set dashboard password: use existing""$xx"
 		  fi
-		fi	
+		fi
 
 		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		CheckCertificate
@@ -1777,8 +1790,23 @@ IotaHornet() {
 			echo "HORNET_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
+
+		echo "INX_INDEXER_VERSION=$VAR_IOTA_INX_INDEXER_VERSION" >> .env
+		echo "INX_MQTT_VERSION=$VAR_IOTA_INX_MQTT_VERSION" >> .env
+		echo "INX_PARTICIPATION_VERSION=$VAR_IOTA_INX_PARTICIPATION_VERSION" >> .env
+		echo "INX_SPAMMER_VERSION=$VAR_IOTA_INX_SPAMMER_VERSION" >> .env
+		echo "INX_POI_VERSION=$VAR_IOTA_INX_POI_VERSION" >> .env
+		echo "INX_DASHBOARD_VERSION=$VAR_IOTA_INX_DASHBOARD_VERSION" >> .env
+
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_IOTA_HORNET_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_IOTA_INX_INDEXER_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_MQTT_VERSION=.*/INX_MQTT_VERSION=$VAR_IOTA_INX_MQTT_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_PARTICIPATION_VERSION=.*/INX_PARTICIPATION_VERSION=$VAR_IOTA_INX_PARTICIPATION_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_SPAMMER_VERSION=.*/INX_SPAMMER_VERSION=$VAR_IOTA_INX_SPAMMER_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_IOTA_INX_POI_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_IOTA_INX_DASHBOARD_VERSION/g" .env; fi
+
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
@@ -1792,6 +1820,7 @@ IotaHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
+	docker network create iota >/dev/null 2>&1
 	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
@@ -1840,7 +1869,7 @@ IotaHornet() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                              Start IOTA-Hornet                              ║"
+	echo "║                                Start Hornet                                 ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -1852,6 +1881,10 @@ IotaHornet() {
 
 	RenameContainer
 
+	if [ -n "$VAR_PASSWORD" ]; then
+	  if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	fi
+
 	echo ""
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
@@ -1862,14 +1895,18 @@ IotaHornet() {
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
-	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
-	    echo ""
+		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo " IOTA-Hornet Dashboard: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/dashboard"
 		echo " IOTA-Hornet Dashboard Username: $VAR_USERNAME"
 		echo " IOTA-Hornet Dashboard Password: <set during install>"
-		echo " IOTA-Hornet API: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/api/v1/info"
+		echo " IOTA-Hornet API: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/api/core/v2/info"
+		echo " Grafana Dashboard: https://$VAR_HOST/grafana"
+		echo " Grafana Username: admin"
+		echo " Grafana Password: <same as hornet password>"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
+		echo ""
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
 	fi
@@ -2380,21 +2417,21 @@ ShimmerHornet() {
 			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 
-		echo "INX_INDEXER_VERSION=$VAR_INX_INDEXER_VERSION" >> .env
-		echo "INX_MQTT_VERSION=$VAR_INX_MQTT_VERSION" >> .env
-		echo "INX_PARTICIPATION_VERSION=$VAR_INX_PARTICIPATION_VERSION" >> .env
-		echo "INX_SPAMMER_VERSION=$VAR_INX_SPAMMER_VERSION" >> .env
-		echo "INX_POI_VERSION=$VAR_INX_POI_VERSION" >> .env
-		echo "INX_DASHBOARD_VERSION=$VAR_INX_DASHBOARD_VERSION" >> .env
+		echo "INX_INDEXER_VERSION=$VAR_SHIMMER_INX_INDEXER_VERSION" >> .env
+		echo "INX_MQTT_VERSION=$VAR_SHIMMER_INX_MQTT_VERSION" >> .env
+		echo "INX_PARTICIPATION_VERSION=$VAR_SHIMMER_INX_PARTICIPATION_VERSION" >> .env
+		echo "INX_SPAMMER_VERSION=$VAR_SHIMMER_INX_SPAMMER_VERSION" >> .env
+		echo "INX_POI_VERSION=$VAR_SHIMMER_INX_POI_VERSION" >> .env
+		echo "INX_DASHBOARD_VERSION=$VAR_SHIMMER_INX_DASHBOARD_VERSION" >> .env
 
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_INX_INDEXER_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_MQTT_VERSION=.*/INX_MQTT_VERSION=$VAR_INX_MQTT_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_PARTICIPATION_VERSION=.*/INX_PARTICIPATION_VERSION=$VAR_INX_PARTICIPATION_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_SPAMMER_VERSION=.*/INX_SPAMMER_VERSION=$VAR_INX_SPAMMER_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_INX_POI_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_INX_DASHBOARD_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_SHIMMER_INX_INDEXER_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_MQTT_VERSION=.*/INX_MQTT_VERSION=$VAR_SHIMMER_INX_MQTT_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_PARTICIPATION_VERSION=.*/INX_PARTICIPATION_VERSION=$VAR_SHIMMER_INX_PARTICIPATION_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_SPAMMER_VERSION=.*/INX_SPAMMER_VERSION=$VAR_SHIMMER_INX_SPAMMER_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_SHIMMER_INX_POI_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_SHIMMER_INX_DASHBOARD_VERSION/g" .env; fi
 
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
@@ -2451,7 +2488,7 @@ ShimmerHornet() {
 
 		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
 
-		echo ufw allow '443/tcp' && ufw allow '443/tcp'
+		echo ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
 		echo ufw allow '14626/udp' && ufw allow '14626/udp'
 	fi
@@ -3125,8 +3162,17 @@ ShimmerChronicle() {
 RenameContainer() {
 	docker container rename iota-hornet_hornet_1 iota-hornet >/dev/null 2>&1
 	docker container rename iota-hornet_traefik_1 iota-hornet.traefik >/dev/null 2>&1
+	docker container rename iota-hornet_inx-participation_1 iota-hornet.inx-participation >/dev/null 2>&1
+	docker container rename iota-hornet_inx-dashboard_1 iota-hornet.inx-dashboard >/dev/null 2>&1
+	docker container rename iota-hornet_inx-indexer_1 iota-hornet.inx-indexer >/dev/null 2>&1
+	docker container rename iota-hornet_inx-poi_1 iota-hornet.inx-poi >/dev/null 2>&1
+	docker container rename iota-hornet_inx-spammer_1 iota-hornet.inx-spammer >/dev/null 2>&1
+	docker container rename iota-hornet_inx-mqtt_1 iota-hornet.inx-mqtt >/dev/null 2>&1
 	docker container rename iota-wasp_traefik_1 iota-wasp.traefik >/dev/null 2>&1
 	docker container rename iota-wasp_wasp_1 iota-wasp >/dev/null 2>&1
+	docker container rename iota-hornet_grafana_1 grafana >/dev/null 2>&1
+	docker container rename iota-hornet_prometheus_1 prometheus >/dev/null 2>&1
+
 	docker container rename shimmer-hornet_hornet_1 shimmer-hornet >/dev/null 2>&1
 	docker container rename shimmer-hornet_traefik_1 shimmer-hornet.traefik >/dev/null 2>&1
 	docker container rename shimmer-hornet_inx-participation_1 shimmer-hornet.inx-participation >/dev/null 2>&1
@@ -3139,6 +3185,7 @@ RenameContainer() {
 	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
 	docker container rename shimmer-hornet_grafana_1 grafana >/dev/null 2>&1
 	docker container rename shimmer-hornet_prometheus_1 prometheus >/dev/null 2>&1
+
 	docker container rename shimmer-inx-chronicle shimmer-plugins.inx-chronicle >/dev/null 2>&1
 	docker container rename shimmer-inx-chronicle.traefik shimmer-plugins.inx-chronicle.traefik >/dev/null 2>&1
 	docker container rename shimmer-inx-chronicle.influxdb shimmer-plugins.inx-chronicle.influxdb >/dev/null 2>&1
