@@ -1251,8 +1251,8 @@ SubMenuWaspCLI() {
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 7 ]; then
-	if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi; fi
+	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 3 ] || [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 7 ]; then
+	if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi; fi
 	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 	echo ""
 	echo "select menu item: "
@@ -1264,25 +1264,27 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo "Install/Prepare Wasp-CLI...$xx"
 
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-	      echo "$fl"; read -r -p 'Press [F] to enable Faucet... Press [ENTER] key to skip... ' F; echo "$xx"
-		  if  [ "$F" = 'f' ] && ! [ "$F" = 'F' ]; then 
-	         fgrep -q "WASP_CLI_FAUCET_ADDRESS" .env || echo "WASP_CLI_FAUCET_ADDRESS=https://faucet.testnet.shimmer.network" >> .env
-		  fi
-		  if [ -f "./prepare_cli.sh" ]; then ./prepare_cli.sh; else echo "$rd""For using Wasp-CLI you must update Shimmer-Wasp first!""$xx"; fi
+		     if  [ "$VAR_NETWORK" = 2; then
+		        echo "$fl"; read -r -p 'Press [F] to enable Faucet... Press [ENTER] key to skip... ' F; echo "$xx"
+		        if  [ "$F" = 'f' ] && ! [ "$F" = 'F' ]; then 
+	               fgrep -q "WASP_CLI_FAUCET_ADDRESS" .env || echo "WASP_CLI_FAUCET_ADDRESS=https://faucet.testnet.shimmer.network" >> .env
+		        fi
+		     fi
+		  if [ -f "./prepare_cli.sh" ]; then ./prepare_cli.sh; else echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	2) clear
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
           VAR_RUN_WASP_CLI_CMD=''
           echo "$ca"
-          if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
+          if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
           echo "$rd""Hint: Quit Wasp-CLI with [q] | Help [-h] | Clear [clear]"
           echo "$xx"
           echo "Set command: (example: $ca""'wasp-cli {commands}' or '{commands}'""$xx):"
@@ -1295,7 +1297,7 @@ SubMenuWaspCLI() {
 			 if [ "$VAR_RUN_WASP_CLI_CMD" = 'clear' ]; then
 			    clear
 			    echo "$ca"
-			    if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
+			    if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
 			    echo "$rd""Hint: Quit Wasp-CLI with [q] | Help [-h] | Clear [clear]"
 			    echo "$xx"
 			    echo "Set command: (example: $ca""'wasp-cli {commands}' or '{commands}'""$xx):"
@@ -1305,7 +1307,7 @@ SubMenuWaspCLI() {
 			 fi
 	      done
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	      echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   fi
 	   SubMenuWaspCLI
@@ -1314,11 +1316,11 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Login (Authenticate against a Wasp node)...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh login; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
@@ -1327,11 +1329,11 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Initialize a new wallet...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh init; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
@@ -1340,11 +1342,11 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Show the wallet address...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh address; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
@@ -1353,11 +1355,11 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Show the wallet balance...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh balance; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
@@ -1366,7 +1368,7 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Show the committee peering info...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then
 		     VAR_WASP_CLI_PUBKEY=$(./wasp-cli-wrapper.sh peering info | grep PubKey | tr -s ' ' | cut -d ' ' -f 2)
@@ -1377,7 +1379,7 @@ SubMenuWaspCLI() {
 			
 		  else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	  else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
@@ -1386,11 +1388,11 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Help...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh -h; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
@@ -1399,11 +1401,11 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Deinstall/Remove Wasp-CLI...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -s "./prepare_cli.sh" ]; then ./prepare_cli.sh --uninstall; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
