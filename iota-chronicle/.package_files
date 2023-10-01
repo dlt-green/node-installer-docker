@@ -1,7 +1,10 @@
+./assets/grafana/custom_run.sh
+./assets/grafana/dashboards/analytics_dashboard.json
+./assets/grafana/dashboards/chronicle_dashboard.json
 ./assets/grafana/dashboards/dashboard.yaml
-./assets/grafana/dashboards/home.json
-./assets/grafana/datasources/datasource.yaml
-./assets/prometheus/prometheus.yml
+./assets/grafana/datasources/influxdb_ds.yml
+./assets/influxdb/setup_v1.sh
+./assets/telegraf/telegraf.conf
 ./assets/traefik/certs/fake.cert
 ./assets/traefik/certs/fake.key
 ./assets/traefik/tls_config.yml

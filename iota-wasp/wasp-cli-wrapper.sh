@@ -21,13 +21,13 @@ if [ ! -f "${configPath}" ] && ! is_parameter_present "-v" $@; then
   print_line 120
 fi
 
-docker rm -f ${WASP_LEDGER_NETWORK}-wasp.cli &>/dev/null && \
+docker rm -f iota-wasp.cli &>/dev/null && \
 docker run -it --rm \
   --volume "${configPath}:/etc/wasp-cli.json" \
   --volume "${currentDir}:/workdir" \
   --workdir "/workdir" \
-  --network "${WASP_LEDGER_NETWORK}" \
-  --name "${WASP_LEDGER_NETWORK}-wasp.cli" \
+  --network "iota" \
+  --name "iota-wasp.cli" \
   --entrypoint "/app/wasp-cli" \
   ${imageTag} \
   -c /etc/wasp-cli.json ${@}

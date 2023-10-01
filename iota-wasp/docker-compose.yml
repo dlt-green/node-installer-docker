@@ -3,7 +3,7 @@ services:
 
   wasp:
     image: iotaledger/wasp:${WASP_VERSION:?WASP_VERSION is missing}
-    container_name: ${WASP_LEDGER_NETWORK:?WASP_LEDGER_NETWORK is missing}-wasp
+    container_name: iota-wasp
     restart: unless-stopped
     ulimits:
       nofile:
@@ -50,7 +50,7 @@ services:
 
   wasp-dashboard:
     image: iotaledger/wasp-dashboard:${WASP_DASHBOARD_VERSION:?WASP_DASHBOARD_VERSION is missing}
-    container_name: ${WASP_LEDGER_NETWORK:?WASP_LEDGER_NETWORK is missing}-wasp.dashboard
+    container_name: iota-wasp.dashboard
     stop_grace_period: 1m
     restart: unless-stopped
     depends_on:
@@ -104,7 +104,7 @@ services:
 
   traefik:
     image: traefik:v2.9.8
-    container_name: ${WASP_LEDGER_NETWORK:?WASP_LEDGER_NETWORK is missing}-wasp.traefik
+    container_name: iota-wasp.traefik
     restart: unless-stopped
     env_file:
       - .env
@@ -146,5 +146,5 @@ services:
 
 networks:
   default:
-    name: ${WASP_LEDGER_NETWORK}
+    name: iota
     external: true

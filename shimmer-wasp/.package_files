@@ -2,9 +2,12 @@
 ./assets/traefik/certs/fake.key
 ./assets/traefik/tls_config.yml
 ./docker-compose.yml
+./prepare_cli.sh
 ./prepare_docker.sh
 ./README.md
+./refresh_trusted_nodes.sh
 ./scripts/prepare_docker_functions.sh
 ./show_logs.sh
 ./start.sh
 ./stop.sh
+./wasp-cli-wrapper.sh

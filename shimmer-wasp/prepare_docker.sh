@@ -17,15 +17,9 @@ usersConfigPath="${dataDir}/config/${usersConfigFilename}"
 validate_ssl_config "WASP_SSL_CERT" "WASP_SSL_KEY"
 copy_common_assets
 
-# Validate HORNET_NETWORK config
-if [[ "${WASP_LEDGER_NETWORK}" != "iota" ]] && [[ "${WASP_LEDGER_NETWORK}" != "shimmer" ]]; then
-  echo "Invalid WASP_LEDGER_NETWORK: ${WASP_LEDGER_NETWORK}"
-  exit 255
-fi
-
 prepare_data_dir "${dataDir}" "config" "waspdb"
 
-create_docker_network "${WASP_LEDGER_NETWORK}"
+create_docker_network "shimmer"
 
 # Generate config
 configUrl="https://raw.githubusercontent.com/iotaledger/wasp/v${WASP_VERSION}/config_defaults.json"
