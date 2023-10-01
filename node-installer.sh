@@ -12,7 +12,9 @@ VAR_NODE=0
 VAR_CONF_RESET=0
 
 VAR_IOTA_HORNET_VERSION='1.2.8'
-VAR_IOTA_WASP_VERSION='0.2.5'
+VAR_IOTA_WASP_VERSION='1.0.0-rc.4'
+VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
+VAR_IOTA_WASP_CLI_VERSION='1.0.0-rc.4'
 
 VAR_IOTA_INX_INDEXER_VERSION='1.0-rc'
 VAR_IOTA_INX_MQTT_VERSION='1.0-rc'
@@ -275,7 +277,7 @@ CheckConfiguration() {
 CheckNodeHealthy() {
 	VAR_NodeHealthy=false
 	case $VAR_NODE in
-	1) VAR_API="api/v1/info"; OBJ=".data.isHealthy" ;;
+	1) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
 	2) VAR_API="info"; OBJ=".Version" ;;
 	3) VAR_API="info"; OBJ=".tangleTime.synced" ;;
 	5) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
@@ -923,7 +925,7 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_IOTA_HORNET_NETWORK/*
 	   fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
@@ -952,13 +954,13 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_IOTA_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_IOTA_HORNET_NETWORK/*
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
 	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_SHIMMER_HORNET_NETWORK/*		  
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_SHIMMER_HORNET_NETWORK/*
 	   fi
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
@@ -1924,7 +1926,7 @@ IotaWasp() {
 	echo "║            DLT.GREEN AUTOMATIC IOTA-WASP INSTALLATION WITH DOCKER           ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-
+	echo "$ca""Wasp is like a INX-Plugin and can only installed on the same Server as IOTA!""$xx";
 	CheckShimmer
 	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
@@ -2023,26 +2025,8 @@ IotaWasp() {
 		echo "$gn""Set peering port: $VAR_IOTA_WASP_PEERING_PORT""$xx"
 
 		echo ''
-		VAR_IOTA_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT= | cut -d '=' -f 2)
-		VAR_DEFAULT='5550';
-		if [ -z "$VAR_IOTA_WASP_NANO_MSG_PORT" ]; then
-		  echo "Set nano-msg-port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set nano-msg-port (config: $ca""$VAR_IOTA_WASP_NANO_MSG_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_NANO_MSG_PORT=$VAR_TMP; elif [ -z "$VAR_IOTA_WASP_NANO_MSG_PORT" ]; then VAR_IOTA_WASP_NANO_MSG_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set nano-msg-port: $VAR_IOTA_WASP_NANO_MSG_PORT""$xx"
-
-		echo ''
-		VAR_IOTA_WASP_LEDGER_CONNECTION=$(cat .env 2>/dev/null | grep WASP_LEDGER_CONNECTION= | cut -d '=' -f 2)
-		VAR_DEFAULT='127.0.0.1:5000';
-		if [ -z "$VAR_IOTA_WASP_LEDGER_CONNECTION" ]; then
-		  echo "Set ledger-connection/txstream (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set ledger-connection/txstream (config: $ca""$VAR_IOTA_WASP_LEDGER_CONNECTION""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_LEDGER_CONNECTION=$VAR_TMP; elif [ -z "$VAR_IOTA_WASP_LEDGER_CONNECTION" ]; then VAR_IOTA_WASP_LEDGER_CONNECTION=$VAR_DEFAULT; fi
-		echo "$gn""Set ledger-connection/txstream: $VAR_IOTA_WASP_LEDGER_CONNECTION""$xx"
-
-		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
-		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-10} | head -n 1);
+		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-10} | head -n 1 | tr '[:upper:]' '[:lower:]');
 		if [ -z "$VAR_USERNAME" ]; then
 		echo "Set dashboard username (generated: $ca"$VAR_DEFAULT"$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
@@ -2051,6 +2035,7 @@ IotaWasp() {
 
 		echo ''
 		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
+		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1);
 		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
 		echo "Set dashboard password / will be saved as hash ($ca""use generated""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
@@ -2066,7 +2051,7 @@ IotaWasp() {
 		    VAR_PASSWORD=''
 		    echo "$gn""Set dashboard password: use existing""$xx"
 		  fi
-		fi	
+		fi
 
 		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		CheckCertificate
@@ -2081,14 +2066,13 @@ IotaWasp() {
 		if [ -f .env ]; then rm .env; fi
 
 		echo "WASP_VERSION=$VAR_IOTA_WASP_VERSION" >> .env
-
+		echo "WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION" >> .env
+		echo "WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION" >> .env
 		echo "WASP_HOST=$VAR_HOST" >> .env
 		echo "WASP_HTTPS_PORT=$VAR_IOTA_WASP_HTTPS_PORT" >> .env
 		echo "WASP_API_PORT=$VAR_IOTA_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_IOTA_WASP_PEERING_PORT" >> .env
-		echo "WASP_NANO_MSG_PORT=$VAR_IOTA_WASP_NANO_MSG_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
-		echo "WASP_LEDGER_CONNECTION=$VAR_IOTA_WASP_LEDGER_CONNECTION" >> .env
 
 		if [ $VAR_CERT = 0 ]
 		then
@@ -2099,15 +2083,48 @@ IotaWasp() {
 			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "WASP_HTTP_PORT=8084" >> .env
+			echo "WASP_HTTP_PORT=8082" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "WASP_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 	else
-		if grep -q 'WASP_LEDGER_NETWORK=' .env; then sed -i "s/WASP_LEDGER_NETWORK=.*/WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK/g" .env; else echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_IOTA_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
+		VAR_DASHBOARD_VERSION=$(cat .env 2>/dev/null | grep WASP_DASHBOARD_VERSION | cut -d '=' -f 2)
+		VAR_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT | cut -d '=' -f 2)
+		VAR_CLI=$(cat .env 2>/dev/null | grep WASP_CLI_VERSION | cut -d '=' -f 2)
+
+		if [ -z "$VAR_DASHBOARD_VERSION" ]; then
+		    echo "WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION" >> .env
+		fi
+
+		if [ -z "$VAR_CLI" ]; then
+		    echo "WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION" >> .env
+		fi
+
+		if [ -f .env ]; then sed -i "s/WASP_CLI_VERSION=.*/WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/WASP_DASHBOARD_VERSION=.*/WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION/g" .env; fi
+
+		if [ -z "$VAR_SALT" ]; then
+		    VAR_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
+
+			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
+			if [ -n "$VAR_PASSWORD" ]; then
+			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+
+			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+
+			    if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+				
+			    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD=.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
+			    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
+			fi
+			if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+		fi
+
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -2119,6 +2136,7 @@ IotaWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
+	docker network create iota >/dev/null 2>&1
 	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
@@ -2130,11 +2148,17 @@ IotaWasp() {
 		echo ""
 
 		if [ -n "$VAR_PASSWORD" ]; then
-		  VAR_DASHBOARD_PASSWORD=$VAR_PASSWORD
+		  if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || VAR_PASSWORD=''; fi
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		  if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		fi
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
+		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
 	fi
 
 	echo ""
@@ -2159,9 +2183,6 @@ IotaWasp() {
 		echo ufw allow "$VAR_IOTA_WASP_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_HTTPS_PORT/tcp"
 		echo ufw allow "$VAR_IOTA_WASP_API_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_API_PORT/tcp"
 		echo ufw allow "$VAR_IOTA_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_PEERING_PORT/tcp"
-		echo ufw allow "$VAR_IOTA_WASP_NANO_MSG_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_NANO_MSG_PORT/tcp"
-		VAR_IOTA_WASP_LEDGER_CONNECTION_PORT=$(echo "$VAR_IOTA_WASP_LEDGER_CONNECTION" | sed -e 's/^.*://')
-		echo ufw allow "$VAR_IOTA_WASP_LEDGER_CONNECTION_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_LEDGER_CONNECTION_PORT/tcp"
 	fi
 
 	echo ""
@@ -2196,8 +2217,7 @@ IotaWasp() {
 		echo " IOTA-Wasp Dashboard Password: <set during install>"
 		echo " IOTA-Wasp API: https://$VAR_HOST:$VAR_IOTA_WASP_API_PORT/info"
 		echo " IOTA-Wasp peering: $VAR_HOST:$VAR_IOTA_WASP_PEERING_PORT"
-		echo " IOTA-Wasp nano-msg: $VAR_HOST:$VAR_IOTA_WASP_NANO_MSG_PORT"
-		echo " IOTA-Wasp ledger-connection/txstream: $VAR_IOTA_WASP_LEDGER_CONNECTION"
+		echo " IOTA-Wasp ledger-connection/txstream: local to IOTA-Hornet"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
@@ -2411,7 +2431,7 @@ ShimmerHornet() {
 			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "HORNET_HTTP_PORT=8081" >> .env
+			echo "HORNET_HTTP_PORT=8085" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "HORNET_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
@@ -2707,7 +2727,7 @@ ShimmerWasp() {
 			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "WASP_HTTP_PORT=8087" >> .env
+			echo "WASP_HTTP_PORT=8086" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "WASP_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
@@ -2749,10 +2769,6 @@ ShimmerWasp() {
 			if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		fi
 
-		VAR_SHIMMER_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT | cut -d '=' -f 2)
-		WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT)
-		if [ -n "$WASP_NANO_MSG_PORT" ]; then grep -v "$WASP_NANO_MSG_PORT" .env > tmp.env; mv tmp.env .env; fi
-		DeleteFirewallPort "$VAR_SHIMMER_WASP_NANO_MSG_PORT"
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
