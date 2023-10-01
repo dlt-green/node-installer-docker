@@ -542,7 +542,7 @@ Dashboard() {
 	fi
 	if ! [ "$VAR_NodeHealthy" = "false" ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ]; then iw=$rd; else iw=$gr; fi	
 
-	VAR_NODE=3; if [ -f "/var/lib/iota-wasp/data/config/wasp-cli.json" ]; then wc=$gn; elif [ -d /var/lib/iota-wasp ]; then wc=$or; else wc=$gr; fi
+	VAR_NODE=3; if [ -f "/var/lib/iota-wasp/data/config/wasp-cli.json" ]; then ic=$gn; elif [ -d /var/lib/iota-wasp ]; then ic=$or; else ic=$gr; fi
 
 	VAR_NODE=5; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-hornet/.env" ]; then
@@ -564,7 +564,7 @@ Dashboard() {
 	
 	if ! [ "$VAR_NodeHealthy" = "false" ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sw=$rd; else sw=$gr; fi
 
-	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then wc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then wc=$or; else wc=$gr; fi
+	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then sc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sc=$or; else sc=$gr; fi
 
 	VAR_NODE=0
 
@@ -584,12 +584,12 @@ Dashboard() {
 	echo "║                                                                             ║"
 	echo "║           ┌──────────────────┬  IOTA  ""$(echo "$VAR_IOTA_HORNET_NETWORK" | sed 's/.*/\u&/')""  ┬──────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
-	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│   ""$wc""WASP-CLI""$xx""   │ │4│      -       │ ║"
+	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│   ""$ic""WASP-CLI""$xx""   │ │4│      -       │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
 	echo "║           ┌──────────────────┬ Shimmer ""$(echo "$VAR_SHIMMER_HORNET_NETWORK" | sed 's/.*/\u&/')"" ┬──────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
-	echo "║ │5│     ""$sh""HORNET""$xx""     │6│      ""$sw""WASP""$xx""      │7│   ""$wc""WASP-CLI""$xx""   │ │8│    ""$ix""PLUGINS""$xx""   │ ║"
+	echo "║ │5│     ""$sh""HORNET""$xx""     │6│      ""$sw""WASP""$xx""      │7│   ""$sc""WASP-CLI""$xx""   │ │8│    ""$ix""PLUGINS""$xx""   │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
 	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
