@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.4.6"
-BUILD="20230929_230823"
+VRSN="v.2.5.0"
+BUILD="20231003_223446"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -11,20 +11,30 @@ VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
 
-VAR_IOTA_HORNET_VERSION='1.2.8'
-VAR_IOTA_WASP_VERSION='0.2.5'
+VAR_IOTA_HORNET_VERSION='2.0.0'
+VAR_IOTA_WASP_VERSION='1.0.0-rc.4'
+VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
+VAR_IOTA_WASP_CLI_VERSION='1.0.0-rc.4'
+
+VAR_IOTA_INX_INDEXER_VERSION='1.0'
+VAR_IOTA_INX_MQTT_VERSION='1.0'
+VAR_IOTA_INX_PARTICIPATION_VERSION='1.0'
+VAR_IOTA_INX_SPAMMER_VERSION='1.0'
+VAR_IOTA_INX_POI_VERSION='1.0'
+VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
+
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
 VAR_SHIMMER_WASP_VERSION='1.0.0-rc.4'
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
 VAR_SHIMMER_WASP_CLI_VERSION='1.0.0-rc.4'
 VAR_SHIMMER_CHRONICLE_VERSION='1.0.0-rc.1'
 
-VAR_INX_INDEXER_VERSION='1.0-rc'
-VAR_INX_MQTT_VERSION='1.0-rc'
-VAR_INX_PARTICIPATION_VERSION='1.0-rc'
-VAR_INX_SPAMMER_VERSION='1.0-rc'
-VAR_INX_POI_VERSION='1.0-rc'
-VAR_INX_DASHBOARD_VERSION='1.0-rc'
+VAR_SHIMMER_INX_INDEXER_VERSION='1.0-rc'
+VAR_SHIMMER_INX_MQTT_VERSION='1.0-rc'
+VAR_SHIMMER_INX_PARTICIPATION_VERSION='1.0-rc'
+VAR_SHIMMER_INX_SPAMMER_VERSION='1.0-rc'
+VAR_SHIMMER_INX_POI_VERSION='1.0-rc'
+VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0-rc'
 
 lg='\033[1m'
 or='\e[1;33m'
@@ -40,19 +50,19 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='70fc961e6a6381dcbb324d5116a8d411fcc2b4d255e196b0a9475d1266edfd51'
+IotaHornetHash='491e2f5bb6f0582e3e4f1488425cedf678fc42cf96d94830deca3929aa504ff7'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='577a5ffe6010f6f06687f6b4ddf7c5c47280da142a1f4381567536e4422e6283'
+IotaWaspHash='80d1ad3407daf4d220d9ba5f58d05b23586c1585a0840ccdd33c778e8ea12f17'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='6a4c2287891e994a3aea2db300f9c6246d981b70b252e61d1efe6d50d77bad3d'
+ShimmerHornetHash='7dff965de8108f69f17e7dd6efb84e8e4adf66800d221c83eca63d67baadf8ef'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='1ce03f48acc23d059e041c26ee6bf704a1989d069b2f03c2ba506fd82c1b5fdb'
+ShimmerWaspHash='7d16cf3dddf4fa645324986b37fec06a496fefbb29f3f4a3d252c86b4252377d'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='ef808ab365826bc9a3110f266f64c59dc8438bf7d8fd5d6351f028089d8b5423'
+ShimmerChronicleHash='e3ec8478442a0876e40897e6e6c2c73730b59134e818203229ad63f8efa6c246'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -267,7 +277,7 @@ CheckConfiguration() {
 CheckNodeHealthy() {
 	VAR_NodeHealthy=false
 	case $VAR_NODE in
-	1) VAR_API="api/v1/info"; OBJ=".data.isHealthy" ;;
+	1) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
 	2) VAR_API="info"; OBJ=".Version" ;;
 	3) VAR_API="info"; OBJ=".tangleTime.synced" ;;
 	5) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
@@ -310,49 +320,51 @@ CheckEventsIota() {
 	   sleep 5
 
 	   if [ -z $EVENTS ]; then 
-	   EVENTS=$(curl https://${ADDR}/api/plugins/participation/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.eventIds'); fi
+	   EVENTS=$(curl https://${ADDR}/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
 
 	   for EVENT_ID in $(echo $EVENTS  | tr -d '"[] ' | sed 's/,/ /g'); do
 	      echo "───────────────────────────────────────────────────────────────────────────────"
-	      EVENT_NAME=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.name')
+	      EVENT_NAME=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.name')
 
-	      EVENT_SYMBOL=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.payload.symbol')
+	      EVENT_SYMBOL=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.payload.symbol')
 
-	      EVENT_STATUS=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.status')
+	      EVENT_STATUS=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.status')
 
-	      EVENT_CHECKSUM=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.checksum')
+	      EVENT_CHECKSUM=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.checksum')
 
-	      EVENT_MILESTONE=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.milestoneIndex')
+	      EVENT_MILESTONE=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.milestoneIndex')
 
-	      EVENT_QUESTIONS=$(curl https://${ADDR}/api/plugins/participation/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.data.questions')
+	      EVENT_QUESTIONS=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.questions')
 
-	      echo "$ca""Name: ""$xx"$EVENT_NAME"$ca"" Symbol: ""$xx"$EVENT_SYMBOL"$ca"" Status: ""$xx"$EVENT_STATUS
+	      echo "$ca""Name: ""$xx"$EVENT_NAME
+		  echo "$ca""Status: ""$xx"$EVENT_STATUS"$ca"" Milestone index: ""$xx"$EVENT_MILESTONE
 
 	      if [ $EVENT_STATUS = "ended" ]; then
 	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
 	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
-	        $(curl https://${ADDR}/api/plugins/participation/admin/events/${EVENT_ID}/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	        $(curl https://${ADDR}/api/participation/v1/admin/events/${EVENT_ID}/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > ${EVENT_ID})
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
 	        
 	        if [ $(jq '.totalRewards' ${EVENT_ID}) = 'null' ]; then
 			  if [ $EVENT_SYMBOL = 'null' ]; then
-			    echo "$gn""Checksum: ""$EVENT_CHECKSUM"
+			    echo "$gn""Checksum: ""$EVENT_CHECKSUM""$xx"
+				if [ -n "$EVENT_QUESTIONS" ]; then echo "$EVENT_QUESTIONS" > "${EVENT_ID}"; fi
 			  else
 			    echo "$rd""Checksum: ""Authentication Error!""$xx"
 			  fi
 	        else
 	          echo "$gn""Checksum: ""$(jq -r '.checksum' ${EVENT_ID})"
 	        fi
-	        EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID})"
+	        EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID} 2>/dev/null)"
 	      else
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
@@ -360,7 +372,7 @@ CheckEventsIota() {
 	        EVENT_REWARDS='not available'
 	      fi
 	      echo ""
-	      echo "$ca""Milestone index: ""$xx"$EVENT_MILESTONE"$ca"" Total rewards: ""$xx"$EVENT_REWARDS
+	      echo "$ca""Total rewards: ""$xx"$EVENT_REWARDS"$ca"" Symbol: ""$xx"$EVENT_SYMBOL
 	      echo "───────────────────────────────────────────────────────────────────────────────"
 	   done
 	fi
@@ -515,7 +527,10 @@ Dashboard() {
 	if [ -f "/var/lib/iota-hornet/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/iota-hornet/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/iota-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
+	  VAR_IOTA_HORNET_NETWORK=$(cat "/var/lib/iota-hornet/.env" | grep HORNET_NETWORK | cut -d '=' -f 2)
 	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	else
+	  VAR_IOTA_HORNET_NETWORK='mainnet'
 	fi
 	if $VAR_NodeHealthy; then ih=$gn; elif [ -d /var/lib/iota-hornet ]; then ih=$rd; else ih=$gr; fi
 
@@ -527,14 +542,16 @@ Dashboard() {
 	fi
 	if ! [ "$VAR_NodeHealthy" = "false" ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ]; then iw=$rd; else iw=$gr; fi	
 
+	VAR_NODE=3; if [ -f "/var/lib/iota-wasp/data/config/wasp-cli.json" ]; then ic=$gn; elif [ -d /var/lib/iota-wasp ]; then ic=$or; else ic=$gr; fi
+
 	VAR_NODE=5; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-hornet/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/shimmer-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
-	  VAR_HORNET_NETWORK=$(cat "/var/lib/shimmer-hornet/.env" | grep HORNET_NETWORK | cut -d '=' -f 2)
+	  VAR_SHIMMER_HORNET_NETWORK=$(cat "/var/lib/shimmer-hornet/.env" | grep HORNET_NETWORK | cut -d '=' -f 2)
 	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	else
-	  VAR_HORNET_NETWORK='mainnet'
+	  VAR_SHIMMER_HORNET_NETWORK='mainnet'
 	fi
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi	
 
@@ -547,7 +564,7 @@ Dashboard() {
 	
 	if ! [ "$VAR_NodeHealthy" = "false" ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sw=$rd; else sw=$gr; fi
 
-	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then wc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then wc=$or; else wc=$gr; fi
+	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then sc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sc=$or; else sc=$gr; fi
 
 	VAR_NODE=0
 
@@ -565,14 +582,14 @@ Dashboard() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║           ┌── IOTA Mainnet ──┐                                              ║"
+	echo "║           ┌──────────────────┬  IOTA Stardust  ┬──────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
-	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│      -       │ │4│      -       │ ║"
+	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│   ""$ic""WASP-CLI""$xx""   │ │4│      -       │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
-	echo "║           ┌──────────────────┬ Shimmer ""$(echo "$VAR_HORNET_NETWORK" | sed 's/.*/\u&/')"" ┬──────────────────┐         ║"
+	echo "║           ┌──────────────────┬ Shimmer ""$(echo "$VAR_SHIMMER_HORNET_NETWORK" | sed 's/.*/\u&/')"" ┬──────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
-	echo "║ │5│     ""$sh""HORNET""$xx""     │6│      ""$sw""WASP""$xx""      │7│   ""$wc""WASP-CLI""$xx""   │ │8│    ""$ix""PLUGINS""$xx""   │ ║"
+	echo "║ │5│     ""$sh""HORNET""$xx""     │6│      ""$sw""WASP""$xx""      │7│   ""$sc""WASP-CLI""$xx""   │ │8│    ""$ix""PLUGINS""$xx""   │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
 	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
@@ -605,9 +622,13 @@ Dashboard() {
 	   SubMenuMaintenance ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-wasp'
 	   SubMenuMaintenance ;;
-	3) clear
-	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
-	   DashboardHelper ;;
+	3) VAR_NETWORK=1; VAR_NODE=3; VAR_DIR='iota-wasp'
+	   clear
+	   echo "$ca"
+	   echo 'Please wait, checking for Updates...'
+	   echo "$xx"
+	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi 
+	   SubMenuWaspCLI ;;
 	4) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   DashboardHelper ;;
@@ -620,7 +641,7 @@ Dashboard() {
 	   echo "$ca"
 	   echo 'Please wait, checking for Updates...'
 	   echo "$xx"
-	   if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi 
+	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi 
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=0; VAR_DIR='shimmer-plugins'
 	   SubMenuPlugins ;;
@@ -910,14 +931,14 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_IOTA_HORNET_NETWORK/*
 	   fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
@@ -939,13 +960,13 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/mainnet/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/mainnet/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_IOTA_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_IOTA_HORNET_NETWORK/*
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_HORNET_NETWORK/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_HORNET_NETWORK/*		  
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_SHIMMER_HORNET_NETWORK/*
 	   fi
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
@@ -1161,7 +1182,7 @@ SubMenuConfiguration() {
 		  fi
 		  if  [ "$K" = 'M' ] || [ "$K" = 'T' ]; then		  
 		     ./prepare_docker.sh >/dev/null 2>&1
-			 VAR_HORNET_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
+			 VAR_SHIMMER_HORNET_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
 	         if  [ "$K" = 'M' ]; then echo "$gn""Mainnet of your Node successfully enabled""$xx"; else echo "$gn""Testnet of your Node successfully enabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
@@ -1230,8 +1251,8 @@ SubMenuWaspCLI() {
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 7 ]; then
-	if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi; fi
+	if [ "$VAR_NODE" = 3 ] || [ "$VAR_NODE" = 7 ]; then
+	if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi; fi
 	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 	echo ""
 	echo "select menu item: "
@@ -1243,25 +1264,27 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo "Install/Prepare Wasp-CLI...$xx"
 
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-	      echo "$fl"; read -r -p 'Press [F] to enable Faucet... Press [ENTER] key to skip... ' F; echo "$xx"
-		  if  [ "$F" = 'f' ] && ! [ "$F" = 'F' ]; then 
-	         fgrep -q "WASP_CLI_FAUCET_ADDRESS" .env || echo "WASP_CLI_FAUCET_ADDRESS=https://faucet.testnet.shimmer.network" >> .env
-		  fi
-		  if [ -f "./prepare_cli.sh" ]; then ./prepare_cli.sh; else echo "$rd""For using Wasp-CLI you must update Shimmer-Wasp first!""$xx"; fi
+		     if  [ "$VAR_NETWORK" = 2 ]; then
+		        echo "$fl"; read -r -p 'Press [F] to enable Faucet... Press [ENTER] key to skip... ' F; echo "$xx"
+		        if  [ "$F" = 'f' ] && ! [ "$F" = 'F' ]; then 
+	               fgrep -q "WASP_CLI_FAUCET_ADDRESS" .env || echo "WASP_CLI_FAUCET_ADDRESS=https://faucet.testnet.shimmer.network" >> .env
+		        fi
+		     fi
+		  if [ -f "./prepare_cli.sh" ]; then ./prepare_cli.sh; else echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	2) clear
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
           VAR_RUN_WASP_CLI_CMD=''
           echo "$ca"
-          if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
+          if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
           echo "$rd""Hint: Quit Wasp-CLI with [q] | Help [-h] | Clear [clear]"
           echo "$xx"
           echo "Set command: (example: $ca""'wasp-cli {commands}' or '{commands}'""$xx):"
@@ -1274,7 +1297,7 @@ SubMenuWaspCLI() {
 			 if [ "$VAR_RUN_WASP_CLI_CMD" = 'clear' ]; then
 			    clear
 			    echo "$ca"
-			    if [ -s "/var/lib/shimmer-wasp/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/shimmer-wasp/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
+			    if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
 			    echo "$rd""Hint: Quit Wasp-CLI with [q] | Help [-h] | Clear [clear]"
 			    echo "$xx"
 			    echo "Set command: (example: $ca""'wasp-cli {commands}' or '{commands}'""$xx):"
@@ -1284,7 +1307,7 @@ SubMenuWaspCLI() {
 			 fi
 	      done
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	      echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   fi
 	   SubMenuWaspCLI
@@ -1293,11 +1316,11 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Login (Authenticate against a Wasp node)...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh login; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
@@ -1306,11 +1329,11 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Initialize a new wallet...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh init; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
@@ -1319,11 +1342,11 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Show the wallet address...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh address; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
@@ -1332,11 +1355,11 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Show the wallet balance...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh balance; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
@@ -1345,7 +1368,7 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Show the committee peering info...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then
 		     VAR_WASP_CLI_PUBKEY=$(./wasp-cli-wrapper.sh peering info | grep PubKey | tr -s ' ' | cut -d ' ' -f 2)
@@ -1356,7 +1379,7 @@ SubMenuWaspCLI() {
 			
 		  else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	  else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
@@ -1365,11 +1388,11 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Help...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh -h; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
@@ -1378,11 +1401,11 @@ SubMenuWaspCLI() {
 	   echo "$ca"
 	   echo 'Deinstall/Remove Wasp-CLI...'
 	   echo "$xx"
-	   if [ -d /var/lib/shimmer-wasp ]; then
+	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -s "./prepare_cli.sh" ]; then ./prepare_cli.sh --uninstall; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
-	      echo "$rd""For using Wasp-CLI you must install Shimmer-Wasp first!""$xx"
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 	   SubMenuWaspCLI
@@ -1737,7 +1760,7 @@ IotaHornet() {
 		    VAR_PASSWORD=''
 		    echo "$gn""Set dashboard password: use existing""$xx"
 		  fi
-		fi	
+		fi
 
 		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		CheckCertificate
@@ -1777,8 +1800,23 @@ IotaHornet() {
 			echo "HORNET_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
+
+		echo "INX_INDEXER_VERSION=$VAR_IOTA_INX_INDEXER_VERSION" >> .env
+		echo "INX_MQTT_VERSION=$VAR_IOTA_INX_MQTT_VERSION" >> .env
+		echo "INX_PARTICIPATION_VERSION=$VAR_IOTA_INX_PARTICIPATION_VERSION" >> .env
+		echo "INX_SPAMMER_VERSION=$VAR_IOTA_INX_SPAMMER_VERSION" >> .env
+		echo "INX_POI_VERSION=$VAR_IOTA_INX_POI_VERSION" >> .env
+		echo "INX_DASHBOARD_VERSION=$VAR_IOTA_INX_DASHBOARD_VERSION" >> .env
+
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_IOTA_HORNET_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_IOTA_INX_INDEXER_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_MQTT_VERSION=.*/INX_MQTT_VERSION=$VAR_IOTA_INX_MQTT_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_PARTICIPATION_VERSION=.*/INX_PARTICIPATION_VERSION=$VAR_IOTA_INX_PARTICIPATION_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_SPAMMER_VERSION=.*/INX_SPAMMER_VERSION=$VAR_IOTA_INX_SPAMMER_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_IOTA_INX_POI_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_IOTA_INX_DASHBOARD_VERSION/g" .env; fi
+
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
@@ -1792,6 +1830,7 @@ IotaHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
+	docker network create iota >/dev/null 2>&1
 	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
@@ -1840,7 +1879,7 @@ IotaHornet() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                              Start IOTA-Hornet                              ║"
+	echo "║                                Start Hornet                                 ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -1852,6 +1891,10 @@ IotaHornet() {
 
 	RenameContainer
 
+	if [ -n "$VAR_PASSWORD" ]; then
+	  if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	fi
+
 	echo ""
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
@@ -1862,14 +1905,18 @@ IotaHornet() {
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
-	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
-	    echo ""
+		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo " IOTA-Hornet Dashboard: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/dashboard"
 		echo " IOTA-Hornet Dashboard Username: $VAR_USERNAME"
 		echo " IOTA-Hornet Dashboard Password: <set during install>"
-		echo " IOTA-Hornet API: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/api/v1/info"
+		echo " IOTA-Hornet API: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/api/core/v2/info"
+		echo " Grafana Dashboard: https://$VAR_HOST/grafana"
+		echo " Grafana Username: admin"
+		echo " Grafana Password: <same as hornet password>"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
+		echo ""
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
 	fi
@@ -1887,7 +1934,7 @@ IotaWasp() {
 	echo "║            DLT.GREEN AUTOMATIC IOTA-WASP INSTALLATION WITH DOCKER           ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-
+	echo "$ca""Wasp is like a INX-Plugin and can only installed on the same Server as IOTA!""$xx";
 	CheckShimmer
 	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
@@ -1986,26 +2033,8 @@ IotaWasp() {
 		echo "$gn""Set peering port: $VAR_IOTA_WASP_PEERING_PORT""$xx"
 
 		echo ''
-		VAR_IOTA_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT= | cut -d '=' -f 2)
-		VAR_DEFAULT='5550';
-		if [ -z "$VAR_IOTA_WASP_NANO_MSG_PORT" ]; then
-		  echo "Set nano-msg-port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set nano-msg-port (config: $ca""$VAR_IOTA_WASP_NANO_MSG_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_NANO_MSG_PORT=$VAR_TMP; elif [ -z "$VAR_IOTA_WASP_NANO_MSG_PORT" ]; then VAR_IOTA_WASP_NANO_MSG_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set nano-msg-port: $VAR_IOTA_WASP_NANO_MSG_PORT""$xx"
-
-		echo ''
-		VAR_IOTA_WASP_LEDGER_CONNECTION=$(cat .env 2>/dev/null | grep WASP_LEDGER_CONNECTION= | cut -d '=' -f 2)
-		VAR_DEFAULT='127.0.0.1:5000';
-		if [ -z "$VAR_IOTA_WASP_LEDGER_CONNECTION" ]; then
-		  echo "Set ledger-connection/txstream (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set ledger-connection/txstream (config: $ca""$VAR_IOTA_WASP_LEDGER_CONNECTION""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_LEDGER_CONNECTION=$VAR_TMP; elif [ -z "$VAR_IOTA_WASP_LEDGER_CONNECTION" ]; then VAR_IOTA_WASP_LEDGER_CONNECTION=$VAR_DEFAULT; fi
-		echo "$gn""Set ledger-connection/txstream: $VAR_IOTA_WASP_LEDGER_CONNECTION""$xx"
-
-		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
-		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-10} | head -n 1);
+		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-10} | head -n 1 | tr '[:upper:]' '[:lower:]');
 		if [ -z "$VAR_USERNAME" ]; then
 		echo "Set dashboard username (generated: $ca"$VAR_DEFAULT"$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
@@ -2014,6 +2043,7 @@ IotaWasp() {
 
 		echo ''
 		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
+		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1);
 		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
 		echo "Set dashboard password / will be saved as hash ($ca""use generated""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
@@ -2029,7 +2059,7 @@ IotaWasp() {
 		    VAR_PASSWORD=''
 		    echo "$gn""Set dashboard password: use existing""$xx"
 		  fi
-		fi	
+		fi
 
 		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 		CheckCertificate
@@ -2044,14 +2074,13 @@ IotaWasp() {
 		if [ -f .env ]; then rm .env; fi
 
 		echo "WASP_VERSION=$VAR_IOTA_WASP_VERSION" >> .env
-
+		echo "WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION" >> .env
+		echo "WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION" >> .env
 		echo "WASP_HOST=$VAR_HOST" >> .env
 		echo "WASP_HTTPS_PORT=$VAR_IOTA_WASP_HTTPS_PORT" >> .env
 		echo "WASP_API_PORT=$VAR_IOTA_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_IOTA_WASP_PEERING_PORT" >> .env
-		echo "WASP_NANO_MSG_PORT=$VAR_IOTA_WASP_NANO_MSG_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
-		echo "WASP_LEDGER_CONNECTION=$VAR_IOTA_WASP_LEDGER_CONNECTION" >> .env
 
 		if [ $VAR_CERT = 0 ]
 		then
@@ -2062,15 +2091,48 @@ IotaWasp() {
 			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "WASP_HTTP_PORT=8084" >> .env
+			echo "WASP_HTTP_PORT=8082" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "WASP_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 	else
-		if grep -q 'WASP_LEDGER_NETWORK=' .env; then sed -i "s/WASP_LEDGER_NETWORK=.*/WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK/g" .env; else echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_IOTA_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
+		VAR_DASHBOARD_VERSION=$(cat .env 2>/dev/null | grep WASP_DASHBOARD_VERSION | cut -d '=' -f 2)
+		VAR_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT | cut -d '=' -f 2)
+		VAR_CLI=$(cat .env 2>/dev/null | grep WASP_CLI_VERSION | cut -d '=' -f 2)
+
+		if [ -z "$VAR_DASHBOARD_VERSION" ]; then
+		    echo "WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION" >> .env
+		fi
+
+		if [ -z "$VAR_CLI" ]; then
+		    echo "WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION" >> .env
+		fi
+
+		if [ -f .env ]; then sed -i "s/WASP_CLI_VERSION=.*/WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/WASP_DASHBOARD_VERSION=.*/WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION/g" .env; fi
+
+		if [ -z "$VAR_SALT" ]; then
+		    VAR_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
+
+			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
+			if [ -n "$VAR_PASSWORD" ]; then
+			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+
+			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+
+			    if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+				
+			    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD=.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
+			    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
+			fi
+			if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+		fi
+
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -2082,6 +2144,7 @@ IotaWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
+	docker network create iota >/dev/null 2>&1
 	docker compose pull
 
 	if [ $VAR_CONF_RESET = 1 ]; then
@@ -2093,11 +2156,17 @@ IotaWasp() {
 		echo ""
 
 		if [ -n "$VAR_PASSWORD" ]; then
-		  VAR_DASHBOARD_PASSWORD=$VAR_PASSWORD
+		  if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || VAR_PASSWORD=''; fi
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		  if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		fi
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
+		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
 	fi
 
 	echo ""
@@ -2122,9 +2191,6 @@ IotaWasp() {
 		echo ufw allow "$VAR_IOTA_WASP_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_HTTPS_PORT/tcp"
 		echo ufw allow "$VAR_IOTA_WASP_API_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_API_PORT/tcp"
 		echo ufw allow "$VAR_IOTA_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_PEERING_PORT/tcp"
-		echo ufw allow "$VAR_IOTA_WASP_NANO_MSG_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_NANO_MSG_PORT/tcp"
-		VAR_IOTA_WASP_LEDGER_CONNECTION_PORT=$(echo "$VAR_IOTA_WASP_LEDGER_CONNECTION" | sed -e 's/^.*://')
-		echo ufw allow "$VAR_IOTA_WASP_LEDGER_CONNECTION_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_LEDGER_CONNECTION_PORT/tcp"
 	fi
 
 	echo ""
@@ -2159,8 +2225,7 @@ IotaWasp() {
 		echo " IOTA-Wasp Dashboard Password: <set during install>"
 		echo " IOTA-Wasp API: https://$VAR_HOST:$VAR_IOTA_WASP_API_PORT/info"
 		echo " IOTA-Wasp peering: $VAR_HOST:$VAR_IOTA_WASP_PEERING_PORT"
-		echo " IOTA-Wasp nano-msg: $VAR_HOST:$VAR_IOTA_WASP_NANO_MSG_PORT"
-		echo " IOTA-Wasp ledger-connection/txstream: $VAR_IOTA_WASP_LEDGER_CONNECTION"
+		echo " IOTA-Wasp ledger-connection/txstream: local to IOTA-Hornet"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
@@ -2374,27 +2439,27 @@ ShimmerHornet() {
 			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "HORNET_HTTP_PORT=8081" >> .env
+			echo "HORNET_HTTP_PORT=8085" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "HORNET_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 
-		echo "INX_INDEXER_VERSION=$VAR_INX_INDEXER_VERSION" >> .env
-		echo "INX_MQTT_VERSION=$VAR_INX_MQTT_VERSION" >> .env
-		echo "INX_PARTICIPATION_VERSION=$VAR_INX_PARTICIPATION_VERSION" >> .env
-		echo "INX_SPAMMER_VERSION=$VAR_INX_SPAMMER_VERSION" >> .env
-		echo "INX_POI_VERSION=$VAR_INX_POI_VERSION" >> .env
-		echo "INX_DASHBOARD_VERSION=$VAR_INX_DASHBOARD_VERSION" >> .env
+		echo "INX_INDEXER_VERSION=$VAR_SHIMMER_INX_INDEXER_VERSION" >> .env
+		echo "INX_MQTT_VERSION=$VAR_SHIMMER_INX_MQTT_VERSION" >> .env
+		echo "INX_PARTICIPATION_VERSION=$VAR_SHIMMER_INX_PARTICIPATION_VERSION" >> .env
+		echo "INX_SPAMMER_VERSION=$VAR_SHIMMER_INX_SPAMMER_VERSION" >> .env
+		echo "INX_POI_VERSION=$VAR_SHIMMER_INX_POI_VERSION" >> .env
+		echo "INX_DASHBOARD_VERSION=$VAR_SHIMMER_INX_DASHBOARD_VERSION" >> .env
 
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_INX_INDEXER_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_MQTT_VERSION=.*/INX_MQTT_VERSION=$VAR_INX_MQTT_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_PARTICIPATION_VERSION=.*/INX_PARTICIPATION_VERSION=$VAR_INX_PARTICIPATION_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_SPAMMER_VERSION=.*/INX_SPAMMER_VERSION=$VAR_INX_SPAMMER_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_INX_POI_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_INX_DASHBOARD_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_SHIMMER_INX_INDEXER_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_MQTT_VERSION=.*/INX_MQTT_VERSION=$VAR_SHIMMER_INX_MQTT_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_PARTICIPATION_VERSION=.*/INX_PARTICIPATION_VERSION=$VAR_SHIMMER_INX_PARTICIPATION_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_SPAMMER_VERSION=.*/INX_SPAMMER_VERSION=$VAR_SHIMMER_INX_SPAMMER_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_SHIMMER_INX_POI_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_SHIMMER_INX_DASHBOARD_VERSION/g" .env; fi
 
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
@@ -2451,7 +2516,7 @@ ShimmerHornet() {
 
 		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
 
-		echo ufw allow '443/tcp' && ufw allow '443/tcp'
+		echo ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
 		echo ufw allow '14626/udp' && ufw allow '14626/udp'
 	fi
@@ -2670,7 +2735,7 @@ ShimmerWasp() {
 			done
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "WASP_HTTP_PORT=8087" >> .env
+			echo "WASP_HTTP_PORT=8086" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "WASP_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
@@ -2712,10 +2777,6 @@ ShimmerWasp() {
 			if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		fi
 
-		VAR_SHIMMER_WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT | cut -d '=' -f 2)
-		WASP_NANO_MSG_PORT=$(cat .env 2>/dev/null | grep WASP_NANO_MSG_PORT)
-		if [ -n "$WASP_NANO_MSG_PORT" ]; then grep -v "$WASP_NANO_MSG_PORT" .env > tmp.env; mv tmp.env .env; fi
-		DeleteFirewallPort "$VAR_SHIMMER_WASP_NANO_MSG_PORT"
 	fi
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
@@ -3125,8 +3186,17 @@ ShimmerChronicle() {
 RenameContainer() {
 	docker container rename iota-hornet_hornet_1 iota-hornet >/dev/null 2>&1
 	docker container rename iota-hornet_traefik_1 iota-hornet.traefik >/dev/null 2>&1
+	docker container rename iota-hornet_inx-participation_1 iota-hornet.inx-participation >/dev/null 2>&1
+	docker container rename iota-hornet_inx-dashboard_1 iota-hornet.inx-dashboard >/dev/null 2>&1
+	docker container rename iota-hornet_inx-indexer_1 iota-hornet.inx-indexer >/dev/null 2>&1
+	docker container rename iota-hornet_inx-poi_1 iota-hornet.inx-poi >/dev/null 2>&1
+	docker container rename iota-hornet_inx-spammer_1 iota-hornet.inx-spammer >/dev/null 2>&1
+	docker container rename iota-hornet_inx-mqtt_1 iota-hornet.inx-mqtt >/dev/null 2>&1
 	docker container rename iota-wasp_traefik_1 iota-wasp.traefik >/dev/null 2>&1
 	docker container rename iota-wasp_wasp_1 iota-wasp >/dev/null 2>&1
+	docker container rename iota-hornet_grafana_1 grafana >/dev/null 2>&1
+	docker container rename iota-hornet_prometheus_1 prometheus >/dev/null 2>&1
+
 	docker container rename shimmer-hornet_hornet_1 shimmer-hornet >/dev/null 2>&1
 	docker container rename shimmer-hornet_traefik_1 shimmer-hornet.traefik >/dev/null 2>&1
 	docker container rename shimmer-hornet_inx-participation_1 shimmer-hornet.inx-participation >/dev/null 2>&1
@@ -3139,6 +3209,7 @@ RenameContainer() {
 	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
 	docker container rename shimmer-hornet_grafana_1 grafana >/dev/null 2>&1
 	docker container rename shimmer-hornet_prometheus_1 prometheus >/dev/null 2>&1
+
 	docker container rename shimmer-inx-chronicle shimmer-plugins.inx-chronicle >/dev/null 2>&1
 	docker container rename shimmer-inx-chronicle.traefik shimmer-plugins.inx-chronicle.traefik >/dev/null 2>&1
 	docker container rename shimmer-inx-chronicle.influxdb shimmer-plugins.inx-chronicle.influxdb >/dev/null 2>&1

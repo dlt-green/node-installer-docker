@@ -7,7 +7,7 @@ OUTPUT_RESET='\033[0m'
 BUILD_DIR=./build
 EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore, .package_files"
 
-NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-chronicle"
+NODES="iota-hornet iota-wasp iota-chronicle shimmer-hornet shimmer-wasp shimmer-chronicle"
 INSTALLER_SCRIPT="./node-installer.sh"
 
 build_node () {
@@ -15,10 +15,6 @@ build_node () {
   local updateHash=$2
 
   local dir=${node}
-  # network independent packages
-  if [[ "${node}" == *"wasp"* ]]; then
-    dir=$(echo ${dir} | sed 's/iota-//g' | sed 's/shimmer-//g')
-  fi
   local sourceDir=./${dir}
 
   if [ ! -d ${sourceDir} ]; then
@@ -56,28 +52,6 @@ build_node () {
   find ${BUILD_DIR}/${node} -type f -exec sed -i 's/\r//' {} \;
   (cd ${BUILD_DIR}/${node}; tar -pcz -f ../${node}.tar.gz *)
   rm -Rf ${BUILD_DIR}/${node}
-
-  local messageAddition=""
-  if [[ "${updateHash}" == "true" ]]; then
-    update_hash_in_installer ${node}
-    messageAddition="(updated hash in installer)"
-  fi
-
-  echo "${node}.tar.gz built successfully ${messageAddition}"
-}
-
-# temporary workaround because we use different wasp versions for iota (older) and shimmer (current)
-build_iota_wasp () {
-  updateHash=$1
-  node="iota-wasp"
-
-  if [[ "${updateHash}" == "interactive" ]]; then
-    read -p "Should the hash in installer be updated (y/n)? " input
-    if [[ "${input}" == "y" ]]; then updateHash="true"; fi
-    echo ""
-  fi
-
-  curl -L -s -o ${BUILD_DIR}/${node}.tar.gz https://github.com/dlt-green/node-installer-docker/releases/download/v.1.5.0/wasp_iota.tar.gz
 
   local messageAddition=""
   if [[ "${updateHash}" == "true" ]]; then
@@ -197,11 +171,8 @@ build_all_nodes () {
 
   echo "Building all nodes..."
   for node in ${NODES}; do
-    if [[ "${node}" == "iota-wasp" ]]; then
-      output=$(build_iota_wasp ${updateHashes})
-    else
-      output=$(build_node ${node} ${updateHashes})
-    fi
+    echo "build_node ${node} ${updateHashes}"
+    output=$(build_node ${node} ${updateHashes})
     echo "  * ${output}"
   done
 }
@@ -285,7 +256,7 @@ MainMenu() {
 }
 
 NodePackagesMenu() {
-  print_menu "all" "iota-hornet" "iota-goshimmer" "iota-wasp" "shimmer-hornet" "shimmer-wasp" "shimmer-chronicle" "Back"
+  print_menu "all" "iota-hornet" "iota-wasp" "iota-chronicle" "shimmer-hornet" "shimmer-wasp" "shimmer-chronicle" "Back"
 	read  -p '> ' n
 	case ${n} in
   1) print_line
@@ -299,12 +270,12 @@ NodePackagesMenu() {
 	   NodePackagesMenu
      ;;
   3) print_line
-     build_node "iota-goshimmer""interactive"
+     build_node "iota-wasp" "interactive"
      enter_to_continue
 	   NodePackagesMenu
      ;;
   4) print_line
-     build_iota_wasp "interactive"
+     build_node "iota-chronicle" "interactive"
      enter_to_continue
 	   NodePackagesMenu
      ;;

@@ -18,7 +18,6 @@ ACME_EMAIL=your-email@example.com
 # WASP_SSL_CERT=<absolute path to cert>
 # WASP_SSL_KEY=<absolute path to key>
 
-WASP_LEDGER_NETWORK=iota # or shimmer
 WASP_VERSION=0.4.0-alpha.1
 WASP_HOST=node.your-domain.com
 # WASP_HTTP_PORT=80
@@ -44,7 +43,6 @@ DASHBOARD_SALT=<password salt>
 | WASP_SSL_CERT                     |    (x)    |             | Absolute path to SSL certificate (mandatory if `SSL_CONFIG=certs`)                                                                                                                                                 |
 | WASP_SSL_KEY                      |    (x)    |             | Absolute path to SSL private key (mandatory if `SSL_CONFIG=certs`)                                                                                                                                                 |
 | ACME_EMAIL                        |    (x)    |             | Mail address used to fetch SSL certificate from letsencrypt (mandatory if `SSL_CONFIG` not set or is set to `letsencrypt`).                                                                                        |
-| WASP_LEDGER_NETWORK               |     x     |             | Network this wasp note belongs to (iota or shimmer)                                                                                                                                                                |
 | WASP_VERSION                      |     x     |             | Version of `iotaledger/wasp` docker image to use                                                                                                                                                                   |
 | WASP_DASHBOARD_VERSION            |     x     |             | Version of `iotaledger/wasp-dashboard` docker image to use                                                                                                                                                         |
 | WASP_HOST                         |     x     |             | Host domain name e.g. `wasp.dlt.green`                                                                                                                                                                             |

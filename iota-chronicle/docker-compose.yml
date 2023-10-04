@@ -1,0 +1,293 @@
+version: '3'
+services:
+
+  inx-chronicle:
+    container_name: iota-inx-chronicle
+    image: dltgreen/inx-chronicle:${INX_CHRONICLE_VERSION:?INX_CHRONICLE_VERSION is missing}
+    stop_grace_period: 5m
+    restart: unless-stopped
+    user: "65532"
+    depends_on:
+      mongodb:
+        condition: service_started
+      influxdb:
+        condition: service_started
+    labels:
+      - "proxy.constraint=inx-chronicle-iota"
+      - "traefik.enable=true"
+
+      - "traefik.http.services.inx-chronicle.loadbalancer.server.port=8042"
+
+      - "traefik.http.routers.inx-chronicle.service=inx-chronicle"
+      - "traefik.http.routers.inx-chronicle.rule=Host(`${INX_CHRONICLE_HOST:?INX_CHRONICLE_HOST is missing}`) && !HeadersRegexp(`referer`, `\\.*influxdb\\.*`) && (PathPrefix(`/api`) || Path(`/login`))"
+      - "traefik.http.routers.inx-chronicle.entrypoints=websecure"
+      - "traefik.http.routers.inx-chronicle.tls=true"
+      - "traefik.http.routers.inx-chronicle.tls.certresolver=myresolver"
+    volumes:
+      - "${INX_CHRONICLE_DATA_DIR:-./data}/identity-${INX_CHRONICLE_NETWORK:-mainnet}.key:/app/identity.key:ro"
+    command:
+      - "--inx-url=http://hornet:9029"
+      - "--inx-sync-start=${INX_CHRONICLE_SYNC_START:-1}"
+      - "--api-port=8042"
+      - "--mongodb-conn-str=mongodb://mongodb:27017"
+      - "--mongodb-database-name=iota"
+      - "--influxdb-url=http://influxdb:8086"
+      - "--influxdb-username=${INX_CHRONICLE_INFLUXDB_USERNAME:-influxdb}"
+      - "--influxdb-password=${INX_CHRONICLE_INFLUXDB_PASSWORD:?INX_CHRONICLE_INFLUXDB_PASSWORD is missing}"
+      - "--analytics-database-name=chronicle"
+      - "--metrics-database-name=chronicle"
+      - "--jwt-identity=/app/identity.key"
+      - "--jwt-salt=${INX_CHRONICLE_JWT_SALT:?INX_CHRONICLE_JWT_SALT is missing}"
+      - "--jwt-password=${INX_CHRONICLE_JWT_PASSWORD?-INX_CHRONICLE_JWT_PASSWORD is missing}"
+      - "--jwt-expiration=${INX_CHRONICLE_JWT_EXPIRATION:-72h}"
+    environment:
+      - RUST_LOG=info
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+
+  ##################################################################
+  #  Storage                                                       #
+  ##################################################################
+
+  mongodb:
+    container_name: iota-inx-chronicle.mongo
+    image: mongo:5.0.16
+    stop_grace_period: 5m
+    restart: unless-stopped
+    user: "65532"
+    volumes:
+      - ${INX_CHRONICLE_DATA_DIR:-./data}/mongodb/${INX_CHRONICLE_NETWORK:-mainnet}:/data/db
+    command: [ "--quiet", "--logpath", "/dev/null" ]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+
+  influxdb:
+    container_name: iota-inx-chronicle.influxdb
+    image: influxdb:2.7.0
+    stop_grace_period: 5m
+    restart: unless-stopped
+    user: "65532"
+    volumes:
+      - ./assets/influxdb:/docker-entrypoint-initdb.d
+      - ${INX_CHRONICLE_DATA_DIR:-./data}/influxdb/${INX_CHRONICLE_NETWORK:-mainnet}/config:/etc/influxdb2
+      - ${INX_CHRONICLE_DATA_DIR:-./data}/influxdb/${INX_CHRONICLE_NETWORK:-mainnet}/storage:/var/lib/influxdb2
+    labels:
+      - "proxy.constraint=inx-chronicle-iota"
+      - "traefik.enable=true"
+
+      - "traefik.http.services.influxdb.loadbalancer.server.port=8086"
+
+      - "traefik.http.routers.influxdb.service=influxdb"
+      - "traefik.http.routers.influxdb.rule=Host(`${INX_CHRONICLE_HOST:?INX_CHRONICLE_HOST is missing}`) && (PathPrefix(`/influxdb`) || HeadersRegexp(`referer`, `\\.*/influxdb\\.*`))"
+      - "traefik.http.routers.influxdb.entrypoints=websecure"
+      - "traefik.http.routers.influxdb.tls=true"
+      - "traefik.http.routers.influxdb.tls.certresolver=myresolver"
+      - "traefik.http.routers.influxdb.middlewares=influxdb_rewritebody, influxdb_strip, influxdb_securityheaders"
+
+      # this whole rewritebody plugin thing is a hacky solution for influxdb not supporting to set a base path; maybe this can be omitted in future
+      - "traefik.http.middlewares.influxdb_strip.stripprefix.prefixes=/influxdb"
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.lastModified=true"
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[0].regex=src=\"/"
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[0].replacement=src=\"/influxdb/"
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[1].regex=href=\"/"
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[1].replacement=href=\"/influxdb/"
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[2].regex=data-basepath=\""
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[2].replacement=data-basepath=\"/influxdb/"
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[3].regex=n.p=\"/\""
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[3].replacement=n.p=\"/influxdb/\""
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[4].regex=\\)}/health`"
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[4].replacement=)}/influxdb/health`"
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[5].regex=\"([a-z0-9]+)(\\.\\.?)(js|svg|woff2|ttf)\""
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[5].replacement=\"influxdb/$$1$$2$$3\""
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[6].regex=fetch\\(o\\.p\\+\"\"\\+a\\.slice\\(0,10\\)\\+\"\\.wasm\"\\)"
+      - "traefik.http.middlewares.influxdb_rewritebody.plugin.rewritebody.rewrites[6].replacement=fetch(o.p+\"influxdb/\"+a.slice(0, 10)+\".wasm\")"
+
+      - "traefik.http.middlewares.influxdb_securityheaders.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.influxdb_securityheaders.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${INX_CHRONICLE_HOST:?INX_CHRONICLE_HOST is missing}:${INX_CHRONICLE_HTTPS_PORT:-443}"
+      - "traefik.http.middlewares.influxdb_securityheaders.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.influxdb_securityheaders.headers.addvaryheader=true"
+      - "traefik.http.middlewares.influxdb_securityheaders.headers.frameDeny=true"
+      - "traefik.http.middlewares.influxdb_securityheaders.headers.contentTypeNosniff=true"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INX_CHRONICLE_INFLUXDB_USERNAME:-influxdb}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INX_CHRONICLE_INFLUXDB_PASSWORD:?INX_CHRONICLE_INFLUXDB_PASSWORD is missing}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INX_CHRONICLE_INFLUXDB_TOKEN:?INX_CHRONICLE_INFLUXDB_TOKEN is missing}
+      - DOCKER_INFLUXDB_INIT_ORG=iota-inx-chronicle
+      - DOCKER_INFLUXDB_INIT_BUCKET=chronicle
+      - DOCKER_INFLUXDB_INIT_RETENTION=8w
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+
+  ##################################################################
+  #  Reverse Proxy and SSL                                         #
+  ##################################################################
+
+  traefik:
+    image: traefik:v2.9.8
+    container_name: iota-inx-chronicle.traefik
+    restart: unless-stopped
+    env_file:
+      - .env
+    command:
+      - "--log.level=WARN"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.constraints=Label(`proxy.constraint`,`inx-chronicle-iota`)"
+
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.transport.respondingTimeouts.readTimeout=10"
+      - "--entrypoints.web.transport.respondingTimeouts.writeTimeout=10"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.transport.respondingTimeouts.readTimeout=10"
+      - "--entrypoints.websecure.transport.respondingTimeouts.writeTimeout=10"
+
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL:-}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+
+      - "--experimental.plugins.rewritebody.modulename=github.com/traefik/plugin-rewritebody"
+      - "--experimental.plugins.rewritebody.version=v0.3.1"
+    ports:
+      - "${INX_CHRONICLE_HTTP_PORT:-80}:80/tcp"
+      - "${INX_CHRONICLE_HTTPS_PORT:-443}:443/tcp"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "${INX_CHRONICLE_DATA_DIR:-./data}/letsencrypt:/letsencrypt"
+      - "./assets/traefik:/etc/traefik/dynamic:ro"
+      - "${INX_CHRONICLE_SSL_CERT:-./assets/traefik/certs/fake.cert}:/certs/domain.cert:ro"
+      - "${INX_CHRONICLE_SSL_KEY:-./assets/traefik/certs/fake.key}:/certs/domain.key:ro"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+
+  ##################################################################
+  #  Debug profile                                                 #
+  ##################################################################
+  mongo-express:
+    container_name: iota-inx-chronicle.mongo-express
+    image: mongo-express
+    depends_on:
+      - mongodb
+    profiles:
+      - debug
+    restart: unless-stopped
+    user: "65532"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_OPTIONS_READONLY=true
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_SITE_BASEURL=/mongodb/
+      - ME_CONFIG_BASICAUTH_USERNAME=${INX_CHRONICLE_MONGODB_USERNAME:-mongodb}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${INX_CHRONICLE_MONGODB_PASSWORD:?INX_CHRONICLE_MONGODB_PASSWORD is missing}
+    labels:
+      - "proxy.constraint=inx-chronicle-iota"
+      - "traefik.enable=true"
+
+      - "traefik.http.services.mongoexpress.loadbalancer.server.port=8081"
+
+      - "traefik.http.routers.mongoexpress.service=mongoexpress"
+      - "traefik.http.routers.mongoexpress.rule=Host(`${INX_CHRONICLE_HOST:?INX_CHRONICLE_HOST is missing}`) && (Path(`/mongodb`) || PathPrefix(`/mongodb/`))"
+      - "traefik.http.routers.mongoexpress.entrypoints=websecure"
+      - "traefik.http.routers.mongoexpress.tls=true"
+      - "traefik.http.routers.mongoexpress.tls.certresolver=myresolver"
+
+      - "traefik.http.routers.mongoexpress.middlewares=mongoexpress_securityheaders"
+      - "traefik.http.middlewares.mongoexpress_securityheaders.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.mongoexpress_securityheaders.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${INX_CHRONICLE_HOST:?INX_CHRONICLE_HOST is missing}:${INX_CHRONICLE_HTTPS_PORT:-443}"
+      - "traefik.http.middlewares.mongoexpress_securityheaders.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.mongoexpress_securityheaders.headers.addvaryheader=true"
+      - "traefik.http.middlewares.mongoexpress_securityheaders.headers.frameDeny=true"
+      - "traefik.http.middlewares.mongoexpress_securityheaders.headers.contentTypeNosniff=true"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+
+  ##################################################################
+  #  Metrics profile                                               #
+  ##################################################################
+  telegraf:
+    container_name: iota-inx-chronicle.telegraf
+    image: telegraf:1.26.2
+    profiles:
+      - metrics
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_started
+    user: "65532"
+    volumes:
+      - ./assets/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    environment:
+      - INFLUXDB_USERNAME=${INX_CHRONICLE_INFLUXDB_USERNAME:-influxdb}
+      - INFLUXDB_PASSWORD=${INX_CHRONICLE_INFLUXDB_PASSWORD:?INX_CHRONICLE_INFLUXDB_PASSWORD is missing}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+
+  grafana:
+    container_name: iota-inx-chronicle.grafana
+    image: grafana/grafana-oss:latest
+    profiles:
+      - metrics
+    restart: unless-stopped
+    depends_on:
+      influxdb:
+        condition: service_started
+    user: "65532"
+    environment:
+      - ADMIN_PASSWORD=${INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD:?INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD is missing}
+      - GF_SERVER_DOMAIN=${INX_CHRONICLE_HOST:?INX_CHRONICLE_HOST is missing}
+      - GF_SERVER_ROOT_URL=/grafana
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - INFLUXDB_TOKEN=${INX_CHRONICLE_INFLUXDB_TOKEN:?INX_CHRONICLE_INFLUXDB_TOKEN is missing}
+      - INFLUXDB_ORG=iota-inx-chronicle
+    labels:
+      - "proxy.constraint=inx-chronicle-iota"
+      - "traefik.enable=true"
+
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+
+      - "traefik.http.routers.grafana.service=grafana"
+      - "traefik.http.routers.grafana.rule=Host(`${INX_CHRONICLE_HOST:?INX_CHRONICLE_HOST is missing}`) && (Path(`/grafana`) || PathPrefix(`/grafana/`))"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.tls.certresolver=myresolver"
+
+      - "traefik.http.routers.grafana.middlewares=grafana_securityheaders"
+      - "traefik.http.middlewares.grafana_securityheaders.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.grafana_securityheaders.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${INX_CHRONICLE_HOST:?INX_CHRONICLE_HOST is missing}:${INX_CHRONICLE_HTTPS_PORT:-443}"
+      - "traefik.http.middlewares.grafana_securityheaders.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.grafana_securityheaders.headers.addvaryheader=true"
+      - "traefik.http.middlewares.grafana_securityheaders.headers.frameDeny=true"
+      - "traefik.http.middlewares.grafana_securityheaders.headers.contentTypeNosniff=true"
+    volumes:
+      - ${INX_CHRONICLE_DATA_DIR:-./data}/grafana/${INX_CHRONICLE_NETWORK:-mainnet}:/var/lib/grafana
+      - ./assets/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./assets/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./assets/grafana/custom_run.sh:/custom_run.sh:ro
+    entrypoint:
+      - "/custom_run.sh"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+
+networks:
+  default:
+    name: iota
+    external: true
