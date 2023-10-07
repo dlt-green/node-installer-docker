@@ -48,6 +48,8 @@ xx='\033[0m'
 
 echo "$xx"
 
+sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
 IotaHornetHash='ee51995f824b3a249dd82385f5bc75bc1c4e1ddfa62805945359d95c3ba181b8'
@@ -3249,8 +3251,6 @@ echo "> $gn""Checking Hash of Installer successful...""$xx"
 echo "> $gn""$InstallerHash""$xx"
 
 sleep 3
-
-sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 CheckFirewall
 DeleteFirewallPort "13266"
