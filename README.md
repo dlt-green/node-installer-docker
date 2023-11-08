@@ -4,7 +4,7 @@
 Wir sind ein Team von Leuten aus der IOTA Community, welches sich die Vision gesetzt hat, einen DNS Server für das IOTA Ecosystem zur Verbesserung des Nutzererlebnisses ins Leben zu rufen. Dabei steht „DNS“ für „Dynamic Node Selection“. Unser Ziel ist es, dass eine Wallet nicht mehr mit einem statischen Zugangspunkt arbeitet, sondern sich dieser je nach Situation ändern kann. Die Zeit von statischen Zugangspunkten in das IOTA Ecosystem ist vorbei. Stellen Sie sich vor, nie mehr darüber nachzudenken, ob der Zugangspunkt funktioniert oder nicht. Stellen Sie sich Geräte in der IOT vor, welche sich vollautomatisch die Node für ihren individuellen Einsatzzweck aussuchen, dies kann z.B. nach Proof of Work, Unterstützung verschiedener Events, nach Vertrauenswürdigkeit oder nach verfügbarer Zugangsgeschwindigkeit sein. Dabei ist uns wichtig, dass der eigentliche Datenverkehr dann zwischen der Wallet und der Node selbst und nicht über den NodePool geführt wird.
 
 # DLT.GREEN AUTOMATIC NODE-INSTALLER DOCKER
-DLT.GREEN Node-Installer ist ein Skript zur Installation von IOTA/Shimmer Nodes (Hornet, Goshimmer und Wasp) sowie auch PIPE von Tanglehub. Die Installation erfolgt mit Docker im Hintergrund und soll es jedem, auch Anfängern, ermöglichen in kurzer Zeit Iota Nodes auf einem Server oder einem Virtual Private Server (VPS) einrichten zu können.
+DLT.GREEN Node-Installer ist ein Skript zur Installation von IOTA/Shimmer Nodes (Hornet, Wasp). Die Installation erfolgt mit Docker im Hintergrund und soll es jedem, auch Anfängern, ermöglichen in kurzer Zeit Iota Nodes auf einem Server oder einem Virtual Private Server (VPS) einrichten zu können.
 
 # Voraussetzungen
 ### Mindestanforderungen für eine Node
@@ -45,9 +45,9 @@ dlt.green
 Die Bedienung des Skripts erfolgt über die Eingabe der Zahlen, welche im Menü angezeigt werden.  
 Wenn Sie auf das Bild klicken, sehen Sie <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">Video-Tutorials</a> für die Installation von IOTA und Shimmer Nodes:
 
-<div align="center">
+<div align="left">
       <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">
-      <img src="https://user-images.githubusercontent.com/89119285/218286717-12f211bd-7ecb-4874-b4ac-d823a54e31f4.png"
+      <img src="https://github.com/dlt-green/node-installer-docker/assets/89119285/bb3afc0b-7534-4963-b920-cb01fc4e38ef"
       alt="Installation">
       </a>
 </div>
