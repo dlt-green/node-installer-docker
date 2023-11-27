@@ -1877,18 +1877,41 @@ IotaHornet() {
 		echo ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
 		echo ufw allow '14626/udp' && ufw allow '14626/udp'
+
+		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                              Download Snapshot                              ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		echo "Download Full Snapshot... full_snapshot.bin"
+		wget -cO - "https://files.stardust-mainnet.iotaledger.net/snapshots/latest-full_snapshot.bin" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/mainnet/full_snapshot.bin
+		chmod 744 /var/lib/$VAR_DIR/data/snapshots/mainnet/full_snapshot.bin
+		
+		echo ""
+		echo "Download Delta Snapshot... delta_snapshot.bin"
+		wget -cO - "https://files.stardust-mainnet.iotaledger.net/snapshots/latest-delta_snapshot.bin" -q --show-progress --progress=bar > /var/lib/$VAR_DIR//data/snapshots/mainnet/delta_snapshot.bin
+		chmod 744 /var/lib/$VAR_DIR/data/snapshots/mainnet/delta_snapshot.bin
+		
 	fi
 
+	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                                Start Hornet                                 ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
+	echo "$ca"
+	echo 'Please wait, importing snapshot can take up to 10 minutes...'
+	echo "$xx"
+	
 	docker compose up -d
-
+	
 	sleep 3
 
 	RenameContainer
