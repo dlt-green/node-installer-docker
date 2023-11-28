@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.5.5"
-BUILD="20231113_190034"
+VRSN="v.2.5.6"
+BUILD="20231128_210440"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -52,19 +52,19 @@ sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='503f62ac0d5e10c832908da5ca1d655e7228999426898ce9e1bb074697b4e6ae'
+IotaHornetHash='5a226de313731ad7dc73be9be69d7e038ff5d14dca7accadc5aa8a28a609b343'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='0c07954be55136fa300488817ee5c95a8ae628ca501e7db0db50323cc7354fa8'
+IotaWaspHash='73aab16454433b9e415c45d8299c526f552261e19488102a8d13d8a143eb0dc1'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='d939a9c96ae0840cd35e7092757cda86f1a4bca2e10c13117363956f616190a1'
+ShimmerHornetHash='66dc3adceaa549963d5fb17a30478ced6f70df3f9a3e644dfeb24eea2196cbdf'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='62f86c639de3741e9d82769b80f9ae6a28002f9f1a76b9492f07c258e64282b5'
+ShimmerWaspHash='dfeec44baa4ea1c2ee12c587b675d8104a20d47f13af09ae4e4598d53563a341'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='5813f0ba02cd4fa63a66459306888fcacde45203cdd4d00e7086c3306648e777'
+ShimmerChronicleHash='bfdfb2687397b4bf5962c08d7d272324150f188844b5600ff41b75694417724c'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1864,8 +1864,14 @@ IotaHornet() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 	./prepare_docker.sh
 
+	echo "done..."
+
+	echo "$fl"; echo 'Continues automatically after 5 seconds... '; echo "$xx"
+	sleep 5
+
 	if [ $VAR_CONF_RESET = 1 ]; then
 
+		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                             Configure Firewall                              ║"
@@ -1877,28 +1883,69 @@ IotaHornet() {
 		echo ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
 		echo ufw allow '14626/udp' && ufw allow '14626/udp'
+
+		echo "$fl"; echo 'Continues automatically after 5 seconds... '; echo "$xx"
+		sleep 5
+
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                              Download Snapshot                              ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	
+		echo "$ca"
+		echo 'Please wait, downloading snapshots may take some time...'
+		echo "$xx"
+
+		echo "Download latest full snapshot... $VAR_IOTA_HORNET_NETWORK"
+		VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_IOTA_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].full')
+		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/full_snapshot.bin
+		chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/full_snapshot.bin
+	
+		echo ""
+	
+		echo "Download latest delta snapshot... $VAR_IOTA_HORNET_NETWORK"
+		VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_IOTA_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].delta')
+		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR//data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/delta_snapshot.bin
+		chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/delta_snapshot.bin
+		
+		echo "$fl"; echo 'Continues automatically after 5 seconds... '; echo "$xx"
+		sleep 5
+		
 	fi
 
+	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                                Start Hornet                                 ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
 
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 
+	echo "$ca"
+	echo 'Please wait, importing snapshot can take up to 10 minutes...'
+	echo "$xx"
+	
 	docker compose up -d
 
-	sleep 3
+	echo "$fl"; echo 'Continues automatically after 5 seconds... '; echo "$xx"	
+	sleep 5
 
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Set Parameters                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	
 	RenameContainer
 
 	if [ -n "$VAR_PASSWORD" ]; then
 	  if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
-	fi
+	else echo 'done...'; fi
 
-	echo ""
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+	echo "$fl"; echo 'Continues automatically after 5 seconds... '; echo "$xx"	
+	sleep 5
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -1921,8 +1968,8 @@ IotaHornet() {
 		echo ""
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	    echo ""
 	fi
-	echo ""
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
