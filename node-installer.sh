@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VRSN="v.2.5.6"
-BUILD="20231128_205722"
+BUILD="20231128_210440"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -52,19 +52,19 @@ sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='4e209f5bea1d033ebcb89f31c7b6c541016078c0aff95998f55a98a51ca9cac4'
+IotaHornetHash='5a226de313731ad7dc73be9be69d7e038ff5d14dca7accadc5aa8a28a609b343'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='6e6179cfed03dc94a5a4085f2d66a6ac76a5b9fde2a1733f93b36ca72131316c'
+IotaWaspHash='73aab16454433b9e415c45d8299c526f552261e19488102a8d13d8a143eb0dc1'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='f9cced59f16d6dbf1a2fc2aa88a2ff1e3afd96a9f67548df66210976bcce9b5d'
+ShimmerHornetHash='66dc3adceaa549963d5fb17a30478ced6f70df3f9a3e644dfeb24eea2196cbdf'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='b1045c273c35ecacea2ae38f5e3b7cb7bddf777073aec815161d80589dc6476d'
+ShimmerWaspHash='dfeec44baa4ea1c2ee12c587b675d8104a20d47f13af09ae4e4598d53563a341'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='663209f5b0ca24286bf00d292a6717529066cb130ebb7b4f7d9875c93896b67e'
+ShimmerChronicleHash='bfdfb2687397b4bf5962c08d7d272324150f188844b5600ff41b75694417724c'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1944,10 +1944,10 @@ IotaHornet() {
 	  if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 	else echo 'done...'; fi
 
-	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
-
 	echo "$fl"; echo 'Continues automatically after 5 seconds... '; echo "$xx"	
 	sleep 5
+
+	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
 	clear
 	echo ""
