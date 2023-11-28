@@ -55,6 +55,11 @@ services:
       - "${HORNET_DATA_DIR:-./data}/storage/${HORNET_NETWORK:-mainnet}:/app/storage"
       - "${HORNET_DATA_DIR:-./data}/snapshots/${HORNET_NETWORK:-mainnet}:/app/snapshots"
       - "${HORNET_DATA_DIR:-./data}/p2pstore/${HORNET_NETWORK:-mainnet}:/app/p2pstore"
+    healthcheck:
+      test: ["CMD", "/app/hornet", "tools", "node-info"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
     logging:
       driver: "json-file"
       options:
