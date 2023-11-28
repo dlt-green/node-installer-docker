@@ -1944,10 +1944,10 @@ IotaHornet() {
 	  if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 	else echo 'done...'; fi
 
-	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
-
 	echo "$fl"; echo 'Continues automatically after 5 seconds... '; echo "$xx"	
 	sleep 5
+
+	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
 	clear
 	echo ""
