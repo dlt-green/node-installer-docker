@@ -1864,8 +1864,14 @@ IotaHornet() {
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 	./prepare_docker.sh
 
+	echo "done..."
+
+	echo "$fl"; echo 'Continues automatically after 5 seconds... '; echo "$xx"
+	sleep 5
+
 	if [ $VAR_CONF_RESET = 1 ]; then
 
+		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                             Configure Firewall                              ║"
@@ -1878,23 +1884,33 @@ IotaHornet() {
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
 		echo ufw allow '14626/udp' && ufw allow '14626/udp'
 
-		echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+		echo "$fl"; echo 'Continues automatically after 5 seconds... '; echo "$xx"
+		sleep 5
 
 		clear
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                              Download Snapshot                              ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
+	
+		echo "$ca"
+		echo 'Please wait, downloading snapshots may take some time...'
+		echo "$xx"
 
-		echo "Download Full Snapshot... full_snapshot.bin"
-		wget -cO - "https://files.stardust-mainnet.iotaledger.net/snapshots/latest-full_snapshot.bin" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/mainnet/full_snapshot.bin
-		chmod 744 /var/lib/$VAR_DIR/data/snapshots/mainnet/full_snapshot.bin
-		
+		echo "Download latest full snapshot... $VAR_IOTA_HORNET_NETWORK"
+		VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_IOTA_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].full')
+		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/full_snapshot.bin
+		chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/full_snapshot.bin
+	
 		echo ""
-		echo "Download Delta Snapshot... delta_snapshot.bin"
-		wget -cO - "https://files.stardust-mainnet.iotaledger.net/snapshots/latest-delta_snapshot.bin" -q --show-progress --progress=bar > /var/lib/$VAR_DIR//data/snapshots/mainnet/delta_snapshot.bin
-		chmod 744 /var/lib/$VAR_DIR/data/snapshots/mainnet/delta_snapshot.bin
+	
+		echo "Download latest delta snapshot... $VAR_IOTA_HORNET_NETWORK"
+		VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_IOTA_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].delta')
+		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR//data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/delta_snapshot.bin
+		chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/delta_snapshot.bin
+		
+		echo "$fl"; echo 'Continues automatically after 5 seconds... '; echo "$xx"
+		sleep 5
 		
 	fi
 
@@ -1911,19 +1927,27 @@ IotaHornet() {
 	echo "$xx"
 	
 	docker compose up -d
-	
-	sleep 3
 
+	echo "$fl"; echo 'Continues automatically after 5 seconds... '; echo "$xx"	
+	sleep 5
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Set Parameters                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	
 	RenameContainer
 
 	if [ -n "$VAR_PASSWORD" ]; then
 	  if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
-	fi
-
-	echo ""
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+	else echo 'done...'; fi
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
+
+	echo "$fl"; echo 'Continues automatically after 5 seconds... '; echo "$xx"	
+	sleep 5
 
 	clear
 	echo ""
@@ -1944,8 +1968,8 @@ IotaHornet() {
 		echo ""
 	else
 	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	    echo ""
 	fi
-	echo ""
 
 	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
 
