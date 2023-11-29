@@ -156,6 +156,15 @@ DeleteFirewallPort() {
 	while true; do n=$(ufw status numbered | grep "$1" | head -n 1 | awk -F"[][]" '{print $2}');[ "$n" != "" ] || break; yes | ufw delete $n; done;
 }
 
+PromptMessage() {
+	WAIT=$(echo $1*10 | bc)
+	STTY=`stty -g`
+	printf "$2"
+	stty intr '' -icanon min 0 time $WAIT ignbrk -brkint -ixon isig
+	read W
+	stty $STTY
+}
+
 FormatToBytes() {
 	unset bytes;
 	if [ -n "$1" ]; then
