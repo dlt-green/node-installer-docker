@@ -1654,7 +1654,7 @@ IotaHornet() {
 	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
-	echo "$fl"; read -r -p 'Press [Enter] key to continue... Press [STRG+C] to cancel... ' W; echo "$xx"
+	echo "$fl"; PromptMessage 10 "Press [Enter] or wait [10s] to continue... Press [Q] to cancel... "; echo "$xx"
 
 	CheckConfiguration
 
