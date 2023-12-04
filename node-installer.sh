@@ -780,7 +780,7 @@ MainMenu() {
 	   echo "$ca"
 	   echo 'Firewall Status/Ports:'
 	   echo "$xx"
-	   ufw status Numbed 2>/dev/null
+	   ufw status numbered 2>/dev/null
 	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
 	5) SubMenuLicense ;;
