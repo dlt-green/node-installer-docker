@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VRSN="v.2.6.0"
-BUILD="20231204_235204"
+BUILD="20231205_000745"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -52,19 +52,19 @@ sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='94191908d22a0c58c0a01b05b18e8f47d2ce8578718e79de3d3e59f6b43bfc81'
+IotaHornetHash='0798c4cb2d0425dbce80c868edf527674c8fea5265bf04ad806ff517b9a71f5e'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='4dcafbb3284d3bf7d59cedc3451e07efb5a76c8b2dc01d9fb7197a8f765e4401'
+IotaWaspHash='6535946ba6fc048bfcc57779fc3a3297d29c134ddae4a9387dc4742ac45c5e45'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='9c6db62d16d9cb94855a92eb216859d7eb6f7d9409f7ef0f8de0d8ff8d8c050f'
+ShimmerHornetHash='0ad96180b1194d601eaca16c49136c78c6f301958c4c2ec9b5400068eaf3ddc7'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='6c908f54709ce8e943c015285adc02207536319205da37b83e70a3b2fb472f83'
+ShimmerWaspHash='980d50ec3d7462ff7d71443826dd9d6ee88f52814368f1b17d72efc7e2b891d3'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='3568ef2a2dd0c9aca6633a6b2f57faac804916a501857c3068cdac0e6640f33a'
+ShimmerChronicleHash='c1d8172c570603aa9445b8c67063b153ee60432233cb76c3b028f9f97866e94f'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -780,7 +780,7 @@ MainMenu() {
 	   echo "$ca"
 	   echo 'Firewall Status/Ports:'
 	   echo "$xx"
-	   ufw status Numbed 2>/dev/null
+	   ufw status numbered 2>/dev/null
 	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
 	5) SubMenuLicense ;;
