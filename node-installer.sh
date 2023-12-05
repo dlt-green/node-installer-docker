@@ -2129,7 +2129,7 @@ IotaWasp() {
 	echo "║            DLT.GREEN AUTOMATIC IOTA-WASP INSTALLATION WITH DOCKER           ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	echo "$ca""Wasp is like a INX-Plugin and can only installed on the same Server as IOTA!""$xx";
+	echo "$ca""Wasp is an INX-Plugin and can only be installed on the same Server as IOTA!""$xx";
 	CheckShimmer
 	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
@@ -2871,7 +2871,7 @@ ShimmerWasp() {
 	echo "║          DLT.GREEN AUTOMATIC SHIMMER-WASP INSTALLATION WITH DOCKER          ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	echo "$ca""Wasp is like a INX-Plugin and can only installed on the same Server as Shimmer!""$xx";
+	echo "$ca""Wasp is an INX-Plugin and can only be installed on the same Server as Shimmer!""$xx";
 	CheckIota
 	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
