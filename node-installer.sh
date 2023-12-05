@@ -999,8 +999,11 @@ SubMenuMaintenance() {
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	   echo "║                                Starting Node                                ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	   echo ""	
 	   
+	   echo "$ca"
+	   echo 'Please wait, importing snapshot can take up to 10 minutes...'
+	   echo "$xx"
+
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
 
 	   RenameContainer; sleep 3
@@ -1082,7 +1085,10 @@ SubMenuMaintenance() {
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	   echo "║                                Starting Node                                ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	   echo ""	
+	   
+	   echo "$ca"
+	   echo 'Please wait, importing snapshot can take up to 10 minutes...'
+	   echo "$xx"
 	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
 
