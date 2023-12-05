@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VRSN="v.2.6.0"
-BUILD="20231205_063117"
+BUILD="20231205_064203"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -52,19 +52,19 @@ sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='c07b0b2b8bc3ea0b18f78d2c8bf01e69275052746118c5b5e4a77f7d2885a182'
+IotaHornetHash='979522aa4472efb64331558a2b7fdb4433053d92f55dbf0a79cab50f00f415da'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='b9ec0446810bb68260124a13bd3cf5727397ca66c7fbdcdab361e8a3389f37c2'
+IotaWaspHash='4cc31c1ba7ca05ac778b7bd5c13f9ceab20ed6026bd1e3375f89457dbb7d0e17'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='aa73cb8b1f98d73a3a205855bf516957f3dc263ad08ec999edbcac99bfb91f20'
+ShimmerHornetHash='835ff104a49147d8487be88c291245b44f2a64c715b6de93562a0a19064ad926'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='f8abb4468ae46e09ae904d24ef22a5d531c7111f5dfaf8ff80bb6c3a44bddde8'
+ShimmerWaspHash='6c9a248e6c758282854717c5b421a1b943c4ebdbc5863d567456dbfd5495d60e'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='2df747a8f2d98f5b6b794842cd9870f4f4722a984ecacd7cb63606e76c786acf'
+ShimmerChronicleHash='e073ac4924abb16759a94b1cad03cb0402eee8b2d3fc453548f4204dba0f6941'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -999,8 +999,11 @@ SubMenuMaintenance() {
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	   echo "║                                Starting Node                                ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	   echo ""	
 	   
+	   echo "$ca"
+	   echo 'Please wait, importing snapshot can take up to 10 minutes...'
+	   echo "$xx"
+
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
 
 	   RenameContainer; sleep 3
@@ -1082,7 +1085,10 @@ SubMenuMaintenance() {
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	   echo "║                                Starting Node                                ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	   echo ""	
+	   
+	   echo "$ca"
+	   echo 'Please wait, importing snapshot can take up to 10 minutes...'
+	   echo "$xx"
 	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
 
