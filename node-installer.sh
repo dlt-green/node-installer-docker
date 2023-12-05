@@ -116,16 +116,14 @@ CheckFirewall() {
 		echo "║                                                                             ║"
 		echo "║                 your default or custom SSH Port will be set                 ║"
 		echo "║                                                                             ║"
-		echo "║          press [S] to skip, [F] to enable the Firewall, [Q] to quit         ║"
+		echo "║          press [S] to skip, [X] to enable the Firewall, [Q] to quit         ║"
 		echo "║                                                                             ║"
 		echo "║                       GNU General Public License v3.0                       ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
-		echo "select menu item:"
-		echo ""
+		echo "$fl"; PromptMessage 10 "[Enter] / wait [10s] for [X]... [P] to pause / [C] to cancel"
 
-		read -r -p '> ' n
-		case $n in
+		case $W in
 		s|S) ;;
 		q|Q) clear; exit ;;
 		*) clear
@@ -623,7 +621,6 @@ Dashboard() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item:"
-	echo ""
 
 	read -r -p '> ' n
 	case $n in
@@ -727,7 +724,6 @@ MainMenu() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item: "
-	echo ""
 
 	read -r -p '> ' n
 	case $n in
@@ -811,7 +807,6 @@ SubMenuLicense() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item: "
-	echo ""
 
 	read -r -p '> ' n
 	case $n in
