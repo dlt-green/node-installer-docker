@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VRSN="v.2.6.0"
-BUILD="20231205_000745"
+BUILD="20231205_063117"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -52,19 +52,19 @@ sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='0798c4cb2d0425dbce80c868edf527674c8fea5265bf04ad806ff517b9a71f5e'
+IotaHornetHash='c07b0b2b8bc3ea0b18f78d2c8bf01e69275052746118c5b5e4a77f7d2885a182'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='6535946ba6fc048bfcc57779fc3a3297d29c134ddae4a9387dc4742ac45c5e45'
+IotaWaspHash='b9ec0446810bb68260124a13bd3cf5727397ca66c7fbdcdab361e8a3389f37c2'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='0ad96180b1194d601eaca16c49136c78c6f301958c4c2ec9b5400068eaf3ddc7'
+ShimmerHornetHash='aa73cb8b1f98d73a3a205855bf516957f3dc263ad08ec999edbcac99bfb91f20'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='980d50ec3d7462ff7d71443826dd9d6ee88f52814368f1b17d72efc7e2b891d3'
+ShimmerWaspHash='f8abb4468ae46e09ae904d24ef22a5d531c7111f5dfaf8ff80bb6c3a44bddde8'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='c1d8172c570603aa9445b8c67063b153ee60432233cb76c3b028f9f97866e94f'
+ShimmerChronicleHash='2df747a8f2d98f5b6b794842cd9870f4f4722a984ecacd7cb63606e76c786acf'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -116,16 +116,14 @@ CheckFirewall() {
 		echo "║                                                                             ║"
 		echo "║                 your default or custom SSH Port will be set                 ║"
 		echo "║                                                                             ║"
-		echo "║          press [S] to skip, [F] to enable the Firewall, [Q] to quit         ║"
+		echo "║          press [S] to skip, [X] to enable the Firewall, [Q] to quit         ║"
 		echo "║                                                                             ║"
 		echo "║                       GNU General Public License v3.0                       ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
-		echo "select menu item:"
-		echo ""
+		echo "$fl"; PromptMessage 10 "[Enter] / wait [10s] for [X]... [P] to pause / [C] to cancel"
 
-		read -r -p '> ' n
-		case $n in
+		case $W in
 		s|S) ;;
 		q|Q) clear; exit ;;
 		*) clear
@@ -623,7 +621,6 @@ Dashboard() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item:"
-	echo ""
 
 	read -r -p '> ' n
 	case $n in
@@ -727,7 +724,6 @@ MainMenu() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item: "
-	echo ""
 
 	read -r -p '> ' n
 	case $n in
@@ -811,7 +807,6 @@ SubMenuLicense() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item: "
-	echo ""
 
 	read -r -p '> ' n
 	case $n in
