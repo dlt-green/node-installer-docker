@@ -46,6 +46,20 @@ fl='\033[1m'
 
 xx='\033[0m'
 
+opt_time=10
+opt_restart=0
+
+while getopts "m:n:t:r:" option
+do
+  case $option in
+     m) opt_mode="$OPTARG";;
+     n) opt_node="$OPTARG";;
+     t) opt_time="$OPTARG";;
+     r) opt_restart="$OPTARG";;
+     \?) echo "Invalid option" & exit;;
+  esac
+done
+
 echo "$xx"
 
 sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
@@ -141,10 +155,10 @@ CheckFirewall() {
 				echo "Set custom SSH-Port... $VAR_SSH_PORT/tcp"
 			 fi
 
-			 echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
 			 sudo ufw enable
-			 echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 ;;
 		esac
 	fi
@@ -217,7 +231,7 @@ CheckDomain() {
 		echo ""
 	    echo "$rd""Attention! Verification of your Domain $VAR_HOST failed! Installation aborted!""$xx"
 	    echo "$rd""Maybe you entered a wrong Domain or the DNS is not reachable yet?""$xx"
-	    echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	    echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 		SubMenuMaintenance
 	else
 	    echo "$gn""Verification of your Domain $VAR_HOST successful""$xx"
@@ -288,7 +302,7 @@ CheckConfiguration() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 		echo "select menu item: "
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] for [X]... Press [P] to pause / [C] to cancel"
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"
 
 		case $W in
 		1) echo "$rd""Reset Configuration... ""$xx"
@@ -404,7 +418,7 @@ CheckEventsIota() {
 	      echo "───────────────────────────────────────────────────────────────────────────────"
 	   done
 	fi
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	Dashboard
 }
 
@@ -496,7 +510,7 @@ CheckEventsShimmer() {
 	      echo "───────────────────────────────────────────────────────────────────────────────"
 	   done
 	fi
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	Dashboard
 }
 
@@ -516,7 +530,7 @@ SetCertificateGlobal() {
 	echo "every Node on your Server will use this Certificate after restarting it""$xx"
 	echo ""
 	echo "select menu item: "
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] for [X]... Press [P] to pause / [C] to cancel"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"
 	case $W in
 	*)
 	   echo "$ca"'Update Certificate for all Nodes...'"$xx"
@@ -536,7 +550,7 @@ SetCertificateGlobal() {
 	     echo "$rd""There was an Error on getting a Let's Encrypt Certificate!""$xx"
 	     echo "$gn""A default Certificate is now generated only for this Node""$xx"
 	   fi
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   ;;
 	1) ;;
 	esac
@@ -622,7 +636,20 @@ Dashboard() {
 	echo ""
 	echo "select menu item:"
 
-	read -r -p '> ' n
+	if [ "$opt_mode" = 0 ]; then
+	  echo "$ca""unattended: System Maintenance...""$xx"
+	  sleep 3
+	  SystemMaintenance
+	fi
+
+	if [ "$opt_mode" = 's' ]; then
+	  echo "$ca""unattended: Start all Nodes...""$xx"
+	  sleep 3
+	  n='s'
+	fi
+
+	if [ "$opt_mode" = 's' ]; then n=s; else read -r -p '> ' n; fi
+
 	case $n in
 
 	s|S)
@@ -637,7 +664,10 @@ Dashboard() {
 	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker compose up -d; fi
 	   if [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then cd /var/lib/shimmer-plugins/inx-chronicle || Dashboard; docker compose up -d; fi
 	   RenameContainer
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   
+	   if [ "$opt_mode" = 's' ]; then clear; exit; fi
+	   
 	   DashboardHelper ;;
 
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
@@ -752,7 +782,7 @@ MainMenu() {
 		 echo "$rd""Attention! Please reconnect so that the alias works!""$xx"
 	   fi
 
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
 	1) SystemMaintenance ;;
 	2) Docker ;;
@@ -777,7 +807,7 @@ MainMenu() {
 	   echo 'Firewall Status/Ports:'
 	   echo "$xx"
 	   ufw status numbered 2>/dev/null
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
 	5) SubMenuLicense ;;
 	q|Q) clear; exit ;;
@@ -785,7 +815,7 @@ MainMenu() {
 	   if [ $? -eq 0 ]; then Dashboard; else
   	     echo ""
   	     echo "$rd""Attention! Please install Docker! Loading Dashboard aborted!""$xx"
-	     echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	     echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	     MainMenu
        fi;;
 	esac
@@ -919,7 +949,7 @@ SubMenuMaintenance() {
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	   clear
 	   echo ""
@@ -933,7 +963,7 @@ SubMenuMaintenance() {
 
 	   RenameContainer; sleep 3
 
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
 	3) echo 'stopping...'; sleep 3
@@ -954,7 +984,7 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 	   sleep 3;
 
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
 	4) echo 'resetting...'; sleep 3
@@ -967,7 +997,7 @@ SubMenuMaintenance() {
 	   echo ""	
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	   clear
 	   echo ""
@@ -992,7 +1022,7 @@ SubMenuMaintenance() {
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
 	   fi
 
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	   clear
 	   echo ""
@@ -1008,7 +1038,7 @@ SubMenuMaintenance() {
 
 	   RenameContainer; sleep 3
 
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
 	5) echo 'loading...'; sleep 3
@@ -1021,7 +1051,7 @@ SubMenuMaintenance() {
 	   echo ""	
 	   
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   
 	   clear
 	   echo ""
@@ -1067,7 +1097,7 @@ SubMenuMaintenance() {
 	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
 	   fi
 
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	   clear
 	   echo ""
@@ -1078,7 +1108,7 @@ SubMenuMaintenance() {
 
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   
 	   clear
 	   echo ""
@@ -1094,7 +1124,7 @@ SubMenuMaintenance() {
 
 	   RenameContainer
 
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
 	6) clear
@@ -1106,13 +1136,13 @@ SubMenuMaintenance() {
 	   
 	   VAR_LOGS=$(echo "$VAR_DIR" | sed 's/\//./g')
 	   docker logs -f --tail 300 $VAR_LOGS
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
 	7) SubMenuConfiguration
 	   ;;
 	8) echo 'deinstall/remove...'; sleep 3
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1124,7 +1154,7 @@ SubMenuMaintenance() {
 	   if [ -d /var/lib/$VAR_DIR ]; then rm -r /var/lib/$VAR_DIR; fi
 
 	   echo "$rd""$VAR_DIR removed from your system!""$xx"
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
 	*) Dashboard ;;
@@ -1264,7 +1294,7 @@ SubMenuConfiguration() {
 	   else
 	      echo "$rd""Generate JWT-Token is not supportet, aborted! ""$xx"
 	   fi	
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
 	2) clear
 	   echo "$ca"
@@ -1290,7 +1320,7 @@ SubMenuConfiguration() {
 	   else
 	      echo "$rd""Toggle Proof of Work is not supportet, aborted!""$xx"
 	   fi	
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
 	3) clear
 	   echo "$ca"
@@ -1317,7 +1347,7 @@ SubMenuConfiguration() {
 	   else
 	      echo "$rd""Toggle Network is not supportet, aborted!""$xx"
 	   fi	
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
 	4) clear
 	   echo "$ca"
@@ -1339,7 +1369,7 @@ SubMenuConfiguration() {
 	   else
 	      echo "$rd""Set Node Alias is not supportet, aborted!""$xx"
 	   fi
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
 	5) clear
 	   echo "$ca"
@@ -1351,7 +1381,7 @@ SubMenuConfiguration() {
 	      ./prepare_docker.sh >/dev/null 2>&1
 	      echo "$rd""Please restart your Node for the changes to take effect!""$xx"
        fi
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
 	*) SubMenuMaintenance ;;
 	esac
@@ -1401,7 +1431,7 @@ SubMenuWaspCLI() {
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	2) clear
@@ -1433,7 +1463,7 @@ SubMenuWaspCLI() {
 	      done
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
-	      echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	      echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   fi
 	   SubMenuWaspCLI
 	   ;;
@@ -1447,7 +1477,7 @@ SubMenuWaspCLI() {
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	4) clear
@@ -1460,7 +1490,7 @@ SubMenuWaspCLI() {
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	5) clear
@@ -1473,7 +1503,7 @@ SubMenuWaspCLI() {
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	6) clear
@@ -1486,7 +1516,7 @@ SubMenuWaspCLI() {
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	7) clear
@@ -1506,7 +1536,7 @@ SubMenuWaspCLI() {
 	  else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	8) clear
@@ -1519,7 +1549,7 @@ SubMenuWaspCLI() {
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	9) clear
@@ -1532,7 +1562,7 @@ SubMenuWaspCLI() {
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	*) Dashboard ;;
@@ -1547,7 +1577,7 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1555,9 +1585,13 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker system prune
+	if [ "$opt_mode" = 0 ]; then
+	  docker system prune -f
+	else
+	  docker system prune
+	fi
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
 	echo "$ca"
@@ -1566,7 +1600,7 @@ SystemMaintenance() {
 	docker stop $(docker ps -a -q)
 	docker ps -a -q >/dev/null 2>&1
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
 	echo "$ca"
@@ -1577,7 +1611,7 @@ SystemMaintenance() {
 	sudo apt upgrade -y
 	sudo apt-get autoremove -y
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
 	echo ""
@@ -1613,8 +1647,8 @@ SystemMaintenance() {
 	if [ $CERT = 0 ]; then echo "$rd""No Let's Encrypt Certificate found, aborted!""$xx"; fi
 	if [ $CERT -gt 1 ]; then echo "$rd"; echo "Misconfiguration with Certificates from your Nodes detected!""$xx"; fi
 	
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-	
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1631,7 +1665,8 @@ SystemMaintenance() {
 	echo ""
 	echo "select menu item: "
 
-	read -r -p '> ' n
+	if [ "$opt_restart" -eq 1 ]; then n=1; else if [ "$opt_restart" -eq 0 ]; then n=0; else	read -r -p '> ' n; fi; fi
+
 	case $n in
 	1) 	echo 'restarting...'; sleep 3
 	    echo "$rd"
@@ -1652,7 +1687,9 @@ SystemMaintenance() {
 	   
 	   RenameContainer
 
-	   echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	   if [ "$opt_mode" = 0 ]; then clear; exit; fi
 
 	   MainMenu ;;
 	esac
@@ -1666,7 +1703,7 @@ Docker() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	sudo docker ps -a -q >/dev/null 2>&1
 
@@ -1712,7 +1749,7 @@ Docker() {
 	sudo apt-get update
 	sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	MainMenu
 }
@@ -1729,7 +1766,7 @@ IotaHornet() {
 	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
 	echo "$ca""Starting Installation or Update...""$xx";
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
 	clear
@@ -1775,7 +1812,7 @@ IotaHornet() {
 	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	CheckConfiguration
 
@@ -1894,7 +1931,7 @@ IotaHornet() {
 		  fi
 		fi
 
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1970,7 +2007,7 @@ IotaHornet() {
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	clear
 	echo ""
@@ -1982,7 +2019,7 @@ IotaHornet() {
 	docker network create iota >/dev/null 2>&1
 	docker compose pull
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
@@ -2002,7 +2039,7 @@ IotaHornet() {
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	fi
 
@@ -2017,7 +2054,7 @@ IotaHornet() {
 
 	echo "done..."
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
@@ -2034,7 +2071,7 @@ IotaHornet() {
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
 		echo ufw allow '14626/udp' && ufw allow '14626/udp'
 
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 		clear
 		echo ""
@@ -2058,7 +2095,7 @@ IotaHornet() {
 		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR//data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/delta_snapshot.bin
 		chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/delta_snapshot.bin
 		
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	fi
 
@@ -2076,7 +2113,7 @@ IotaHornet() {
 
 	docker compose up -d
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	clear
 	echo ""
@@ -2091,7 +2128,7 @@ IotaHornet() {
 	  if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 	else echo 'done...'; fi
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear	
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear	
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -2117,7 +2154,7 @@ IotaHornet() {
 	    echo ""
 	fi
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	Dashboard
 }
@@ -2134,7 +2171,7 @@ IotaWasp() {
 	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
 	echo "$ca""Starting Installation or Update...""$xx";
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
 
 	clear
@@ -2179,7 +2216,7 @@ IotaWasp() {
 	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	CheckConfiguration
 
@@ -2263,7 +2300,7 @@ IotaWasp() {
 		  fi
 		fi
 
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -2352,7 +2389,7 @@ IotaWasp() {
 
 	fi
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	clear
 	echo ""
@@ -2364,7 +2401,7 @@ IotaWasp() {
 	docker network create iota >/dev/null 2>&1
 	docker compose pull
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	if [ $VAR_CONF_RESET = 1 ]; then
 
 		echo ""
@@ -2385,7 +2422,7 @@ IotaWasp() {
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	fi
 
 	echo ""
@@ -2399,7 +2436,7 @@ IotaWasp() {
 
 	echo "done..."
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	if [ $VAR_CONF_RESET = 1 ]; then
 
 		echo ""
@@ -2413,7 +2450,7 @@ IotaWasp() {
 		echo ufw allow "$VAR_IOTA_WASP_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_HTTPS_PORT/tcp"
 		echo ufw allow "$VAR_IOTA_WASP_API_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_API_PORT/tcp"
 		echo ufw allow "$VAR_IOTA_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_IOTA_WASP_PEERING_PORT/tcp"
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	fi
 
 	echo ""
@@ -2426,7 +2463,7 @@ IotaWasp() {
 
 	docker compose up -d
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	clear
 	RenameContainer
@@ -2454,7 +2491,7 @@ IotaWasp() {
 	    echo ""
 	fi
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	Dashboard
 }
@@ -2471,7 +2508,7 @@ ShimmerHornet() {
 	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
 	echo "$ca""Starting Installation or Update...""$xx";													 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
 
 	clear
@@ -2517,7 +2554,7 @@ ShimmerHornet() {
 	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	CheckConfiguration
 
@@ -2636,7 +2673,7 @@ ShimmerHornet() {
 		  fi
 		fi
 
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -2712,7 +2749,7 @@ ShimmerHornet() {
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	clear
 	echo ""
@@ -2724,7 +2761,7 @@ ShimmerHornet() {
 	docker network create shimmer >/dev/null 2>&1
 	docker compose pull
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
@@ -2744,7 +2781,7 @@ ShimmerHornet() {
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	fi
 
@@ -2759,7 +2796,7 @@ ShimmerHornet() {
 
 	echo "done..."
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	if [ $VAR_CONF_RESET = 1 ]; then
 
@@ -2776,7 +2813,7 @@ ShimmerHornet() {
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
 		echo ufw allow '14626/udp' && ufw allow '14626/udp'
 
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 		clear
 		echo ""
@@ -2800,7 +2837,7 @@ ShimmerHornet() {
 		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR//data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
 		chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
 		
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	fi
 
@@ -2818,7 +2855,7 @@ ShimmerHornet() {
 
 	docker compose up -d
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	clear
 	echo ""
@@ -2833,7 +2870,7 @@ ShimmerHornet() {
 	  if [ $VAR_CONF_RESET = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 	else echo 'done...'; fi
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear	
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear	
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -2859,7 +2896,7 @@ ShimmerHornet() {
 	    echo ""
 	fi
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	Dashboard
 }
@@ -2876,7 +2913,7 @@ ShimmerWasp() {
 	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
 	echo "$ca""Starting Installation or Update...""$xx";
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
 
 	clear
@@ -2921,7 +2958,7 @@ ShimmerWasp() {
 	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	CheckConfiguration
 
@@ -3005,7 +3042,7 @@ ShimmerWasp() {
 		  fi
 		fi
 
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -3094,7 +3131,7 @@ ShimmerWasp() {
 
 	fi
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	clear
 	echo ""
@@ -3106,7 +3143,7 @@ ShimmerWasp() {
 	docker network create shimmer >/dev/null 2>&1
 	docker compose pull
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	if [ $VAR_CONF_RESET = 1 ]; then
 
 		echo ""
@@ -3127,7 +3164,7 @@ ShimmerWasp() {
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	fi
 
 	echo ""
@@ -3141,7 +3178,7 @@ ShimmerWasp() {
 
 	echo "done..."
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	if [ $VAR_CONF_RESET = 1 ]; then
 
 		echo ""
@@ -3155,7 +3192,7 @@ ShimmerWasp() {
 		echo ufw allow "$VAR_SHIMMER_WASP_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_HTTPS_PORT/tcp"
 		echo ufw allow "$VAR_SHIMMER_WASP_API_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_API_PORT/tcp"
 		echo ufw allow "$VAR_SHIMMER_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_PEERING_PORT/tcp"
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	fi
 
 	echo ""
@@ -3168,7 +3205,7 @@ ShimmerWasp() {
 
 	docker compose up -d
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	clear
 	RenameContainer
@@ -3196,7 +3233,7 @@ ShimmerWasp() {
 	    echo ""
 	fi
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	Dashboard
 }
@@ -3212,7 +3249,7 @@ ShimmerChronicle() {
 	CheckIota
 	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
@@ -3251,7 +3288,7 @@ ShimmerChronicle() {
 	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	CheckConfiguration
 
@@ -3359,7 +3396,7 @@ ShimmerChronicle() {
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_DEFAULT; fi
 		echo "$gn""Set grafana password: $VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx"
-		echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 		CheckCertificate
 
 		echo ""
@@ -3397,7 +3434,7 @@ ShimmerChronicle() {
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 	fi
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
 	echo ""
@@ -3464,7 +3501,7 @@ ShimmerChronicle() {
 	RenameContainer
 
 	echo ""
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -3498,7 +3535,7 @@ ShimmerChronicle() {
 	fi
 	echo ""
 
-	echo "$fl"; PromptMessage 10 "Press [Enter] / wait [10s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	SubMenuMaintenance
 }
