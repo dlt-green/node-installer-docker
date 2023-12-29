@@ -40,6 +40,27 @@ Mit dem erstmaligen ausführen des Installers wird automatisch ein Alias auf Ben
 ```console
 dlt.green
 ```
+### NODE-INSTALLER Scripting (unattended)
+
+```
+dlt.green [-m modus/optional] [-t time/optional] [-r reset/optional]
+```
+
+```
+modus: 0: Maintenance -> System Updates/Docker Cleanup
+modus: s: Start all Nodes
+```
+
+```
+time: 0-20 seconds
+default: 10
+```
+
+```
+reset: 0: no reset
+reset: 1: system reset (nodes will be automatically shut down before)
+default: 0
+```
 
 ### Bedienung
 Die Bedienung des Skripts erfolgt über die Eingabe der Zahlen, welche im Menü angezeigt werden.  
