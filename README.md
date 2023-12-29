@@ -47,17 +47,19 @@ dlt.green [-m modus/optional] [-t time/optional] [-r reset/optional]
 ```
 
 ```
-modus: "0": Maintenance -> System Updates/Docker Cleanup
-modus: "s": Start all Nodes
+modus: 0: Maintenance -> System Updates/Docker Cleanup
+modus: s: Start all Nodes
 ```
 
 ```
-time: "0"-"20" seconds
+time: 0-20 seconds
+default: 10
 ```
 
 ```
-reset: "0": no reset
-reset: "1": system reset (nodes will be automatically shut down before)
+reset: 0: no reset
+reset: 1: system reset (nodes will be automatically shut down before)
+default: 0
 ```
 
 ### Bedienung
