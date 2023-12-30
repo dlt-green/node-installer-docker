@@ -61,7 +61,7 @@ reboot: 0: no reboot
 reboot: 1: system reboot (nodes will be automatically shut down before)
 default: 0
 
-hint: when you have enabled autostart via gui, then all intalled nodes/inx-modules start automatically again after reboot
+hint: when you enabled autostart via gui, all installed nodes start automatically after reboot
 ```
 
 ### Bedienung
