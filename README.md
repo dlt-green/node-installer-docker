@@ -57,9 +57,11 @@ default: 10
 ```
 
 ```
-reset: 0: no reset
-reset: 1: system reset (nodes will be automatically shut down before)
+reboot: 0: no reboot
+reboot: 1: system reboot (nodes will be automatically shut down before)
 default: 0
+
+hint: when you have enabled autostart via gui, then all intalled nodes/inx-modules start automatically again after reboot
 ```
 
 ### Bedienung
