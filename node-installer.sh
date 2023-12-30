@@ -692,25 +692,25 @@ Dashboard() {
 	if [ "$opt_mode" = 1 ]; then
 	  echo "$ca""unattended: Update IOTA-Hornet...""$xx"
 	  sleep 3
-	  IotaHornet
+	  n='1'
 	fi
 	
 	if [ "$opt_mode" = 2 ]; then
 	  echo "$ca""unattended: Update IOTA-Wasp...""$xx"
 	  sleep 3
-	  IotaWasp
+	  n='2'
 	fi
 	
 	if [ "$opt_mode" = 5 ]; then
 	  echo "$ca""unattended: Update Shimmer-Hornet...""$xx"
 	  sleep 3
-	  ShimmerHornet
+	  n='5'
 	fi
 
 	if [ "$opt_mode" = 6 ]; then
 	  echo "$ca""unattended: Update Shimmer-Wasp...""$xx"
 	  sleep 3
-	  ShimmerWasp
+	  n='6'
 	fi
 
 	if [ "$opt_mode" = 's' ]; then
@@ -719,7 +719,7 @@ Dashboard() {
 	  n='s'
 	fi
 
-	if [ "$opt_mode" = 's' ]; then n=s; else read -r -p '> ' n; fi
+	if ! [ "$opt_mode" ]; then read -r -p '> ' n; fi
 
 	case $n in
 
