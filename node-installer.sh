@@ -689,6 +689,30 @@ Dashboard() {
 	  SystemMaintenance
 	fi
 
+	if [ "$opt_mode" = 1 ]; then
+	  echo "$ca""unattended: Update IOTA-Hornet...""$xx"
+	  sleep 3
+	  IotaHornet
+	fi
+	
+	if [ "$opt_mode" = 2 ]; then
+	  echo "$ca""unattended: Update IOTA-Wasp...""$xx"
+	  sleep 3
+	  IotaWasp
+	fi
+	
+	if [ "$opt_mode" = 5 ]; then
+	  echo "$ca""unattended: Update Shimmer-Hornet...""$xx"
+	  sleep 3
+	  ShimmerHornet
+	fi
+
+	if [ "$opt_mode" = 6 ]; then
+	  echo "$ca""unattended: Update Shimmer-Wasp...""$xx"
+	  sleep 3
+	  ShimmerWasp
+	fi
+
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
 	  sleep 3
