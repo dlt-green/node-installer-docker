@@ -62,7 +62,7 @@ done
 
 echo "$xx"
 
-sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+sudo apt-get install nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
@@ -112,7 +112,7 @@ CheckShimmer() {
 }
 
 CheckAutostart() {
-	if [ "$(crontab -l | grep '@reboot cd \/home && bash -ic \"dlt.green -m s\"')" = '' ]
+	if ! [ "$(crontab -l | grep '@reboot cd \/home && bash -ic \"dlt.green -m s\"')" ]
 	then
 		clear
 		echo ""
@@ -126,9 +126,9 @@ CheckAutostart() {
 		echo "║$rd        /_/   \_\|_|    |_|  |_____||_| \_|  |_|  |___|\___/ |_| \_|         $xx║"
 		echo "║                                                                             ║"
 		echo "║                                                                             ║"
-		echo "║$rd                !!! Autostart all Nodes not enabled !!!                      $xx║"
+		echo "║$rd              !!! Autostart for all Nodes not enabled !!!                    $xx║"
 		echo "║                                                                             ║"
-		echo "║       in the Moment you must restart your Nodes manually after reboot       ║"
+		echo "║       in the moment you must restart your Nodes manually after reboot       ║"
 		echo "║                                                                             ║"
 		echo "║           press [S] to skip, [X] to enable Autostart, [Q] to quit           ║"
 		echo "║                                                                             ║"
@@ -146,10 +146,16 @@ CheckAutostart() {
 		     echo "$xx"
 		     sleep 3
 
-			 crontab -l && echo "@reboot cd /home && bash -ic \"dlt.green -m s\"" | crontab -
-			 
-			 if [ "$(crontab -l | grep '@reboot cd \/home && bash -ic \"dlt.green -m s\"')" != '' ]; then
-				echo "$gn""Autostart for all Nodes enabled""$xx"
+			 if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
+			    export EDITOR='/usr/bin/nano' && echo "# crontab" | crontab -
+			 fi
+
+			 if ! [ "$(crontab -l | grep '@reboot cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
+			    (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "# DLT.GREEN Node-Installer-Docker: Start all Nodes" && echo "@reboot cd /home && bash -ic \"dlt.green -m s\"") | crontab -
+			 fi
+
+			 if [ "$(crontab -l | grep '@reboot cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
+			    echo "$gn""Autostart for all Nodes enabled""$xx"
 			 fi
 			 
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
