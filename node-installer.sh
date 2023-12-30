@@ -742,9 +742,9 @@ Dashboard() {
 	   DashboardHelper ;;
 
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
-	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaHornet ;;
+	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaHornet; fi ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-wasp'
-	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaWasp ;;
+	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaWasp; fi ;;
 	3) VAR_NETWORK=1; VAR_NODE=3; VAR_DIR='iota-wasp'
 	   clear
 	   echo "$ca"
@@ -756,9 +756,9 @@ Dashboard() {
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   DashboardHelper ;;
 	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-hornet'
-	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerHornet ;;
+	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerHornet; fi ;;
 	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-wasp'
-	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerWasp ;;
+	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerWasp; fi ;;
 	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='shimmer-wasp'
 	   clear
 	   echo "$ca"
@@ -1838,7 +1838,7 @@ IotaHornet() {
 
 	echo "$ca""Starting Installation or Update...""$xx";
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
-	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
+	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
 	clear
 	echo ""
@@ -2245,7 +2245,7 @@ IotaWasp() {
 
 	echo "$ca""Starting Installation or Update...""$xx";
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
-	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
+	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
 	clear
 	echo ""
@@ -2584,7 +2584,7 @@ ShimmerHornet() {
 
 	echo "$ca""Starting Installation or Update...""$xx";													 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
-	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
+	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
 	clear
 	echo ""
@@ -2991,7 +2991,7 @@ ShimmerWasp() {
 
 	echo "$ca""Starting Installation or Update...""$xx";
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
-	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
+	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
 	clear
 	echo ""
@@ -3329,7 +3329,7 @@ ShimmerChronicle() {
 	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
+	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
