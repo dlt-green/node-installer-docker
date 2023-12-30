@@ -689,13 +689,37 @@ Dashboard() {
 	  SystemMaintenance
 	fi
 
+	if [ "$opt_mode" = 1 ]; then
+	  echo "$ca""unattended: Update IOTA-Hornet...""$xx"
+	  sleep 3
+	  n='1'
+	fi
+	
+	if [ "$opt_mode" = 2 ]; then
+	  echo "$ca""unattended: Update IOTA-Wasp...""$xx"
+	  sleep 3
+	  n='2'
+	fi
+	
+	if [ "$opt_mode" = 5 ]; then
+	  echo "$ca""unattended: Update Shimmer-Hornet...""$xx"
+	  sleep 3
+	  n='5'
+	fi
+
+	if [ "$opt_mode" = 6 ]; then
+	  echo "$ca""unattended: Update Shimmer-Wasp...""$xx"
+	  sleep 3
+	  n='6'
+	fi
+
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
 	  sleep 3
 	  n='s'
 	fi
 
-	if [ "$opt_mode" = 's' ]; then n=s; else read -r -p '> ' n; fi
+	if ! [ "$opt_mode" ]; then read -r -p '> ' n; fi
 
 	case $n in
 
@@ -718,9 +742,9 @@ Dashboard() {
 	   DashboardHelper ;;
 
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
-	   SubMenuMaintenance ;;
+	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaHornet ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-wasp'
-	   SubMenuMaintenance ;;
+	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaWasp ;;
 	3) VAR_NETWORK=1; VAR_NODE=3; VAR_DIR='iota-wasp'
 	   clear
 	   echo "$ca"
@@ -732,9 +756,9 @@ Dashboard() {
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   DashboardHelper ;;
 	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-hornet'
-	   SubMenuMaintenance ;;
+	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerHornet ;;
 	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-wasp'
-	   SubMenuMaintenance ;;
+	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerWasp ;;
 	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='shimmer-wasp'
 	   clear
 	   echo "$ca"
@@ -2203,6 +2227,8 @@ IotaHornet() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
+	if [ "$opt_mode" ]; then clear; exit; fi
+
 	Dashboard
 }
 
@@ -2539,6 +2565,8 @@ IotaWasp() {
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+	if [ "$opt_mode" ]; then clear; exit; fi
 
 	Dashboard
 }
@@ -2945,6 +2973,8 @@ ShimmerHornet() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
+	if [ "$opt_mode" ]; then clear; exit; fi
+
 	Dashboard
 }
 
@@ -3281,6 +3311,8 @@ ShimmerWasp() {
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+	if [ "$opt_mode" ]; then clear; exit; fi
 
 	Dashboard
 }
