@@ -111,6 +111,53 @@ CheckShimmer() {
 	if [ -s "/var/lib/shimmer-wasp/.env" ];   then VAR_NETWORK=2; fi
 }
 
+CheckAutostart() {
+	if [ "$(crontab -l | grep '@reboot cd \/home && bash -ic \"dlt.green -m s\"')" = '' ]
+	then
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
+		echo "║                                                                             ║"
+		echo "║$rd            _   _____  _____  _____  _   _  _____  ___  ___   _   _          $xx║"
+		echo "║$rd           / \ |_   _||_   _|| ____|| \ | ||_   _||_ _|/ _ \ | \ | |         $xx║"
+		echo "║$rd          / _ \  | |    | |  |  _|  |  \| |  | |   | || | | ||  \| |         $xx║"
+		echo "║$rd         / ___ \ | |    | |  | |___ | |\  |  | |   | || |_| || |\  |         $xx║"
+		echo "║$rd        /_/   \_\|_|    |_|  |_____||_| \_|  |_|  |___|\___/ |_| \_|         $xx║"
+		echo "║                                                                             ║"
+		echo "║                                                                             ║"
+		echo "║$rd                !!! Autostart all Nodes not enabled !!!                      $xx║"
+		echo "║                                                                             ║"
+		echo "║       in the Moment you must restart your Nodes manually after reboot       ║"
+		echo "║                                                                             ║"
+		echo "║           press [S] to skip, [X] to enable Autostart, [Q] to quit           ║"
+		echo "║                                                                             ║"
+		echo "║                       GNU General Public License v3.0                       ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+		echo "$fl"; PromptMessage 20 "[Enter] / wait [20s] for [X]... [P] to pause / [S] to skip"
+
+		case $W in
+		s|S) ;;
+		q|Q) clear; exit ;;
+		*) clear
+		     echo "$ca"
+		     echo 'Enable Autostart...'
+		     echo "$xx"
+		     sleep 3
+
+			 crontab -l && echo "@reboot cd /home && bash -ic \"dlt.green -m s\"" | crontab -
+			 
+			 if [ "$(crontab -l | grep '@reboot cd \/home && bash -ic \"dlt.green -m s\"')" != '' ]; then
+				echo "$gn""Autostart for all Nodes enabled""$xx"
+			 fi
+			 
+			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+			 ;;
+		esac
+	fi
+}
+
 CheckFirewall() {
 	if [ $(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2) != 'active' ]
 	then
@@ -135,7 +182,7 @@ CheckFirewall() {
 		echo "║                       GNU General Public License v3.0                       ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
-		echo "$fl"; PromptMessage 10 "[Enter] / wait [10s] for [X]... [P] to pause / [C] to cancel"
+		echo "$fl"; PromptMessage 20 "[Enter] / wait [20s] for [X]... [P] to pause / [S] to skip"
 
 		case $W in
 		s|S) ;;
@@ -265,7 +312,7 @@ CheckCertificate() {
 		echo "then the Node will use the Certificate from the Master-Node""$xx"
 		echo ""
 		echo "select menu item: "
-		echo "$fl"; PromptMessage 10 "[Enter] / wait [10s] for [X]... [P] to pause / [C] to cancel"
+		echo "$fl"; PromptMessage 20 "[Enter] / wait [20s] for [X]... [P] to pause / [C] to cancel"
 		
 		case $W in
 		1) VAR_CERT=1
@@ -3607,8 +3654,10 @@ echo "> $gn""$InstallerHash""$xx"
 
 sleep 3
 
-CheckFirewall
-DeleteFirewallPort "13266"
+if ! [ "$opt_mode" ]; then
+	CheckFirewall
+	CheckAutostart
+fi
 
 if [ -d /var/lib/pipe ]; then VAR_PIPE_PORT=$(cat .env 2>/dev/null | grep PIPE_PORT= | cut -d '=' -f 2); fi
 if [ -d /var/lib/pipe ]; then cd /var/lib/pipe || SubMenuMaintenance; docker compose down >/dev/null 2>&1; fi
