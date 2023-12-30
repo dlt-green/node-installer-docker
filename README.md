@@ -47,8 +47,13 @@ dlt.green [-m modus/optional] [-t time/optional] [-r reset/optional]
 ```
 
 ```
-modus: 0: Maintenance -> System Updates/Docker Cleanup
 modus: s: Start all Nodes
+modus: 0: Maintenance -> System Updates/Docker Cleanup
+
+modus: 1: Update -> IOTA-Hornet
+modus: 2: Update -> IOTA-Wasp
+modus: 5: Update -> Shimmer-Hornet
+modus: 6: Update -> Shimmer-Wasp
 ```
 
 ```
