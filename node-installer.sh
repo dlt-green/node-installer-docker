@@ -160,7 +160,7 @@ CheckAutostart() {
 		     sleep 3
 
 			 if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
-			    export EDITOR='/usr/bin/nano' && echo "# crontab" | crontab -
+			    export EDITOR='nano' && echo "# crontab" | crontab -
 			 fi
 
 			 if ! [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
@@ -905,7 +905,7 @@ MainMenu() {
 	   echo 'Edit Cron-Jobs:'
 	   echo "$xx"
 	   if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
-  	     export EDITOR='/usr/bin/nano' && echo "# crontab" | crontab -
+  	     export EDITOR='nano' && echo "# crontab" | crontab -
 	   fi
 	   crontab -e
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
