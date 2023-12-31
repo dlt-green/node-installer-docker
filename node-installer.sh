@@ -1749,7 +1749,8 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "$gn""You don't have to stop Nodes installed with the DLT.GREEN Installer,"
-	echo "but you must restart them with our Installer after reastarting your System""$xx"
+	echo "but you must restart them with our Installer after reastarting your System,"
+	echo "if you don't have Autostart enabled!""$xx"
 	echo ""
 	echo "select menu item: "
 
@@ -1758,7 +1759,8 @@ SystemMaintenance() {
 	case $n in
 	1) 	echo 'restarting...'; sleep 3
 	    echo "$rd"
-	    echo "System restarted, dont't forget to reconnect and start your Nodes again!"
+	    echo "System restarted, dont't forget to reconnect and start your Nodes again,"
+	    echo "if you don't have Autostart enabled!"
 	    echo "$xx"
 		sudo reboot
 		;;
