@@ -125,7 +125,7 @@ CheckShimmer() {
 }
 
 CheckAutostart() {
-	if ! [ "$(crontab -l | grep '@reboot cd \/home && bash -ic \"dlt.green -m s\"')" ]
+	if ! [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]
 	then
 		clear
 		echo ""
@@ -163,11 +163,11 @@ CheckAutostart() {
 			    export EDITOR='/usr/bin/nano' && echo "# crontab" | crontab -
 			 fi
 
-			 if ! [ "$(crontab -l | grep '@reboot cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
-			    (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "# DLT.GREEN Node-Installer-Docker: Start all Nodes" && echo "@reboot cd /home && bash -ic \"dlt.green -m s\"") | crontab -
+			 if ! [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
+			    (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "# DLT.GREEN Node-Installer-Docker: Start all Nodes" && echo "@reboot sleep 30; cd /home && bash -ic \"dlt.green -m s\"") | crontab -
 			 fi
 
-			 if [ "$(crontab -l | grep '@reboot cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
+			 if [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
 			    echo "$gn""Autostart for all Nodes enabled""$xx"
 			 fi
 			 
