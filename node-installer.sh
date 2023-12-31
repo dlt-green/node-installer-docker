@@ -824,7 +824,8 @@ MainMenu() {
 	echo "║                              2. Docker Installation                         ║"
 	echo "║                              3. Docker Status                               ║"
 	echo "║                              4. Firewall Status/Ports                       ║"
-	echo "║                              5. License Information                         ║"
+	echo "║                              5. Edit Cron-Jobs                              ║"
+	echo "║                              6. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                              Q. Quit                                        ║"
 	echo "║                                                                             ║"
@@ -886,7 +887,17 @@ MainMenu() {
 	   ufw status numbered 2>/dev/null
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
-	5) SubMenuLicense ;;
+	5) clear
+	   echo "$ca"
+	   echo 'Edit Cron-Jobs:'
+	   echo "$xx"
+	   if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
+  	     export EDITOR='/usr/bin/nano' && echo "# crontab" | crontab -
+	   fi
+	   crontab -e
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   MainMenu ;;
+	6) SubMenuLicense ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
 	   if [ $? -eq 0 ]; then Dashboard; else
