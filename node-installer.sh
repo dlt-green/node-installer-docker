@@ -47,7 +47,6 @@ fl='\033[1m'
 xx='\033[0m'
 
 opt_time=10
-opt_restart=0
 
 while getopts "m:n:t:r:" option
 do
@@ -1754,7 +1753,7 @@ SystemMaintenance() {
 	echo ""
 	echo "select menu item: "
 
-	if [ "$opt_restart" -eq 1 ]; then n=1; else if [ "$opt_restart" -eq 0 ]; then n=0; else	read -r -p '> ' n; fi; fi
+	if [ "$opt_restart" = 1 ]; then n=1; else if [ "$opt_restart" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
 
 	case $n in
 	1) 	echo 'restarting...'; sleep 3
