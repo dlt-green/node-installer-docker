@@ -51,11 +51,25 @@ opt_time=10
 while getopts "m:n:t:r:" option
 do
   case $option in
-     m) opt_mode="$OPTARG";;
-     n) opt_node="$OPTARG";;
-     t) opt_time="$OPTARG";;
-     r) opt_restart="$OPTARG";;
-     \?) echo "Invalid option" & exit;;
+     m) 
+	 case $OPTARG in
+	 0|1|2|5|6|s) opt_mode="$OPTARG" ;;
+     *) echo "$rd""Invalid Argument for Option -m {0|1|2|5|6|s}""$xx" & exit ;;
+	 esac
+	 ;;
+     t) 
+	 case $OPTARG in
+	 0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20) opt_time="$OPTARG" ;;
+     *) echo "$rd""Invalid Argument for Option -t {0-20}""$xx" & exit ;;
+	 esac
+	 ;;
+     r) 
+	 case $OPTARG in
+	 0|1) opt_restart="$OPTARG" ;;
+     *) echo "$rd""Invalid rgument for Option -r {0|1}""$xx" & exit ;;
+	 esac
+	 ;;
+     \?) echo "$rd""Invalid Option""$xx" & exit ;;
   esac
 done
 
