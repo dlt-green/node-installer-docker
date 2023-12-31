@@ -47,8 +47,13 @@ dlt.green [-m modus/optional] [-t time/optional] [-r reset/optional]
 ```
 
 ```
-modus: 0: Maintenance -> System Updates/Docker Cleanup
 modus: s: Start all Nodes
+modus: 0: Maintenance -> System Updates/Docker Cleanup
+
+modus: 1: Update -> IOTA-Hornet
+modus: 2: Update -> IOTA-Wasp
+modus: 5: Update -> Shimmer-Hornet
+modus: 6: Update -> Shimmer-Wasp
 ```
 
 ```
@@ -57,9 +62,11 @@ default: 10
 ```
 
 ```
-reset: 0: no reset
-reset: 1: system reset (nodes will be automatically shut down before)
+reboot: 0: no reboot
+reboot: 1: system reboot (nodes will be automatically shut down before)
 default: 0
+
+hint: when you enabled autostart via gui, all installed nodes start automatically after reboot
 ```
 
 ### Bedienung

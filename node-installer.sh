@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.6.1"
-BUILD="20231229_231647"
+VRSN="v.2.7.0"
+BUILD="20231231_172217"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -12,9 +12,9 @@ VAR_NODE=0
 VAR_CONF_RESET=0
 
 VAR_IOTA_HORNET_VERSION='2.0.1'
-VAR_IOTA_WASP_VERSION='1.0.1-rc.12'
+VAR_IOTA_WASP_VERSION='1.0.1-rc.15'
 VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_IOTA_WASP_CLI_VERSION='1.0.1-rc.12'
+VAR_IOTA_WASP_CLI_VERSION='1.0.1-rc.15'
 
 VAR_IOTA_INX_INDEXER_VERSION='1.0'
 VAR_IOTA_INX_MQTT_VERSION='1.0'
@@ -24,9 +24,9 @@ VAR_IOTA_INX_POI_VERSION='1.0'
 VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
 
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
-VAR_SHIMMER_WASP_VERSION='1.0.1-rc.12'
+VAR_SHIMMER_WASP_VERSION='1.0.1-rc.15'
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_SHIMMER_WASP_CLI_VERSION='1.0.1-rc.12'
+VAR_SHIMMER_WASP_CLI_VERSION='1.0.1-rc.15'
 VAR_SHIMMER_CHRONICLE_VERSION='1.0.0-rc.1'
 
 VAR_SHIMMER_INX_INDEXER_VERSION='1.0-rc'
@@ -47,38 +47,51 @@ fl='\033[1m'
 xx='\033[0m'
 
 opt_time=10
-opt_restart=0
 
 while getopts "m:n:t:r:" option
 do
   case $option in
-     m) opt_mode="$OPTARG";;
-     n) opt_node="$OPTARG";;
-     t) opt_time="$OPTARG";;
-     r) opt_restart="$OPTARG";;
-     \?) echo "Invalid option" & exit;;
+     m) 
+	 case $OPTARG in
+	 0|1|2|5|6|s) opt_mode="$OPTARG" ;;
+     *) echo "$rd""Invalid Argument for Option -m {0|1|2|5|6|s}""$xx" & exit ;;
+	 esac
+	 ;;
+     t) 
+	 case $OPTARG in
+	 0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20) opt_time="$OPTARG" ;;
+     *) echo "$rd""Invalid Argument for Option -t {0-20}""$xx" & exit ;;
+	 esac
+	 ;;
+     r) 
+	 case $OPTARG in
+	 0|1) opt_restart="$OPTARG" ;;
+     *) echo "$rd""Invalid rgument for Option -r {0|1}""$xx" & exit ;;
+	 esac
+	 ;;
+     \?) echo "$rd""Invalid Option""$xx" & exit ;;
   esac
 done
 
 echo "$xx"
 
-sudo apt-get install curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+sudo apt-get install nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='88c0a7d6f93df44c85a6fe9f2764e6e67c5a9e690ac300a688b8b70f79bd4d13'
+IotaHornetHash='6add8d804a50032e87f2987b5c8bcaea8e97b1154ba7564f598bcd761a46a5db'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='282335a10c9c6bdf9e79d846bf84add8703d403d838868872bf754e487943a6b'
+IotaWaspHash='6d6460ccaaf42050315635dbff61522b21b026f3acfa6e76e5d818818f17b0a6'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='f1508c914982166c8425db51a5961e997d985c4b60ed0684e18791d23e3e0724'
+ShimmerHornetHash='94f8bb779a9ec36edfa442258b5834d2a1d4e4fd98909b28e0355ed0ecbe68ca'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='1593a2dc4068d402102914840307d73ceed770fedb5669700a290c98504fd240'
+ShimmerWaspHash='9977b4dfbbec7ca0ed41fd0c0c4e133cf30fb3c69358dbbbfeab6982e9d30746'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='118279aa6327a2d6afa6acf0fc7715df5717c007712da4cacee8746c830345d4'
+ShimmerChronicleHash='8fe2a79db9e84e24451b2e77a8970752d48b0da3739b36e579ff6279d0d973de'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -111,6 +124,59 @@ CheckShimmer() {
 	if [ -s "/var/lib/shimmer-wasp/.env" ];   then VAR_NETWORK=2; fi
 }
 
+CheckAutostart() {
+	if ! [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]
+	then
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
+		echo "║                                                                             ║"
+		echo "║$rd            _   _____  _____  _____  _   _  _____  ___  ___   _   _          $xx║"
+		echo "║$rd           / \ |_   _||_   _|| ____|| \ | ||_   _||_ _|/ _ \ | \ | |         $xx║"
+		echo "║$rd          / _ \  | |    | |  |  _|  |  \| |  | |   | || | | ||  \| |         $xx║"
+		echo "║$rd         / ___ \ | |    | |  | |___ | |\  |  | |   | || |_| || |\  |         $xx║"
+		echo "║$rd        /_/   \_\|_|    |_|  |_____||_| \_|  |_|  |___|\___/ |_| \_|         $xx║"
+		echo "║                                                                             ║"
+		echo "║                                                                             ║"
+		echo "║$rd              !!! Autostart for all Nodes not enabled !!!                    $xx║"
+		echo "║                                                                             ║"
+		echo "║       in the moment you must restart your Nodes manually after reboot       ║"
+		echo "║                                                                             ║"
+		echo "║           press [S] to skip, [X] to enable Autostart, [Q] to quit           ║"
+		echo "║                                                                             ║"
+		echo "║                       GNU General Public License v3.0                       ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+		echo "$fl"; PromptMessage 20 "[Enter] / wait [20s] for [X]... [P] to pause / [S] to skip"
+
+		case $W in
+		s|S) ;;
+		q|Q) clear; exit ;;
+		*) clear
+		     echo "$ca"
+		     echo 'Enable Autostart...'
+		     echo "$xx"
+		     sleep 3
+
+			 if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
+			    export EDITOR='nano' && echo "# crontab" | crontab -
+			 fi
+
+			 if ! [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
+			    (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "# DLT.GREEN Node-Installer-Docker: Start all Nodes" && echo "@reboot sleep 30; cd /home && bash -ic \"dlt.green -m s\"") | crontab -
+			 fi
+
+			 if [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
+			    echo "$gn""Autostart for all Nodes enabled""$xx"
+			 fi
+			 
+			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+			 ;;
+		esac
+	fi
+}
+
 CheckFirewall() {
 	if [ $(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2) != 'active' ]
 	then
@@ -135,7 +201,7 @@ CheckFirewall() {
 		echo "║                       GNU General Public License v3.0                       ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
-		echo "$fl"; PromptMessage 10 "[Enter] / wait [10s] for [X]... [P] to pause / [C] to cancel"
+		echo "$fl"; PromptMessage 20 "[Enter] / wait [20s] for [X]... [P] to pause / [S] to skip"
 
 		case $W in
 		s|S) ;;
@@ -265,7 +331,7 @@ CheckCertificate() {
 		echo "then the Node will use the Certificate from the Master-Node""$xx"
 		echo ""
 		echo "select menu item: "
-		echo "$fl"; PromptMessage 10 "[Enter] / wait [10s] for [X]... [P] to pause / [C] to cancel"
+		echo "$fl"; PromptMessage 20 "[Enter] / wait [20s] for [X]... [P] to pause / [C] to cancel"
 		
 		case $W in
 		1) VAR_CERT=1
@@ -642,13 +708,37 @@ Dashboard() {
 	  SystemMaintenance
 	fi
 
+	if [ "$opt_mode" = 1 ]; then
+	  echo "$ca""unattended: Update IOTA-Hornet...""$xx"
+	  sleep 3
+	  n='1'
+	fi
+	
+	if [ "$opt_mode" = 2 ]; then
+	  echo "$ca""unattended: Update IOTA-Wasp...""$xx"
+	  sleep 3
+	  n='2'
+	fi
+	
+	if [ "$opt_mode" = 5 ]; then
+	  echo "$ca""unattended: Update Shimmer-Hornet...""$xx"
+	  sleep 3
+	  n='5'
+	fi
+
+	if [ "$opt_mode" = 6 ]; then
+	  echo "$ca""unattended: Update Shimmer-Wasp...""$xx"
+	  sleep 3
+	  n='6'
+	fi
+
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
 	  sleep 3
 	  n='s'
 	fi
 
-	if [ "$opt_mode" = 's' ]; then n=s; else read -r -p '> ' n; fi
+	if ! [ "$opt_mode" ]; then read -r -p '> ' n; fi
 
 	case $n in
 
@@ -671,9 +761,9 @@ Dashboard() {
 	   DashboardHelper ;;
 
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
-	   SubMenuMaintenance ;;
+	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaHornet; fi ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-wasp'
-	   SubMenuMaintenance ;;
+	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaWasp; fi ;;
 	3) VAR_NETWORK=1; VAR_NODE=3; VAR_DIR='iota-wasp'
 	   clear
 	   echo "$ca"
@@ -685,9 +775,9 @@ Dashboard() {
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   DashboardHelper ;;
 	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-hornet'
-	   SubMenuMaintenance ;;
+	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerHornet; fi ;;
 	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-wasp'
-	   SubMenuMaintenance ;;
+	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerWasp; fi ;;
 	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='shimmer-wasp'
 	   clear
 	   echo "$ca"
@@ -747,7 +837,8 @@ MainMenu() {
 	echo "║                              2. Docker Installation                         ║"
 	echo "║                              3. Docker Status                               ║"
 	echo "║                              4. Firewall Status/Ports                       ║"
-	echo "║                              5. License Information                         ║"
+	echo "║                              5. Edit Cron-Jobs                              ║"
+	echo "║                              6. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                              Q. Quit                                        ║"
 	echo "║                                                                             ║"
@@ -809,7 +900,17 @@ MainMenu() {
 	   ufw status numbered 2>/dev/null
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
-	5) SubMenuLicense ;;
+	5) clear
+	   echo "$ca"
+	   echo 'Edit Cron-Jobs:'
+	   echo "$xx"
+	   if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
+  	     export EDITOR='nano' && echo "# crontab" | crontab -
+	   fi
+	   crontab -e
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   MainMenu ;;
+	6) SubMenuLicense ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
 	   if [ $? -eq 0 ]; then Dashboard; else
@@ -1661,16 +1762,18 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "$gn""You don't have to stop Nodes installed with the DLT.GREEN Installer,"
-	echo "but you must restart them with our Installer after reastarting your System""$xx"
+	echo "but you must restart them with our Installer after reastarting your System,"
+	echo "if you don't have Autostart enabled!""$xx"
 	echo ""
 	echo "select menu item: "
 
-	if [ "$opt_restart" -eq 1 ]; then n=1; else if [ "$opt_restart" -eq 0 ]; then n=0; else	read -r -p '> ' n; fi; fi
+	if [ "$opt_restart" = 1 ]; then n=1; else if [ "$opt_restart" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
 
 	case $n in
 	1) 	echo 'restarting...'; sleep 3
 	    echo "$rd"
-	    echo "System restarted, dont't forget to reconnect and start your Nodes again!"
+	    echo "System restarted, dont't forget to reconnect and start your Nodes again,"
+	    echo "if you don't have Autostart enabled!"
 	    echo "$xx"
 		sudo reboot
 		;;
@@ -1767,7 +1870,7 @@ IotaHornet() {
 
 	echo "$ca""Starting Installation or Update...""$xx";
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
-	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
+	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
 	clear
 	echo ""
@@ -2156,6 +2259,8 @@ IotaHornet() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
+	if [ "$opt_mode" ]; then clear; exit; fi
+
 	Dashboard
 }
 
@@ -2172,7 +2277,7 @@ IotaWasp() {
 
 	echo "$ca""Starting Installation or Update...""$xx";
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
-	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; SubMenuMaintenance; fi
+	if [ "$VAR_NETWORK" = 2 ]; then VAR_NETWORK=1; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
 	clear
 	echo ""
@@ -2493,6 +2598,8 @@ IotaWasp() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
+	if [ "$opt_mode" ]; then clear; exit; fi
+
 	Dashboard
 }
 
@@ -2509,7 +2616,7 @@ ShimmerHornet() {
 
 	echo "$ca""Starting Installation or Update...""$xx";													 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
-	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
+	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
 	clear
 	echo ""
@@ -2898,6 +3005,8 @@ ShimmerHornet() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
+	if [ "$opt_mode" ]; then clear; exit; fi
+
 	Dashboard
 }
 
@@ -2914,7 +3023,7 @@ ShimmerWasp() {
 
 	echo "$ca""Starting Installation or Update...""$xx";
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
-	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
+	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
 	clear
 	echo ""
@@ -3235,6 +3344,8 @@ ShimmerWasp() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
+	if [ "$opt_mode" ]; then clear; exit; fi
+
 	Dashboard
 }
 
@@ -3250,7 +3361,7 @@ ShimmerChronicle() {
 	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; SubMenuMaintenance; fi
+	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
 	echo "Stopping Node... $VAR_DIR"
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
@@ -3607,8 +3718,10 @@ echo "> $gn""$InstallerHash""$xx"
 
 sleep 3
 
-CheckFirewall
-DeleteFirewallPort "13266"
+if ! [ "$opt_mode" ]; then
+	CheckFirewall
+	CheckAutostart
+fi
 
 if [ -d /var/lib/pipe ]; then VAR_PIPE_PORT=$(cat .env 2>/dev/null | grep PIPE_PORT= | cut -d '=' -f 2); fi
 if [ -d /var/lib/pipe ]; then cd /var/lib/pipe || SubMenuMaintenance; docker compose down >/dev/null 2>&1; fi
