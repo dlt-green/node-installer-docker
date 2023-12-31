@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VRSN="v.2.7.0"
-BUILD="20231231_140317"
+BUILD="20231231_172217"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -79,19 +79,19 @@ sudo apt-get install nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='9c39ac64033a2895035eb385633e3d673788b844cd9b71adf513918bab6425af'
+IotaHornetHash='6add8d804a50032e87f2987b5c8bcaea8e97b1154ba7564f598bcd761a46a5db'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='513b807824f5d640576af5f415ee93a01947c9fcc9e22c75303baa612ccc15e1'
+IotaWaspHash='6d6460ccaaf42050315635dbff61522b21b026f3acfa6e76e5d818818f17b0a6'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='d52cc37f2bc8220e89293beca7fab96f0e8d5fe61a7b16ddaf376f9d0116a126'
+ShimmerHornetHash='94f8bb779a9ec36edfa442258b5834d2a1d4e4fd98909b28e0355ed0ecbe68ca'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='3a0aee2d2659607a9316a99267f903b77095871e69f7ef92ac1390b45196c096'
+ShimmerWaspHash='9977b4dfbbec7ca0ed41fd0c0c4e133cf30fb3c69358dbbbfeab6982e9d30746'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='7e2137456f7d4d85f1099b07896f6a1211ddc74b15ac17f10042b21dc0314553'
+ShimmerChronicleHash='8fe2a79db9e84e24451b2e77a8970752d48b0da3739b36e579ff6279d0d973de'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -125,7 +125,7 @@ CheckShimmer() {
 }
 
 CheckAutostart() {
-	if ! [ "$(crontab -l | grep '@reboot cd \/home && bash -ic \"dlt.green -m s\"')" ]
+	if ! [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]
 	then
 		clear
 		echo ""
@@ -160,14 +160,14 @@ CheckAutostart() {
 		     sleep 3
 
 			 if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
-			    export EDITOR='/usr/bin/nano' && echo "# crontab" | crontab -
+			    export EDITOR='nano' && echo "# crontab" | crontab -
 			 fi
 
-			 if ! [ "$(crontab -l | grep '@reboot cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
-			    (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "# DLT.GREEN Node-Installer-Docker: Start all Nodes" && echo "@reboot cd /home && bash -ic \"dlt.green -m s\"") | crontab -
+			 if ! [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
+			    (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "# DLT.GREEN Node-Installer-Docker: Start all Nodes" && echo "@reboot sleep 30; cd /home && bash -ic \"dlt.green -m s\"") | crontab -
 			 fi
 
-			 if [ "$(crontab -l | grep '@reboot cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
+			 if [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
 			    echo "$gn""Autostart for all Nodes enabled""$xx"
 			 fi
 			 
@@ -905,7 +905,7 @@ MainMenu() {
 	   echo 'Edit Cron-Jobs:'
 	   echo "$xx"
 	   if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
-  	     export EDITOR='/usr/bin/nano' && echo "# crontab" | crontab -
+  	     export EDITOR='nano' && echo "# crontab" | crontab -
 	   fi
 	   crontab -e
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
