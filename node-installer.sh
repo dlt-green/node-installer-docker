@@ -209,7 +209,7 @@ CheckFirewall() {
 		echo "║                       GNU General Public License v3.0                       ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
-		echo "$fl"; PromptMessage 20 "[Enter] / wait [20s] for [X]... [P] to pause / [S] to skip"
+		echo "$fl"; PromptMessage "$opt_time" "[Enter] / wait ["$opt_time"s] for [X]... [P] to pause / [S] to skip"
 
 		case $W in
 		s|S) ;;
@@ -231,7 +231,13 @@ CheckFirewall() {
 
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
-			 sudo ufw enable
+			 
+			 if ! [ "$opt_mode" ]; then
+				sudo ufw enable
+			 else
+				sudo ufw --force enable
+			 fi
+
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 ;;
 		esac
