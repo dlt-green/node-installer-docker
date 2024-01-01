@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.7.1"
-BUILD="20240101_124945"
+VRSN="v.2.7.2"
+BUILD="20240101_161240"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -47,10 +47,20 @@ fl='\033[1m'
 xx='\033[0m'
 
 opt_time=10
+opt_check=1
+opt_reboot=0
 
-while getopts "m:n:t:r:" option
+while getopts "m:n:t:r:c:" option
 do
   case $option in
+     c) 
+	 case $OPTARG in
+	 0|1) opt_check="$OPTARG" ;;
+     *) echo "$rd""Invalid rgument for Option -c {0|1}""$xx"
+        if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
+        exit ;;
+	 esac
+	 ;;
      m) 
 	 case $OPTARG in
 	 0|1|2|5|6|s) opt_mode="$OPTARG" ;;
@@ -69,7 +79,7 @@ do
 	 ;;
      r) 
 	 case $OPTARG in
-	 0|1) opt_restart="$OPTARG" ;;
+	 0|1) opt_reboot="$OPTARG" ;;
      *) echo "$rd""Invalid rgument for Option -r {0|1}""$xx"
         if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
         exit ;;
@@ -87,19 +97,19 @@ sudo apt-get install nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='544ce5acacbea4ddcb8d02f6003639bb08128361d4e7dfa568096c56e62de072'
+IotaHornetHash='a8f0261ab0e385300ee8562cf6a023a7586dcb5c76d5fb694a3f961d4a66969e'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='72d32d3e9408d59d2bcbabd0cee078771189d22806e90e57798d47f4bcf164d7'
+IotaWaspHash='d4fcf9e2dc040c1fdcc8472b30ff8afaa9e69adc06f985cb42b78ebd4bc4e28c'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='ccd55244606b49837c64027534846cfeb138fca1acec0df6b538b4355d7c5b70'
+ShimmerHornetHash='a6351ce700210237678f98b59d0aa8d3e3417e61428a6821e97754b70096e109'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='5f0bd031b8a1db3927527613dba646f0960dd94d50826f959442dcfaec848241'
+ShimmerWaspHash='8f3b783b5d895b8318edfa8284e1a43d92ba2efd608be59666cf2b2e24ca20e1'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='7f299877322948faaee3076a8379820887ffd277b260ae169ee0879075ecb834'
+ShimmerChronicleHash='b85c72e9f8ddd82253ed0a1005251e61e34d5d1952c985c22205006c31534f09'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -156,7 +166,7 @@ CheckAutostart() {
 		echo "║                       GNU General Public License v3.0                       ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
-		echo "$fl"; PromptMessage 20 "[Enter] / wait [20s] for [X]... [P] to pause / [S] to skip"
+		echo "$fl"; PromptMessage "$opt_time" "[Enter] / wait ["$opt_time"s] for [X]... [P] to pause / [S] to skip"
 
 		case $W in
 		s|S) ;;
@@ -209,7 +219,7 @@ CheckFirewall() {
 		echo "║                       GNU General Public License v3.0                       ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
-		echo "$fl"; PromptMessage 20 "[Enter] / wait [20s] for [X]... [P] to pause / [S] to skip"
+		echo "$fl"; PromptMessage "$opt_time" "[Enter] / wait ["$opt_time"s] for [X]... [P] to pause / [S] to skip"
 
 		case $W in
 		s|S) ;;
@@ -231,7 +241,9 @@ CheckFirewall() {
 
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
-			 sudo ufw enable
+			 
+			 sudo ufw --force enable
+
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 ;;
 		esac
@@ -1775,7 +1787,7 @@ SystemMaintenance() {
 	echo ""
 	echo "select menu item: "
 
-	if [ "$opt_restart" = 1 ]; then n=1; else if [ "$opt_restart" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
+	if [ "$opt_reboot" = 1 ]; then n=1; else if [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
 
 	case $n in
 	1) 	echo 'restarting...'; sleep 3
@@ -3726,9 +3738,9 @@ echo "> $gn""$InstallerHash""$xx"
 
 sleep 3
 
-if ! [ "$opt_mode" ]; then
-	CheckFirewall
-	CheckAutostart
+if [ "$opt_check" = 1 ]; then
+	CheckFirewall;
+	CheckAutostart;
 fi
 
 if [ -d /var/lib/pipe ]; then VAR_PIPE_PORT=$(cat .env 2>/dev/null | grep PIPE_PORT= | cut -d '=' -f 2); fi
