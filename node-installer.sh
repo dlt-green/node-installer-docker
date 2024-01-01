@@ -156,7 +156,7 @@ CheckAutostart() {
 		echo "║                       GNU General Public License v3.0                       ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
-		echo "$fl"; PromptMessage 20 "[Enter] / wait [20s] for [X]... [P] to pause / [S] to skip"
+		echo "$fl"; PromptMessage "$opt_time" "[Enter] / wait ["$opt_time"s] for [X]... [P] to pause / [S] to skip"
 
 		case $W in
 		s|S) ;;
@@ -3732,10 +3732,8 @@ echo "> $gn""$InstallerHash""$xx"
 
 sleep 3
 
-if ! [ "$opt_mode" ]; then
-	CheckFirewall
-	CheckAutostart
-fi
+CheckFirewall
+CheckAutostart
 
 if [ -d /var/lib/pipe ]; then VAR_PIPE_PORT=$(cat .env 2>/dev/null | grep PIPE_PORT= | cut -d '=' -f 2); fi
 if [ -d /var/lib/pipe ]; then cd /var/lib/pipe || SubMenuMaintenance; docker compose down >/dev/null 2>&1; fi
