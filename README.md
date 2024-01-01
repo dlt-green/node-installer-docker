@@ -33,14 +33,14 @@ Es wird automatisch ein SSL Zertifikat über Let's Encrypt generiert, es kann je
 sudo wget https://github.com/dlt-green/node-installer-docker/releases/latest/download/node-installer.sh && sudo sh node-installer.sh
 ```
 
-### NODE-INSTALLER ausführen
+### NODE-INSTALLER mit GUI
 
 Mit dem erstmaligen ausführen des Installers wird automatisch ein Alias auf Benutzerebene angelegt, bedeutet, dass under dem angemeldeten Benutzer nach dem erstmaligen starten des Installers alternativ dieser Alias verwendet werden kann:
 
 ```console
 dlt.green
 ```
-### NODE-INSTALLER Scripting (unattended)
+### NODE-INSTALLER unattended
 
 ```
 dlt.green [-m modus/optional] [-t time/optional] [-r reboot/optional]
@@ -65,8 +65,10 @@ default: 10
 reboot: 0: no reboot
 reboot: 1: system reboot (nodes will be automatically shut down before)
 default: 0
+```
 
-hint: when you enabled autostart via gui, all installed nodes start automatically after reboot
+```
+hint: when you use unattended mode, UFW Firewall and Autostart will be automatically enabled (enforced)
 ```
 
 ### Bedienung
