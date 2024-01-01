@@ -47,10 +47,20 @@ fl='\033[1m'
 xx='\033[0m'
 
 opt_time=10
+opt_check=1
+opt_reboot=0
 
-while getopts "m:n:t:r:" option
+while getopts "m:n:t:r:c:" option
 do
   case $option in
+     c) 
+	 case $OPTARG in
+	 0|1) opt_check="$OPTARG" ;;
+     *) echo "$rd""Invalid rgument for Option -c {0|1}""$xx"
+        if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
+        exit ;;
+	 esac
+	 ;;
      m) 
 	 case $OPTARG in
 	 0|1|2|5|6|s) opt_mode="$OPTARG" ;;
@@ -69,7 +79,7 @@ do
 	 ;;
      r) 
 	 case $OPTARG in
-	 0|1) opt_restart="$OPTARG" ;;
+	 0|1) opt_reboot="$OPTARG" ;;
      *) echo "$rd""Invalid rgument for Option -r {0|1}""$xx"
         if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
         exit ;;
@@ -232,11 +242,7 @@ CheckFirewall() {
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
 			 
-			 if ! [ "$opt_mode" ]; then
-				sudo ufw enable
-			 else
-				sudo ufw --force enable
-			 fi
+			 sudo ufw --force enable
 
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 ;;
@@ -1781,7 +1787,7 @@ SystemMaintenance() {
 	echo ""
 	echo "select menu item: "
 
-	if [ "$opt_restart" = 1 ]; then n=1; else if [ "$opt_restart" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
+	if [ "$opt_reboot" = 1 ]; then n=1; else if [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
 
 	case $n in
 	1) 	echo 'restarting...'; sleep 3
@@ -3732,8 +3738,10 @@ echo "> $gn""$InstallerHash""$xx"
 
 sleep 3
 
-CheckFirewall
-CheckAutostart
+if [ "$opt_check" = 1 ]; then
+	CheckFirewall;
+	CheckAutostart;
+fi
 
 if [ -d /var/lib/pipe ]; then VAR_PIPE_PORT=$(cat .env 2>/dev/null | grep PIPE_PORT= | cut -d '=' -f 2); fi
 if [ -d /var/lib/pipe ]; then cd /var/lib/pipe || SubMenuMaintenance; docker compose down >/dev/null 2>&1; fi
