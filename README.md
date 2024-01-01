@@ -43,7 +43,7 @@ dlt.green
 ### NODE-INSTALLER Scripting (unattended)
 
 ```
-dlt.green [-m modus/optional] [-t time/optional] [-r reset/optional]
+dlt.green [-m modus/optional] [-t time/optional] [-r reboot/optional]
 ```
 
 ```
