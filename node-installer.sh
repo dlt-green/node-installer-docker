@@ -1727,10 +1727,11 @@ SystemMaintenance() {
 	echo "$ca"
 	echo 'Please wait, updating the System...'
 	echo "$xx"
-	sudo apt-get update && apt-get upgrade -y
-	sudo apt-get dist-upgrade -y
-	sudo apt upgrade -y
-	sudo apt-get autoremove -y
+	sudo DEBIAN_FRONTEND=noninteractive apt update
+	sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
+	sudo DEBIAN_FRONTEND=noninteractive apt dist-upgrade -y
+	sudo DEBIAN_FRONTEND=noninteractive apt autoclean -y
+	sudo DEBIAN_FRONTEND=noninteractive apt autoremove -y
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
