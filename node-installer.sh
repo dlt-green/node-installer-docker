@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.7.2"
-BUILD="20240101_161240"
+VRSN="v.2.7.3"
+BUILD="20240102_064340"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -97,19 +97,19 @@ sudo apt-get install nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='a8f0261ab0e385300ee8562cf6a023a7586dcb5c76d5fb694a3f961d4a66969e'
+IotaHornetHash='39e09207283c269121a34076b2404bb870d3f3bd29fdc746920a0fc8caa8ce8e'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='d4fcf9e2dc040c1fdcc8472b30ff8afaa9e69adc06f985cb42b78ebd4bc4e28c'
+IotaWaspHash='0414d60f01d9684d49464c3208413ee400ca4188e36f70cf0dc0b130b9eb1522'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='a6351ce700210237678f98b59d0aa8d3e3417e61428a6821e97754b70096e109'
+ShimmerHornetHash='f1e8eeec35b1d7c358a812f6234e9b3cf47e72f5d44b5e44d59eb9138c0ff29f'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='8f3b783b5d895b8318edfa8284e1a43d92ba2efd608be59666cf2b2e24ca20e1'
+ShimmerWaspHash='ae5a9b4d4b407203bb8ac99c921572cee4bdad23d9cf258d4e0974afb265bcca'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='b85c72e9f8ddd82253ed0a1005251e61e34d5d1952c985c22205006c31534f09'
+ShimmerChronicleHash='4f3d448226d93f2748751960debb5d045a5283b46efafa657db277dd3c704ad6'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1727,10 +1727,11 @@ SystemMaintenance() {
 	echo "$ca"
 	echo 'Please wait, updating the System...'
 	echo "$xx"
-	sudo apt-get update && apt-get upgrade -y
-	sudo apt-get dist-upgrade -y
-	sudo apt upgrade -y
-	sudo apt-get autoremove -y
+	sudo DEBIAN_FRONTEND=noninteractive apt update
+	sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
+	sudo DEBIAN_FRONTEND=noninteractive apt dist-upgrade -y
+	sudo DEBIAN_FRONTEND=noninteractive apt autoclean -y
+	sudo DEBIAN_FRONTEND=noninteractive apt autoremove -y
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
