@@ -36,6 +36,12 @@ VAR_SHIMMER_INX_SPAMMER_VERSION='1.0-rc'
 VAR_SHIMMER_INX_POI_VERSION='1.0-rc'
 VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0-rc'
 
+VAR_CRON_TITLE_1='# DLT.GREEN Node-Installer-Docker: Start all Nodes'
+VAR_CRON_JOB_1='@reboot sleep 30; cd /home && bash -ic "dlt.green -m s"'
+	
+VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker: System Maintenance'
+VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0 -t 0 -r 1"'
+
 lg='\033[1m'
 or='\e[1;33m'
 ca='\e[1;96m'
@@ -143,7 +149,7 @@ CheckShimmer() {
 }
 
 CheckAutostart() {
-	if ! [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]
+	if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]
 	then
 		clear
 		echo ""
@@ -159,7 +165,7 @@ CheckAutostart() {
 		echo "║                                                                             ║"
 		echo "║$rd              !!! Autostart for all Nodes not enabled !!!                    $xx║"
 		echo "║                                                                             ║"
-		echo "║       in the moment you must restart your Nodes manually after reboot       ║"
+		echo "║       in the Moment you must restart your Nodes manually after reboot       ║"
 		echo "║                                                                             ║"
 		echo "║           press [S] to skip, [X] to enable Autostart, [Q] to quit           ║"
 		echo "║                                                                             ║"
@@ -175,19 +181,19 @@ CheckAutostart() {
 		     echo "$ca"
 		     echo 'Enable Autostart...'
 		     echo "$xx"
-		     sleep 3
+		     sleep 3	   	   
 
-			 if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
-			    export EDITOR='nano' && echo "# crontab" | crontab -
-			 fi
+		     if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
+		        export EDITOR='nano' && echo "# crontab" | crontab -
+		     fi
 
-			 if ! [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
-			    (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "# DLT.GREEN Node-Installer-Docker: Start all Nodes" && echo "@reboot sleep 30; cd /home && bash -ic \"dlt.green -m s\"") | crontab -
-			 fi
+		     if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		        (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_JOB_1") | crontab - 
+		     fi
 
-			 if [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
-			    echo "$gn""Autostart for all Nodes enabled""$xx"
-			 fi
+		     if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		        echo "$gn""Autostart enabled""$xx"
+		     fi
 			 
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 ;;
@@ -857,7 +863,7 @@ MainMenu() {
 	echo "║                              2. Docker Installation                         ║"
 	echo "║                              3. Docker Status                               ║"
 	echo "║                              4. Firewall Status/Ports                       ║"
-	echo "║                              5. Edit Cron-Jobs                              ║"
+	echo "║                              5. Cron-Jobs                                   ║"
 	echo "║                              6. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                              Q. Quit                                        ║"
@@ -920,16 +926,7 @@ MainMenu() {
 	   ufw status numbered 2>/dev/null
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
-	5) clear
-	   echo "$ca"
-	   echo 'Edit Cron-Jobs:'
-	   echo "$xx"
-	   if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
-  	     export EDITOR='nano' && echo "# crontab" | crontab -
-	   fi
-	   crontab -e
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-	   MainMenu ;;
+	5) SubMenuCronJobs ;;
 	6) SubMenuLicense ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
@@ -939,6 +936,118 @@ MainMenu() {
 	     echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	     MainMenu
        fi;;
+	esac
+}
+
+SubMenuCronJobs() {
+
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn"[✓] "; else cja=$rd"[X] "; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ];  then cjb=$gn"[✓] "; else cjb=$rd"[X] "; fi
+	
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
+	echo "║""$ca""$VAR_DOMAIN""$xx""║"
+	echo "║                                                                             ║"
+	echo "║                              1. ""$cja""Autostart""$xx""                               ║"
+	echo "║                              2. ""$cjb""System Maintenance""$xx""                      ║"
+	echo "║                              3. ""$cjz""Edit Cron-Jobs""$xx""                              ║"
+	echo "║                              X. Management Dashboard                        ║"
+	echo "║                                                                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	echo "select menu item: "
+
+	read -r -p '> ' n
+	case $n in
+	1) clear
+	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		  echo "$ca"
+		  echo 'Disable Autostart...'
+		  echo "$xx"
+		  sleep 3
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_1")" | grep -v "$VAR_CRON_JOB_1") | crontab - 
+		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		     echo "$rd""Autostart disabled""$xx"
+		  fi
+	   else
+		  echo "$ca"
+		  echo 'Enable Autostart...'
+		  echo "$xx"
+		  sleep 3	   	   
+
+		  if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
+		     export EDITOR='nano' && echo "# crontab" | crontab -
+		  fi
+
+		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_JOB_1") | crontab - 
+		  fi
+
+		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		     echo "$gn""Autostart enabled""$xx"
+		  fi
+	   fi
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuCronJobs ;;
+	2) clear
+	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+		  echo "$ca"
+		  echo 'Disable System Maintenance...'
+		  echo "$xx"
+		  sleep 3
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2") | crontab - 
+		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+		     echo "$rd""System Maintenance disabled""$xx"
+		  fi
+	   else
+		  echo "$ca"
+		  echo 'Enable System Maintenance...'
+		  echo "$xx"
+		  unset VAR_CRON_HOUR_2
+		  while [ -z "$VAR_CRON_HOUR_2" ]; do
+		    echo "Set Time [Hour] (example: $ca""0-23""$xx""):";
+		    read -r -p '> ' VAR_TMP
+		    case $VAR_TMP in
+			  [0-23]*) VAR_CRON_HOUR_2=$VAR_TMP;; 
+			  *) unset VAR_CRON_HOUR_2; echo "$rd""Wrong value!"; echo "$xx";; 
+		    esac 
+		  done
+  
+		  VAR_CRON_MIN_2="$(shuf --random-source='/dev/urandom' -n 1 -i 0-59)"
+		  echo ""
+		  echo "Set Time [Minute] (random value: $ca""0-59""$xx""):"
+		  echo '> '"$VAR_CRON_MIN_2"
+		  echo ""
+		  
+		  sleep 3	  	   
+
+		  if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
+		     export EDITOR='nano' && echo "# crontab" | crontab -
+		  fi
+
+		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_JOB_2") | crontab - 
+		  fi
+
+		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+		     echo "$gn""System Maintenance enabled: ""$(printf '%02d' "$VAR_CRON_HOUR_2")"":""$(printf '%02d' "$VAR_CRON_MIN_2")""$xx"
+		  fi
+	   fi
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuCronJobs ;;
+	3) clear
+	   echo "$ca"
+	   echo 'Edit Cron-Jobs:'
+	   echo "$xx"
+	   if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
+  	     export EDITOR='nano' && echo "# crontab" | crontab -
+	   fi
+	   crontab -e
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuCronJobs ;;
+	*) Dashboard ;;
 	esac
 }
 
