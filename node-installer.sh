@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.7.4"
-BUILD="20240105_165242"
+VRSN="v.2.7.5"
+BUILD="20240105_182614"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -97,19 +97,19 @@ sudo apt-get install nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='53dcc7d0ce3d331b1e978757fb10851817d88a351a0ff903bf29a31ef25d23a1'
+IotaHornetHash='a43dceb9d017022a1febafabf70aaafe213d9ccb4ad8b51c4437ad6274bb78fd'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='ed25576f6b2ba375b31d0a6137ba1dc2aa4f2fef7bfb8d9229d335a47c4d84b5'
+IotaWaspHash='679e7a8d8daf60c6fd17daab6581a9ebd0d223f45a83f12fc52b82e8b568f414'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='6a355e55ab6b5fe529b274822a5cd7395599b8401cb7080652ecb28b9ed62d3b'
+ShimmerHornetHash='2075208377f5fb96473670d93ec497f3b960e67b1e4abf8dd2e585442d4cd521'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='058b8cc915cd274f86918678a4fdb15a35636e6abbd934dd404020fbb0ef66c6'
+ShimmerWaspHash='88139fd7f120f04608e1a08a5895409ca368d0ff5c42a4b4466b987dda8814d5'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='9d978a5b912d5520f624e22f28306eca848d212bcb4032ac141c504c0d3f600b'
+ShimmerChronicleHash='3ded15a884935162383475cbe084af07ccfc3eaede7b3a370dfbcf2195b3440b'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1705,12 +1705,9 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                  Delete unused old docker containers/images                 ║"
+	echo "║                       Delete Docker Containers/Images                       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-
-	echo "$ca"'Please wait, delete unused old docker containers/images...'
-	echo "$xx"
 
 	docker system prune -f
 
@@ -1719,21 +1716,32 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                      Check necessary docker containers                      ║"
+	echo "║                         Stopping Docker Containers                          ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	echo "$ca"'Please wait, check necessary docker containers...'
-	echo "$xx"
+	docker stop $(docker ps -a -q)
+	docker ps -a -q >/dev/null 2>&1
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                      Check necessary Docker Containers                      ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
 
 	for NODE in $NODES; do
 	  if [ -f "/var/lib/$NODE/.env" ]; then
-	    if [ -d "/var/lib/$NODE" ]; then cd "/var/lib/$NODE" || exit; fi
-	    if [ -f docker-compose.yml ]; then
-	      if [ "$NODE | grep 'iota'" ]; then docker network create iota >/dev/null 2>&1; fi
-	      if [ "$NODE | grep 'shimmer'" ]; then docker network create shimmer >/dev/null 2>&1; fi
-		  docker-compose up --no-start
-		fi
+	    if [ -d "/var/lib/$NODE" ]; then
+	      cd "/var/lib/$NODE" || exit
+	      if [ -f docker-compose.yml ]; then
+	        if [ "$($NODE 2>&1 | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
+	        if [ "$($NODE 2>&1 | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
+		    docker-compose up --no-start
+	      fi
+	    fi
 	  fi
 	done
 
@@ -1744,27 +1752,9 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                         Stopping docker containers                          ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	echo "$ca"'Please wait, docker containers can take up to 5 minutes...'
-	echo "$xx"
-
-	docker stop $(docker ps -a -q)
-	docker ps -a -q >/dev/null 2>&1
-
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                               Updating System                               ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-
-	echo "$ca"'Please wait, updating the System...'
-	echo "$xx"
 
 	sudo DEBIAN_FRONTEND=noninteractive apt update
 	sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
