@@ -867,7 +867,8 @@ MainMenu() {
 	echo "║                              3. Docker Status                               ║"
 	echo "║                              4. Firewall Status/Ports                       ║"
 	echo "║                              5. Cron-Jobs                                   ║"
-	echo "║                              6. License Information                         ║"
+	echo "║                              6. Notify-Me                                   ║"
+	echo "║                              7. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                              Q. Quit                                        ║"
 	echo "║                                                                             ║"
@@ -930,7 +931,8 @@ MainMenu() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
 	5) SubMenuCronJobs ;;
-	6) SubMenuLicense ;;
+	6) ;;
+	7) SubMenuLicense ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
 	   if [ $? -eq 0 ]; then Dashboard; else
@@ -1062,6 +1064,10 @@ SubMenuLicense() {
 	echo "║                      GNU General Public License v3.0                        ║"
 	echo "║                                                                             ║"
 	echo "║    https://github.com/dlt-green/node-installer-docker/blob/main/license     ║"
+	echo "║                                                                             ║"
+	echo "║                                 MIT License                                 ║"
+	echo "║                                                                             ║"
+	echo "║        https://github.com/notify-run/notify-run-rs/blob/main/LICENSE        ║"	
 	echo "║                                                                             ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
