@@ -697,6 +697,9 @@ Dashboard() {
 
 	VAR_NODE=0
 
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn; else cja=$rd; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ];  then cjb=$gn; else cjb=$rd; fi
+
 	PositionCenter "$VAR_DOMAIN"
 	VAR_DOMAIN=$text
 
@@ -723,7 +726,7 @@ Dashboard() {
 	echo "║                                                                             ║"
 	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
 	echo "║                                                                             ║"
-	echo "║   [E] Events  [R] Refresh  [S] Start all Nodes  [M] Maintenance  [Q] Quit   ║"
+	echo "║   [E] Events  [R] Refresh  [""$cja""S""$xx""] Start all Nodes  [""$cjb""M""$xx""] Maintenance  [Q] Quit   ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item:"
@@ -1009,16 +1012,14 @@ SubMenuCronJobs() {
 		  while [ -z "$VAR_CRON_HOUR_2" ]; do
 		    echo "Set Time [Hour] (example: $ca""0-23""$xx""):";
 		    read -r -p '> ' VAR_TMP
-		    case $VAR_TMP in
-			  [0-23]*) VAR_CRON_HOUR_2=$VAR_TMP;; 
-			  *) unset VAR_CRON_HOUR_2; echo "$rd""Wrong value!"; echo "$xx";; 
-		    esac 
+		    if [ $VAR_TMP -lt 0 ] || [ $VAR_TMP -gt 59 ]; then echo "$rd""Wrong value!"; echo "$xx"; else VAR_CRON_HOUR_2=$VAR_TMP; echo "$gn"" ✓""$xx"; fi
 		  done
   
 		  VAR_CRON_MIN_2="$(shuf --random-source='/dev/urandom' -n 1 -i 0-59)"
 		  echo ""
 		  echo "Set Time [Minute] (random value: $ca""0-59""$xx""):"
 		  echo '> '"$VAR_CRON_MIN_2"
+		  echo "$gn"" ✓""$xx"
 		  echo ""
 		  
 		  sleep 3	  	   
