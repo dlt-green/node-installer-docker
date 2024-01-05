@@ -1705,12 +1705,9 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                  Delete unused old docker containers/images                 ║"
+	echo "║                       Delete Docker Containers/Images                       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-
-	echo "$ca"'Please wait, delete unused old docker containers/images...'
-	echo "$xx"
 
 	docker system prune -f
 
@@ -1719,21 +1716,32 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                      Check necessary docker containers                      ║"
+	echo "║                         Stopping Docker Containers                          ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	echo "$ca"'Please wait, check necessary docker containers...'
-	echo "$xx"
+	docker stop $(docker ps -a -q)
+	docker ps -a -q >/dev/null 2>&1
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                      Check necessary Docker Containers                      ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
 
 	for NODE in $NODES; do
 	  if [ -f "/var/lib/$NODE/.env" ]; then
-	    if [ -d "/var/lib/$NODE" ]; then cd "/var/lib/$NODE" || exit; fi
-	    if [ -f docker-compose.yml ]; then
-	      if [ "$NODE | grep 'iota'" ]; then docker network create iota >/dev/null 2>&1; fi
-	      if [ "$NODE | grep 'shimmer'" ]; then docker network create shimmer >/dev/null 2>&1; fi
-		  docker-compose up --no-start
-		fi
+	    if [ -d "/var/lib/$NODE" ]; then
+	      cd "/var/lib/$NODE" || exit
+	      if [ -f docker-compose.yml ]; then
+	        if [ "$($NODE 2>&1 | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
+	        if [ "$($NODE 2>&1 | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
+		    docker-compose up --no-start
+	      fi
+	    fi
 	  fi
 	done
 
@@ -1744,27 +1752,9 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                         Stopping docker containers                          ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	echo "$ca"'Please wait, docker containers can take up to 5 minutes...'
-	echo "$xx"
-
-	docker stop $(docker ps -a -q)
-	docker ps -a -q >/dev/null 2>&1
-
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                               Updating System                               ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-
-	echo "$ca"'Please wait, updating the System...'
-	echo "$xx"
 
 	sudo DEBIAN_FRONTEND=noninteractive apt update
 	sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
