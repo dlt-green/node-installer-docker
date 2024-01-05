@@ -1698,35 +1698,74 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
+	NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
+
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
+	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                  Delete unused old docker containers/images                 ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ "$opt_mode" = 0 ]; then
-	  docker system prune -f
-	else
-	  docker system prune
-	fi
+	echo "$ca"'Please wait, delete unused old docker containers/images...'
+	echo "$xx"
+
+	docker system prune -f
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
-	echo "$ca"
-	echo 'Please wait, stopping Nodes can take up to 5 minutes...'
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                      Check necessary docker containers                      ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	echo "$ca"'Please wait, check necessary docker containers...'
 	echo "$xx"
+
+	for NODE in $NODES; do
+	  if [ -f "/var/lib/$NODE/.env" ]; then
+	    if [ -d "/var/lib/$NODE" ]; then cd "/var/lib/$NODE" || exit; fi
+	    if [ -f docker-compose.yml ]; then
+	      if [ "$NODE | grep 'iota'" ]; then docker network create iota >/dev/null 2>&1; fi
+	      if [ "$NODE | grep 'shimmer'" ]; then docker network create shimmer >/dev/null 2>&1; fi
+		  docker-compose up --no-start
+		fi
+	  fi
+	done
+
+	RenameContainer
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                         Stopping docker containers                          ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	echo "$ca"'Please wait, docker containers can take up to 5 minutes...'
+	echo "$xx"
+
 	docker stop $(docker ps -a -q)
 	docker ps -a -q >/dev/null 2>&1
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
-	echo "$ca"
-	echo 'Please wait, updating the System...'
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Updating System                               ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	echo "$ca"'Please wait, updating the System...'
 	echo "$xx"
+
 	sudo DEBIAN_FRONTEND=noninteractive apt update
 	sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
 	sudo DEBIAN_FRONTEND=noninteractive apt dist-upgrade -y
@@ -1742,7 +1781,6 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
 	CERT=0
 	
 	for NODE in $NODES; do
