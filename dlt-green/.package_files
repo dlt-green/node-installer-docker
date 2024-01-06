@@ -1,0 +1,10 @@
+./assets/traefik/certs/fake.cert
+./assets/traefik/certs/fake.key
+./assets/traefik/tls_config.yml
+./docker-compose.yml
+./prepare_docker.sh
+./README.md
+./scripts/prepare_docker_functions.sh
+./show_logs.sh
+./start.sh
+./stop.sh
