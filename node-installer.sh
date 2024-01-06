@@ -118,6 +118,9 @@ ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/
 ShimmerChronicleHash='96c01e2ce8f6bd744140b17ccfbda9d8ca7ae3d246a511a7980de9e45b72cd1b'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
+DltGreenHash='96c01e2ce8f6bd744140b17ccfbda9d8ca7ae3d246a511a7980de9e45b72cd1b'
+DltGreenPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/dlt-green.tar.gz"
+
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
 
 clear
@@ -931,6 +934,7 @@ MainMenu() {
 	   MainMenu ;;
 	5) SubMenuCronJobs ;;
 	6) SubMenuLicense ;;
+	8) Certificate ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
 	   if [ $? -eq 0 ]; then Dashboard; else
@@ -2014,6 +2018,243 @@ Docker() {
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	MainMenu
+}
+
+Certificate() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║           DLT.GREEN AUTOMATIC CERTIFICATE INSTALLATION WITH DOCKER          ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	echo "$ca""Starting Installation or Update...""$xx";
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                            Prepare Installation                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	echo "Stopping Node... $VAR_DIR"
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
+
+	echo ""
+	echo "Check Directory... /var/lib/$VAR_DIR"
+
+	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
+	cd /var/lib/$VAR_DIR || exit
+
+	echo ""
+	echo "CleanUp Directory... /var/lib/$VAR_DIR"
+
+	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
+
+	echo ""
+	echo "Download Package... install.tar.gz"
+	wget -cO - "$DltGreenPackage" -q > install.tar.gz
+
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$DltGreenHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
+
+	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
+
+	echo "Unpack Package... install.tar.gz"
+	tar -xzf install.tar.gz
+
+	echo "Delete Package... install.tar.gz"
+	rm -r install.tar.gz
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+	CheckConfiguration
+
+	if [ $VAR_CONF_RESET = 1 ]; then
+
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                               Set Parameters                                ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		VAR_HOST=$(cat .env 2>/dev/null | grep DLTGREEN_HOST= | cut -d '=' -f 2)
+		if [ -z "$VAR_HOST" ]; then
+		  VAR_HOST=$(echo $VAR_DOMAIN | xargs)
+		  if [ -n "$VAR_HOST" ]; then
+		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "Press [Enter] to use global domain:"
+		  else
+			echo "Set domain name (example: $ca""vrom.dlt.green""$xx):";
+		  fi
+		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
+		CheckDomain "$VAR_HOST"
+
+		echo ''
+		VAR_DLTGREEN_HTTPS_PORT=$(cat .env 2>/dev/null | grep DLTGREEN_HTTPS_PORT= | cut -d '=' -f 2)
+		VAR_DEFAULT='443';
+		if [ -z "$VAR_DLTGREEN_HTTPS_PORT" ]; then
+		  echo "Set dashboard port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set dashboard port (config: $ca""$VAR_DLTGREEN_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_DLTGREEN_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_DLTGREEN_HTTPS_PORT" ]; then VAR_DLTGREEN_HTTPS_PORT=$VAR_DEFAULT; fi
+		echo "$gn""Set dashboard port: $VAR_DLTGREEN_HTTPS_PORT""$xx"
+
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                              Write Parameters                               ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		CheckCertificate
+
+		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+		if [ -f .env ]; then rm .env; fi
+
+		echo "DLTGREEN_HOST=$VAR_HOST" >> .env
+		echo "DLTGREEN_HTTPS_PORT=$VAR_DLTGREEN_HTTPS_PORT" >> .env
+
+		if [ $VAR_CERT = 0 ]
+		then
+			echo "HORNET_HTTP_PORT=80" >> .env
+			clear
+			echo ""
+			echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+			echo "║                     Retrieve Let's Encrypt Certificate                      ║"
+			echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+			echo ""
+
+			unset VAR_ACME_EMAIL
+				while [ -z "$VAR_ACME_EMAIL" ]; do
+			 	 VAR_ACME_EMAIL=$(cat .env 2>/dev/null | grep ACME_EMAIL= | cut -d '=' -f 2)
+				  if [ -z "$ACME_EMAIL" ]; then
+				    echo "Set mail for certificate renewal:"; else echo "Set mail for certificate renewal (config: $ca""$ACME_EMAIL""$xx)"; echo "Press [Enter] to use existing config:"; fi
+				  read -r -p '> ' VAR_TMP
+				  if [ -n "$VAR_TMP" ]; then VAR_ACME_EMAIL=$VAR_TMP; fi
+				  if ! [ -z "${VAR_ACME_EMAIL##*@*}" ]; then
+				    VAR_ACME_EMAIL=''
+				    echo "$rd""Set mail for certificate renewal: Please insert correct mail!"; echo "$xx"
+				  fi
+				done
+			echo "$gn""Set mail for certificate renewal: $VAR_ACME_EMAIL""$xx"
+			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+		else
+			echo "SSL_CONFIG=certs" >> .env
+			echo "DLTGREEN_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
+			echo "DLTGREEN_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
+		fi
+
+	else
+
+		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
+
+	fi
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                                 Pull Data                                   ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	docker network create DLT.GREEN >/dev/null 2>&1
+	docker compose pull
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Prepare Docker                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+	./prepare_docker.sh
+
+	echo "done..."
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+	if [ $VAR_CONF_RESET = 1 ]; then
+
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                             Configure Firewall                              ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		if [ $VAR_CERT = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
+
+		echo ufw allow "$VAR_DLTGREEN_HTTPS_PORT/tcp" && ufw allow "$VAR_DLTGREEN_HTTPS_PORT/tcp"
+
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+	fi
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                             Start Certificate                               ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+
+	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
+
+	echo "$ca"
+	echo 'Please wait, importing snapshot can take up to 10 minutes...'
+	echo "$xx"
+
+	docker compose up -d
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                           Set external Parameters                           ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	
+	RenameContainer
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear	
+
+	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
+
+	clear
+	echo ""
+
+	if [ $VAR_CONF_RESET = 1 ]; then
+
+		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+		echo ""
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+		echo ""
+	else
+	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	    echo ""
+	fi
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+	if [ "$opt_mode" ]; then clear; exit; fi
+
+	Dashboard
 }
 
 IotaHornet() {
