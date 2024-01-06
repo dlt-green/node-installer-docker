@@ -68,7 +68,7 @@ services:
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "${DLTGREEN_HTTP_PORT:-80}:80/tcp"
-#      - "${DLTGREEN_HTTPS_PORT:-443}:443/tcp"
+      - "${DLTGREEN_HTTPS_PORT:-443}:443/tcp"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "${DLTGREEN_DATA_DIR:-./data}/letsencrypt:/letsencrypt"
