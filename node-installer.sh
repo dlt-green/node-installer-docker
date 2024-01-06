@@ -2128,7 +2128,7 @@ Certificate() {
 
 		if [ $VAR_CERT = 0 ]
 		then
-			echo "HORNET_HTTP_PORT=80" >> .env
+			echo "DLTGREEN_HTTP_PORT=80" >> .env
 			clear
 			echo ""
 			echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -2171,7 +2171,7 @@ Certificate() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker network create DLT.GREEN >/dev/null 2>&1
+	docker network create dlt-green >/dev/null 2>&1
 	docker compose pull
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
