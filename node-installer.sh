@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.7.3"
-BUILD="20240102_064340"
+VRSN="v.2.7.6"
+BUILD="20240105_235025"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -35,6 +35,12 @@ VAR_SHIMMER_INX_PARTICIPATION_VERSION='1.0-rc'
 VAR_SHIMMER_INX_SPAMMER_VERSION='1.0-rc'
 VAR_SHIMMER_INX_POI_VERSION='1.0-rc'
 VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0-rc'
+
+VAR_CRON_TITLE_1='# DLT.GREEN Node-Installer-Docker: Start all Nodes'
+VAR_CRON_JOB_1='@reboot sleep 30; cd /home && bash -ic "dlt.green -m s"'
+	
+VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker: System Maintenance'
+VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0 -t 0 -r 1"'
 
 lg='\033[1m'
 or='\e[1;33m'
@@ -97,19 +103,19 @@ sudo apt-get install nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='39e09207283c269121a34076b2404bb870d3f3bd29fdc746920a0fc8caa8ce8e'
+IotaHornetHash='55afe20a97e5c84881374448e0805f68791fe398f787dacac8fe57cdeb0e3c30'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='0414d60f01d9684d49464c3208413ee400ca4188e36f70cf0dc0b130b9eb1522'
+IotaWaspHash='244185d6d7988297ff82da91fd375dcbbc02762afc3aaf0ff053e38f8a60fc1c'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='f1e8eeec35b1d7c358a812f6234e9b3cf47e72f5d44b5e44d59eb9138c0ff29f'
+ShimmerHornetHash='dcbd46d81d2e012bde73348d8a0917080ae64ee89874c637f5f95c123228d872'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='ae5a9b4d4b407203bb8ac99c921572cee4bdad23d9cf258d4e0974afb265bcca'
+ShimmerWaspHash='cb2d8fbc78ddddc87495f35e2615d3186ad98f4d00e612f8ae4e81333e30b446'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='4f3d448226d93f2748751960debb5d045a5283b46efafa657db277dd3c704ad6'
+ShimmerChronicleHash='96c01e2ce8f6bd744140b17ccfbda9d8ca7ae3d246a511a7980de9e45b72cd1b'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -143,7 +149,7 @@ CheckShimmer() {
 }
 
 CheckAutostart() {
-	if ! [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]
+	if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]
 	then
 		clear
 		echo ""
@@ -159,7 +165,7 @@ CheckAutostart() {
 		echo "║                                                                             ║"
 		echo "║$rd              !!! Autostart for all Nodes not enabled !!!                    $xx║"
 		echo "║                                                                             ║"
-		echo "║       in the moment you must restart your Nodes manually after reboot       ║"
+		echo "║       in the Moment you must restart your Nodes manually after reboot       ║"
 		echo "║                                                                             ║"
 		echo "║           press [S] to skip, [X] to enable Autostart, [Q] to quit           ║"
 		echo "║                                                                             ║"
@@ -175,19 +181,19 @@ CheckAutostart() {
 		     echo "$ca"
 		     echo 'Enable Autostart...'
 		     echo "$xx"
-		     sleep 3
+		     sleep 3	   	   
 
-			 if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
-			    export EDITOR='nano' && echo "# crontab" | crontab -
-			 fi
+		     if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
+		        export EDITOR='nano' && echo "# crontab" | crontab -
+		     fi
 
-			 if ! [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
-			    (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "# DLT.GREEN Node-Installer-Docker: Start all Nodes" && echo "@reboot sleep 30; cd /home && bash -ic \"dlt.green -m s\"") | crontab -
-			 fi
+		     if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		        (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_JOB_1") | crontab - 
+		     fi
 
-			 if [ "$(crontab -l | grep '@reboot sleep 30\; cd \/home && bash -ic \"dlt.green -m s\"')" ]; then
-			    echo "$gn""Autostart for all Nodes enabled""$xx"
-			 fi
+		     if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		        echo "$gn""Autostart enabled""$xx"
+		     fi
 			 
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 ;;
@@ -691,6 +697,9 @@ Dashboard() {
 
 	VAR_NODE=0
 
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn; else cja=$rd; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ];  then cjb=$gn; else cjb=$rd; fi
+
 	PositionCenter "$VAR_DOMAIN"
 	VAR_DOMAIN=$text
 
@@ -717,7 +726,7 @@ Dashboard() {
 	echo "║                                                                             ║"
 	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
 	echo "║                                                                             ║"
-	echo "║   [E] Events  [R] Refresh  [S] Start all Nodes  [M] Maintenance  [Q] Quit   ║"
+	echo "║   [E] Events  [R] Refresh  [""$cja""S""$xx""] Start all Nodes  [""$cjb""M""$xx""] Maintenance  [Q] Quit   ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "select menu item:"
@@ -857,7 +866,7 @@ MainMenu() {
 	echo "║                              2. Docker Installation                         ║"
 	echo "║                              3. Docker Status                               ║"
 	echo "║                              4. Firewall Status/Ports                       ║"
-	echo "║                              5. Edit Cron-Jobs                              ║"
+	echo "║                              5. Cron-Jobs                                   ║"
 	echo "║                              6. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                              Q. Quit                                        ║"
@@ -920,16 +929,7 @@ MainMenu() {
 	   ufw status numbered 2>/dev/null
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
-	5) clear
-	   echo "$ca"
-	   echo 'Edit Cron-Jobs:'
-	   echo "$xx"
-	   if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
-  	     export EDITOR='nano' && echo "# crontab" | crontab -
-	   fi
-	   crontab -e
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-	   MainMenu ;;
+	5) SubMenuCronJobs ;;
 	6) SubMenuLicense ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
@@ -939,6 +939,116 @@ MainMenu() {
 	     echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	     MainMenu
        fi;;
+	esac
+}
+
+SubMenuCronJobs() {
+
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn"[✓] "; else cja=$rd"[X] "; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ];  then cjb=$gn"[✓] "; else cjb=$rd"[X] "; fi
+	
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
+	echo "║""$ca""$VAR_DOMAIN""$xx""║"
+	echo "║                                                                             ║"
+	echo "║                              1. ""$cja""Autostart""$xx""                               ║"
+	echo "║                              2. ""$cjb""System Maintenance""$xx""                      ║"
+	echo "║                              3. ""$cjz""Edit Cron-Jobs""$xx""                              ║"
+	echo "║                              X. Management Dashboard                        ║"
+	echo "║                                                                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	echo "select menu item: "
+
+	read -r -p '> ' n
+	case $n in
+	1) clear
+	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		  echo "$ca"
+		  echo 'Disable Autostart...'
+		  echo "$xx"
+		  sleep 3
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_1")" | grep -v "$VAR_CRON_JOB_1") | crontab - 
+		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		     echo "$rd""Autostart disabled""$xx"
+		  fi
+	   else
+		  echo "$ca"
+		  echo 'Enable Autostart...'
+		  echo "$xx"
+		  sleep 3	   	   
+
+		  if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
+		     export EDITOR='nano' && echo "# crontab" | crontab -
+		  fi
+
+		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_JOB_1") | crontab - 
+		  fi
+
+		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		     echo "$gn""Autostart enabled""$xx"
+		  fi
+	   fi
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuCronJobs ;;
+	2) clear
+	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+		  echo "$ca"
+		  echo 'Disable System Maintenance...'
+		  echo "$xx"
+		  sleep 3
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2") | crontab - 
+		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+		     echo "$rd""System Maintenance disabled""$xx"
+		  fi
+	   else
+		  echo "$ca"
+		  echo 'Enable System Maintenance...'
+		  echo "$xx"
+		  unset VAR_CRON_HOUR_2
+		  while [ -z "$VAR_CRON_HOUR_2" ]; do
+		    echo "Set Time [Hour] (example: $ca""0-23""$xx""):";
+		    read -r -p '> ' VAR_TMP
+		    if [ $VAR_TMP -lt 0 ] || [ $VAR_TMP -gt 59 ]; then echo "$rd""Wrong value!"; echo "$xx"; else VAR_CRON_HOUR_2=$VAR_TMP; echo "$gn"" ✓""$xx"; fi
+		  done
+  
+		  VAR_CRON_MIN_2="$(shuf --random-source='/dev/urandom' -n 1 -i 0-59)"
+		  echo ""
+		  echo "Set Time [Minute] (random value: $ca""0-59""$xx""):"
+		  echo '> '"$VAR_CRON_MIN_2"
+		  echo "$gn"" ✓""$xx"
+		  echo ""
+		  
+		  sleep 3	  	   
+
+		  if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
+		     export EDITOR='nano' && echo "# crontab" | crontab -
+		  fi
+
+		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_JOB_2") | crontab - 
+		  fi
+
+		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+		     echo "$gn""System Maintenance enabled: ""$(printf '%02d' "$VAR_CRON_HOUR_2")"":""$(printf '%02d' "$VAR_CRON_MIN_2")""$xx"
+		  fi
+	   fi
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuCronJobs ;;
+	3) clear
+	   echo "$ca"
+	   echo 'Edit Cron-Jobs:'
+	   echo "$xx"
+	   if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
+  	     export EDITOR='nano' && echo "# crontab" | crontab -
+	   fi
+	   crontab -e
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuCronJobs ;;
+	*) Dashboard ;;
 	esac
 }
 
@@ -1698,35 +1808,64 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                  Delete unused old docker containers/images                 ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	if [ "$opt_mode" = 0 ]; then
-	  docker system prune -f
-	else
-	  docker system prune
-	fi
+	NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
-	echo "$ca"
-	echo 'Please wait, stopping Nodes can take up to 5 minutes...'
-	echo "$xx"
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                       Delete Docker Containers/Images                       ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	docker system prune -f
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                         Stopping Docker Containers                          ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
 	docker stop $(docker ps -a -q)
 	docker ps -a -q >/dev/null 2>&1
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
-	echo "$ca"
-	echo 'Please wait, updating the System...'
-	echo "$xx"
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                      Check necessary Docker Containers                      ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	for NODE in $NODES; do
+	  if [ -f "/var/lib/$NODE/.env" ]; then
+	    if [ -d "/var/lib/$NODE" ]; then
+	      cd "/var/lib/$NODE" || exit
+	      if [ -f docker-compose.yml ]; then
+	        if [ "$($NODE 2>&1 | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
+	        if [ "$($NODE 2>&1 | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
+		    docker-compose up --no-start
+	      fi
+	    fi
+	  fi
+	done
+
+	RenameContainer
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Updating System                               ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
 	sudo DEBIAN_FRONTEND=noninteractive apt update
 	sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
 	sudo DEBIAN_FRONTEND=noninteractive apt dist-upgrade -y
@@ -1742,7 +1881,6 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
 	CERT=0
 	
 	for NODE in $NODES; do
