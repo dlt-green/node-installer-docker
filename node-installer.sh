@@ -99,7 +99,7 @@ done
 
 echo "$xx"
 
-sudo apt-get install nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
@@ -931,7 +931,50 @@ MainMenu() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
 	5) SubMenuCronJobs ;;
-	6) ;;
+	6) clear
+	   echo "$ca"
+	   echo "Set Alias 'dlt.green-msg':"
+	   echo "$xx"
+
+	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel)
+	   
+	   echo ""
+	   
+	   echo "ChannelId:   " $(echo $VAR_NOTIFY | jq -r '.channelId')
+	   echo "ChannelPage: " $(echo $VAR_NOTIFY | jq -r '.channel_page')
+	   echo "Endpoint:    " $(echo $VAR_NOTIFY | jq -r '.endpoint')
+
+	   VAR_NOTIFY_ENDPOINT=$(echo $VAR_NOTIFY | jq -r '.endpoint')
+	   VAR_NOTIFY_ENDPOINT_URL='curl '$(echo $VAR_NOTIFY | jq -r '.endpoint')' -d'
+	   
+	   echo ""
+	   qrencode -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
+	   echo ""
+	   
+
+
+	   if [ -f ~/.bash_aliases ]; then
+	     headerLine=$(awk '/# DLT.GREEN Node-Installer-Docker/{ print NR; exit }' ~/.bash_aliases)
+	     insertLine=$(awk '/dlt.green-msg=/{ print NR; exit }' ~/.bash_aliases)
+	     if [ -z "$insertLine" ]; then
+	         if [ ! -z "$headerLine" ]; then
+	           insertLine=$(($headerLine))
+	         sed -i "$insertLine a alias dlt.green-msg=""$VAR_NOTIFY_ENDPOINT_URL""" ~/.bash_aliases
+	         echo "$gn""Alias set 1!""$xx"
+	       else
+	         echo "$rd""Error setting Alias!""$xx"
+	       fi
+	     else
+	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg=''${VAR_NOTIFY_ENDPOINT_URL}''/g' ~/.bash_aliases
+	       echo "$gn""Alias set 2!""$xx"
+	     fi	     
+
+		 echo ""
+		 echo "$rd""Attention! Please reconnect so that the alias works!""$xx"
+	   fi
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   MainMenu ;;
 	7) SubMenuLicense ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
