@@ -792,6 +792,8 @@ Dashboard() {
 	   
 	   DashboardHelper ;;
 
+	0) VAR_NETWORK=0; VAR_NODE=0; VAR_DIR='dlt-green'
+	   if ! [ "$opt_mode" ]; then Certificate; else Certificate; fi ;;
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
 	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaHornet; fi ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-wasp'
@@ -934,7 +936,6 @@ MainMenu() {
 	   MainMenu ;;
 	5) SubMenuCronJobs ;;
 	6) SubMenuLicense ;;
-	8) Certificate ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
 	   if [ $? -eq 0 ]; then Dashboard; else
@@ -2127,7 +2128,7 @@ Certificate() {
 
 		if [ $VAR_CERT = 0 ]
 		then
-			echo "HORNET_HTTP_PORT=80" >> .env
+			echo "DLTGREEN_HTTP_PORT=80" >> .env
 			clear
 			echo ""
 			echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -2170,7 +2171,7 @@ Certificate() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker network create DLT.GREEN >/dev/null 2>&1
+	docker network create dlt-green >/dev/null 2>&1
 	docker compose pull
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
