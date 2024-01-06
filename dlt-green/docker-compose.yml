@@ -1,6 +1,41 @@
 version: '3'
 services:
 
+  nginx:
+    image: nginx:1.25.3
+    container_name: dlt-green.nginx
+    restart: unless-stopped
+    volumes:
+      - ./web:/usr/share/nginx/html
+    labels:
+      - "traefik.enable=true"
+      - "proxy.constraint=dlt-green"
+
+      - "traefik.http.routers.nginx.service=nginx"
+      - "traefik.http.routers.nginx.rule=Host(`${DLTGREEN_HOST:?DLTGREEN_HOST is missing}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.nginx.entrypoints=websecure"
+      - "traefik.http.routers.nginx.tls=true"
+      - "traefik.http.routers.nginx.tls.certresolver=myresolver"
+
+      - "traefik.http.services.nginx.loadbalancer.server.port=80"
+      - "traefik.http.services.nginx.loadbalancer.healthCheck.path=/"
+      - "traefik.http.services.nginx.loadbalancer.healthCheck.interval=15s"
+      - "traefik.http.services.nginx.loadbalancer.healthCheck.timeout=5s"
+
+      - "traefik.http.routers.nginx.middlewares=security-headers"
+
+      # middlewares
+      - "traefik.http.middlewares.security-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.security-headers.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${DLTGREEN_HOST:?DLTGREEN_HOST is missing}:${DLTGREEN_HTTPS_PORT:-443}"
+      - "traefik.http.middlewares.security-headers.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.security-headers.headers.addvaryheader=true"
+      - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+
   ##################################################################
   #  Reverse Proxy and SSL                                         #
   ##################################################################
@@ -12,7 +47,7 @@ services:
     env_file:
       - .env
     command:
-      - "--log.level=TRACE"
+      - "--log.level=WARN"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.constraints=Label(`proxy.constraint`,`dlt-green`)"
