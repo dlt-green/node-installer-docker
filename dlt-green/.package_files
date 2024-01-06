@@ -8,3 +8,4 @@
 ./show_logs.sh
 ./start.sh
 ./stop.sh
+./web/index.html
