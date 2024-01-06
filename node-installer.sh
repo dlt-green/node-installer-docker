@@ -792,6 +792,8 @@ Dashboard() {
 	   
 	   DashboardHelper ;;
 
+	0) VAR_NETWORK=0; VAR_NODE=0; VAR_DIR='dlt-green'
+	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else Certificate; fi ;;
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
 	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaHornet; fi ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-wasp'
@@ -934,7 +936,6 @@ MainMenu() {
 	   MainMenu ;;
 	5) SubMenuCronJobs ;;
 	6) SubMenuLicense ;;
-	8) Certificate ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
 	   if [ $? -eq 0 ]; then Dashboard; else
