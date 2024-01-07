@@ -733,7 +733,7 @@ Dashboard() {
 	  echo "$ca""unattended: System Maintenance...""$xx"
 	  sleep 3
 	  VAR_STATUS='System Maintenance'
-	  bash -ic "dlt.green-msg \"$VAR_DOMAIN: $VAR_STATUS\"" 2>/dev/null
+#	  bash -ic "dlt.green-msg \"$VAR_DOMAIN: $VAR_STATUS\"" 2>/dev/null
 	  SystemMaintenance
 	fi
 
@@ -764,7 +764,7 @@ Dashboard() {
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
 	  VAR_STATUS='Start all Nodes'
-	  bash -ic "dlt.green-msg \"$VAR_DOMAIN: $VAR_STATUS\"" 2>/dev/null
+#	  bash -ic "dlt.green-msg \"$VAR_DOMAIN: $VAR_STATUS\"" 2>/dev/null
 	  sleep 3
 	  n='s'
 	fi
