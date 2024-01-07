@@ -54,7 +54,6 @@ xx='\033[0m'
 
 opt_time=10
 opt_check=1
-opt_reboot=0
 
 while getopts "m:n:t:r:c:" option
 do
@@ -734,7 +733,7 @@ Dashboard() {
 	  echo "$ca""unattended: System Maintenance...""$xx"
 	  sleep 3
 	  VAR_STATUS='System Maintenance'
-	  $(bash -ic "dlt.green-msg \"$VAR_DOMAIN: $VAR_STATUS\"" 2>/dev/null)
+	  bash -ic "dlt.green-msg \"$VAR_DOMAIN: $VAR_STATUS\"" 2>/dev/null
 	  SystemMaintenance
 	fi
 
@@ -765,7 +764,7 @@ Dashboard() {
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
 	  VAR_STATUS='Start all Nodes'
-	  $(bash -ic "dlt.green-msg \"$VAR_DOMAIN: $VAR_STATUS\"" 2>/dev/null)
+	  bash -ic "dlt.green-msg \"$VAR_DOMAIN: $VAR_STATUS\"" 2>/dev/null
 	  sleep 3
 	  n='s'
 	fi
@@ -1978,6 +1977,7 @@ SystemMaintenance() {
 	echo ""
 	echo "select menu item: "
 
+	if [ "$opt_mode" ]; then if ! [ "$opt_reboot" ]; then "$opt_reboot"=0; fi; fi
 	if [ "$opt_reboot" = 1 ]; then n=1; else if [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
 
 	case $n in
