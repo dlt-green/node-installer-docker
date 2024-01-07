@@ -99,7 +99,7 @@ done
 
 echo "$xx"
 
-sudo apt-get install nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
@@ -733,6 +733,8 @@ Dashboard() {
 	if [ "$opt_mode" = 0 ]; then
 	  echo "$ca""unattended: System Maintenance...""$xx"
 	  sleep 3
+	  VAR_STATUS='System Maintenance'
+	  echo $(bash -ic "dlt.green-msg \"${VAR_DOMAIN}: ${VAR_STATUS}\"")
 	  SystemMaintenance
 	fi
 
@@ -762,6 +764,8 @@ Dashboard() {
 
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
+	  VAR_STATUS='Start all Nodes'
+	  echo $(bash -ic "dlt.green-msg \"${VAR_DOMAIN}: ${VAR_STATUS}\"")
 	  sleep 3
 	  n='s'
 	fi
@@ -866,7 +870,8 @@ MainMenu() {
 	echo "║                              3. Docker Status                               ║"
 	echo "║                              4. Firewall Status/Ports                       ║"
 	echo "║                              5. Cron-Jobs                                   ║"
-	echo "║                              6. License Information                         ║"
+	echo "║                              6. Notify-Me                                   ║"
+	echo "║                              7. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                              Q. Quit                                        ║"
 	echo "║                                                                             ║"
@@ -929,7 +934,51 @@ MainMenu() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
 	5) SubMenuCronJobs ;;
-	6) SubMenuLicense ;;
+	6) clear
+	   echo "$ca"
+	   echo "Set Alias 'dlt.green-msg':"
+	   echo "$xx"
+
+	   VAR_NOTIFY_URL='https\:\/\/notify.run'
+	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel)
+	   
+	   echo ""
+	   
+	   echo "ChannelId:   " $(echo $VAR_NOTIFY | jq -r '.channelId')
+	   echo "ChannelPage: " $(echo $VAR_NOTIFY | jq -r '.channel_page')
+	   echo "Endpoint:    " $(echo $VAR_NOTIFY | jq -r '.endpoint')
+
+	   VAR_NOTIFY_ENDPOINT=$(echo $VAR_NOTIFY | jq -r '.endpoint')
+	   VAR_NOTIFY_ENDPOINT_URL='curl '$VAR_NOTIFY_ENDPOINT' -d'
+	   VAR_NOTIFY_ID=$(echo $VAR_NOTIFY | jq -r '.channelId')
+	   
+	   echo ""
+	   qrencode -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
+	   echo ""
+
+	   if [ -f ~/.bash_aliases ]; then
+	     headerLine=$(awk '/# DLT.GREEN Node-Installer-Docker/{ print NR; exit }' ~/.bash_aliases)
+	     insertLine=$(awk '/dlt.green-msg=/{ print NR; exit }' ~/.bash_aliases)
+	     if [ -z "$insertLine" ]; then
+	         if [ ! -z "$headerLine" ]; then
+	           insertLine=$(($headerLine))
+	         sed -i "$insertLine a alias dlt.green-msg=\"""$VAR_NOTIFY_ENDPOINT_URL"""\" ~/.bash_aliases
+	         echo "$gn""Alias set!""$xx"
+	       else
+	         echo "$rd""Error setting Alias!""$xx"
+	       fi
+	     else
+	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
+	       echo "$gn""Alias set!""$xx"
+	     fi	     
+
+		 echo ""
+		 echo "$rd""Attention! Please reconnect so that the alias works!""$xx"
+	   fi
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   MainMenu ;;
+	7) SubMenuLicense ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
 	   if [ $? -eq 0 ]; then Dashboard; else
@@ -1061,6 +1110,10 @@ SubMenuLicense() {
 	echo "║                      GNU General Public License v3.0                        ║"
 	echo "║                                                                             ║"
 	echo "║    https://github.com/dlt-green/node-installer-docker/blob/main/license     ║"
+	echo "║                                                                             ║"
+	echo "║                                 MIT License                                 ║"
+	echo "║                                                                             ║"
+	echo "║        https://github.com/notify-run/notify-run-rs/blob/main/LICENSE        ║"	
 	echo "║                                                                             ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
