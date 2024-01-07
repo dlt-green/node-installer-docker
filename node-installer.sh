@@ -265,7 +265,7 @@ PromptMessage() {
 	STTY=`stty -g`
 	printf "$2"
 	echo ""
-	stty intr '' -icanon min 0 time $WAIT ignbrk -brkint -ixon isig;read -p '> ' W
+	stty intr '^C' -icanon min 0 time $WAIT ignbrk -brkint -ixon isig;read -p '> ' W
 	stty $STTY
 
 	if [ "$W" = 'P' ] || [ "$W" = 'p' ]; then
