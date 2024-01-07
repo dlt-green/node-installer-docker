@@ -347,17 +347,16 @@ CheckCertificate() {
 		echo "║""$ca""$VAR_DOMAIN""$xx""║"
 		echo "║                                                                             ║"
 		echo "║                            1. Use global Certificate                        ║"
-		echo "║                            X. Generate new Let's Encrypt Certificate        ║"
+		echo "║                            X. Use Let's Encrypt Certificate (recommend)     ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
-		echo "$rd""Attention! For one Node on your Server (Master-Node, e.g. HORNET)"
-		echo "you must use (X) for getting a Let's Encrypt Certificate,"
-		echo "for all additional installed Nodes use (1) global Certificate,"
-		echo "then the Node will use the Certificate from the Master-Node""$xx"
+		echo "$gn""You can receive a free Let's Encrypt Certificate for this Node [X]"
+		echo "All other Nodes on this Server will automatically use this Certificate""$xx"
+		echo "$rd""Alternatively, you can also use your own Certificate [1]""$xx"
 		echo ""
 		echo "select menu item: "
-		echo "$fl"; PromptMessage 20 "[Enter] / wait [20s] for [X]... [P] to pause / [C] to cancel"
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"
 		
 		case $W in
 		1) VAR_CERT=1
@@ -614,11 +613,11 @@ SetCertificateGlobal() {
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                            1. Use Certificate only for this Node            ║"
-	echo "║                            X. Update Certificate for all Nodes (default)    ║"
+	echo "║                            X. Update Certificate for all Nodes (recommend)  ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	echo "$rd""Attention! If you (1) update the Certificate for all Nodes,"
+	echo "$gn""If you [X] update the Certificate for all Nodes (recommend),"
 	echo "every Node on your Server will use this Certificate after restarting it""$xx"
 	echo ""
 	echo "select menu item: "
@@ -626,7 +625,7 @@ SetCertificateGlobal() {
 	case $W in
 	*)
 	   echo "$ca"'Update Certificate for all Nodes...'"$xx"
-	   sleep 10
+	   sleep 15
 	   mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
 	   cd "/var/lib/$VAR_DIR/data/letsencrypt" || exit
 	   cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$VAR_HOST"'") | .certificate' | base64 -d > "$VAR_HOST.crt"
@@ -2201,7 +2200,7 @@ IotaHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		CheckCertificate
+		if [ "$VAR_IOTA_HORNET_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
@@ -2572,7 +2571,8 @@ IotaWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		CheckCertificate
+		if [ "$VAR_IOTA_WASP_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
+		
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
@@ -2947,7 +2947,7 @@ ShimmerHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		CheckCertificate
+		if [ "$VAR_SHIMMER_HORNET_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
@@ -3318,7 +3318,8 @@ ShimmerWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		CheckCertificate
+		if [ "$VAR_SHIMMER_WASP_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
+		
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
@@ -3667,13 +3668,14 @@ ShimmerChronicle() {
 		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_DEFAULT; fi
 		echo "$gn""Set grafana password: $VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx"
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-		CheckCertificate
 
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                              Write Parameters                               ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
+
+		if [ "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
