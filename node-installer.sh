@@ -734,6 +734,8 @@ Dashboard() {
 	if [ "$opt_mode" = 0 ]; then
 	  echo "$ca""unattended: System Maintenance...""$xx"
 	  sleep 3
+	  VAR_STATUS='System Maintenance'
+	  echo $(bash -ic "dlt.green-msg \"${VAR_DOMAIN}: ${VAR_STATUS}\"")
 	  SystemMaintenance
 	fi
 
@@ -763,6 +765,8 @@ Dashboard() {
 
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
+	  VAR_STATUS='Start all Nodes'
+	  echo $(bash -ic "dlt.green-msg \"${VAR_DOMAIN}: ${VAR_STATUS}\"")
 	  sleep 3
 	  n='s'
 	fi
@@ -936,6 +940,7 @@ MainMenu() {
 	   echo "Set Alias 'dlt.green-msg':"
 	   echo "$xx"
 
+	   VAR_NOTIFY_URL='https\:\/\/notify.run'
 	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel)
 	   
 	   echo ""
@@ -945,13 +950,12 @@ MainMenu() {
 	   echo "Endpoint:    " $(echo $VAR_NOTIFY | jq -r '.endpoint')
 
 	   VAR_NOTIFY_ENDPOINT=$(echo $VAR_NOTIFY | jq -r '.endpoint')
-	   VAR_NOTIFY_ENDPOINT_URL='curl '$(echo $VAR_NOTIFY | jq -r '.endpoint')' -d'
+	   VAR_NOTIFY_ENDPOINT_URL='curl '$VAR_NOTIFY_ENDPOINT' -d'
+	   VAR_NOTIFY_ID=$(echo $VAR_NOTIFY | jq -r '.channelId')
 	   
 	   echo ""
 	   qrencode -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
 	   echo ""
-	   
-
 
 	   if [ -f ~/.bash_aliases ]; then
 	     headerLine=$(awk '/# DLT.GREEN Node-Installer-Docker/{ print NR; exit }' ~/.bash_aliases)
@@ -959,14 +963,14 @@ MainMenu() {
 	     if [ -z "$insertLine" ]; then
 	         if [ ! -z "$headerLine" ]; then
 	           insertLine=$(($headerLine))
-	         sed -i "$insertLine a alias dlt.green-msg=""$VAR_NOTIFY_ENDPOINT_URL""" ~/.bash_aliases
-	         echo "$gn""Alias set 1!""$xx"
+	         sed -i "$insertLine a alias dlt.green-msg=\"""$VAR_NOTIFY_ENDPOINT_URL"""\" ~/.bash_aliases
+	         echo "$gn""Alias set!""$xx"
 	       else
 	         echo "$rd""Error setting Alias!""$xx"
 	       fi
 	     else
-	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg=''${VAR_NOTIFY_ENDPOINT_URL}''/g' ~/.bash_aliases
-	       echo "$gn""Alias set 2!""$xx"
+	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
+	       echo "$gn""Alias set!""$xx"
 	     fi	     
 
 		 echo ""
