@@ -1849,6 +1849,7 @@ SystemMaintenance() {
 	      if [ -f docker-compose.yml ]; then
 	        if [ "$($NODE 2>&1 | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
 	        if [ "$($NODE 2>&1 | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
+	        docker compose pull
 	        /prepare_docker.sh >/dev/null 2>&1
 	        docker-compose up --no-start
 	      fi
