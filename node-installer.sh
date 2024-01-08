@@ -42,6 +42,8 @@ VAR_CRON_JOB_1='@reboot sleep 30; cd /home && bash -ic "dlt.green -m s"'
 VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker: System Maintenance'
 VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0 -t 0 -r 1"'
 
+NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
+
 lg='\033[1m'
 or='\e[1;33m'
 ca='\e[1;96m'
@@ -287,6 +289,16 @@ PromptMessage() {
 	echo "Continue..."
 	sleep 3
 	echo "$xx"
+}
+
+NotifyMessage() {
+	NotifyAlias=$(cat ~/.bash_aliases | grep "alias dlt.green-msg" | cut -d '=' -f 2 | cut -d '"' -f 2 2>/dev/null)
+	NotifyDomain=$(echo "$1" | tr -d " ")
+	if ! [ "$NotifyAlias" ]; then echo "$or""Send notification not enabled...""$xx"; else
+		NotifyResult=$($NotifyAlias """$NotifyDomain: $2""" 2>/dev/null)
+		if [ "$NotifyResult" = 'ok' ]; then echo "$gn""Send notification successfully...""$xx"; else echo "$rd""Send notification failed...""$xx"; fi
+	fi
+	sleep 3
 }
 
 FormatToBytes() {
@@ -731,9 +743,9 @@ Dashboard() {
 
 	if [ "$opt_mode" = 0 ]; then
 	  echo "$ca""unattended: System Maintenance...""$xx"
-	  sleep 3
 	  VAR_STATUS='System Maintenance'
-#	  bash -ic "dlt.green-msg \"$VAR_DOMAIN: $VAR_STATUS\"" 2>/dev/null
+	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
+	  sleep 3
 	  SystemMaintenance
 	fi
 
@@ -764,7 +776,7 @@ Dashboard() {
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
 	  VAR_STATUS='Start all Nodes'
-#	  bash -ic "dlt.green-msg \"$VAR_DOMAIN: $VAR_STATUS\"" 2>/dev/null
+	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='s'
 	fi
@@ -778,12 +790,21 @@ Dashboard() {
 	   echo "$ca"
 	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
-	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker compose up -d; fi
-	   sleep 5
-	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then cd /var/lib/shimmer-plugins/inx-chronicle || Dashboard; docker compose up -d; fi
+
+	   for NODE in $NODES; do
+	     if [ -f "/var/lib/$NODE/.env" ]; then
+	       if [ -d "/var/lib/$NODE" ]; then
+	         cd "/var/lib/$NODE" || exit
+	         if [ -f docker-compose.yml ]; then
+	           if [ "$($NODE 2>&1 | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
+	           if [ "$($NODE 2>&1 | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
+	           docker compose pull >/dev/null 2>&1
+	           ./prepare_docker.sh >/dev/null 2>&1
+	           docker compose up -d
+	         fi
+	       fi
+	     fi
+	   done
 	   RenameContainer
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   
@@ -933,50 +954,7 @@ MainMenu() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
 	5) SubMenuCronJobs ;;
-	6) clear
-	   echo "$ca"
-	   echo "Set Alias 'dlt.green-msg':"
-	   echo "$xx"
-
-	   VAR_NOTIFY_URL='https\:\/\/notify.run'
-	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel)
-	   
-	   echo ""
-	   
-	   echo "ChannelId:   " $(echo $VAR_NOTIFY | jq -r '.channelId')
-	   echo "ChannelPage: " $(echo $VAR_NOTIFY | jq -r '.channel_page')
-	   echo "Endpoint:    " $(echo $VAR_NOTIFY | jq -r '.endpoint')
-
-	   VAR_NOTIFY_ENDPOINT=$(echo $VAR_NOTIFY | jq -r '.endpoint')
-	   VAR_NOTIFY_ENDPOINT_URL='curl '$VAR_NOTIFY_ENDPOINT' -d'
-	   VAR_NOTIFY_ID=$(echo $VAR_NOTIFY | jq -r '.channelId')
-	   
-	   echo ""
-	   qrencode -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
-	   echo ""
-
-	   if [ -f ~/.bash_aliases ]; then
-	     headerLine=$(awk '/# DLT.GREEN Node-Installer-Docker/{ print NR; exit }' ~/.bash_aliases)
-	     insertLine=$(awk '/dlt.green-msg=/{ print NR; exit }' ~/.bash_aliases)
-	     if [ -z "$insertLine" ]; then
-	         if [ ! -z "$headerLine" ]; then
-	           insertLine=$(($headerLine))
-	         sed -i "$insertLine a alias dlt.green-msg=\"""$VAR_NOTIFY_ENDPOINT_URL"""\" ~/.bash_aliases
-	         echo "$gn""Alias set!""$xx"
-	       else
-	         echo "$rd""Error setting Alias!""$xx"
-	       fi
-	     else
-	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
-	       echo "$gn""Alias set!""$xx"
-	     fi	     
-
-		 echo ""
-		 echo "$rd""Attention! Please reconnect so that the alias works!""$xx"
-	   fi
-
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-	   MainMenu ;;
+	6) SubMenuNotifyMe ;;
 	7) SubMenuLicense ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
@@ -1095,7 +1073,87 @@ SubMenuCronJobs() {
 	   crontab -e
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuCronJobs ;;
-	*) Dashboard ;;
+	*) MainMenu ;;
+	esac
+}
+
+SubMenuNotifyMe() {
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
+	echo "║""$ca""$VAR_DOMAIN""$xx""║"
+	echo "║                                                                             ║"
+	echo "║                              1. Generate new Message Channel                ║"
+	echo "║                              2. Show existing Message Channel               ║"
+	echo "║                              X. Management Dashboard                        ║"
+	echo "║                                                                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	echo "select menu item: "
+
+	read -r -p '> ' n
+	case $n in
+	1) clear
+	   echo "$ca"
+	   echo "Generate new Message Channel..."
+	   echo "$xx"
+
+	   VAR_NOTIFY_URL='https\:\/\/notify.run'
+	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null)
+
+	   echo "ChannelId:   " $(echo $VAR_NOTIFY | jq -r '.channelId')
+	   echo "ChannelPage: " $(echo $VAR_NOTIFY | jq -r '.channel_page')
+	   echo "Endpoint:    " $(echo $VAR_NOTIFY | jq -r '.endpoint')
+
+	   VAR_NOTIFY_ENDPOINT=$(echo $VAR_NOTIFY | jq -r '.endpoint')
+	   VAR_NOTIFY_ENDPOINT_URL='curl '$VAR_NOTIFY_ENDPOINT' -d'
+	   VAR_NOTIFY_ID=$(echo $VAR_NOTIFY | jq -r '.channelId')
+	   
+	   echo ""
+	   qrencode -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
+	   echo ""
+
+	   if [ -f ~/.bash_aliases ]; then
+	     headerLine=$(awk '/# DLT.GREEN Node-Installer-Docker/{ print NR; exit }' ~/.bash_aliases)
+	     insertLine=$(awk '/dlt.green-msg=/{ print NR; exit }' ~/.bash_aliases)
+	     if [ -z "$insertLine" ]; then
+	         if [ ! -z "$headerLine" ]; then
+	           insertLine=$(($headerLine))
+	         sed -i "$insertLine a alias dlt.green-msg=\"""$VAR_NOTIFY_ENDPOINT_URL"""\" ~/.bash_aliases
+	         echo "$gn""New Message Channel generated...""$xx"
+	       else
+	         echo "$rd""Error generating new Message Channel!""$xx"
+	       fi
+	     else
+	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
+	       echo "$gn""New Message Channel generated...""$xx"
+	     fi	     
+	   fi
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuNotifyMe ;;
+	2) clear
+	   echo "$ca"
+	   echo "Show existing Message Channel..."
+	   echo "$xx"
+	
+	   VAR_NOTIFY_URL='https://notify.run'
+	   VAR_NOTIFY_ENDPOINT=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2 | cut -d ' ' -f 2)
+	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
+
+	   echo "ChannelId:   " "$VAR_NOTIFY_ID"
+	   echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
+	   echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
+
+	   echo ""
+	   qrencode -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
+	   echo ""
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuNotifyMe ;;
+	*) MainMenu ;;
 	esac
 }
 
@@ -1859,8 +1917,6 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
-
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
@@ -1892,7 +1948,6 @@ SystemMaintenance() {
 	echo "║                      Check necessary Docker Containers                      ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-
 	for NODE in $NODES; do
 	  if [ -f "/var/lib/$NODE/.env" ]; then
 	    if [ -d "/var/lib/$NODE" ]; then
@@ -1907,6 +1962,7 @@ SystemMaintenance() {
 	    fi
 	  fi
 	done
+
 
 	RenameContainer
 
@@ -1981,6 +2037,12 @@ SystemMaintenance() {
 
 	if [ "$opt_mode" ]; then if ! [ "$opt_reboot" ]; then "$opt_reboot"=0; fi; fi
 	if [ "$opt_reboot" = 1 ]; then n=1; else if [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
+
+	if [ "$opt_mode" = 0 ]; then if [ "$opt_reboot" = 1 ]; then
+	  VAR_STATUS='System Reboot'
+	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
+	  sleep 3
+	fi; fi
 
 	case $n in
 	1) 	echo 'restarting...'; sleep 3
