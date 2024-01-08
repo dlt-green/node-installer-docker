@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VRSN="v.2.7.6"
-BUILD="20240107_121853"
+BUILD="20240108_060714"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -102,19 +102,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='d98f96d63d4261bb7894d67519aa8255bd185f27d99be5a78bde39652891e2bd'
+IotaHornetHash='2a0ec3bdad8970394945fb39b3f830a494b2efd498c9d11118cc0ca434629a04'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='c966e67e98cdc06cce8af2bf0d404dabdbd1e1aaae6798a36df25995ded3e941'
+IotaWaspHash='9f7b1fdd453d3480a117c141cc734bc1624afc6ced17c3b53a534701c3b4c375'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='6960027b1f3cdb45776d43aee78cd4260f2f53ded88b2425af2543b057782a93'
+ShimmerHornetHash='01f114a8f7166a432b1c6d1857f133405478d73c0bb0784bab65d4f0699bb1bc'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='271fa0adeca8a2e197f9eb826228df079e587f2f0f279dde3d2e6a0733bfc4ff'
+ShimmerWaspHash='f5a56d9702c2267a63bae6f194fde9ea10e2988dcefb12626fb1e6cb0e348745'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='887ec2f5e0e370ef528bc6da3ae1255c6f6078f366712f5bbc9d2679fc475fae'
+ShimmerChronicleHash='880879595aff9c8d5a833231edc504df9189ee040deab10fd2f30fe6bfe0b460'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1900,6 +1900,7 @@ SystemMaintenance() {
 	      if [ -f docker-compose.yml ]; then
 	        if [ "$($NODE 2>&1 | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
 	        if [ "$($NODE 2>&1 | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
+	        docker compose pull
 	        /prepare_docker.sh >/dev/null 2>&1
 	        docker-compose up --no-start
 	      fi
