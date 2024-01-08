@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VRSN="v.2.7.6"
-BUILD="20240108_060714"
+BUILD="20240108_060927"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -102,19 +102,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='2a0ec3bdad8970394945fb39b3f830a494b2efd498c9d11118cc0ca434629a04'
+IotaHornetHash='ea18bc22e07c975661b12553ac647678a1fb2878bebf92d1b852dc08e116f522'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='9f7b1fdd453d3480a117c141cc734bc1624afc6ced17c3b53a534701c3b4c375'
+IotaWaspHash='040295a20711d675a9fba4fd2ea3a9b8c5fd9837fa4cc171d3068197d66c1c5f'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='01f114a8f7166a432b1c6d1857f133405478d73c0bb0784bab65d4f0699bb1bc'
+ShimmerHornetHash='89a35dc26411203ff7cdd3b5b8725241ee545e7b4ca6591df392ad2193193840'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='f5a56d9702c2267a63bae6f194fde9ea10e2988dcefb12626fb1e6cb0e348745'
+ShimmerWaspHash='1e7bdf827a79dea6837d048c71643286e89059f5d4ce5865ecb9ad0879e47fc4'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='880879595aff9c8d5a833231edc504df9189ee040deab10fd2f30fe6bfe0b460'
+ShimmerChronicleHash='8a0a4b2d84016f083f9edf633124e86fe06526c2c53bc61d649f6f82e9fe3109'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1902,7 +1902,7 @@ SystemMaintenance() {
 	        if [ "$($NODE 2>&1 | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
 	        docker compose pull
 	        /prepare_docker.sh >/dev/null 2>&1
-	        docker-compose up --no-start
+	        docker compose up --no-start
 	      fi
 	    fi
 	  fi
