@@ -800,8 +800,8 @@ Dashboard() {
 	       if [ -d "/var/lib/$NODE" ]; then
 	         cd "/var/lib/$NODE" || exit
 	         if [ -f docker-compose.yml ]; then
-	           if [ "$($NODE | grep 'iota') >/dev/null 2>&1" ]; then docker network create iota >/dev/null 2>&1; fi
-	           if [ "$($NODE | grep 'shimmer') >/dev/null 2>&1" ]; then docker network create shimmer >/dev/null 2>&1; fi
+	           if [ "$NODE | grep 'iota'" ]; then docker network create iota >/dev/null 2>&1; fi
+	           if [ "$NODE | grep 'shimmer'" ]; then docker network create shimmer >/dev/null 2>&1; fi
 	           docker compose up -d
 	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
 			   if ! [ VAR_STATUS ]; then $VAR_STATUS = 'down'; fi
@@ -1936,8 +1936,8 @@ SystemMaintenance() {
 	    if [ -d "/var/lib/$NODE" ]; then
 	      cd "/var/lib/$NODE" || exit
 	      if [ -f docker-compose.yml ]; then
-	        if [ "$($NODE 2>&1 | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
-	        if [ "$($NODE 2>&1 | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
+	        if [ "$NODE | grep 'iota'" ]; then docker network create iota >/dev/null 2>&1; fi
+	        if [ "$NODE | grep 'shimmer'" ]; then docker network create shimmer >/dev/null 2>&1; fi
 	        docker compose up -d
 	      fi
 	    fi
