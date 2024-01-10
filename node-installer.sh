@@ -802,17 +802,14 @@ Dashboard() {
 	         if [ -f docker-compose.yml ]; then
 	           if [ "$($NODE | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
 	           if [ "$($NODE | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
-	           docker compose pull
-	           echo " "
-	           ./prepare_docker.sh
-	           echo " "
 	           docker compose up -d
 	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
-			   if ! [ VAR_STATUS ]; then $VAR_STATUS = 'down'
+			   if ! [ VAR_STATUS ]; then $VAR_STATUS = 'down'; fi
 	           NotifyMessage "$NODE" "$VAR_STATUS"
 	         fi
 	       fi
 	     fi
+		 
 	   done
 	   RenameContainer
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -1931,6 +1928,27 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                      Check necessary Docker Containers                      ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	for NODE in $NODES; do
+	  if [ -f "/var/lib/$NODE/.env" ]; then
+	    if [ -d "/var/lib/$NODE" ]; then
+	      cd "/var/lib/$NODE" || exit
+	      if [ -f docker-compose.yml ]; then
+	        if [ "$($NODE 2>&1 | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
+	        if [ "$($NODE 2>&1 | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
+	        docker compose up -d
+	      fi
+	    fi
+	  fi
+	done
+
+	RenameContainer
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                       Delete Docker Containers/Images                       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
@@ -1948,32 +1966,6 @@ SystemMaintenance() {
 
 	docker stop $(docker ps -a -q)
 	docker ps -a -q >/dev/null 2>&1
-
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                      Check necessary Docker Containers                      ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-	for NODE in $NODES; do
-	  if [ -f "/var/lib/$NODE/.env" ]; then
-	    if [ -d "/var/lib/$NODE" ]; then
-	      cd "/var/lib/$NODE" || exit
-	      if [ -f docker-compose.yml ]; then
-	        if [ "$($NODE 2>&1 | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
-	        if [ "$($NODE 2>&1 | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
-	        docker compose pull >/dev/null 2>&1
-	        ./prepare_docker.sh >/dev/null 2>&1
-	        docker compose up --no-start
-	      fi
-	    fi
-	  fi
-	done
-
-
-	RenameContainer
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
