@@ -42,6 +42,8 @@ VAR_CRON_JOB_1='@reboot sleep 30; cd /home && bash -ic "dlt.green -m s"'
 VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker: System Maintenance'
 VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0 -t 0 -r 1"'
 
+NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
+
 lg='\033[1m'
 or='\e[1;33m'
 ca='\e[1;96m'
@@ -788,12 +790,21 @@ Dashboard() {
 	   echo "$ca"
 	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
-	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker compose up -d; fi
-	   sleep 5
-	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then cd /var/lib/shimmer-plugins/inx-chronicle || Dashboard; docker compose up -d; fi
+
+	   for NODE in $NODES; do
+	     if [ -f "/var/lib/$NODE/.env" ]; then
+	       if [ -d "/var/lib/$NODE" ]; then
+	         cd "/var/lib/$NODE" || exit
+	         if [ -f docker-compose.yml ]; then
+	           if [ "$($NODE 2>&1 | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
+	           if [ "$($NODE 2>&1 | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
+	           docker compose pull >/dev/null 2>&1
+	           ./prepare_docker.sh >/dev/null 2>&1
+	           docker compose up -d
+	         fi
+	       fi
+	     fi
+	   done
 	   RenameContainer
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   
@@ -1906,8 +1917,6 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
-
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
@@ -1939,7 +1948,6 @@ SystemMaintenance() {
 	echo "║                      Check necessary Docker Containers                      ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-
 	for NODE in $NODES; do
 	  if [ -f "/var/lib/$NODE/.env" ]; then
 	    if [ -d "/var/lib/$NODE" ]; then
@@ -1954,6 +1962,7 @@ SystemMaintenance() {
 	    fi
 	  fi
 	done
+
 
 	RenameContainer
 
