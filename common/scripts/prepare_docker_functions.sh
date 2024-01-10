@@ -99,6 +99,7 @@ prepare_data_dir () {
   local subDirs=${@:2}
 
   echo "Preparing data dir and subdirs..."
+  mkdir -p "$dataDir"
   for subDir in $subDirs; do
     mkdir -p "$dataDir/$subDir"
     echo "  $dataDir/$subDir"

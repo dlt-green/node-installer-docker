@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.7.6"
-BUILD="20240108_061957"
+VRSN="v.2.7.7"
+BUILD="20240110_030353"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -42,6 +42,8 @@ VAR_CRON_JOB_1='@reboot sleep 30; cd /home && bash -ic "dlt.green -m s"'
 VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker: System Maintenance'
 VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0 -t 0 -r 1"'
 
+NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
+
 lg='\033[1m'
 or='\e[1;33m'
 ca='\e[1;96m'
@@ -54,7 +56,6 @@ xx='\033[0m'
 
 opt_time=10
 opt_check=1
-opt_reboot=0
 
 while getopts "m:n:t:r:c:" option
 do
@@ -99,23 +100,23 @@ done
 
 echo "$xx"
 
-sudo apt-get install nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='66ad3a325d1fb069e5065cde5d763242cafedcbf15c97aeb90cbe56646b8efbb'
+IotaHornetHash='d85cc816ddfc3e501daf54c077ba2ca939a54b2a3cea57d0434d4851c29f220b'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='ca3c64465658b891951a902052d01070b2be38bce30f73225bdd8065a90ba451'
+IotaWaspHash='892d71cc5dc87866566008e603129e0aad5da70730a1c418ff0dbb4dd3b579d5'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='78f7f94f28fc251b998b0cd90752f340e174ca5f3db73845b085f0812ed3987b'
+ShimmerHornetHash='72f906d3847bc09c7e05c0593e54b42a9d4aa5b6fb0d03e2ca84e2637c55ae4f'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='13c1b0dd467486c01e40b98c178369524d1b6d2b04647cca6004d3bfbfda3772'
+ShimmerWaspHash='6dd26686681ce5047fbe4cbae5a9c1c1eb6002567425ac877ca5ff16c652414c'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='83d6b9270ecca839626a13b3ea5cdcffdb223e0b44095e6468e5d75ebe55cf6a'
+ShimmerChronicleHash='613afec3e7e7e764922091524f9a4e7ddab56d5a9c03958f36973b4dfa527e12'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -265,7 +266,7 @@ PromptMessage() {
 	STTY=`stty -g`
 	printf "$2"
 	echo ""
-	stty intr '' -icanon min 0 time $WAIT ignbrk -brkint -ixon isig;read -p '> ' W
+	stty intr '^C' -icanon min 0 time $WAIT ignbrk -brkint -ixon isig;read -p '> ' W
 	stty $STTY
 
 	if [ "$W" = 'P' ] || [ "$W" = 'p' ]; then
@@ -288,6 +289,16 @@ PromptMessage() {
 	echo "Continue..."
 	sleep 3
 	echo "$xx"
+}
+
+NotifyMessage() {
+	NotifyAlias=$(cat ~/.bash_aliases | grep "alias dlt.green-msg" | cut -d '=' -f 2 | cut -d '"' -f 2 2>/dev/null)
+	NotifyDomain=$(echo "$1" | tr -d " ")
+	if ! [ "$NotifyAlias" ]; then echo "$or""Send notification not enabled..."; else
+		NotifyResult=$($NotifyAlias """$NotifyDomain: $2""" 2>/dev/null)
+		if [ "$NotifyResult" = 'ok' ]; then echo "$gn""Send notification successfully...""$xx"; else echo "$rd""Send notification failed...""$xx"; fi
+	fi
+	sleep 3
 }
 
 FormatToBytes() {
@@ -347,17 +358,16 @@ CheckCertificate() {
 		echo "║""$ca""$VAR_DOMAIN""$xx""║"
 		echo "║                                                                             ║"
 		echo "║                            1. Use global Certificate                        ║"
-		echo "║                            X. Generate new Let's Encrypt Certificate        ║"
+		echo "║                            X. Use Let's Encrypt Certificate (recommend)     ║"
 		echo "║                                                                             ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
-		echo "$rd""Attention! For one Node on your Server (Master-Node, e.g. HORNET)"
-		echo "you must use (X) for getting a Let's Encrypt Certificate,"
-		echo "for all additional installed Nodes use (1) global Certificate,"
-		echo "then the Node will use the Certificate from the Master-Node""$xx"
+		echo "$gn""You can receive a free Let's Encrypt Certificate for this Node [X]"
+		echo "All other Nodes on this Server will automatically use this Certificate""$xx"
+		echo "$rd""Alternatively, you can also use your own Certificate [1]""$xx"
 		echo ""
 		echo "select menu item: "
-		echo "$fl"; PromptMessage 20 "[Enter] / wait [20s] for [X]... [P] to pause / [C] to cancel"
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"
 		
 		case $W in
 		1) VAR_CERT=1
@@ -614,11 +624,11 @@ SetCertificateGlobal() {
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                            1. Use Certificate only for this Node            ║"
-	echo "║                            X. Update Certificate for all Nodes (default)    ║"
+	echo "║                            X. Update Certificate for all Nodes (recommend)  ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	echo "$rd""Attention! If you (1) update the Certificate for all Nodes,"
+	echo "$gn""If you [X] update the Certificate for all Nodes (recommend),"
 	echo "every Node on your Server will use this Certificate after restarting it""$xx"
 	echo ""
 	echo "select menu item: "
@@ -626,7 +636,7 @@ SetCertificateGlobal() {
 	case $W in
 	*)
 	   echo "$ca"'Update Certificate for all Nodes...'"$xx"
-	   sleep 10
+	   sleep 15
 	   mkdir -p "/etc/letsencrypt/live/$VAR_HOST" || exit
 	   cd "/var/lib/$VAR_DIR/data/letsencrypt" || exit
 	   cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$VAR_HOST"'") | .certificate' | base64 -d > "$VAR_HOST.crt"
@@ -733,6 +743,8 @@ Dashboard() {
 
 	if [ "$opt_mode" = 0 ]; then
 	  echo "$ca""unattended: System Maintenance...""$xx"
+	  VAR_STATUS='System Maintenance'
+	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  SystemMaintenance
 	fi
@@ -763,6 +775,8 @@ Dashboard() {
 
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
+	  VAR_STATUS='Start all Nodes'
+	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='s'
 	fi
@@ -776,12 +790,21 @@ Dashboard() {
 	   echo "$ca"
 	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
-	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker compose up -d; fi
-	   sleep 5
-	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then cd /var/lib/shimmer-plugins/inx-chronicle || Dashboard; docker compose up -d; fi
+
+	   for NODE in $NODES; do
+	     if [ -f "/var/lib/$NODE/.env" ]; then
+	       if [ -d "/var/lib/$NODE" ]; then
+	         cd "/var/lib/$NODE" || exit
+	         if [ -f docker-compose.yml ]; then
+	           if [ "$($NODE 2>&1 | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
+	           if [ "$($NODE 2>&1 | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
+	           docker compose pull >/dev/null 2>&1
+	           ./prepare_docker.sh >/dev/null 2>&1
+	           docker compose up -d
+	         fi
+	       fi
+	     fi
+	   done
 	   RenameContainer
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   
@@ -867,7 +890,8 @@ MainMenu() {
 	echo "║                              3. Docker Status                               ║"
 	echo "║                              4. Firewall Status/Ports                       ║"
 	echo "║                              5. Cron-Jobs                                   ║"
-	echo "║                              6. License Information                         ║"
+	echo "║                              6. Notify-Me                                   ║"
+	echo "║                              7. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                              Q. Quit                                        ║"
 	echo "║                                                                             ║"
@@ -930,7 +954,8 @@ MainMenu() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
 	5) SubMenuCronJobs ;;
-	6) SubMenuLicense ;;
+	6) SubMenuNotifyMe ;;
+	7) SubMenuLicense ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
 	   if [ $? -eq 0 ]; then Dashboard; else
@@ -1048,7 +1073,87 @@ SubMenuCronJobs() {
 	   crontab -e
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuCronJobs ;;
-	*) Dashboard ;;
+	*) MainMenu ;;
+	esac
+}
+
+SubMenuNotifyMe() {
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
+	echo "║""$ca""$VAR_DOMAIN""$xx""║"
+	echo "║                                                                             ║"
+	echo "║                              1. Generate new Message Channel                ║"
+	echo "║                              2. Show existing Message Channel               ║"
+	echo "║                              X. Management Dashboard                        ║"
+	echo "║                                                                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	echo "select menu item: "
+
+	read -r -p '> ' n
+	case $n in
+	1) clear
+	   echo "$ca"
+	   echo "Generate new Message Channel..."
+	   echo "$xx"
+
+	   VAR_NOTIFY_URL='https\:\/\/notify.run'
+	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null)
+
+	   echo "ChannelId:   " $(echo $VAR_NOTIFY | jq -r '.channelId')
+	   echo "ChannelPage: " $(echo $VAR_NOTIFY | jq -r '.channel_page')
+	   echo "Endpoint:    " $(echo $VAR_NOTIFY | jq -r '.endpoint')
+
+	   VAR_NOTIFY_ENDPOINT=$(echo $VAR_NOTIFY | jq -r '.endpoint')
+	   VAR_NOTIFY_ENDPOINT_URL='curl '$VAR_NOTIFY_ENDPOINT' -d'
+	   VAR_NOTIFY_ID=$(echo $VAR_NOTIFY | jq -r '.channelId')
+	   
+	   echo ""
+	   qrencode -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
+	   echo ""
+
+	   if [ -f ~/.bash_aliases ]; then
+	     headerLine=$(awk '/# DLT.GREEN Node-Installer-Docker/{ print NR; exit }' ~/.bash_aliases)
+	     insertLine=$(awk '/dlt.green-msg=/{ print NR; exit }' ~/.bash_aliases)
+	     if [ -z "$insertLine" ]; then
+	         if [ ! -z "$headerLine" ]; then
+	           insertLine=$(($headerLine))
+	         sed -i "$insertLine a alias dlt.green-msg=\"""$VAR_NOTIFY_ENDPOINT_URL"""\" ~/.bash_aliases
+	         echo "$gn""New Message Channel generated...""$xx"
+	       else
+	         echo "$rd""Error generating new Message Channel!""$xx"
+	       fi
+	     else
+	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
+	       echo "$gn""New Message Channel generated...""$xx"
+	     fi	     
+	   fi
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuNotifyMe ;;
+	2) clear
+	   echo "$ca"
+	   echo "Show existing Message Channel..."
+	   echo "$xx"
+	
+	   VAR_NOTIFY_URL='https://notify.run'
+	   VAR_NOTIFY_ENDPOINT=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2 | cut -d ' ' -f 2)
+	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
+
+	   echo "ChannelId:   " "$VAR_NOTIFY_ID"
+	   echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
+	   echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
+
+	   echo ""
+	   qrencode -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
+	   echo ""
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuNotifyMe ;;
+	*) MainMenu ;;
 	esac
 }
 
@@ -1062,6 +1167,10 @@ SubMenuLicense() {
 	echo "║                      GNU General Public License v3.0                        ║"
 	echo "║                                                                             ║"
 	echo "║    https://github.com/dlt-green/node-installer-docker/blob/main/license     ║"
+	echo "║                                                                             ║"
+	echo "║                                 MIT License                                 ║"
+	echo "║                                                                             ║"
+	echo "║        https://github.com/notify-run/notify-run-rs/blob/main/LICENSE        ║"	
 	echo "║                                                                             ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
@@ -1808,8 +1917,6 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
-
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
@@ -1841,7 +1948,6 @@ SystemMaintenance() {
 	echo "║                      Check necessary Docker Containers                      ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-
 	for NODE in $NODES; do
 	  if [ -f "/var/lib/$NODE/.env" ]; then
 	    if [ -d "/var/lib/$NODE" ]; then
@@ -1856,6 +1962,7 @@ SystemMaintenance() {
 	    fi
 	  fi
 	done
+
 
 	RenameContainer
 
@@ -1928,7 +2035,14 @@ SystemMaintenance() {
 	echo ""
 	echo "select menu item: "
 
+	if [ "$opt_mode" ]; then if ! [ "$opt_reboot" ]; then "$opt_reboot"=0; fi; fi
 	if [ "$opt_reboot" = 1 ]; then n=1; else if [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
+
+	if [ "$opt_mode" = 0 ]; then if [ "$opt_reboot" = 1 ]; then
+	  VAR_STATUS='System Reboot'
+	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
+	  sleep 3
+	fi; fi
 
 	case $n in
 	1) 	echo 'restarting...'; sleep 3
@@ -2203,7 +2317,7 @@ IotaHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		CheckCertificate
+		if [ "$VAR_IOTA_HORNET_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
@@ -2574,7 +2688,8 @@ IotaWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		CheckCertificate
+		if [ "$VAR_IOTA_WASP_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
+		
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
@@ -2949,7 +3064,7 @@ ShimmerHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		CheckCertificate
+		if [ "$VAR_SHIMMER_HORNET_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
@@ -3320,7 +3435,8 @@ ShimmerWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		CheckCertificate
+		if [ "$VAR_SHIMMER_WASP_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
+		
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
@@ -3669,13 +3785,14 @@ ShimmerChronicle() {
 		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_DEFAULT; fi
 		echo "$gn""Set grafana password: $VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx"
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-		CheckCertificate
 
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                              Write Parameters                               ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
+
+		if [ "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || exit; fi
 		if [ -f .env ]; then rm .env; fi
