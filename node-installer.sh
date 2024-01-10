@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.7.8"
-BUILD="20240110_030913"
+VRSN="v.2.7.9"
+BUILD="20240110_215510"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -37,10 +37,14 @@ VAR_SHIMMER_INX_POI_VERSION='1.0-rc'
 VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0-rc'
 
 VAR_CRON_TITLE_1='# DLT.GREEN Node-Installer-Docker: Start all Nodes'
-VAR_CRON_JOB_1='@reboot sleep 30; cd /home && bash -ic "dlt.green -m s"'
-	
+VAR_CRON_TIME_1_1='@reboot sleep '
+VAR_CRON_TIME_1_2='60; '
+VAR_CRON_JOB_1='cd /home && bash -ic "dlt.green -m s'
+VAR_CRON_END_1=' -t 0"'
+
 VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker: System Maintenance'
-VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0 -t 0 -r 1"'
+VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0'
+VAR_CRON_END_2=' -t 0 -r 1"'
 
 NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
 
@@ -104,19 +108,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='463acc20ac057dc9dd997418272837ead44ce377531b278f99f15d4e705de939'
+IotaHornetHash='4724e7f2e762a7216dfa675bf408cb102753bbb9758b507de93d7ce34b3129f4'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='ec4f0aced63bc47df1ca6d9535cd64186ce3d448d97715a97b8b100002a5f457'
+IotaWaspHash='a315f633eadd0bcc6b9ed13a4860244bb38e1c0c7479f197fb1c494ccdec5ef5'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='8a19857c93084724d742f66073dcbafa97d531dd22cdfa0dee7c44fdffdff16f'
+ShimmerHornetHash='47f14abbe92396fd05816d4c35354b1d1468d9e9742856fb7c8aa813665d29c4'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='2d8fed68bda4a7fec143fb5cf243645cfdea12f9b88a5b0b752826481dd544f2'
+ShimmerWaspHash='65412b1f76698548d0f6b5fc0b73844b401d140519ec56c2b36b6a84296c4893'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='6d32f12f081abba1a0cfbac862f6e4c7eece3020a214e52aa019d2931ecb9fa9'
+ShimmerChronicleHash='e1b1938f893feefda3a0bfdd1a65a607316213a96ac0a3d209428cfcead0853c'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -150,7 +154,7 @@ CheckShimmer() {
 }
 
 CheckAutostart() {
-	if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]
+	if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1" )" ]
 	then
 		clear
 		echo ""
@@ -189,10 +193,10 @@ CheckAutostart() {
 		     fi
 
 		     if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
-		        (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_JOB_1") | crontab - 
+		        (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1_1""$VAR_CRON_TIME_1_2""$VAR_CRON_JOB_1""$VAR_CRON_END_1") | crontab - 
 		     fi
 
-		     if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		     if [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
 		        echo "$gn""Autostart enabled""$xx"
 		     fi
 			 
@@ -707,7 +711,7 @@ Dashboard() {
 
 	VAR_NODE=0
 
-	if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn; else cja=$rd; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ];  then cja=$gn; else cja=$rd; fi
 	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ];  then cjb=$gn; else cjb=$rd; fi
 
 	PositionCenter "$VAR_DOMAIN"
@@ -801,6 +805,8 @@ Dashboard() {
 	           docker compose pull >/dev/null 2>&1
 	           ./prepare_docker.sh >/dev/null 2>&1
 	           docker compose up -d
+	           VAR_STATUS="$(docker inspect iota-hornet | jq -r '.[] .State .Health .Status')"
+	           NotifyMessage "$NODE" "$VAR_STATUS"
 	         fi
 	       fi
 	     fi
@@ -969,7 +975,7 @@ MainMenu() {
 
 SubMenuCronJobs() {
 
-	if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn"[✓] "; else cja=$rd"[X] "; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_TIME_1" | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn"[✓] "; else cja=$rd"[X] "; fi
 	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ];  then cjb=$gn"[✓] "; else cjb=$rd"[X] "; fi
 	
 	clear
@@ -1010,10 +1016,10 @@ SubMenuCronJobs() {
 		  fi
 
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
-		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_JOB_1") | crontab - 
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1_1""$VAR_CRON_TIME_1_2""$VAR_CRON_JOB_1""$VAR_CRON_END_1") | crontab - 
 		  fi
 
-		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
 		     echo "$gn""Autostart enabled""$xx"
 		  fi
 	   fi
@@ -1054,7 +1060,7 @@ SubMenuCronJobs() {
 		  fi
 
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
-		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_JOB_2") | crontab - 
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_JOB_2""$VAR_CRON_END_2") | crontab - 
 		  fi
 
 		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
@@ -1112,7 +1118,7 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY_ID=$(echo $VAR_NOTIFY | jq -r '.channelId')
 	   
 	   echo ""
-	   qrencode -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
+	   qrencode -m 2 -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
 	   echo ""
 
 	   if [ -f ~/.bash_aliases ]; then
@@ -1148,7 +1154,7 @@ SubMenuNotifyMe() {
 	   echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
 
 	   echo ""
-	   qrencode -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
+	   qrencode -m 2 -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
 	   echo ""
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
