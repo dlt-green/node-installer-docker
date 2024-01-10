@@ -37,9 +37,11 @@ VAR_SHIMMER_INX_POI_VERSION='1.0-rc'
 VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0-rc'
 
 VAR_CRON_TITLE_1='# DLT.GREEN Node-Installer-Docker: Start all Nodes'
-VAR_CRON_JOB_1='@reboot sleep 30; cd /home && bash -ic "dlt.green -m s"'
-	
-VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker: System Maintenance'
+VAR_CRON_TIME_1='@reboot sleep'
+VAR_CRON_JOB_1='cd /home && bash -ic "dlt.green -m s"'
+
+VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker:System Maintenance'
+VAR_CRON_TIME_2=''
 VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0 -t 0 -r 1"'
 
 NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
@@ -189,7 +191,7 @@ CheckAutostart() {
 		     fi
 
 		     if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
-		        (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_JOB_1") | crontab - 
+		        (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1" && echo "$VAR_CRON_JOB_1") | crontab - 
 		     fi
 
 		     if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
@@ -969,7 +971,7 @@ MainMenu() {
 
 SubMenuCronJobs() {
 
-	if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn"[✓] "; else cja=$rd"[X] "; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_TIME_1" | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn"[✓] "; else cja=$rd"[X] "; fi
 	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ];  then cjb=$gn"[✓] "; else cjb=$rd"[X] "; fi
 	
 	clear
