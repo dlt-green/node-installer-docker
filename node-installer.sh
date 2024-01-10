@@ -800,12 +800,15 @@ Dashboard() {
 	       if [ -d "/var/lib/$NODE" ]; then
 	         cd "/var/lib/$NODE" || exit
 	         if [ -f docker-compose.yml ]; then
-	           if [ "$($NODE 2>&1 | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
-	           if [ "$($NODE 2>&1 | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
-	           docker compose pull >/dev/null 2>&1
-	           ./prepare_docker.sh >/dev/null 2>&1
+	           if [ "$($NODE | grep 'iota')" ]; then docker network create iota >/dev/null 2>&1; fi
+	           if [ "$($NODE | grep 'shimmer')" ]; then docker network create shimmer >/dev/null 2>&1; fi
+	           docker compose pull
+	           echo " "
+	           ./prepare_docker.sh
+	           echo " "
 	           docker compose up -d
-	           VAR_STATUS="$(docker inspect iota-hornet | jq -r '.[] .State .Health .Status')"
+	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
+			   if ! [ VAR_STATUS ]; then $VAR_STATUS = 'down'
 	           NotifyMessage "$NODE" "$VAR_STATUS"
 	         fi
 	       fi
