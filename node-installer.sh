@@ -37,12 +37,14 @@ VAR_SHIMMER_INX_POI_VERSION='1.0-rc'
 VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0-rc'
 
 VAR_CRON_TITLE_1='# DLT.GREEN Node-Installer-Docker: Start all Nodes'
-VAR_CRON_TIME_1='@reboot sleep'
-VAR_CRON_JOB_1='cd /home && bash -ic "dlt.green -m s"'
+VAR_CRON_TIME_1_1='@reboot sleep '
+VAR_CRON_TIME_1_2='60; '
+VAR_CRON_JOB_1='cd /home && bash -ic "dlt.green -m s'
+VAR_CRON_END_1=' -t 0"'
 
-VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker:System Maintenance'
-VAR_CRON_TIME_2=''
-VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0 -t 0 -r 1"'
+VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker: System Maintenance'
+VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0'
+VAR_CRON_END_2=' -t 0 -r 1"'
 
 NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
 
@@ -152,7 +154,7 @@ CheckShimmer() {
 }
 
 CheckAutostart() {
-	if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]
+	if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1" )" ]
 	then
 		clear
 		echo ""
@@ -191,10 +193,10 @@ CheckAutostart() {
 		     fi
 
 		     if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
-		        (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1" && echo "$VAR_CRON_JOB_1") | crontab - 
+		        (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1_1""$VAR_CRON_TIME_1_2""$VAR_CRON_JOB_1""$VAR_CRON_END_1") | crontab - 
 		     fi
 
-		     if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		     if [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
 		        echo "$gn""Autostart enabled""$xx"
 		     fi
 			 
@@ -709,7 +711,7 @@ Dashboard() {
 
 	VAR_NODE=0
 
-	if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn; else cja=$rd; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ];  then cja=$gn; else cja=$rd; fi
 	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ];  then cjb=$gn; else cjb=$rd; fi
 
 	PositionCenter "$VAR_DOMAIN"
@@ -803,6 +805,8 @@ Dashboard() {
 	           docker compose pull >/dev/null 2>&1
 	           ./prepare_docker.sh >/dev/null 2>&1
 	           docker compose up -d
+	           VAR_STATUS="$(docker inspect iota-hornet | jq -r '.[] .State .Health .Status')"
+	           NotifyMessage "$NODE" "$VAR_STATUS"
 	         fi
 	       fi
 	     fi
@@ -1012,10 +1016,10 @@ SubMenuCronJobs() {
 		  fi
 
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
-		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_JOB_1") | crontab - 
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1_1""$VAR_CRON_TIME_1_2""$VAR_CRON_JOB_1""$VAR_CRON_END_1") | crontab - 
 		  fi
 
-		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
+		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
 		     echo "$gn""Autostart enabled""$xx"
 		  fi
 	   fi
@@ -1056,7 +1060,7 @@ SubMenuCronJobs() {
 		  fi
 
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
-		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_JOB_2") | crontab - 
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_JOB_2""$VAR_CRON_END_2") | crontab - 
 		  fi
 
 		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
@@ -1114,7 +1118,7 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY_ID=$(echo $VAR_NOTIFY | jq -r '.channelId')
 	   
 	   echo ""
-	   qrencode -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
+	   qrencode -m 2 -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
 	   echo ""
 
 	   if [ -f ~/.bash_aliases ]; then
@@ -1150,7 +1154,7 @@ SubMenuNotifyMe() {
 	   echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
 
 	   echo ""
-	   qrencode -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
+	   qrencode -m 2 -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
 	   echo ""
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
