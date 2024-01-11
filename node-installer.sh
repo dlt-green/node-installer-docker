@@ -804,12 +804,11 @@ Dashboard() {
 	           if [ "$NODE | grep 'shimmer'" ]; then docker network create shimmer >/dev/null 2>&1; fi
 	           docker compose up -d
 	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
-			   if ! [ VAR_STATUS ]; then $VAR_STATUS = 'down'; fi
+	           if ! [ $VAR_STATUS ]; then $VAR_STATUS='down'; fi
 	           NotifyMessage "$NODE" "$VAR_STATUS"
 	         fi
 	       fi
 	     fi
-		 
 	   done
 	   RenameContainer
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
