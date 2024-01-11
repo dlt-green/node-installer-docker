@@ -780,7 +780,7 @@ Dashboard() {
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
 	  VAR_STATUS='Start all Nodes'
-	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
+	  if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	  sleep 3
 	  n='s'
 	fi
@@ -800,17 +800,20 @@ Dashboard() {
 	       if [ -d "/var/lib/$NODE" ]; then
 	         cd "/var/lib/$NODE" || exit
 	         if [ -f docker-compose.yml ]; then
-	           if [ "$NODE | grep 'iota'" ]; then docker network create iota >/dev/null 2>&1; fi
-	           if [ "$NODE | grep 'shimmer'" ]; then docker network create shimmer >/dev/null 2>&1; fi
+	           if [ "$NODE" = *'iota'* ]; then docker network create iota >/dev/null 2>&1; fi
+	           if [ "$NODE" = *'shimmer'*]; then docker network create shimmer >/dev/null 2>&1; fi
 	           docker compose up -d
+	           sleep 5
 	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
 	           if ! [ $VAR_STATUS ]; then $VAR_STATUS='down'; fi
-	           NotifyMessage "$NODE" "$VAR_STATUS"
+	           if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	         fi
 	       fi
 	     fi
 	   done
+
 	   RenameContainer
+
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   
 	   if [ "$opt_mode" = 's' ]; then clear; exit; fi
@@ -1927,27 +1930,6 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                      Check necessary Docker Containers                      ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-	for NODE in $NODES; do
-	  if [ -f "/var/lib/$NODE/.env" ]; then
-	    if [ -d "/var/lib/$NODE" ]; then
-	      cd "/var/lib/$NODE" || exit
-	      if [ -f docker-compose.yml ]; then
-	        if [ "$NODE | grep 'iota'" ]; then docker network create iota >/dev/null 2>&1; fi
-	        if [ "$NODE | grep 'shimmer'" ]; then docker network create shimmer >/dev/null 2>&1; fi
-	        docker compose up -d
-	      fi
-	    fi
-	  fi
-	done
-
-	RenameContainer
-
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                       Delete Docker Containers/Images                       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
@@ -1955,6 +1937,28 @@ SystemMaintenance() {
 	docker system prune -f
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                      Check necessary Docker Containers                      ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	
+	for NODE in $NODES; do
+	  if [ -f "/var/lib/$NODE/.env" ]; then
+	    if [ -d "/var/lib/$NODE" ]; then
+	      cd "/var/lib/$NODE" || exit
+	      if [ -f docker-compose.yml ]; then
+	        if [ "$NODE" = *'iota'* ]; then docker network create iota >/dev/null 2>&1; fi
+	        if [ "$NODE" = *'shimmer'*]; then docker network create shimmer >/dev/null 2>&1; fi
+	        docker compose up --no-start
+	      fi
+	    fi
+	  fi
+	done
+
+	RenameContainer
 
 	clear
 	echo ""
@@ -2040,7 +2044,7 @@ SystemMaintenance() {
 
 	if [ "$opt_mode" = 0 ]; then if [ "$opt_reboot" = 1 ]; then
 	  VAR_STATUS='System Reboot'
-	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
+	  if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	  sleep 3
 	fi; fi
 
@@ -2056,13 +2060,28 @@ SystemMaintenance() {
 	   echo "$ca"
 	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
 	   echo "$xx"
-	   if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || Dashboard; docker compose up -d; fi
-	   sleep 5
-	   if [ -d /var/lib/iota-wasp ]; then cd /var/lib/iota-wasp || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-wasp ]; then cd /var/lib/shimmer-wasp || Dashboard; docker compose up -d; fi
-	   if [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then cd /var/lib/shimmer-plugins/inx-chronicle || Dashboard; docker compose up -d; fi
 	   
+	   VAR_STATUS='Start all Nodes'
+	   if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
+	   sleep 3
+
+	   for NODE in $NODES; do
+	     if [ -f "/var/lib/$NODE/.env" ]; then
+	       if [ -d "/var/lib/$NODE" ]; then
+	         cd "/var/lib/$NODE" || exit
+	         if [ -f docker-compose.yml ]; then
+	           if [ "$NODE" = *'iota'* ]; then docker network create iota >/dev/null 2>&1; fi
+	           if [ "$NODE" = *'shimmer'*]; then docker network create shimmer >/dev/null 2>&1; fi
+	           docker compose up -d
+	           sleep 5
+	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
+	           if ! [ $VAR_STATUS ]; then $VAR_STATUS='down'; fi
+	           NotifyMessage "$NODE" "$VAR_STATUS"
+	         fi
+	       fi
+	     fi
+	   done
+
 	   RenameContainer
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
