@@ -2028,13 +2028,13 @@ SystemMaintenance() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                            1. System Restart (recommend)                    ║"
+	echo "║                            1. System Reboot (recommend)                     ║"
 	echo "║                            X. Maintenance Menu                              ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "$gn""You don't have to stop Nodes installed with the DLT.GREEN Installer,"
-	echo "but you must restart them with our Installer after reastarting your System,"
+	echo "but you must restart them with our Installer after rebooting your System,"
 	echo "if you don't have Autostart enabled!""$xx"
 	echo ""
 	echo "select menu item: "
@@ -2049,9 +2049,9 @@ SystemMaintenance() {
 	fi; fi
 
 	case $n in
-	1) 	echo 'restarting...'; sleep 3
+	1) 	echo 'rebooting...'; sleep 3
 	    echo "$rd"
-	    echo "System restarted, dont't forget to reconnect and start your Nodes again,"
+	    echo "System rebooted, dont't forget to reconnect and start your Nodes again,"
 	    echo "if you don't have Autostart enabled!"
 	    echo "$xx"
 		sudo reboot
@@ -2073,7 +2073,7 @@ SystemMaintenance() {
 	           if [ "$NODE" = *'iota'* ]; then docker network create iota >/dev/null 2>&1; fi
 	           if [ "$NODE" = *'shimmer'*]; then docker network create shimmer >/dev/null 2>&1; fi
 	           docker compose up -d
-	           sleep 5
+	           sleep 10
 	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
 	           if ! [ $VAR_STATUS ]; then $VAR_STATUS='down'; fi
 	           NotifyMessage "$NODE" "$VAR_STATUS"
