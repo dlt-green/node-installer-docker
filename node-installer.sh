@@ -780,7 +780,7 @@ Dashboard() {
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
 	  VAR_STATUS='Start all Nodes'
-	  if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
+	  if [ "$opt_mode" = 0 ]; then NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	  sleep 3
 	  n='s'
 	fi
@@ -806,7 +806,7 @@ Dashboard() {
 	           sleep 5
 	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
 	           if ! [ $VAR_STATUS ]; then $VAR_STATUS='down'; fi
-	           if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
+	           if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	         fi
 	       fi
 	     fi
