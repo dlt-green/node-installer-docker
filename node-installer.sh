@@ -2044,7 +2044,7 @@ SystemMaintenance() {
 
 	if [ "$opt_mode" = 0 ]; then if [ "$opt_reboot" = 1 ]; then
 	  VAR_STATUS='System Reboot'
-	  if [ "$opt_mode" = 0 ]; then NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	  sleep 3
 	fi; fi
 
@@ -2075,7 +2075,20 @@ SystemMaintenance() {
 	           docker compose up -d
 	           sleep 10
 	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
-	           if ! [ $VAR_STATUS ]; then $VAR_STATUS='down'; fi
+	           NotifyMessage "$NODE" "$VAR_STATUS"
+			   
+	           if [ $VAR_STATUS = 'unhealthy' ]; then
+	             VAR_STATUS="resetting database"
+	             NotifyMessage "$NODE" "$VAR_STATUS"
+	             docker compose down
+	             if [ "$NODE" = *'iota'* ]; then rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_IOTA_HORNET_NETWORK/*; fi
+	             if [ "$NODE" = *'shimmer'*]; then rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*; fi
+	             docker compose up -d
+	             sleep 10
+	             VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
+			   fi
+			   
+	           if ! [ $VAR_STATUS ]; then $VAR_STATUS='fatal error'; fi
 	           NotifyMessage "$NODE" "$VAR_STATUS"
 	         fi
 	       fi
