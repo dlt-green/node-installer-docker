@@ -2044,7 +2044,7 @@ SystemMaintenance() {
 
 	if [ "$opt_mode" = 0 ]; then if [ "$opt_reboot" = 1 ]; then
 	  VAR_STATUS='System Reboot'
-	  if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
+	  if [ "$opt_mode" = 0 ]; then NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	  sleep 3
 	fi; fi
 
