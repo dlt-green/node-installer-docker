@@ -46,7 +46,7 @@ VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker: System Maintenance'
 VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0'
 VAR_CRON_END_2=' -t 0 -r 1"'
 
-NODES="TEST iota-hornetx iota-waspx shimmer-hornetx shimmer-waspx shimmer-plugins/inx-chroniclex"
+NODES="TEST iota-hornet iota-wasp  shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
 
 lg='\033[1m'
 or='\e[1;33m'
