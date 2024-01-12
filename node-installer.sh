@@ -1954,16 +1954,16 @@ SystemMaintenance() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                       Delete Docker Containers/Images                       ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
+#	clear
+#	echo ""
+#	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+#	echo "║                       Delete Docker Containers/Images                       ║"
+#	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+#	echo ""
 
-	docker system prune -f
+#	docker system prune -f
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+#	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
 	echo ""
