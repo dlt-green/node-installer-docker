@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VRSN="v.2.8.6"
-BUILD="20240112_020606"
+BUILD="20240112_024826"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -108,19 +108,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='d1bc6ed08553fde348946e6fe6006309b4abe966c6014f9ed78742651cbcde49'
+IotaHornetHash='20954144caa2624e3e7e62aecdd71b86678a834fcb87c1b4faed3862158362f8'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='905925c57bd92da19f7fd00c48f022584b45e24fa1474a5fb2dd7bb30783925f'
+IotaWaspHash='fb45166e52b4527d816c4d94f09d55c249795ef92f6d94b10fe125bf630508eb'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='6d396da2bb65f87ea8380f0fb2a1c392e93c2209c13b2266c35afe5bd8126f23'
+ShimmerHornetHash='030df6794e5ca1fa37a454ffb4e7f2db4dafab080ffc809c3b71433759628dc7'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='71d00a071ab275501faea014f591078d781dcce9e0dabda68300b27f6fe7118a'
+ShimmerWaspHash='10e87e4ad557b154869727c634f55c39a1776c82dbc901c84aae0dc2d1111a64'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='8f47fda39db20c7ff3a821d9126ba4dcc951b25d415ebac49fe77c3160036d47'
+ShimmerChronicleHash='4c8b4044d57d0a7a2b7dd2e5dc007586d9f9e1d221f4f3e4899322665bb62162'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
