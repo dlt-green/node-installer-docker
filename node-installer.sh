@@ -757,25 +757,25 @@ Dashboard() {
 	if [ "$opt_mode" = 1 ]; then
 	  echo "$ca""unattended: Update IOTA-Hornet...""$xx"
 	  sleep 3
-#	  n='1'
+	  n='1'
 	fi
 	
 	if [ "$opt_mode" = 2 ]; then
 	  echo "$ca""unattended: Update IOTA-Wasp...""$xx"
 	  sleep 3
-#	  n='2'
+	  n='2'
 	fi
 	
 	if [ "$opt_mode" = 5 ]; then
 	  echo "$ca""unattended: Update Shimmer-Hornet...""$xx"
 	  sleep 3
-#	  n='5'
+	  n='5'
 	fi
 
 	if [ "$opt_mode" = 6 ]; then
 	  echo "$ca""unattended: Update Shimmer-Wasp...""$xx"
 	  sleep 3
-#	  n='6'
+	  n='6'
 	fi
 
 	if [ "$opt_mode" = 's' ]; then
