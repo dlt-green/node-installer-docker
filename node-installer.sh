@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 VRSN="v.2.8.8"
 BUILD="20240112_160800"
@@ -791,6 +791,7 @@ Dashboard() {
 	case $n in
 
 	s|S)
+	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   clear
 	   echo "$ca"
 	   echo 'Please wait, starting Nodes can take up to 10 minutes...'
@@ -808,21 +809,21 @@ Dashboard() {
 	           VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
 
 	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
-	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="database broken: $VAR_IOTA_HORNET_NETWORK"; fi
-	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="database broken: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="database broken: $VAR_IOTA_HORNET_NETWORK"; fi
+	             if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="database broken: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	             docker compose stop
 	             docker compose pull
 	             ./prepare_docker.sh
-	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="resetting database: $VAR_IOTA_HORNET_NETWORK"; fi
-	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="resetting database: $VAR_IOTA_HORNET_NETWORK"; fi
+	             if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
-	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then 
+	             if [ "$VAR_NETWORK" = 1 ]; then 
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_IOTA_HORNET_NETWORK"/*
 	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_IOTA_HORNET_NETWORK";
 	             fi
-	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then 
+	             if [ "$VAR_NETWORK" = 2 ]; then 
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_SHIMMER_HORNET_NETWORK";
@@ -2107,21 +2108,21 @@ SystemMaintenance() {
 	           VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
 
 	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
-	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="database broken: $VAR_IOTA_HORNET_NETWORK"; fi
-	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="database broken: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="database broken: $VAR_IOTA_HORNET_NETWORK"; fi
+	             if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="database broken: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	             docker compose stop
 	             docker compose pull
 	             ./prepare_docker.sh
-	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="resetting database: $VAR_IOTA_HORNET_NETWORK"; fi
-	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="resetting database: $VAR_IOTA_HORNET_NETWORK"; fi
+	             if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
-	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then 
+	             if [ "$VAR_NETWORK" = 1 ]; then 
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_IOTA_HORNET_NETWORK"/*
 	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_IOTA_HORNET_NETWORK";
 	             fi
-	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then
+	             if [ "$VAR_NETWORK" = 2 ]; then
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_SHIMMER_HORNET_NETWORK";
@@ -2242,7 +2243,7 @@ IotaHornet() {
 	echo ""
 	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
-#	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
+	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
 
 	echo ""
 	echo "Download Package... install.tar.gz"
