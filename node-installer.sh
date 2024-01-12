@@ -1981,7 +1981,7 @@ SystemMaintenance() {
 	      if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
 	        CheckIota; if [ "$VAR_NETWORK" = 1 ]; then docker network create iota >/dev/null 2>&1; fi
 	        CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; fi
-	        docker compose up --no-start
+	        docker compose up -d
 	      fi
 	    fi
 	  fi
@@ -2649,7 +2649,7 @@ IotaWasp() {
 	echo ""
 	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
-#	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
+	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
 
 	echo ""
 	echo "Download Package... install.tar.gz"
@@ -2990,7 +2990,7 @@ ShimmerHornet() {
 	echo ""
 	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
-#	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
+	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
 
 	echo ""
 	echo "Download Package... install.tar.gz"
@@ -3729,7 +3729,7 @@ ShimmerChronicle() {
 	echo ""
 	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
-#	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
+	find . -maxdepth 1 -mindepth 1 ! \( -name ".env" -o -name "data" \) -exec rm -rf {} +
 
 	echo ""
 	echo "Download Package... install.tar.gz"
