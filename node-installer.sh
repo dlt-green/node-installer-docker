@@ -266,12 +266,12 @@ DeleteFirewallPort() {
 }
 
 PromptMessage() {
-	WAIT=$(echo $1*10 | bc)
-	STTY=`stty -g`
+	WAIT=$(echo "$1"*10 | bc)
+	STTY=$(stty -g)
 	printf "$2"
 	echo ""
-	stty intr '^C' -icanon min 0 time $WAIT ignbrk -brkint -ixon isig;read -p '> ' W
-	stty $STTY
+	stty intr '^C' -icanon min 0 time "$WAIT" ignbrk -brkint -ixon isig;read -p '> ' W
+	stty "$STTY"
 
 	if [ "$W" = 'P' ] || [ "$W" = 'p' ]; then
 		echo "$or"
