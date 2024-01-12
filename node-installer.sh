@@ -61,7 +61,7 @@ xx='\033[0m'
 opt_time=10
 opt_check=1
 
-while getopts "m:n:t:r:c:" option
+while getopts "m:t:r:c:" option
 do
   case $option in
      c) 
