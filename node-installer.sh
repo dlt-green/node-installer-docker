@@ -799,7 +799,7 @@ Dashboard() {
 	     if [ -f "/var/lib/$NODE/.env" ]; then
 	       if [ -d "/var/lib/$NODE" ]; then
 	         cd "/var/lib/$NODE" || exit
-	         if [ -f docker-compose.yml ]; then
+	         if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
 	           if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1); then docker network create iota >/dev/null 2>&1; fi
 	           if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1); then docker network create shimmer >/dev/null 2>&1; fi
 	           docker compose up -d
@@ -2098,7 +2098,7 @@ SystemMaintenance() {
 	     if [ -f "/var/lib/$NODE/.env" ]; then
 	       if [ -d "/var/lib/$NODE" ]; then
 	         cd "/var/lib/$NODE" || exit
-	         if [ -f docker-compose.yml ]; then
+	         if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
 	           if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1); then docker network create iota >/dev/null 2>&1; fi
 	           if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1); then docker network create shimmer >/dev/null 2>&1; fi
 	           docker compose up -d
