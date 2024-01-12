@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.8.3"
-BUILD="20240111_202747"
+VRSN="v.2.8.4"
+BUILD="20240112_012221"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -108,19 +108,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='0724c09fe0e05cc003e4d498206e59387ea578d7e7330bced0d86e6e9b2ba9fc'
+IotaHornetHash='5a428947cb28b8f88249a73fa77ec8d4893c7d8201d740d5a5c54b4c61c54e91'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='6d847527ee074003ad05335d4bcddc8793e9e9b916f7dc144e789dbe837d1fb7'
+IotaWaspHash='d6abe00cc43acec7c604377cd890d8b16d681e160b41fa9b094acaaba40bb55c'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='fa87470ef2e917ed16798af2cf91394bedf3b58aa37c1917b4676d04216841a3'
+ShimmerHornetHash='6e52102eef8cc891f19103660664d103b7a4f41cd0dc4102b8a075287c5b1b6f'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='340d0c6ad8a32e541e63e82f1afc541dd1ba442fca63331908d1adde9c06be06'
+ShimmerWaspHash='7a05a1d6e3c5d6f1d4ca5a8c21858e6d988b3c7622fef71b34c850fa7510af1d'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='1f3bd44eea98eea1cf9b5c64d69085585281bb0492bd8bc091d9da08a6e03a23'
+ShimmerChronicleHash='7b6e974ffd32ee30ba77bcd0474cbe66a6e70277e2d00a9ad5db64613a2a780c'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -780,7 +780,7 @@ Dashboard() {
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
 	  VAR_STATUS='Start all Nodes'
-	  if [ "$opt_mode" = 0 ]; then NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='s'
 	fi
@@ -792,7 +792,7 @@ Dashboard() {
 	s|S)
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
+	   echo 'Please wait, starting Nodes can take up to 10 minutes...'
 	   echo "$xx"
 
 	   for NODE in $NODES; do
@@ -800,12 +800,39 @@ Dashboard() {
 	       if [ -d "/var/lib/$NODE" ]; then
 	         cd "/var/lib/$NODE" || exit
 	         if [ -f docker-compose.yml ]; then
-	           if [ "$NODE" = *'iota'* ]; then docker network create iota >/dev/null 2>&1; fi
-	           if [ "$NODE" = *'shimmer'*]; then docker network create shimmer >/dev/null 2>&1; fi
+	           if [ "echo $NODE | grep -i 'iota'" ]; then docker network create iota >/dev/null 2>&1; fi
+	           if [ "echo $NODE | grep -i 'shimmer'" ]; then docker network create shimmer >/dev/null 2>&1; fi
 	           docker compose up -d
 	           sleep 10
 	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
-	           if ! [ $VAR_STATUS ]; then $VAR_STATUS='down'; fi
+
+	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
+	             if [ "echo $NODE | grep -i 'iota'" ]; then VAR_STATUS="database broken: $VAR_IOTA_HORNET_NETWORK"; fi
+	             if [ "echo $NODE | grep -i 'shimmer'" ]; then VAR_STATUS="database broken: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
+	             docker compose stop
+	             docker compose pull
+	             ./prepare_docker.sh
+	             if [ "echo $NODE | grep -i 'iota'" ]; then VAR_STATUS="resetting database: $VAR_IOTA_HORNET_NETWORK"; fi
+	             if [ "echo $NODE | grep -i 'shimmer'" ]; then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
+	             if [ "echo $NODE | grep -i 'iota'" ]; then 
+				   rm -rf /var/lib/$NODE/data/storage/$VAR_IOTA_HORNET_NETWORK/*
+				   rm -rf /var/lib/$NODE/data/snapshots/$VAR_IOTA_HORNET_NETWORK/*
+	               VAR_STATUS="importing snapshot: $VAR_IOTA_HORNET_NETWORK";
+	             fi
+	             if [ "echo $NODE | grep -i 'shimmer'" ]; then 
+				   rm -rf /var/lib/$NODE/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
+				   rm -rf /var/lib/$NODE/data/snapshots/$VAR_SHIMMER_HORNET_NETWORK/*
+	               VAR_STATUS="importing snapshot: $VAR_SHIMMER_HORNET_NETWORK";
+	             fi
+	             if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
+	             docker compose up -d
+	             sleep 60
+	             VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
+			   fi
+			   
+	           if ! [ "$VAR_STATUS" ]; then VAR_STATUS='FATAL ERROR'; fi
 	           if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	         fi
 	       fi
@@ -1950,8 +1977,8 @@ SystemMaintenance() {
 	    if [ -d "/var/lib/$NODE" ]; then
 	      cd "/var/lib/$NODE" || exit
 	      if [ -f docker-compose.yml ]; then
-	        if [ "$NODE" = *'iota'* ]; then docker network create iota >/dev/null 2>&1; fi
-	        if [ "$NODE" = *'shimmer'*]; then docker network create shimmer >/dev/null 2>&1; fi
+	        if [ "echo $NODE | grep -i 'iota'" ]; then docker network create iota >/dev/null 2>&1; fi
+	        if [ "echo $NODE | grep -i 'shimmer'" ]; then docker network create shimmer >/dev/null 2>&1; fi
 	        docker compose up --no-start
 	      fi
 	    fi
@@ -1959,6 +1986,8 @@ SystemMaintenance() {
 	done
 
 	RenameContainer
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
 	echo ""
@@ -2044,7 +2073,7 @@ SystemMaintenance() {
 
 	if [ "$opt_mode" = 0 ]; then if [ "$opt_reboot" = 1 ]; then
 	  VAR_STATUS='System Reboot'
-	  if [ "$opt_mode" = 0 ]; then NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	fi; fi
 
@@ -2058,7 +2087,7 @@ SystemMaintenance() {
 		;;
 	*) clear
 	   echo "$ca"
-	   echo 'Please wait, starting Nodes can take up to 5 minutes...'
+	   echo 'Please wait, starting Nodes can take up to 10 minutes...'
 	   echo "$xx"
 	   
 	   VAR_STATUS='Start all Nodes'
@@ -2070,13 +2099,40 @@ SystemMaintenance() {
 	       if [ -d "/var/lib/$NODE" ]; then
 	         cd "/var/lib/$NODE" || exit
 	         if [ -f docker-compose.yml ]; then
-	           if [ "$NODE" = *'iota'* ]; then docker network create iota >/dev/null 2>&1; fi
-	           if [ "$NODE" = *'shimmer'*]; then docker network create shimmer >/dev/null 2>&1; fi
+	           if [ "echo $NODE | grep -i 'iota'" ]; then docker network create iota >/dev/null 2>&1; fi
+	           if [ "echo $NODE | grep -i 'shimmer'" ]; then docker network create shimmer >/dev/null 2>&1; fi
 	           docker compose up -d
 	           sleep 10
 	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
-	           if ! [ $VAR_STATUS ]; then $VAR_STATUS='down'; fi
-	           NotifyMessage "$NODE" "$VAR_STATUS"
+
+	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
+	             if [ "echo $NODE | grep -i 'iota'" ]; then VAR_STATUS="database broken: $VAR_IOTA_HORNET_NETWORK"; fi
+	             if [ "echo $NODE | grep -i 'shimmer'" ]; then VAR_STATUS="database broken: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
+	             docker compose stop
+	             docker compose pull
+	             ./prepare_docker.sh
+	             if [ "echo $NODE | grep -i 'iota'" ]; then VAR_STATUS="resetting database: $VAR_IOTA_HORNET_NETWORK"; fi
+	             if [ "echo $NODE | grep -i 'shimmer'" ]; then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
+	             if [ "echo $NODE | grep -i 'iota'" ]; then 
+				   rm -rf /var/lib/$NODE/data/storage/$VAR_IOTA_HORNET_NETWORK/*
+				   rm -rf /var/lib/$NODE/data/snapshots/$VAR_IOTA_HORNET_NETWORK/*
+	               VAR_STATUS="importing snapshot: $VAR_IOTA_HORNET_NETWORK";
+	             fi
+	             if [ "echo $NODE | grep -i 'shimmer'" ]; then 
+				   rm -rf /var/lib/$NODE/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
+				   rm -rf /var/lib/$NODE/data/snapshots/$VAR_SHIMMER_HORNET_NETWORK/*
+	               VAR_STATUS="importing snapshot: $VAR_SHIMMER_HORNET_NETWORK";
+	             fi
+	             if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
+	             docker compose up -d
+	             sleep 60
+	             VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
+			   fi
+			   
+	           if ! [ "$VAR_STATUS" ]; then VAR_STATUS='FATAL ERROR'; fi
+	           if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	         fi
 	       fi
 	     fi
