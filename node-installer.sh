@@ -2070,7 +2070,7 @@ SystemMaintenance() {
 	echo ""
 	echo "select menu item: "
 
-	if [ "$opt_mode" ]; then if ! [ "$opt_reboot" ]; then "opt_reboot"=0; fi; fi
+	if [ "$opt_mode" ]; then if ! [ "$opt_reboot" ]; then opt_reboot=0; fi; fi
 	if [ "$opt_reboot" = 1 ]; then n=1; else if [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
 
 	if [ "$opt_mode" = 0 ]; then if [ "$opt_reboot" = 1 ]; then
