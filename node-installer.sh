@@ -2119,7 +2119,7 @@ SystemMaintenance() {
 				   rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_IOTA_HORNET_NETWORK";
 	             fi
-	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then if [ "$VAR_NETWORK" = 2 ]; then 
+	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then 
 				   rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
 				   rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_SHIMMER_HORNET_NETWORK";
