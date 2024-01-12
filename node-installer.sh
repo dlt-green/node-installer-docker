@@ -177,7 +177,7 @@ CheckAutostart() {
 		echo "║                       GNU General Public License v3.0                       ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
-		echo "$fl"; PromptMessage "$opt_time" "[Enter] / wait ["$opt_time"s] for [X]... [P] to pause / [S] to skip"
+		echo "$fl"; PromptMessage "$opt_time" "[Enter] / wait [""$opt_time""s] for [X]... [P] to pause / [S] to skip"
 
 		case $W in
 		s|S) ;;
@@ -200,7 +200,7 @@ CheckAutostart() {
 		        echo "$gn""Autostart enabled""$xx"
 		     fi
 			 
-			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 ;;
 		esac
 	fi
@@ -230,7 +230,7 @@ CheckFirewall() {
 		echo "║                       GNU General Public License v3.0                       ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
-		echo "$fl"; PromptMessage "$opt_time" "[Enter] / wait ["$opt_time"s] for [X]... [P] to pause / [S] to skip"
+		echo "$fl"; PromptMessage "$opt_time" "[Enter] / wait [""$opt_time""s] for [X]... [P] to pause / [S] to skip"
 
 		case $W in
 		s|S) ;;
@@ -250,19 +250,19 @@ CheckFirewall() {
 				echo "Set custom SSH-Port... $VAR_SSH_PORT/tcp"
 			 fi
 
-			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
 			 
 			 sudo ufw --force enable
 
-			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 ;;
 		esac
 	fi
 }
 
 DeleteFirewallPort() {
-	while true; do n=$(ufw status numbered | grep "$1" | head -n 1 | awk -F"[][]" '{print $2}');[ "$n" != "" ] || break; yes | ufw delete $n; done;
+	while true; do n=$(ufw status numbered | grep "$1" | head -n 1 | awk -F"[][]" '{print $2}');[ "$n" != "" ] || break; yes | ufw delete "$n"; done;
 }
 
 PromptMessage() {
@@ -327,8 +327,8 @@ FormatToBytes() {
 FormatFromBytes() {
 	unset fbytes;
 	if [ -n "$1" ]; then
-		fbytes=$(numfmt --to iec --format "%8f" $1)B;
-		fbytes=$(echo $fbytes | sed 's/ *$//g');
+		fbytes=$(numfmt --to iec --format "%8f" "$1")B;
+		fbytes=$(echo "$fbytes" | sed 's/ *$//g');
 	fi
 }
 
@@ -338,7 +338,7 @@ CheckDomain() {
 		echo ""
 	    echo "$rd""Attention! Verification of your Domain $VAR_HOST failed! Installation aborted!""$xx"
 	    echo "$rd""Maybe you entered a wrong Domain or the DNS is not reachable yet?""$xx"
-	    echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	    echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 		SubMenuMaintenance
 	else
 	    echo "$gn""Verification of your Domain $VAR_HOST successful""$xx"
@@ -371,7 +371,7 @@ CheckCertificate() {
 		echo "$rd""Alternatively, you can also use your own Certificate [1]""$xx"
 		echo ""
 		echo "select menu item: "
-		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"
 		
 		case $W in
 		1) VAR_CERT=1
@@ -408,7 +408,7 @@ CheckConfiguration() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 		echo "select menu item: "
-		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] for [X]... Press [P] to pause / [C] to cancel"
 
 		case $W in
 		1) echo "$rd""Reset Configuration... ""$xx"
@@ -432,8 +432,8 @@ CheckNodeHealthy() {
 	6) VAR_API="v1/node/version"; OBJ=".version" ;;
 	*) ;;
 	esac
-	VAR_NodeHealthy=$(curl https://${VAR_DOMAIN}:${VAR_PORT}/${VAR_API} --http1.1 -m 3 -s -X GET -H 'Content-Type: application/json' | jq ${OBJ} 2>/dev/null)
-	if [ -z $VAR_NodeHealthy ]; then VAR_NodeHealthy=false; fi
+	VAR_NodeHealthy=$(curl https://"${VAR_DOMAIN}":"${VAR_PORT}"/"${VAR_API}" --http1.1 -m 3 -s -X GET -H 'Content-Type: application/json' | jq "${OBJ}" 2>/dev/null)
+	if [ -z "$VAR_NodeHealthy" ]; then VAR_NodeHealthy=false; fi
 }
 
 CheckEventsIota() {
@@ -451,7 +451,7 @@ CheckEventsIota() {
 	cd /var/lib/$VAR_DIR >/dev/null 2>&1 || Dashboard;
 	
 	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
-	if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""IOTA-Hornet: No Salt found!""$xx"
+	if [ -z "$VAR_RESTAPI_SALT" ]; then echo "$rd""IOTA-Hornet: No Salt found!""$xx"
 	else
 	   echo "Event IDs can be found at:"
 	   echo 'https://github.com/iotaledger/participation-events'
@@ -462,57 +462,57 @@ CheckEventsIota() {
 	   echo ''
 	   
 	   ADDR=$(cat .env 2>/dev/null | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
-	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
-	   echo "$ca""Address: ""$xx"$ADDR" ($ca""JWT-Token for API Access randomly generated""$xx)"
+	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt "$VAR_RESTAPI_SALT" | awk '{ print $5 }')
+	   echo "$ca""Address: ""$xx""$ADDR"" ($ca""JWT-Token for API Access randomly generated""$xx)"
 	   echo ''
 	   sleep 5
 
-	   if [ -z $EVENTS ]; then 
-	   EVENTS=$(curl https://${ADDR}/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	   if [ -z "$EVENTS" ]; then 
+	   EVENTS=$(curl https://"${ADDR}"/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
 
-	   for EVENT_ID in $(echo $EVENTS  | tr -d '"[] ' | sed 's/,/ /g'); do
+	   for EVENT_ID in $(echo "$EVENTS"  | tr -d '"[] ' | sed 's/,/ /g'); do
 	      echo "───────────────────────────────────────────────────────────────────────────────"
-	      EVENT_NAME=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      EVENT_NAME=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.name')
 
-	      EVENT_SYMBOL=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      EVENT_SYMBOL=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.payload.symbol')
 
-	      EVENT_STATUS=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      EVENT_STATUS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.status')
 
-	      EVENT_CHECKSUM=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      EVENT_CHECKSUM=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.checksum')
 
-	      EVENT_MILESTONE=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      EVENT_MILESTONE=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.milestoneIndex')
 
-	      EVENT_QUESTIONS=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      EVENT_QUESTIONS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.questions')
 
-	      echo "$ca""Name: ""$xx"$EVENT_NAME
-		  echo "$ca""Status: ""$xx"$EVENT_STATUS"$ca"" Milestone index: ""$xx"$EVENT_MILESTONE
+	      echo "$ca""Name: ""$xx""$EVENT_NAME"
+		  echo "$ca""Status: ""$xx""$EVENT_STATUS""$ca"" Milestone index: ""$xx""$EVENT_MILESTONE"
 
-	      if [ $EVENT_STATUS = "ended" ]; then
+	      if [ "$EVENT_STATUS" = "ended" ]; then
 	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
 	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
-	        $(curl https://${ADDR}/api/participation/v1/admin/events/${EVENT_ID}/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > ${EVENT_ID})
+	        $(curl https://"${ADDR}"/api/participation/v1/admin/events/"${EVENT_ID}"/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > "${EVENT_ID}")
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
 	        
-	        if [ $(jq '.totalRewards' ${EVENT_ID}) = 'null' ]; then
-			  if [ $EVENT_SYMBOL = 'null' ]; then
+	        if [ $(jq '.totalRewards' "${EVENT_ID}") = 'null' ]; then
+			  if [ "$EVENT_SYMBOL" = 'null' ]; then
 			    echo "$gn""Checksum: ""$EVENT_CHECKSUM""$xx"
 				if [ -n "$EVENT_QUESTIONS" ]; then echo "$EVENT_QUESTIONS" > "${EVENT_ID}"; fi
 			  else
 			    echo "$rd""Checksum: ""Authentication Error!""$xx"
 			  fi
 	        else
-	          echo "$gn""Checksum: ""$(jq -r '.checksum' ${EVENT_ID})"
+	          echo "$gn""Checksum: ""$(jq -r '.checksum' "${EVENT_ID}")"
 	        fi
-	        EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID} 2>/dev/null)"
+	        EVENT_REWARDS="$(jq '.totalRewards' "${EVENT_ID}" 2>/dev/null)"
 	      else
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
@@ -520,11 +520,11 @@ CheckEventsIota() {
 	        EVENT_REWARDS='not available'
 	      fi
 	      echo ""
-	      echo "$ca""Total rewards: ""$xx"$EVENT_REWARDS"$ca"" Symbol: ""$xx"$EVENT_SYMBOL
+	      echo "$ca""Total rewards: ""$xx""$EVENT_REWARDS""$ca"" Symbol: ""$xx""$EVENT_SYMBOL"
 	      echo "───────────────────────────────────────────────────────────────────────────────"
 	   done
 	fi
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	Dashboard
 }
 
@@ -543,7 +543,7 @@ CheckEventsShimmer() {
 	cd /var/lib/$VAR_DIR >/dev/null 2>&1 || Dashboard;
 	
 	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
-	if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""Shimmer-Hornet: No Salt found!""$xx"
+	if [ -z "$VAR_RESTAPI_SALT" ]; then echo "$rd""Shimmer-Hornet: No Salt found!""$xx"
 	else
 	   echo "Event IDs can be found at:"
 	   echo "'https://github.com/iota-community/Shimmer-governance-participation-events'"
@@ -554,57 +554,57 @@ CheckEventsShimmer() {
 	   echo ''
 	   
 	   ADDR=$(cat .env 2>/dev/null | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
-	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
-	   echo "$ca""Address: ""$xx"$ADDR" ($ca""JWT-Token for API Access randomly generated""$xx)"
+	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt "$VAR_RESTAPI_SALT" | awk '{ print $5 }')
+	   echo "$ca""Address: ""$xx""$ADDR"" ($ca""JWT-Token for API Access randomly generated""$xx)"
 	   echo ''
 	   sleep 5
 
-	   if [ -z $EVENTS ]; then 
-	   EVENTS=$(curl https://${ADDR}/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	   if [ -z "$EVENTS" ]; then 
+	   EVENTS=$(curl https://"${ADDR}"/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
 
-	   for EVENT_ID in $(echo $EVENTS  | tr -d '"[] ' | sed 's/,/ /g'); do
+	   for EVENT_ID in $(echo "$EVENTS"  | tr -d '"[] ' | sed 's/,/ /g'); do
 	      echo "───────────────────────────────────────────────────────────────────────────────"
-	      EVENT_NAME=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      EVENT_NAME=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.name')
 
-	      EVENT_SYMBOL=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID} --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      EVENT_SYMBOL=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.payload.symbol')
 
-	      EVENT_STATUS=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      EVENT_STATUS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.status')
 
-	      EVENT_CHECKSUM=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      EVENT_CHECKSUM=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.checksum')
 
-	      EVENT_MILESTONE=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      EVENT_MILESTONE=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.milestoneIndex')
 
-	      EVENT_QUESTIONS=$(curl https://${ADDR}/api/participation/v1/events/${EVENT_ID}/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      EVENT_QUESTIONS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.questions')
 
-	      echo "$ca""Name: ""$xx"$EVENT_NAME
-		  echo "$ca""Status: ""$xx"$EVENT_STATUS"$ca"" Milestone index: ""$xx"$EVENT_MILESTONE
+	      echo "$ca""Name: ""$xx""$EVENT_NAME"
+		  echo "$ca""Status: ""$xx""$EVENT_STATUS""$ca"" Milestone index: ""$xx""$EVENT_MILESTONE"
 
-	      if [ $EVENT_STATUS = "ended" ]; then
+	      if [ "$EVENT_STATUS" = "ended" ]; then
 	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
 	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
-	        $(curl https://${ADDR}/api/participation/v1/admin/events/${EVENT_ID}/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > ${EVENT_ID})
+	        $(curl https://"${ADDR}"/api/participation/v1/admin/events/"${EVENT_ID}"/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > "${EVENT_ID}")
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
 	        
-	        if [ $(jq '.totalRewards' ${EVENT_ID}) = 'null' ]; then
-			  if [ $EVENT_SYMBOL = 'null' ]; then
+	        if [ $(jq '.totalRewards' "${EVENT_ID}") = 'null' ]; then
+			  if [ "$EVENT_SYMBOL" = 'null' ]; then
 			    echo "$gn""Checksum: ""$EVENT_CHECKSUM""$xx"
 				if [ -n "$EVENT_QUESTIONS" ]; then echo "$EVENT_QUESTIONS" > "${EVENT_ID}"; fi
 			  else
 			    echo "$rd""Checksum: ""Authentication Error!""$xx"
 			  fi
 	        else
-	          echo "$gn""Checksum: ""$(jq -r '.checksum' ${EVENT_ID})"
+	          echo "$gn""Checksum: ""$(jq -r '.checksum' "${EVENT_ID}")"
 	        fi
-	        EVENT_REWARDS="$(jq '.totalRewards' ${EVENT_ID} 2>/dev/null)"
+	        EVENT_REWARDS="$(jq '.totalRewards' "${EVENT_ID}" 2>/dev/null)"
 	      else
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
@@ -612,13 +612,14 @@ CheckEventsShimmer() {
 	        EVENT_REWARDS='not available'
 	      fi
 	      echo ""
-	      echo "$ca""Total rewards: ""$xx"$EVENT_REWARDS"$ca"" Symbol: ""$xx"$EVENT_SYMBOL
+	      echo "$ca""Total rewards: ""$xx""$EVENT_REWARDS""$ca"" Symbol: ""$xx""$EVENT_SYMBOL"
 	      echo "───────────────────────────────────────────────────────────────────────────────"
 	   done
 	fi
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	Dashboard
 }
+
 
 SetCertificateGlobal() {
 	clear
@@ -636,7 +637,7 @@ SetCertificateGlobal() {
 	echo "every Node on your Server will use this Certificate after restarting it""$xx"
 	echo ""
 	echo "select menu item: "
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] for [X]... Press [P] to pause / [C] to cancel"
 	case $W in
 	*)
 	   echo "$ca"'Update Certificate for all Nodes...'"$xx"
@@ -656,7 +657,7 @@ SetCertificateGlobal() {
 	     echo "$rd""There was an Error on getting a Let's Encrypt Certificate!""$xx"
 	     echo "$gn""A default Certificate is now generated only for this Node""$xx"
 	   fi
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   ;;
 	1) ;;
 	esac
@@ -671,7 +672,7 @@ Dashboard() {
 	  VAR_DOMAIN=$(cat /var/lib/iota-hornet/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/iota-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
 	  VAR_IOTA_HORNET_NETWORK=$(cat "/var/lib/iota-hornet/.env" | grep HORNET_NETWORK | cut -d '=' -f 2)
-	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	  if [ -z "$VAR_PORT" ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	else
 	  VAR_IOTA_HORNET_NETWORK='mainnet'
 	fi
@@ -681,7 +682,7 @@ Dashboard() {
 	if [ -f "/var/lib/iota-wasp/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/iota-wasp/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/iota-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
-	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	  if [ -z "$VAR_PORT" ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	fi
 	if ! [ "$VAR_NodeHealthy" = "false" ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ]; then iw=$rd; else iw=$gr; fi	
 
@@ -692,7 +693,7 @@ Dashboard() {
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/shimmer-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
 	  VAR_SHIMMER_HORNET_NETWORK=$(cat "/var/lib/shimmer-hornet/.env" | grep HORNET_NETWORK | cut -d '=' -f 2)
-	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	  if [ -z "$VAR_PORT" ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	else
 	  VAR_SHIMMER_HORNET_NETWORK='mainnet'
 	fi
@@ -702,7 +703,7 @@ Dashboard() {
 	if [ -f "/var/lib/shimmer-wasp/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-wasp/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/shimmer-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
-	  if [ -z $VAR_PORT ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
+	  if [ -z "$VAR_PORT" ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	fi
 	
 	if ! [ "$VAR_NodeHealthy" = "false" ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sw=$rd; else sw=$gr; fi
@@ -719,7 +720,7 @@ Dashboard() {
 
 	ix=$gr
 	if [ "$(docker container inspect -f '{{.State.Status}}' shimmer-plugins'.inx-chronicle' 2>/dev/null)" = 'running' ]; then
-	  if [ ix != $rd ]; then ix=$gn; fi
+	  if [ ix != "$rd" ]; then ix=$gn; fi
 	elif [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then ix=$rd; else ix=$gr; fi
 
 	clear
@@ -841,7 +842,7 @@ Dashboard() {
 
 	   RenameContainer
 
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   
 	   if [ "$opt_mode" = 's' ]; then clear; exit; fi
 	   
@@ -961,7 +962,7 @@ MainMenu() {
 		 echo "$rd""Attention! Please reconnect so that the alias works!""$xx"
 	   fi
 
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
 	1) SystemMaintenance ;;
 	2) Docker ;;
@@ -986,7 +987,7 @@ MainMenu() {
 	   echo 'Firewall Status/Ports:'
 	   echo "$xx"
 	   ufw status numbered 2>/dev/null
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   MainMenu ;;
 	5) SubMenuCronJobs ;;
 	6) SubMenuNotifyMe ;;
@@ -996,7 +997,7 @@ MainMenu() {
 	   if [ $? -eq 0 ]; then Dashboard; else
   	     echo ""
   	     echo "$rd""Attention! Please install Docker! Loading Dashboard aborted!""$xx"
-	     echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	     echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	     MainMenu
        fi;;
 	esac
@@ -1191,6 +1192,7 @@ SubMenuNotifyMe() {
 	*) MainMenu ;;
 	esac
 }
+
 SubMenuLicense() {
 	clear
 	echo ""
