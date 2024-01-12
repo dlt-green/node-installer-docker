@@ -803,7 +803,7 @@ Dashboard() {
 	           if [ echo $NODE | grep -i 'iota' ]; then docker network create iota >/dev/null 2>&1; fi
 	           if [ echo $NODE | grep -i 'shimmer' ]; then docker network create shimmer >/dev/null 2>&1; fi
 	           docker compose up -d
-	           sleep 20
+	           sleep 30
 	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
 
 	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
