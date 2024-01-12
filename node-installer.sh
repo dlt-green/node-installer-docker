@@ -2214,7 +2214,7 @@ IotaHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then
+	CheckShimmer
 	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
 	echo "$ca""Starting Installation or Update...""$xx";
@@ -2621,7 +2621,7 @@ IotaWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "$ca""Wasp is an INX-Plugin and can only be installed on the same Server as IOTA!""$xx";
-	CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then
+	CheckShimmer
 	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
 	echo "$ca""Starting Installation or Update...""$xx";
