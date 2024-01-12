@@ -620,7 +620,6 @@ CheckEventsShimmer() {
 	Dashboard
 }
 
-
 SetCertificateGlobal() {
 	clear
 	echo ""
