@@ -1956,16 +1956,16 @@ SystemMaintenance() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
-#	clear
-#	echo ""
-#	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-#	echo "║                       Delete Docker Containers/Images                       ║"
-#	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-#	echo ""
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                       Delete Docker Containers/Images                       ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
 
-#	docker system prune -f
+	docker system prune -f
 
-#	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
 	echo ""
@@ -1978,7 +1978,7 @@ SystemMaintenance() {
 	  if [ -f "/var/lib/$NODE/.env" ]; then
 	    if [ -d "/var/lib/$NODE" ]; then
 	      cd "/var/lib/$NODE" || exit
-	      if [ -f docker-compose.yml ]; then
+	      if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
 	        if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1); then docker network create iota >/dev/null 2>&1; fi
 	        if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1); then docker network create shimmer >/dev/null 2>&1; fi
 	        docker compose up --no-start
@@ -2093,7 +2093,7 @@ SystemMaintenance() {
 	   echo "$xx"
 	   
 	   VAR_STATUS='Start all Nodes'
-	   if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
+	   if [ "$opt_mode" = 0 ]; then NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	   sleep 3
 
 	   for NODE in $NODES; do
