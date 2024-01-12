@@ -817,20 +817,20 @@ Dashboard() {
 	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then 
-				   rm -rf /var/lib/"$NODE"/data/storage/"$VAR_IOTA_HORNET_NETWORK"/*
-				   rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_IOTA_HORNET_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_IOTA_HORNET_NETWORK";
 	             fi
 	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then 
-				   rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
-				   rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_SHIMMER_HORNET_NETWORK";
 	             fi
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	             docker compose up -d
 	             sleep 60
 	             VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
-			   fi
+	           fi
 			   
 	           if ! [ "$VAR_STATUS" ]; then VAR_STATUS='FATAL ERROR'; fi
 	           if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
@@ -2115,23 +2115,23 @@ SystemMaintenance() {
 	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then 
-				   rm -rf /var/lib/"$NODE"/data/storage/"$VAR_IOTA_HORNET_NETWORK"/*
-				   rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_IOTA_HORNET_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_IOTA_HORNET_NETWORK";
 	             fi
-	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then 
-				   rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
-				   rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
+	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then
+	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_SHIMMER_HORNET_NETWORK";
 	             fi
 	             if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	             docker compose up -d
 	             sleep 60
 	             VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
-			   fi
+	          fi
 			   
-	           if ! [ "$VAR_STATUS" ]; then VAR_STATUS='FATAL ERROR'; fi
-	           if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
+	          if ! [ "$VAR_STATUS" ]; then VAR_STATUS='FATAL ERROR'; fi
+	          if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	         fi
 	       fi
 	     fi
