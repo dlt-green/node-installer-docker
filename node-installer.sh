@@ -795,6 +795,8 @@ Dashboard() {
 	   echo 'Please wait, starting Nodes can take up to 10 minutes...'
 	   echo "$xx"
 
+	   NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
+
 	   for NODE in $NODES; do
 	     if [ -f "/var/lib/$NODE/.env" ]; then
 	       if [ -d "/var/lib/$NODE" ]; then
