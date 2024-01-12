@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VRSN="v.2.8.7"
-BUILD="20240112_081058"
+VRSN="v.2.8.8"
+BUILD="20240112_160800"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -108,19 +108,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='361a4a09bb8563966dfbedc9de67f42b54bf8b83f42bb60426401d59fbaf6a34'
+IotaHornetHash='0e5f52ed2c2b037ffdc87b6c95de26b4d69f8d0349601f516090f1a43ccaba39'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='dd9f105a070a1eb86ab4e3035d55824a96945c0d03b48e4f598da9a9b3e62aa6'
+IotaWaspHash='fe7466fa8528b05603d927d4eaf7e9001224dc61002e93f63ba2e6c4baaf2995'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='6f9d98714fb1206c4704985ae061593b28ec669a2c54d625ce435519258acaf8'
+ShimmerHornetHash='abfc919f99d12a1e0efac1f87a4f75ff64ebcbf9cf51bec60d69c647113d526d'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='b9a4e5607d80dd3f2d71090fea11c760acdd925f59cf8d765e545329881fd65f'
+ShimmerWaspHash='e31deb49c5706e14a95b20dabeed81f5b9acefa9a266215a6a13b58d62646abf'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='3230cac96e599e6fd198474f8f37f000832a8148d230bac653ac3acc4e7c76b5'
+ShimmerChronicleHash='c96b0027f0d85a5c1e6206980a94126456abdd4e9d0c893996f6c55abe994928'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -266,12 +266,12 @@ DeleteFirewallPort() {
 }
 
 PromptMessage() {
-	WAIT=$(echo $1*10 | bc)
-	STTY=`stty -g`
+	WAIT=$(echo "$1"*10 | bc)
+	STTY=$(stty -g)
 	printf "$2"
 	echo ""
-	stty intr '^C' -icanon min 0 time $WAIT ignbrk -brkint -ixon isig;read -p '> ' W
-	stty $STTY
+	stty intr '^C' -icanon min 0 time "$WAIT" ignbrk -brkint -ixon isig;read -p '> ' W
+	stty "$STTY"
 
 	if [ "$W" = 'P' ] || [ "$W" = 'p' ]; then
 		echo "$or"
@@ -795,44 +795,42 @@ Dashboard() {
 	   echo 'Please wait, starting Nodes can take up to 10 minutes...'
 	   echo "$xx"
 
-	   NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
-
 	   for NODE in $NODES; do
 	     if [ -f "/var/lib/$NODE/.env" ]; then
 	       if [ -d "/var/lib/$NODE" ]; then
 	         cd "/var/lib/$NODE" || exit
 	         if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
-	           if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1 ); then docker network create iota >/dev/null 2>&1; fi
-	           if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1 ); then docker network create shimmer >/dev/null 2>&1; fi
+	           CheckIota; if [ "$VAR_NETWORK" = 1 ]; then docker network create iota >/dev/null 2>&1; fi
+	           CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; fi
 	           docker compose up -d
 	           sleep 30
-	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
+	           VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
 
 	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
-	             if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1 ); then VAR_STATUS="database broken: $VAR_IOTA_HORNET_NETWORK"; fi
-	             if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1 ); then VAR_STATUS="database broken: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="database broken: $VAR_IOTA_HORNET_NETWORK"; fi
+	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="database broken: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	             docker compose stop
 	             docker compose pull
 	             ./prepare_docker.sh
-	             if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1 ); then VAR_STATUS="resetting database: $VAR_IOTA_HORNET_NETWORK"; fi
-	             if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1 ); then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="resetting database: $VAR_IOTA_HORNET_NETWORK"; fi
+	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
-	             if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1 ); then 
-				   rm -rf /var/lib/$NODE/data/storage/$VAR_IOTA_HORNET_NETWORK/*
-				   rm -rf /var/lib/$NODE/data/snapshots/$VAR_IOTA_HORNET_NETWORK/*
+	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then 
+	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_IOTA_HORNET_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_IOTA_HORNET_NETWORK";
 	             fi
-	             if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1 ); then 
-				   rm -rf /var/lib/$NODE/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
-				   rm -rf /var/lib/$NODE/data/snapshots/$VAR_SHIMMER_HORNET_NETWORK/*
+	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then 
+	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_SHIMMER_HORNET_NETWORK";
 	             fi
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	             docker compose up -d
 	             sleep 60
-	             VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
-			   fi
+	             VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
+	           fi
 			   
 	           if ! [ "$VAR_STATUS" ]; then VAR_STATUS='FATAL ERROR'; fi
 	           if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
@@ -1054,7 +1052,7 @@ SubMenuCronJobs() {
 		     echo "$gn""Autostart enabled""$xx"
 		  fi
 	   fi
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuCronJobs ;;
 	2) clear
 	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
@@ -1074,7 +1072,7 @@ SubMenuCronJobs() {
 		  while [ -z "$VAR_CRON_HOUR_2" ]; do
 		    echo "Set Time [Hour] (example: $ca""0-23""$xx""):";
 		    read -r -p '> ' VAR_TMP
-		    if [ $VAR_TMP -lt 0 ] || [ $VAR_TMP -gt 59 ]; then echo "$rd""Wrong value!"; echo "$xx"; else VAR_CRON_HOUR_2=$VAR_TMP; echo "$gn"" ✓""$xx"; fi
+		    if [ "$VAR_TMP" -lt 0 ] || [ "$VAR_TMP" -gt 59 ]; then echo "$rd""Wrong value!"; echo "$xx"; else VAR_CRON_HOUR_2=$VAR_TMP; echo "$gn"" ✓""$xx"; fi
 		  done
   
 		  VAR_CRON_MIN_2="$(shuf --random-source='/dev/urandom' -n 1 -i 0-59)"
@@ -1098,7 +1096,7 @@ SubMenuCronJobs() {
 		     echo "$gn""System Maintenance enabled: ""$(printf '%02d' "$VAR_CRON_HOUR_2")"":""$(printf '%02d' "$VAR_CRON_MIN_2")""$xx"
 		  fi
 	   fi
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuCronJobs ;;
 	3) clear
 	   echo "$ca"
@@ -1108,7 +1106,7 @@ SubMenuCronJobs() {
   	     export EDITOR='nano' && echo "# crontab" | crontab -
 	   fi
 	   crontab -e
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuCronJobs ;;
 	*) MainMenu ;;
 	esac
@@ -1140,16 +1138,16 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY_URL='https\:\/\/notify.run'
 	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null)
 
-	   echo "ChannelId:   " $(echo $VAR_NOTIFY | jq -r '.channelId')
-	   echo "ChannelPage: " $(echo $VAR_NOTIFY | jq -r '.channel_page')
-	   echo "Endpoint:    " $(echo $VAR_NOTIFY | jq -r '.endpoint')
+	   echo "ChannelId:   " $(echo "$VAR_NOTIFY" | jq -r '.channelId')
+	   echo "ChannelPage: " $(echo "$VAR_NOTIFY" | jq -r '.channel_page')
+	   echo "Endpoint:    " $(echo "$VAR_NOTIFY" | jq -r '.endpoint')
 
-	   VAR_NOTIFY_ENDPOINT=$(echo $VAR_NOTIFY | jq -r '.endpoint')
+	   VAR_NOTIFY_ENDPOINT=$(echo "$VAR_NOTIFY" | jq -r '.endpoint')
 	   VAR_NOTIFY_ENDPOINT_URL='curl '$VAR_NOTIFY_ENDPOINT' -d'
-	   VAR_NOTIFY_ID=$(echo $VAR_NOTIFY | jq -r '.channelId')
+	   VAR_NOTIFY_ID=$(echo "$VAR_NOTIFY" | jq -r '.channelId')
 	   
 	   echo ""
-	   qrencode -m 2 -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
+	   qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
 	   echo ""
 
 	   if [ -f ~/.bash_aliases ]; then
@@ -1169,7 +1167,7 @@ SubMenuNotifyMe() {
 	     fi	     
 	   fi
 
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
 	2) clear
 	   echo "$ca"
@@ -1185,15 +1183,14 @@ SubMenuNotifyMe() {
 	   echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
 
 	   echo ""
-	   qrencode -m 2 -o - -t ANSIUTF8 $VAR_NOTIFY_ENDPOINT
+	   qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
 	   echo ""
 
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
 	*) MainMenu ;;
 	esac
 }
-
 SubMenuLicense() {
 	clear
 	echo ""
@@ -1979,8 +1976,8 @@ SystemMaintenance() {
 	    if [ -d "/var/lib/$NODE" ]; then
 	      cd "/var/lib/$NODE" || exit
 	      if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
-	        if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1); then docker network create iota >/dev/null 2>&1; fi
-	        if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1); then docker network create shimmer >/dev/null 2>&1; fi
+	        CheckIota; if [ "$VAR_NETWORK" = 1 ]; then docker network create iota >/dev/null 2>&1; fi
+	        CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; fi
 	        docker compose up --no-start
 	      fi
 	    fi
@@ -2040,7 +2037,7 @@ SystemMaintenance() {
 	        if [ -s "/var/lib/$NODE/data/letsencrypt/$HOST.key" ]; then
 	          cp "/var/lib/$NODE/data/letsencrypt/$HOST.key" "/etc/letsencrypt/live/$HOST/privkey.pem"
 	          echo "$gn""Global Certificate is now updated for all Nodes from $NODE""$xx"
-	          echo "valid until: "$(openssl x509 -in $HOST.crt -noout -enddate | cut -d '=' -f 2)
+	          echo "valid until: ""$(openssl x509 -in "$HOST".crt -noout -enddate | cut -d '=' -f 2)"
 	          CERT=$(( CERT + 1 ))
 	        fi
 	      fi
@@ -2101,40 +2098,40 @@ SystemMaintenance() {
 	       if [ -d "/var/lib/$NODE" ]; then
 	         cd "/var/lib/$NODE" || exit
 	         if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
-	           if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1 ); then docker network create iota >/dev/null 2>&1; fi
-	           if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1 ); then docker network create shimmer >/dev/null 2>&1; fi
+	           CheckIota; if [ "$VAR_NETWORK" = 1 ]; then docker network create iota >/dev/null 2>&1; fi
+	           CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; fi
 	           docker compose up -d
 	           sleep 10
-	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
+	           VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
 
 	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
-	             if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1 ); then VAR_STATUS="database broken: $VAR_IOTA_HORNET_NETWORK"; fi
-	             if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1 ); then VAR_STATUS="database broken: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="database broken: $VAR_IOTA_HORNET_NETWORK"; fi
+	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="database broken: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	             docker compose stop
 	             docker compose pull
 	             ./prepare_docker.sh
-	             if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1 ); then VAR_STATUS="resetting database: $VAR_IOTA_HORNET_NETWORK"; fi
-	             if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1 ); then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="resetting database: $VAR_IOTA_HORNET_NETWORK"; fi
+	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
-	             if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>& 1); then 
-				   rm -rf /var/lib/$NODE/data/storage/$VAR_IOTA_HORNET_NETWORK/*
-				   rm -rf /var/lib/$NODE/data/snapshots/$VAR_IOTA_HORNET_NETWORK/*
+	             CheckIota; if [ "$VAR_NETWORK" = 1 ]; then 
+	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_IOTA_HORNET_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_IOTA_HORNET_NETWORK";
 	             fi
-	             if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1 ); then 
-				   rm -rf /var/lib/$NODE/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
-				   rm -rf /var/lib/$NODE/data/snapshots/$VAR_SHIMMER_HORNET_NETWORK/*
+	             CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then
+	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               VAR_STATUS="importing snapshot: $VAR_SHIMMER_HORNET_NETWORK";
 	             fi
 	             if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	             docker compose up -d
 	             sleep 60
-	             VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
-			   fi
+	             VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
+	          fi
 			   
-	           if ! [ "$VAR_STATUS" ]; then VAR_STATUS='FATAL ERROR'; fi
-	           if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
+	          if ! [ "$VAR_STATUS" ]; then VAR_STATUS='FATAL ERROR'; fi
+	          if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	         fi
 	       fi
 	     fi
