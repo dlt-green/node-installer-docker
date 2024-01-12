@@ -2101,28 +2101,28 @@ SystemMaintenance() {
 	       if [ -d "/var/lib/$NODE" ]; then
 	         cd "/var/lib/$NODE" || exit
 	         if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
-	           if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1); then docker network create iota >/dev/null 2>&1; fi
-	           if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1); then docker network create shimmer >/dev/null 2>&1; fi
+	           if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1 ); then docker network create iota >/dev/null 2>&1; fi
+	           if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1 ); then docker network create shimmer >/dev/null 2>&1; fi
 	           docker compose up -d
 	           sleep 10
 	           VAR_STATUS="$(docker inspect $NODE | jq -r '.[] .State .Health .Status')"
 
 	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
-	             if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1); then VAR_STATUS="database broken: $VAR_IOTA_HORNET_NETWORK"; fi
-	             if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1); then VAR_STATUS="database broken: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1 ); then VAR_STATUS="database broken: $VAR_IOTA_HORNET_NETWORK"; fi
+	             if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1 ); then VAR_STATUS="database broken: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
 	             docker compose stop
 	             docker compose pull
 	             ./prepare_docker.sh
-	             if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1); then VAR_STATUS="resetting database: $VAR_IOTA_HORNET_NETWORK"; fi
-	             if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1); then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
+	             if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1 ); then VAR_STATUS="resetting database: $VAR_IOTA_HORNET_NETWORK"; fi
+	             if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1 ); then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 0 ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
-	             if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>&1); then 
+	             if ( echo "$NODE" | grep -o 'iota' >/dev/null 2>& 1); then 
 				   rm -rf /var/lib/$NODE/data/storage/$VAR_IOTA_HORNET_NETWORK/*
 				   rm -rf /var/lib/$NODE/data/snapshots/$VAR_IOTA_HORNET_NETWORK/*
 	               VAR_STATUS="importing snapshot: $VAR_IOTA_HORNET_NETWORK";
 	             fi
-	             if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1); then 
+	             if ( echo "$NODE" | grep -o 'shimmer' >/dev/null 2>&1 ); then 
 				   rm -rf /var/lib/$NODE/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
 				   rm -rf /var/lib/$NODE/data/snapshots/$VAR_SHIMMER_HORNET_NETWORK/*
 	               VAR_STATUS="importing snapshot: $VAR_SHIMMER_HORNET_NETWORK";
@@ -4077,10 +4077,6 @@ if [ "$opt_check" = 1 ]; then
 	CheckFirewall;
 	CheckAutostart;
 fi
-
-if [ -d /var/lib/pipe ]; then VAR_PIPE_PORT=$(cat .env 2>/dev/null | grep PIPE_PORT= | cut -d '=' -f 2); fi
-if [ -d /var/lib/pipe ]; then cd /var/lib/pipe || SubMenuMaintenance; docker compose down >/dev/null 2>&1; fi
-if [ -d /var/lib/pipe ]; then rm -r /var/lib/pipe; fi
 
 docker --version | grep "Docker version" >/dev/null 2>&1
 if [ $? -eq 0 ]
