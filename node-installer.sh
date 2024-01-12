@@ -812,9 +812,9 @@ Dashboard() {
 	             if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="database broken: $VAR_IOTA_HORNET_NETWORK"; fi
 	             if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="database broken: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
-	             docker compose stop
-	             docker compose pull
-	             ./prepare_docker.sh
+#	             docker compose stop
+#	             docker compose pull
+#	             ./prepare_docker.sh
 	             if [ "$VAR_NETWORK" = 1 ]; then VAR_STATUS="resetting database: $VAR_IOTA_HORNET_NETWORK"; fi
 	             if [ "$VAR_NETWORK" = 2 ]; then VAR_STATUS="resetting database: $VAR_SHIMMER_HORNET_NETWORK"; fi
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
@@ -829,7 +829,7 @@ Dashboard() {
 	               VAR_STATUS="importing snapshot: $VAR_SHIMMER_HORNET_NETWORK";
 	             fi
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "$NODE" "$VAR_STATUS"; fi
-	             docker compose up -d
+#	             docker compose up -d
 	             sleep 60
 	             VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
 	           fi
@@ -1981,7 +1981,7 @@ SystemMaintenance() {
 	      if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
 	        CheckIota; if [ "$VAR_NETWORK" = 1 ]; then docker network create iota >/dev/null 2>&1; fi
 	        CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; fi
-	        docker compose up -d
+	        docker compose up --no-start
 	      fi
 	    fi
 	  fi
