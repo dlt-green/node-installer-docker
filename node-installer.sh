@@ -756,24 +756,32 @@ Dashboard() {
 
 	if [ "$opt_mode" = 1 ]; then
 	  echo "$ca""unattended: Update IOTA-Hornet...""$xx"
+	  VAR_STATUS='Update IOTA-Hornet'
+	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='1'
 	fi
 	
 	if [ "$opt_mode" = 2 ]; then
 	  echo "$ca""unattended: Update IOTA-Wasp...""$xx"
+	  VAR_STATUS='Update IOTA-Wasp'
+	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='2'
 	fi
 	
 	if [ "$opt_mode" = 5 ]; then
 	  echo "$ca""unattended: Update Shimmer-Hornet...""$xx"
+	  VAR_STATUS='Update Shimmer-Hornet'
+	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='5'
 	fi
 
 	if [ "$opt_mode" = 6 ]; then
 	  echo "$ca""unattended: Update Shimmer-Wasp...""$xx"
+	  VAR_STATUS='Update Shimmer-Wasp'
+	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='6'
 	fi
