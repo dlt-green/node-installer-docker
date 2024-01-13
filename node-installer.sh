@@ -2247,10 +2247,11 @@ IotaHornet() {
 	if [ ! -d /var/lib/"$VAR_DIR" ]; then mkdir /var/lib/"$VAR_DIR" || exit; fi
 	cd /var/lib/"$VAR_DIR" || exit
 
-	echo ""
-	echo "CleanUp Directory... /var/lib/$VAR_DIR"
-
-	$(find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +)
+	if ! [ "$opt_mode" = 's' ]; then
+		echo ""
+		echo "CleanUp Directory... /var/lib/$VAR_DIR"
+		find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +
+	fi
 
 	echo ""
 	echo "Download Package... install.tar.gz"
@@ -2653,10 +2654,11 @@ IotaWasp() {
 	if [ ! -d /var/lib/"$VAR_DIR" ]; then mkdir /var/lib/"$VAR_DIR" || exit; fi
 	cd /var/lib/"$VAR_DIR" || exit
 
-	echo ""
-	echo "CleanUp Directory... /var/lib/$VAR_DIR"
-
-	$($(find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +))
+	if ! [ "$opt_mode" = 's' ]; then
+		echo ""
+		echo "CleanUp Directory... /var/lib/$VAR_DIR"
+		find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +
+	fi
 
 	echo ""
 	echo "Download Package... install.tar.gz"
@@ -2994,10 +2996,11 @@ ShimmerHornet() {
 	if [ ! -d /var/lib/"$VAR_DIR" ]; then mkdir /var/lib/"$VAR_DIR" || exit; fi
 	cd /var/lib/"$VAR_DIR" || exit
 
-	echo ""
-	echo "CleanUp Directory... /var/lib/$VAR_DIR"
-
-	$($(find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +))
+	if ! [ "$opt_mode" = 's' ]; then
+		echo ""
+		echo "CleanUp Directory... /var/lib/$VAR_DIR"
+		find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +
+	fi
 
 	echo ""
 	echo "Download Package... install.tar.gz"
@@ -3400,10 +3403,11 @@ ShimmerWasp() {
 	if [ ! -d /var/lib/"$VAR_DIR" ]; then mkdir /var/lib/"$VAR_DIR" || exit; fi
 	cd /var/lib/"$VAR_DIR" || exit
 
-	echo ""
-	echo "CleanUp Directory... /var/lib/$VAR_DIR"
-
-	$($(find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +))
+	if ! [ "$opt_mode" = 's' ]; then
+		echo ""
+		echo "CleanUp Directory... /var/lib/$VAR_DIR"
+		find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +
+	fi
 
 	echo ""
 	echo "Download Package... install.tar.gz"
@@ -3733,10 +3737,11 @@ ShimmerChronicle() {
 	if [ ! -d /var/lib/"$VAR_DIR" ]; then mkdir /var/lib/"$VAR_DIR" || exit; fi
 	cd /var/lib/"$VAR_DIR" || exit
 
-	echo ""
-	echo "CleanUp Directory... /var/lib/$VAR_DIR"
-
-	$($(find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +))
+	if ! [ "$opt_mode" = 's' ]; then
+		echo ""
+		echo "CleanUp Directory... /var/lib/$VAR_DIR"
+		find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +
+	fi
 
 	echo ""
 	echo "Download Package... install.tar.gz"
