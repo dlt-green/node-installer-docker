@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.3.0.0"
-BUILD="20240113_024734"
+VRSN="v.3.0.1"
+BUILD="20240113_191756"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -108,19 +108,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='7cb69ee7ed0ee5041b20c23ad6d7914cc1b6642057a16ffdc0a74543f0d6cd08'
+IotaHornetHash='75860ef4a1f94b6a393b783e517d12ac843dd8cf18aa14733fff16dfa093b316'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='c5fc08e6b097f76ca106f59006547ade05d6a2bf17119f8a616673bfc3005f42'
+IotaWaspHash='d79ba49539509e15a29774ba074d701a25c90203890aa5b1148e33649a712a1f'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='4bc7334aaf58454ed0b8809f73433788fddb583fc0e9a37a68f2cf4d82579457'
+ShimmerHornetHash='1baa80e75f83e371bdd155c2db6944dd7ef3adc20c829d7fe1606e539157c27f'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='28e46df155ac94aa0c920a3cea3bb4332e4594d189fe5339e4915680d1a31d47'
+ShimmerWaspHash='3726f59446ea65a25e7397d2fe948ea04fb6e815c0cbd8845e8f227ce5deda5c'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='0214e8d6383d350ffb05b8cba88b7ec65e85c0fbf0121dfdb4eab5719368ba03'
+ShimmerChronicleHash='39898fe8c1d96dd9a68aec0eefb7cc55ff125a6bbc1b3a008a9cb4884290303d'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -750,8 +750,7 @@ Dashboard() {
 	  VAR_STATUS='System Maintenance'
 	  NotifyMessage "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
-	  SystemMaintenance
-	  n='q'
+	  n='0'
 	fi
 
 	if [ "$opt_mode" = 1 ]; then
@@ -853,14 +852,15 @@ Dashboard() {
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   
-	   if [ "$opt_mode" = 's' ]; then clear; exit; fi
-	   
-	   DashboardHelper ;;
+	   if [ "$opt_mode" ]; then clear; exit; else DashboardHelper; fi ;;
 
+	0) VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	   SystemMaintenance
+	   if [ "$opt_mode" ]; then clear; exit; else DashboardHelper; fi ;;
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
-	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaHornet; fi ;;
+	   if [ "$opt_mode" ]; then IotaHornet; clear; exit; else SubMenuMaintenance; fi ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-wasp'
-	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaWasp; fi ;;
+	   if [ "$opt_mode" ]; then IotaWasp; clear; exit; else SubMenuMaintenance; fi ;;
 	3) VAR_NETWORK=1; VAR_NODE=3; VAR_DIR='iota-wasp'
 	   clear
 	   echo "$ca"
@@ -872,9 +872,9 @@ Dashboard() {
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   DashboardHelper ;;
 	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-hornet'
-	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerHornet; fi ;;
+	   if [ "$opt_mode" ]; then ShimmerHornet; clear; exit; else SubMenuMaintenance; fi ;;
 	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-wasp'
-	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerWasp; fi ;;
+	   if [ "$opt_mode" ]; then ShimmerWasp; clear; exit; else SubMenuMaintenance; fi ;;
 	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='shimmer-wasp'
 	   clear
 	   echo "$ca"
@@ -883,7 +883,7 @@ Dashboard() {
 	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi 
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=0; VAR_DIR='shimmer-plugins'
-	   SubMenuPlugins ;;
+	   if [ "$opt_mode" ]; then clear; exit; else SubMenuPlugins; fi ;;
 	e|E) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   if [ -d "/var/lib/iota-hornet" ]; then CheckEventsIota; fi
@@ -1188,13 +1188,16 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY_ENDPOINT=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2 | cut -d ' ' -f 2)
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
 
-	   echo "ChannelId:   " "$VAR_NOTIFY_ID"
-	   echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
-	   echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
-
-	   echo ""
-	   qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
-	   echo ""
+	   if [ "$VAR_NOTIFY_ID" ]; then
+	     echo "ChannelId:   " "$VAR_NOTIFY_ID"
+	     echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
+	     echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
+	     echo ""
+	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
+ 	     echo ""
+	   else
+	     echo "$rd""No Message Channel generated!""$xx"
+	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
@@ -2006,8 +2009,7 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker stop $(docker ps -a -q)
-	docker ps -a -q >/dev/null 2>&1
+	docker stop "$(docker ps -a -q)" 2>/dev/null
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
@@ -2152,9 +2154,8 @@ SystemMaintenance() {
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
-	   if [ "$opt_mode" = 0 ]; then clear; exit; fi
-
-	   MainMenu ;;
+	   if ! [ "$opt_mode" ]; then MainMenu; fi
+	   ;;
 	esac
 }
 
@@ -2176,9 +2177,9 @@ Docker() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	sudo apt-get update
+	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get update
 
-	sudo apt-get install \
+	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install \
 		ca-certificates \
 		curl \
 		gnupg \
@@ -2191,7 +2192,7 @@ Docker() {
 	echo ""
 
 	sudo mkdir -p /etc/apt/keyrings
-	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -2209,12 +2210,12 @@ Docker() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	sudo apt-get update
-	sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
+	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get update
+	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
-	MainMenu
+	if ! [ "$opt_mode" ]; then MainMenu; fi
 }
 
 IotaHornet() {
@@ -2618,9 +2619,7 @@ IotaHornet() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
-	if [ "$opt_mode" ]; then clear; exit; fi
-
-	Dashboard
+	if ! [ "$opt_mode" ]; then Dashboard; fi
 }
 
 IotaWasp() {
@@ -2957,9 +2956,7 @@ IotaWasp() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
-	if [ "$opt_mode" ]; then clear; exit; fi
-
-	Dashboard
+	if ! [ "$opt_mode" ]; then Dashboard; fi
 }
 
 ShimmerHornet() {
@@ -3363,9 +3360,7 @@ ShimmerHornet() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
-	if [ "$opt_mode" ]; then clear; exit; fi
-
-	Dashboard
+	if ! [ "$opt_mode" ]; then Dashboard; fi
 }
 
 ShimmerWasp() {
@@ -3702,9 +3697,7 @@ ShimmerWasp() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
-	if [ "$opt_mode" ]; then clear; exit; fi
-
-	Dashboard
+	if ! [ "$opt_mode" ]; then Dashboard; fi
 }
 
 ShimmerChronicle() {
@@ -3730,11 +3723,8 @@ ShimmerChronicle() {
 	if [ ! -d /var/lib/"$VAR_DIR" ]; then mkdir /var/lib/"$VAR_DIR" || exit; fi
 	cd /var/lib/"$VAR_DIR" || exit
 
-	if ! [ "$opt_mode" = 's' ]; then
-		echo ""
-		echo "CleanUp Directory... /var/lib/$VAR_DIR"
-		find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +
-	fi
+	echo "CleanUp Directory... /var/lib/$VAR_DIR"
+	find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +
 
 	echo ""
 	echo "Download Package... install.tar.gz"
@@ -4008,7 +3998,7 @@ ShimmerChronicle() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
-	SubMenuMaintenance
+	if ! [ "$opt_mode" ]; then SubMenuMaintenance; fi
 }
 
 RenameContainer() {
@@ -4088,5 +4078,12 @@ if [ $? -eq 0 ]
 	then
         Dashboard
 	else
-        MainMenu
+        if [ "$opt_mode" = 0 ]; then
+			echo "$ca""unattended: Install Docker...""$xx"
+			Docker
+			Dashboard
+		else
+			MainMenu
+		fi
+	fi
 fi

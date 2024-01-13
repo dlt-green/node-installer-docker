@@ -43,17 +43,17 @@ dlt.green
 ### NODE-INSTALLER unattended
 
 ```
-dlt.green [-m modus/optional] [-t time/optional] [-r reboot/optional] [-c checks/optional]
+dlt.green [-m mode/optional] [-t time/optional] [-r reboot/optional] [-c checks/optional]
 ```
 
 ```
-modus: s: Start all Nodes
-modus: 0: Maintenance -> System Updates/Docker Cleanup
-
-modus: 1: Update -> IOTA-Hornet
-modus: 2: Update -> IOTA-Wasp
-modus: 5: Update -> Shimmer-Hornet
-modus: 6: Update -> Shimmer-Wasp
+mode: s: Start all Nodes
+mode: 0: Maintenance -> System Updates/Docker Cleanup/Certificate Update
+         this mode also automatically installs Docker if Docker was not preinstalled
+mode: 1: Update -> IOTA-Hornet
+mode: 2: Update -> IOTA-Wasp
+mode: 5: Update -> Shimmer-Hornet
+mode: 6: Update -> Shimmer-Wasp
 ```
 
 ```
