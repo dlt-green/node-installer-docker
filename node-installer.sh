@@ -857,9 +857,9 @@ Dashboard() {
 	   DashboardHelper ;;
 
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
-	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaHornet; fi ;;
+#	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaHornet; fi ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-wasp'
-	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaWasp; fi ;;
+#	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else IotaWasp; fi ;;
 	3) VAR_NETWORK=1; VAR_NODE=3; VAR_DIR='iota-wasp'
 	   clear
 	   echo "$ca"
@@ -871,9 +871,9 @@ Dashboard() {
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   DashboardHelper ;;
 	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-hornet'
-	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerHornet; fi ;;
+#	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerHornet; fi ;;
 	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-wasp'
-	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerWasp; fi ;;
+#	   if ! [ "$opt_mode" ]; then SubMenuMaintenance; else ShimmerWasp; fi ;;
 	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='shimmer-wasp'
 	   clear
 	   echo "$ca"
