@@ -1188,12 +1188,15 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY_ENDPOINT=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2 | cut -d ' ' -f 2)
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
 
-	   echo "ChannelId:   " "$VAR_NOTIFY_ID"
-	   echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
-	   echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
-
-	   echo ""
-	   qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
+	   if [ "$VAR_NOTIFY_ID" ]; then
+	     echo "ChannelId:   " "$VAR_NOTIFY_ID"
+	     echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
+	     echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
+	     echo ""
+	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT";
+	   else
+	     echo "$rd""No Message Channel generated!""$xx"
+	   fi
 	   echo ""
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
