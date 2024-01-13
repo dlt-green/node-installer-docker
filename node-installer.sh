@@ -1193,11 +1193,11 @@ SubMenuNotifyMe() {
 	     echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
 	     echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
 	     echo ""
-	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT";
+	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
+ 	     echo ""
 	   else
 	     echo "$rd""No Message Channel generated!""$xx"
 	   fi
-	   echo ""
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
