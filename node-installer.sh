@@ -2250,7 +2250,7 @@ IotaHornet() {
 	echo ""
 	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
-	$("find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +")
+	$(find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +)
 
 	echo ""
 	echo "Download Package... install.tar.gz"
@@ -2656,7 +2656,7 @@ IotaWasp() {
 	echo ""
 	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
-	$("find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +")
+	$($(find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +))
 
 	echo ""
 	echo "Download Package... install.tar.gz"
@@ -2997,7 +2997,7 @@ ShimmerHornet() {
 	echo ""
 	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
-	$("find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +")
+	$($(find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +))
 
 	echo ""
 	echo "Download Package... install.tar.gz"
@@ -3403,7 +3403,7 @@ ShimmerWasp() {
 	echo ""
 	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
-	$("find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +")
+	$($(find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +))
 
 	echo ""
 	echo "Download Package... install.tar.gz"
@@ -3736,7 +3736,7 @@ ShimmerChronicle() {
 	echo ""
 	echo "CleanUp Directory... /var/lib/$VAR_DIR"
 
-	$("find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +")
+	$($(find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +))
 
 	echo ""
 	echo "Download Package... install.tar.gz"
