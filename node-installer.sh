@@ -1188,7 +1188,7 @@ SubMenuNotifyMe() {
 	   
 	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.run/'"$VAR_NOTIFY_ID"' -d'
 
-	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """info | $VAR_DOMAIN | message channel activated""" 2>/dev/null)
+	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """info | $VAR_DOMAIN | message channel: activated""" 2>/dev/null)
 	   if [ "$NotifyResult" = 'ok' ]; then
 
 	     if [ -f ~/.bash_aliases ]; then
@@ -1198,13 +1198,13 @@ SubMenuNotifyMe() {
 	         if [ ! -z "$headerLine" ]; then
 	         insertLine=$(($headerLine))
 	         sed -i "$insertLine a alias dlt.green-msg=\"""$VAR_NOTIFY_ENDPOINT_URL"""\" ~/.bash_aliases
-	         echo "$gn""New Message Channel activated...""$xx"
+	         echo "$gn""New message channel: activated...""$xx"
 	       else
 	         echo "$rd""Error activating new Message Channel!""$xx"
 	       fi
 	     else
 	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
-	       echo "$gn""New Message Channel activated...""$xx"
+	       echo "$gn""New message channel: activated...""$xx"
 	     fi
 	   fi
 
