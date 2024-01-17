@@ -781,7 +781,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 6 ]; then
 	  echo "$ca""unattended: Update Shimmer-Wasp...""$xx"
-	  VAR_STATUS='Update shimmer-wasp'
+	  VAR_STATUS='update shimmer-wasp'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='6'
@@ -2061,7 +2061,10 @@ SystemMaintenance() {
 	echo ""
 
 	docker stop $(docker ps -a -q) 2>/dev/null
-
+	if [ "$opt_mode" = 0 ]; then
+	  VAR_STATUS='stop all nodes'
+	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
+	fi
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
@@ -2076,7 +2079,10 @@ SystemMaintenance() {
 	sudo DEBIAN_FRONTEND=noninteractive apt dist-upgrade -y
 	sudo DEBIAN_FRONTEND=noninteractive apt autoclean -y
 	sudo DEBIAN_FRONTEND=noninteractive apt autoremove -y
-
+	if [ "$opt_mode" = 0 ]; then
+	  VAR_STATUS='update system'
+	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
+	fi
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
@@ -2102,6 +2108,10 @@ SystemMaintenance() {
 	          cp "/var/lib/$NODE/data/letsencrypt/$HOST.key" "/etc/letsencrypt/live/$HOST/privkey.pem"
 	          echo "$gn""Global Certificate is now updated for all Nodes from $NODE""$xx"
 	          echo "valid until: ""$(openssl x509 -in "$HOST".crt -noout -enddate | cut -d '=' -f 2)"
+	          if [ "$opt_mode" = 0 ]; then
+	            VAR_STATUS='ssl-certificate: valid until '"$(openssl x509 -in "$HOST".crt -noout -enddate | cut -d '=' -f 2)"
+	            NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
+	          fi
 	          CERT=$(( CERT + 1 ))
 	        fi
 	      fi
@@ -2109,8 +2119,20 @@ SystemMaintenance() {
 	  fi
 	done
 	
-	if [ $CERT = 0 ]; then echo "$rd""No Let's Encrypt Certificate found, aborted!""$xx"; fi
-	if [ $CERT -gt 1 ]; then echo "$rd"; echo "Misconfiguration with Certificates from your Nodes detected!""$xx"; fi
+	if [ $CERT = 0 ]; then
+	  echo "$rd""No Let's Encrypt Certificate found, aborted!""$xx"
+	  if [ "$opt_mode" = 0 ]; then
+	      VAR_STATUS="ssl-certificate: no let's encrypt certificate found"
+	      NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS";
+	  fi
+	fi
+	if [ $CERT -gt 1 ]; then echo "$rd";
+	  echo "Misconfiguration with Certificates from your Nodes detected""$xx"
+	  if [ "$opt_mode" = 0 ]; then
+	      VAR_STATUS="ssl-certificate: misconfiguration detected!"
+	      NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS";
+	  fi
+	fi
 	
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
