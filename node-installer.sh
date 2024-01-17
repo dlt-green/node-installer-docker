@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.3.0.3"
-BUILD="20240117_072042"
+VRSN="v.3.0.4"
+BUILD="20240117_200421"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -108,19 +108,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='c24405e95d66f0adeb7a708aac41098f5b672529676d50a8a7d7fe536683e850'
+IotaHornetHash='efe8341bc991c6e8045219ebaa8ef6859a7d3000234725c6bdf4764ed7d3d344'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='6e4764b1c1652b87e96a3993ec38671dd573330e3098d3a6ab26da539938e3c1'
+IotaWaspHash='0d78ac4fe395fad980b049fb4015526cb8e6bc0dbfdb8c424341bccb00b92988'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='1b903d67a00c8070cb6c541af34c39a75611720a1e4f49ba650e22faf9968e95'
+ShimmerHornetHash='e9438c5746ff4d5ce799d2681d080c88c6df5f114bbb8861f1de09c13c546ed2'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='17e89f8aa7c87c76eb02fae21954c5ff13987b03b50a56f902301e0ac59281cb'
+ShimmerWaspHash='f73e1ee7c3ab99acbc91f92a71c05420f8bdd361021b792239392425a11439bd'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='c96ccea0c6f6d0218f12a1432446f6c822a9d66402576a8c09610dc13d693499'
+ShimmerChronicleHash='cf1bbd35a109c8d418a6a5c0e257370c1994736636f3d1b18e633124964e38a6'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -781,7 +781,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 6 ]; then
 	  echo "$ca""unattended: Update Shimmer-Wasp...""$xx"
-	  VAR_STATUS='Update shimmer-wasp'
+	  VAR_STATUS='update shimmer-wasp'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='6'
@@ -821,24 +821,27 @@ Dashboard() {
 	           VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
 
 	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
-	             VAR_STATUS="$NODE$NETWORK: database broken"
+	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             docker compose stop
 	             docker compose pull
 	             ./prepare_docker.sh
-	             VAR_STATUS="$NODE$NETWORK: reset database"
-	             if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             if [ "$NODE" = 'iota-hornet' ]; then 
+	               VAR_STATUS="$NODE$NETWORK: reset database"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_IOTA_HORNET_NETWORK"/*
 	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/*
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
 	             if [ "$NODE" = 'shimmer-hornet' ]; then 
+	               VAR_STATUS="$NODE$NETWORK: reset database"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
-	             if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             docker compose up -d
 	             sleep 60
 	             VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
@@ -1135,8 +1138,9 @@ SubMenuNotifyMe() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                              1. Generate new Message Channel                ║"
-	echo "║                              2. Show existing Message Channel               ║"
+	echo "║                              1. Show existing Message Channel               ║"
+	echo "║                              2. Activate new Message Channel                ║"	
+	echo "║                              3. Generate new Message Channel                ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1146,6 +1150,70 @@ SubMenuNotifyMe() {
 	read -r -p '> ' n
 	case $n in
 	1) clear
+	   echo "$ca"
+	   echo "Show existing Message Channel..."
+	   echo "$xx"
+	
+	   VAR_NOTIFY_URL='https://notify.run'
+	   VAR_NOTIFY_ENDPOINT=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2 | cut -d ' ' -f 2)
+	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
+
+	   if [ "$VAR_NOTIFY_ID" ]; then
+	     echo "ChannelId:   " "$VAR_NOTIFY_ID"
+	     echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
+	     echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
+	     echo ""
+	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
+ 	     echo ""
+	   else
+	     echo "$rd""No Message Channel generated!""$xx"
+	   fi
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuNotifyMe ;;
+	2) clear
+	   echo "$ca"
+	   echo "Activate new Message Channel..."
+	   echo "$xx"
+
+	   VAR_NOTIFY_URL='https\:\/\/notify.run'
+
+	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
+	   VAR_DEFAULT=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null);
+	   if [ -z "$VAR_NOTIFY_ID" ]; then
+	     echo "Set message channel (default: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set message channel (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
+	   read -r -p '> ' VAR_TMP
+	   if [ -n "$VAR_TMP" ]; then VAR_NOTIFY_ID=$VAR_TMP; elif [ -z "$VAR_NOTIFY_ID" ]; then VAR_NOTIFY_ID=$VAR_DEFAULT; fi
+	   echo "$gn""Set Message Channel: $VAR_NOTIFY_ID""$xx"
+	   
+	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.run/'"$VAR_NOTIFY_ID"' -d'
+
+	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """info | $VAR_DOMAIN | message channel activated""" 2>/dev/null)
+	   if [ "$NotifyResult" = 'ok' ]; then
+
+	     if [ -f ~/.bash_aliases ]; then
+	       headerLine=$(awk '/# DLT.GREEN Node-Installer-Docker/{ print NR; exit }' ~/.bash_aliases)
+	       insertLine=$(awk '/dlt.green-msg=/{ print NR; exit }' ~/.bash_aliases)
+	       if [ -z "$insertLine" ]; then
+	         if [ ! -z "$headerLine" ]; then
+	         insertLine=$(($headerLine))
+	         sed -i "$insertLine a alias dlt.green-msg=\"""$VAR_NOTIFY_ENDPOINT_URL"""\" ~/.bash_aliases
+	         echo "$gn""New Message Channel activated...""$xx"
+	       else
+	         echo "$rd""Error activating new Message Channel!""$xx"
+	       fi
+	     else
+	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
+	       echo "$gn""New Message Channel activated...""$xx"
+	     fi
+	   fi
+
+           else echo "$rd""Error activating new Message Channel!""$xx"; fi
+
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuNotifyMe ;;
+	3) clear
 	   echo "$ca"
 	   echo "Generate new Message Channel..."
 	   echo "$xx"
@@ -1180,28 +1248,6 @@ SubMenuNotifyMe() {
 	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
 	       echo "$gn""New Message Channel generated...""$xx"
 	     fi	     
-	   fi
-
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-	   SubMenuNotifyMe ;;
-	2) clear
-	   echo "$ca"
-	   echo "Show existing Message Channel..."
-	   echo "$xx"
-	
-	   VAR_NOTIFY_URL='https://notify.run'
-	   VAR_NOTIFY_ENDPOINT=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2 | cut -d ' ' -f 2)
-	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
-
-	   if [ "$VAR_NOTIFY_ID" ]; then
-	     echo "ChannelId:   " "$VAR_NOTIFY_ID"
-	     echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
-	     echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
-	     echo ""
-	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
- 	     echo ""
-	   else
-	     echo "$rd""No Message Channel generated!""$xx"
 	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2015,7 +2061,10 @@ SystemMaintenance() {
 	echo ""
 
 	docker stop $(docker ps -a -q) 2>/dev/null
-
+	if [ "$opt_mode" = 0 ]; then
+	  VAR_STATUS='stop all nodes'
+	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
+	fi
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
@@ -2030,7 +2079,10 @@ SystemMaintenance() {
 	sudo DEBIAN_FRONTEND=noninteractive apt dist-upgrade -y
 	sudo DEBIAN_FRONTEND=noninteractive apt autoclean -y
 	sudo DEBIAN_FRONTEND=noninteractive apt autoremove -y
-
+	if [ "$opt_mode" = 0 ]; then
+	  VAR_STATUS='update system'
+	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
+	fi
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
@@ -2056,6 +2108,10 @@ SystemMaintenance() {
 	          cp "/var/lib/$NODE/data/letsencrypt/$HOST.key" "/etc/letsencrypt/live/$HOST/privkey.pem"
 	          echo "$gn""Global Certificate is now updated for all Nodes from $NODE""$xx"
 	          echo "valid until: ""$(openssl x509 -in "$HOST".crt -noout -enddate | cut -d '=' -f 2)"
+	          if [ "$opt_mode" = 0 ]; then
+	            VAR_STATUS='ssl-certificate: valid until '"$(openssl x509 -in "$HOST".crt -noout -enddate | cut -d '=' -f 2)"
+	            NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
+	          fi
 	          CERT=$(( CERT + 1 ))
 	        fi
 	      fi
@@ -2063,8 +2119,20 @@ SystemMaintenance() {
 	  fi
 	done
 	
-	if [ $CERT = 0 ]; then echo "$rd""No Let's Encrypt Certificate found, aborted!""$xx"; fi
-	if [ $CERT -gt 1 ]; then echo "$rd"; echo "Misconfiguration with Certificates from your Nodes detected!""$xx"; fi
+	if [ $CERT = 0 ]; then
+	  echo "$rd""No Let's Encrypt Certificate found, aborted!""$xx"
+	  if [ "$opt_mode" = 0 ]; then
+	      VAR_STATUS="ssl-certificate: no let's encrypt certificate found"
+	      NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS";
+	  fi
+	fi
+	if [ $CERT -gt 1 ]; then echo "$rd";
+	  echo "Misconfiguration with Certificates from your Nodes detected""$xx"
+	  if [ "$opt_mode" = 0 ]; then
+	      VAR_STATUS="ssl-certificate: misconfiguration detected!"
+	      NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS";
+	  fi
+	fi
 	
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
