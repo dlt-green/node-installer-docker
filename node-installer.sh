@@ -748,7 +748,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 0 ]; then
 	  echo "$ca""unattended: System Maintenance...""$xx"
-	  VAR_STATUS='system maintenance'
+	  VAR_STATUS='system: maintenance'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  SystemMaintenance
 	  if [ "$opt_mode" ]; then opt_mode='s'; fi
@@ -757,7 +757,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 1 ]; then
 	  echo "$ca""unattended: Update IOTA-Hornet...""$xx"
-	  VAR_STATUS="update iota-hornet: v.$VAR_IOTA_HORNET_VERSION"
+	  VAR_STATUS="iota-hornet $VAR_IOTA_HORNET_NETWORK: update v.$VAR_IOTA_HORNET_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='1'
@@ -765,7 +765,7 @@ Dashboard() {
 	
 	if [ "$opt_mode" = 2 ]; then
 	  echo "$ca""unattended: Update IOTA-Wasp...""$xx"
-	  VAR_STATUS="update iota-wasp v.$VAR_IOTA_WASP_VERSION"
+	  VAR_STATUS="iota-wasp: update v.$VAR_IOTA_WASP_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='2'
@@ -773,7 +773,7 @@ Dashboard() {
 	
 	if [ "$opt_mode" = 5 ]; then
 	  echo "$ca""unattended: Update Shimmer-Hornet...""$xx"
-	  VAR_STATUS="update shimmer-hornet: v.$VAR_SHIMMER_HORNET_VERSION"
+	  VAR_STATUS="shimmer-hornet $VAR_SHIMMER_HORNET_NETWORK: update v.$VAR_SHIMMER_HORNET_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='5'
@@ -781,7 +781,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 6 ]; then
 	  echo "$ca""unattended: Update Shimmer-Wasp...""$xx"
-	  VAR_STATUS="update shimmer-wasp: v.$VAR_SHIMMER_WASP_VERSION"
+	  VAR_STATUS="shimmer-wasp: update v.$VAR_SHIMMER_WASP_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='6'
@@ -789,7 +789,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
-	  VAR_STATUS='start all nodes'
+	  VAR_STATUS='system: start all nodes'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='s'
@@ -2062,7 +2062,7 @@ SystemMaintenance() {
 
 	docker stop $(docker ps -a -q) 2>/dev/null
 	if [ "$opt_mode" = 0 ]; then
-	  VAR_STATUS='stop all nodes'
+	  VAR_STATUS='system: stop all nodes'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	fi
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2080,7 +2080,7 @@ SystemMaintenance() {
 	sudo DEBIAN_FRONTEND=noninteractive apt autoclean -y
 	sudo DEBIAN_FRONTEND=noninteractive apt autoremove -y
 	if [ "$opt_mode" = 0 ]; then
-	  VAR_STATUS='update system'
+	  VAR_STATUS='system: update'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	fi
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2157,7 +2157,7 @@ SystemMaintenance() {
 	if [ "$opt_reboot" = 1 ]; then n=1; else if [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
 
 	if [ "$opt_mode" = 0 ]; then if [ "$opt_reboot" = 1 ]; then
-	  VAR_STATUS='system reboot'
+	  VAR_STATUS='system: reboot'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
 	  sleep 3
 	fi; fi
