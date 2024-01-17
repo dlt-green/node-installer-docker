@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.3.0.5"
-BUILD="20240117_212028"
+VRSN="v.3.0.6"
+BUILD="20240117_214710"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -108,19 +108,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='5893566655453315c3a1d0a2b5cb883ae3eb547272eb6c6594003ee0633f1839'
+IotaHornetHash='06f76012e669e7eca01d041eb60de037d5a98951b16beedb44269932e5b6d225'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='df6a6530299710250bc6276ab10fd79cd355b93538b6905c614ec7f1673a7f0b'
+IotaWaspHash='525e561d672149a3b11e61af747c6d51c6f3196079762e8a7393a7235a9f9efc'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='65b056c66e56882fd29214e77f8ad41dbaf3e45c6eeaf02bfff917de4b37d98d'
+ShimmerHornetHash='954c7cd5b5a251730583c27ba33ad3a6e72d1a5fe5c859316530400d0199984b'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='3de46358e8a99c28bdad72395ddadf483257635506028d259093bf38f69600e6'
+ShimmerWaspHash='0594aff0ec8849bf775cbb0f37ae3e2cf441ccb01641f87cb2445146996d2eb6'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='f98137ec6bdbcac79795ba7b036175ea32d82bdfa90ee34c321c257b8d1fde40'
+ShimmerChronicleHash='07dd5b973972b22501698942d9557eee87620b1392643669e0e2902bc827d851'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -748,7 +748,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 0 ]; then
 	  echo "$ca""unattended: System Maintenance...""$xx"
-	  VAR_STATUS='system maintenance'
+	  VAR_STATUS='system: maintenance'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  SystemMaintenance
 	  if [ "$opt_mode" ]; then opt_mode='s'; fi
@@ -757,7 +757,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 1 ]; then
 	  echo "$ca""unattended: Update IOTA-Hornet...""$xx"
-	  VAR_STATUS="update iota-hornet: v.$VAR_IOTA_HORNET_VERSION"
+	  VAR_STATUS="iota-hornet $VAR_IOTA_HORNET_NETWORK: update v.$VAR_IOTA_HORNET_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='1'
@@ -765,7 +765,7 @@ Dashboard() {
 	
 	if [ "$opt_mode" = 2 ]; then
 	  echo "$ca""unattended: Update IOTA-Wasp...""$xx"
-	  VAR_STATUS="update iota-wasp v.$VAR_IOTA_WASP_VERSION"
+	  VAR_STATUS="iota-wasp: update v.$VAR_IOTA_WASP_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='2'
@@ -773,7 +773,7 @@ Dashboard() {
 	
 	if [ "$opt_mode" = 5 ]; then
 	  echo "$ca""unattended: Update Shimmer-Hornet...""$xx"
-	  VAR_STATUS="update shimmer-hornet: v.$VAR_SHIMMER_HORNET_VERSION"
+	  VAR_STATUS="shimmer-hornet $VAR_SHIMMER_HORNET_NETWORK: update v.$VAR_SHIMMER_HORNET_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='5'
@@ -781,7 +781,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 6 ]; then
 	  echo "$ca""unattended: Update Shimmer-Wasp...""$xx"
-	  VAR_STATUS="update shimmer-wasp: v.$VAR_SHIMMER_WASP_VERSION"
+	  VAR_STATUS="shimmer-wasp: update v.$VAR_SHIMMER_WASP_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='6'
@@ -789,7 +789,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
-	  VAR_STATUS='start all nodes'
+	  VAR_STATUS='system: start all nodes'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='s'
@@ -2062,7 +2062,7 @@ SystemMaintenance() {
 
 	docker stop $(docker ps -a -q) 2>/dev/null
 	if [ "$opt_mode" = 0 ]; then
-	  VAR_STATUS='stop all nodes'
+	  VAR_STATUS='system: stop all nodes'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	fi
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2080,7 +2080,7 @@ SystemMaintenance() {
 	sudo DEBIAN_FRONTEND=noninteractive apt autoclean -y
 	sudo DEBIAN_FRONTEND=noninteractive apt autoremove -y
 	if [ "$opt_mode" = 0 ]; then
-	  VAR_STATUS='update system'
+	  VAR_STATUS='system: update'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	fi
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2157,7 +2157,7 @@ SystemMaintenance() {
 	if [ "$opt_reboot" = 1 ]; then n=1; else if [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
 
 	if [ "$opt_mode" = 0 ]; then if [ "$opt_reboot" = 1 ]; then
-	  VAR_STATUS='system reboot'
+	  VAR_STATUS='system: reboot'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
 	  sleep 3
 	fi; fi
