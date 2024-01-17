@@ -2014,7 +2014,7 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker stop "$(docker ps -a -q)" 2>/dev/null
+	docker stop $(docker ps -a -q) 2>/dev/null
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
