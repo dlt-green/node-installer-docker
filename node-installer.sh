@@ -1138,8 +1138,9 @@ SubMenuNotifyMe() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                              1. Generate new Message Channel                ║"
-	echo "║                              2. Show existing Message Channel               ║"
+	echo "║                              1. Show existing Message Channel               ║"
+	echo "║                              2. Activate new Message Channel                ║"	
+	echo "║                              3. Generate new Message Channel                ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1149,6 +1150,70 @@ SubMenuNotifyMe() {
 	read -r -p '> ' n
 	case $n in
 	1) clear
+	   echo "$ca"
+	   echo "Show existing Message Channel..."
+	   echo "$xx"
+	
+	   VAR_NOTIFY_URL='https://notify.run'
+	   VAR_NOTIFY_ENDPOINT=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2 | cut -d ' ' -f 2)
+	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
+
+	   if [ "$VAR_NOTIFY_ID" ]; then
+	     echo "ChannelId:   " "$VAR_NOTIFY_ID"
+	     echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
+	     echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
+	     echo ""
+	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
+ 	     echo ""
+	   else
+	     echo "$rd""No Message Channel generated!""$xx"
+	   fi
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuNotifyMe ;;
+	2) clear
+	   echo "$ca"
+	   echo "Activate new Message Channel..."
+	   echo "$xx"
+
+	   VAR_NOTIFY_URL='https\:\/\/notify.run'
+
+	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
+	   VAR_DEFAULT=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null);
+	   if [ -z "$VAR_NOTIFY_ID" ]; then
+	     echo "Set message channel (default: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set message channel (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
+	   read -r -p '> ' VAR_TMP
+	   if [ -n "$VAR_TMP" ]; then VAR_NOTIFY_ID=$VAR_TMP; elif [ -z "$VAR_NOTIFY_ID" ]; then VAR_NOTIFY_ID=$VAR_DEFAULT; fi
+	   echo "$gn""Set Message Channel: $VAR_NOTIFY_ID""$xx"
+	   
+	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.run/'"$VAR_NOTIFY_ID"' -d'
+
+	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """info | $VAR_DOMAIN | message channel activated""" 2>/dev/null)
+	   if [ "$NotifyResult" = 'ok' ]; then
+
+	     if [ -f ~/.bash_aliases ]; then
+	       headerLine=$(awk '/# DLT.GREEN Node-Installer-Docker/{ print NR; exit }' ~/.bash_aliases)
+	       insertLine=$(awk '/dlt.green-msg=/{ print NR; exit }' ~/.bash_aliases)
+	       if [ -z "$insertLine" ]; then
+	         if [ ! -z "$headerLine" ]; then
+	         insertLine=$(($headerLine))
+	         sed -i "$insertLine a alias dlt.green-msg=\"""$VAR_NOTIFY_ENDPOINT_URL"""\" ~/.bash_aliases
+	         echo "$gn""New Message Channel activated...""$xx"
+	       else
+	         echo "$rd""Error activating new Message Channel!""$xx"
+	       fi
+	     else
+	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
+	       echo "$gn""New Message Channel activated...""$xx"
+	     fi
+	   fi
+
+           else echo "$rd""Error activating new Message Channel!""$xx"; fi
+
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuNotifyMe ;;
+	3) clear
 	   echo "$ca"
 	   echo "Generate new Message Channel..."
 	   echo "$xx"
@@ -1183,28 +1248,6 @@ SubMenuNotifyMe() {
 	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
 	       echo "$gn""New Message Channel generated...""$xx"
 	     fi	     
-	   fi
-
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-	   SubMenuNotifyMe ;;
-	2) clear
-	   echo "$ca"
-	   echo "Show existing Message Channel..."
-	   echo "$xx"
-	
-	   VAR_NOTIFY_URL='https://notify.run'
-	   VAR_NOTIFY_ENDPOINT=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2 | cut -d ' ' -f 2)
-	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
-
-	   if [ "$VAR_NOTIFY_ID" ]; then
-	     echo "ChannelId:   " "$VAR_NOTIFY_ID"
-	     echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
-	     echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
-	     echo ""
-	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
- 	     echo ""
-	   else
-	     echo "$rd""No Message Channel generated!""$xx"
 	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
