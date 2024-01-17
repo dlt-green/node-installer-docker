@@ -757,7 +757,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 1 ]; then
 	  echo "$ca""unattended: Update IOTA-Hornet...""$xx"
-	  VAR_STATUS='update iota-hornet'
+	  VAR_STATUS="update iota-hornet: v.$VAR_IOTA_HORNET_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='1'
@@ -765,7 +765,7 @@ Dashboard() {
 	
 	if [ "$opt_mode" = 2 ]; then
 	  echo "$ca""unattended: Update IOTA-Wasp...""$xx"
-	  VAR_STATUS='update iota-wasp'
+	  VAR_STATUS="update iota-wasp v.$VAR_IOTA_WASP_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='2'
@@ -773,7 +773,7 @@ Dashboard() {
 	
 	if [ "$opt_mode" = 5 ]; then
 	  echo "$ca""unattended: Update Shimmer-Hornet...""$xx"
-	  VAR_STATUS='update shimmer-hornet'
+	  VAR_STATUS="update shimmer-hornet: v.$VAR_SHIMMER_HORNET_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='5'
@@ -781,7 +781,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 6 ]; then
 	  echo "$ca""unattended: Update Shimmer-Wasp...""$xx"
-	  VAR_STATUS='update shimmer-wasp'
+	  VAR_STATUS="update shimmer-wasp: v.$VAR_SHIMMER_WASP_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='6'
