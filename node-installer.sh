@@ -27,7 +27,6 @@ VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
 VAR_SHIMMER_WASP_VERSION='1.0.1-rc.16'
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
 VAR_SHIMMER_WASP_CLI_VERSION='1.0.1-rc.16'
-VAR_SHIMMER_CHRONICLE_VERSION='1.0.0-rc.1'
 
 VAR_SHIMMER_INX_INDEXER_VERSION='1.0-rc'
 VAR_SHIMMER_INX_MQTT_VERSION='1.0-rc'
@@ -35,6 +34,9 @@ VAR_SHIMMER_INX_PARTICIPATION_VERSION='1.0-rc'
 VAR_SHIMMER_INX_SPAMMER_VERSION='1.0-rc'
 VAR_SHIMMER_INX_POI_VERSION='1.0-rc'
 VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0-rc'
+
+VAR_SHIMMER_INX_CHRONICLE_VERSION='1.0.0-rc.1'
+VAR_SHIMMER_INX_GROUPFI_VERSION='0.0.0'
 
 VAR_CRON_TITLE_1='# DLT.GREEN Node-Installer-Docker: Start all Nodes'
 VAR_CRON_TIME_1_1='@reboot sleep '
@@ -46,7 +48,7 @@ VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker: System Maintenance'
 VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0'
 VAR_CRON_END_2=' -t 0 -r 1"'
 
-NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
+NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle shimmer-plugins/inx-groupfi"
 
 lg='\033[1m'
 or='\e[1;33m'
@@ -122,6 +124,9 @@ ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/
 
 ShimmerChronicleHash='07dd5b973972b22501698942d9557eee87620b1392643669e0e2902bc827d851'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
+
+ShimmerGroupfiHash=''
+ShimmerGroupfiPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-groupfi.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
 
@@ -721,7 +726,11 @@ Dashboard() {
 	ix=$gr
 	if [ "$(docker container inspect -f '{{.State.Status}}' shimmer-plugins'.inx-chronicle' 2>/dev/null)" = 'running' ]; then
 	  if [ ix != "$rd" ]; then ix=$gn; fi
-	elif [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then ix=$rd; else ix=$gr; fi
+	elif [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then ix=$rd; fi
+
+	if [ "$(docker container inspect -f '{{.State.Status}}' shimmer-plugins'.inx-groupfi' 2>/dev/null)" = 'running' ]; then
+	  if [ ix != "$rd" ]; then ix=$gn; fi
+	elif [ -d /var/lib/shimmer-plugins/inx-groupfi ]; then ix=$rd; fi
 
 	clear
 	echo ""
@@ -1350,13 +1359,24 @@ SubMenuMaintenance() {
 	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 9 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_CHRONICLE_VERSION ]; then
+			if [ $(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_INX_CHRONICLE_VERSION ]; then
 				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_CHRONICLE_VERSION""$xx"
+				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_INX_CHRONICLE_VERSION""$xx"
 			fi
 		else
-			echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | available: v.$VAR_SHIMMER_CHRONICLE_VERSION""$xx"
+			echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | available: v.$VAR_SHIMMER_INX_CHRONICLE_VERSION""$xx"
+		fi
+	fi
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 10 ]; then
+		if [ -f /var/lib/$VAR_DIR/.env ]; then
+			if [ $(cat .env 2>/dev/null | grep INX_GROUPFI_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_INX_GROUPFI_VERSION ]; then
+				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_GROUPFI_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			else
+				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_GROUPFI_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_INX_GROUPFI_VERSION""$xx"
+			fi
+		else
+			echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | available: v.$VAR_SHIMMER_INX_GROUPFI_VERSION""$xx"
 		fi
 	fi
 	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
@@ -1370,6 +1390,7 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then ShimmerHornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then ShimmerWasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 9 ]; then ShimmerChronicle; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 10 ]; then ShimmerGroupFi; fi
 	   ;;
 	2) echo '(re)starting...'; sleep 3
 
@@ -1379,12 +1400,6 @@ SubMenuMaintenance() {
 	   echo "║                                Stopping Node                                ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   echo ""	
-
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-wasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop shimmer-wasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 9 ]; then docker stop shimmer-plugins.inx-chronicle; fi
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
@@ -1414,14 +1429,9 @@ SubMenuMaintenance() {
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   echo ""	
 
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-wasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop shimmer-wasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 9 ]; then docker stop shimmer-plugins.inx-chronicle; fi
-
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
-	   sleep 3;
+
+	   sleep 3
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
@@ -1604,13 +1614,16 @@ SubMenuPlugins() {
 
 
 	if [ "$(docker container inspect -f '{{.State.Status}}' $VAR_DIR'.inx-chronicle' 2>/dev/null)" = 'running' ]; then ixc=$gn; elif [ -d /var/lib/$VAR_DIR/inx-chronicle ]; then ixc=$rd; else ixc=$gr; fi
+	if [ "$(docker container inspect -f '{{.State.Status}}' $VAR_DIR'.inx-groupfi' 2>/dev/null)" = 'running' ]; then ixg=$gn; elif [ -d /var/lib/$VAR_DIR/inx-groupfi ]; then ixg=$rd; else ixg=$gr; fi
+
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                              1. ""$ixc""INX-CHRONICLE""$xx""                               ║"
+	echo "║                              1. ""$ixc""INX-Chronicle (IOTA)""$xx""                        ║"
+	echo "║                              2. ""$ixg""INX-GroupFi (TanglePay)""$xx""                     ║"	
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1632,6 +1645,15 @@ SubMenuPlugins() {
 	   VAR_DIR=$VAR_DIR'/inx-chronicle'
 	   VAR_NODE=9;
 	   SubMenuMaintenance ;;
+	2) clear
+
+	   cd /var/lib/$VAR_DIR || Dashboard;
+	   if [ ! -d /var/lib/$VAR_DIR/inx-groupfi ]; then mkdir /var/lib/$VAR_DIR/inx-groupfi || exit; fi
+	   cd /var/lib/$VAR_DIR/inx-groupfi || exit
+	   VAR_DIR=$VAR_DIR'/inx-groupfi'
+	   VAR_NODE=10;
+	   SubMenuMaintenance ;;
+
 	*) Dashboard ;;
 	esac
 }
@@ -1700,13 +1722,24 @@ SubMenuConfiguration() {
 	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 9 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_CHRONICLE_VERSION ]; then
+			if [ $(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_INX_CHRONICLE_VERSION ]; then
 				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_CHRONICLE_VERSION""$xx"
+				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_INX_CHRONICLE_VERSION""$xx"
 			fi
 		else
-			echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | available: v.$VAR_SHIMMER_CHRONICLE_VERSION""$xx"
+			echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | available: v.$VAR_SHIMMER_INX_CHRONICLE_VERSION""$xx"
+		fi
+	fi
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 10 ]; then
+		if [ -f /var/lib/$VAR_DIR/.env ]; then
+			if [ $(cat .env 2>/dev/null | grep INX_GROUPFI_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_INX_GROUPFI_VERSION ]; then
+				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_GROUPFI_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			else
+				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_GROUPFI_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_INX_GROUPFI_VERSION""$xx"
+			fi
+		else
+			echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | available: v.$VAR_SHIMMER_INX_GROUPFI_VERSION""$xx"
 		fi
 	fi
 	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
@@ -3722,7 +3755,7 @@ ShimmerChronicle() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║       DLT.GREEN AUTOMATIC SHIMMER-CHRONICLE INSTALLATION WITH DOCKER        ║"
+	echo "║     DLT.GREEN AUTOMATIC SHIMMER-INX-CHRONICLE INSTALLATION WITH DOCKER      ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "$ca""Chronicle is a INX-Plugin and can only installed on the same Server as Shimmer!""$xx";
@@ -3770,7 +3803,7 @@ ShimmerChronicle() {
 
 	CheckConfiguration
 
-	VAR_CHRONICLE_LEDGER_NETWORK='shimmer'
+	VAR_SHIMMER_INX_CHRONICLE_LEDGER_NETWORK='shimmer'
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
@@ -3795,85 +3828,85 @@ ShimmerChronicle() {
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_HTTPS_PORT=$(cat .env 2>/dev/null | grep INX_CHRONICLE_HTTPS_PORT= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT=$(cat .env 2>/dev/null | grep INX_CHRONICLE_HTTPS_PORT= | cut -d '=' -f 2)
 		VAR_DEFAULT='449';
-		if [ -z "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT" ]; then
-		  echo "Set https port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set https port (config: $ca""$VAR_SHIMMER_CHRONICLE_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT" ]; then
+		  echo "Set https port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set https port (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT" ]; then VAR_SHIMMER_CHRONICLE_HTTPS_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set https port: $VAR_SHIMMER_CHRONICLE_HTTPS_PORT""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT" ]; then VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT=$VAR_DEFAULT; fi
+		echo "$gn""Set https port: $VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME=$(cat .env 2>/dev/null | grep INX_CHRONICLE_MONGODB_USERNAME= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME=$(cat .env 2>/dev/null | grep INX_CHRONICLE_MONGODB_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME" ]; then
-		echo "Set MongoDB username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set MongoDB username (config: $ca""$VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME" ]; then
+		echo "Set MongoDB username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set MongoDB username (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME=$VAR_TMP; elif [ -z "$MONGODB_USERNAME" ]; then VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME=$VAR_DEFAULT; fi
-		echo "$gn""Set MongoDB username: $VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME=$VAR_TMP; elif [ -z "$MONGODB_USERNAME" ]; then VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME=$VAR_DEFAULT; fi
+		echo "$gn""Set MongoDB username: $VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_MONGODB_PASSWORD= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_MONGODB_PASSWORD= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD" ]; then
-		echo "Set MongoDB password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set MongoDB password (config: $ca""$VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD" ]; then
+		echo "Set MongoDB password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set MongoDB password (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD" ]; then VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD=$VAR_DEFAULT; fi
-		echo "$gn""Set MongoDB password: $VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD" ]; then VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD=$VAR_DEFAULT; fi
+		echo "$gn""Set MongoDB password: $VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_USERNAME= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME" ]; then
-		echo "Set InfluxDB username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set InfluxDB username (config: $ca""$VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME" ]; then
+		echo "Set InfluxDB username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set InfluxDB username (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME=$VAR_TMP; elif [ -z "$INFLUXDB_USERNAME" ]; then VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME=$VAR_DEFAULT; fi
-		echo "$gn""Set InfluxDB username: $VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_TMP; elif [ -z "$INFLUXDB_USERNAME" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_DEFAULT; fi
+		echo "$gn""Set InfluxDB username: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_PASSWORD= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_PASSWORD= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD" ]; then
-		echo "Set InfluxDB password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set InfluxDB password (config: $ca""$VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD" ]; then
+		echo "Set InfluxDB password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set InfluxDB password (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD" ]; then VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD=$VAR_DEFAULT; fi
-		echo "$gn""Set InfluxDB password: $VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_DEFAULT; fi
+		echo "$gn""Set InfluxDB password: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_TOKEN= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_TOKEN= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN" ]; then
-		echo "Set InfluxDB token (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set InfluxDB token (config: $ca""$VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN" ]; then
+		echo "Set InfluxDB token (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set InfluxDB token (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN" ]; then VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN=$VAR_DEFAULT; fi
-		echo "$gn""Set InfluxDB password: $VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_DEFAULT; fi
+		echo "$gn""Set InfluxDB password: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_JWT_SALT=$(cat .env 2>/dev/null | grep INX_CHRONICLE_JWT_SALT= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_JWT_SALT=$(cat .env 2>/dev/null | grep INX_CHRONICLE_JWT_SALT= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_JWT_SALT" ]; then
-		echo "Set JWT salt (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set JWT salt (config: $ca""$VAR_SHIMMER_CHRONICLE_JWT_SALT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_JWT_SALT" ]; then
+		echo "Set JWT salt (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set JWT salt (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_JWT_SALT""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_JWT_SALT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_JWT_SALT" ]; then VAR_SHIMMER_CHRONICLE_JWT_SALT=$VAR_DEFAULT; fi
-		echo "$gn""Set JWT salt: $VAR_SHIMMER_CHRONICLE_JWT_SALT""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_JWT_SALT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_JWT_SALT" ]; then VAR_SHIMMER_INX_CHRONICLE_JWT_SALT=$VAR_DEFAULT; fi
+		echo "$gn""Set JWT salt: $VAR_SHIMMER_INX_CHRONICLE_JWT_SALT""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_JWT_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_JWT_PASSWORD= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_JWT_PASSWORD= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_JWT_PASSWORD" ]; then
-		echo "Set JWT password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set JWT password (config: $ca""$VAR_SHIMMER_CHRONICLE_JWT_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD" ]; then
+		echo "Set JWT password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set JWT password (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_JWT_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_JWT_PASSWORD" ]; then VAR_SHIMMER_CHRONICLE_JWT_PASSWORD=$VAR_DEFAULT; fi
-		echo "$gn""Set JWT password: $VAR_SHIMMER_CHRONICLE_JWT_PASSWORD""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD" ]; then VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD=$VAR_DEFAULT; fi
+		echo "$gn""Set JWT password: $VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then
-		echo "Set grafana password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set grafana password (config: $ca""$VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then
+		echo "Set grafana password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set grafana password (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_DEFAULT; fi
-		echo "$gn""Set grafana password: $VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_DEFAULT; fi
+		echo "$gn""Set grafana password: $VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx"
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 		echo ""
@@ -3882,17 +3915,17 @@ ShimmerChronicle() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
+		if [ "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
 		echo "COMPOSE_PROFILES=metrics,debug" >> .env
-		echo "INX_CHRONICLE_VERSION=$VAR_SHIMMER_CHRONICLE_VERSION" >> .env
+		echo "INX_CHRONICLE_VERSION=$VAR_SHIMMER_INX_CHRONICLE_VERSION" >> .env
 		echo "INX_CHRONICLE_HOST=$VAR_HOST" >> .env
-		echo "INX_CHRONICLE_HTTPS_PORT=$VAR_SHIMMER_CHRONICLE_HTTPS_PORT" >> .env
-		echo "INX_CHRONICLE_LEDGER_NETWORK=$VAR_CHRONICLE_LEDGER_NETWORK" >> .env
-		echo "INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD" >> .env
+		echo "INX_CHRONICLE_HTTPS_PORT=$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT" >> .env
+		echo "INX_CHRONICLE_LEDGER_NETWORK=$VAR_SHIMMER_INX_CHRONICLE_LEDGER_NETWORK" >> .env
+		echo "INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
@@ -3909,7 +3942,7 @@ ShimmerChronicle() {
 			echo "INX_CHRONICLE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 	else
-		if [ -f .env ]; then sed -i "s/INX_CHRONICLE_VERSION=.*/INX_CHRONICLE_VERSION=$VAR_SHIMMER_CHRONICLE_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_CHRONICLE_VERSION=.*/INX_CHRONICLE_VERSION=$VAR_SHIMMER_INX_CHRONICLE_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 	fi
 
@@ -3933,13 +3966,13 @@ ShimmerChronicle() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		echo "INX_CHRONICLE_MONGODB_USERNAME=$VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME" >> .env
-		echo "INX_CHRONICLE_MONGODB_PASSWORD=$VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD" >> .env	
-		echo "INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME" >> .env
-		echo "INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD" >> .env		
-		echo "INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN" >> .env		
-		echo "INX_CHRONICLE_JWT_SALT=$VAR_SHIMMER_CHRONICLE_JWT_SALT" >> .env
-		echo "INX_CHRONICLE_JWT_PASSWORD=$VAR_SHIMMER_CHRONICLE_JWT_PASSWORD" >> .env
+		echo "INX_CHRONICLE_MONGODB_USERNAME=$VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME" >> .env
+		echo "INX_CHRONICLE_MONGODB_PASSWORD=$VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD" >> .env	
+		echo "INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME" >> .env
+		echo "INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD" >> .env		
+		echo "INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN" >> .env		
+		echo "INX_CHRONICLE_JWT_SALT=$VAR_SHIMMER_INX_CHRONICLE_JWT_SALT" >> .env
+		echo "INX_CHRONICLE_JWT_PASSWORD=$VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD" >> .env
 
 	fi
 
@@ -3962,12 +3995,12 @@ ShimmerChronicle() {
 
 		if [ "$VAR_CERT" = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
 
-		echo ufw allow "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT/tcp"
+		echo ufw allow "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT/tcp"
 	fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                          Start SHIMMER-CHRONICLE                            ║"
+	echo "║                         Start Shimmmer-INX-Chronicle                        ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -3993,19 +4026,228 @@ ShimmerChronicle() {
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
-		echo "https port:  $VAR_SHIMMER_CHRONICLE_HTTPS_PORT"
+		echo "https port:  $VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT"
 	    echo "-------------------------------------------------------------------------------"
-		echo "MongoDB username: $VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME"
-		echo "MongoDB password: $VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD"
+		echo "MongoDB username: $VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME"
+		echo "MongoDB password: $VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD"
 	    echo "-------------------------------------------------------------------------------"
-		echo "InfluxDB username: $VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME"
-		echo "InfluxDB password: $VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD"
-		echo "InfluxDB token:    $VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN"
+		echo "InfluxDB username: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME"
+		echo "InfluxDB password: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD"
+		echo "InfluxDB token:    $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN"
 	    echo "-------------------------------------------------------------------------------"
-		echo "JWT salt:     $VAR_SHIMMER_CHRONICLE_JWT_SALT"
-		echo "JWT password: $VAR_SHIMMER_CHRONICLE_JWT_PASSWORD"
+		echo "JWT salt:     $VAR_SHIMMER_INX_CHRONICLE_JWT_SALT"
+		echo "JWT password: $VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD"
 	    echo "-------------------------------------------------------------------------------"
-		echo "grafana password: $VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD"
+		echo "grafana password: $VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD"
+	    echo "-------------------------------------------------------------------------------"
+		echo "ledger-connection/txstream: local to shimmer-hornet"
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+	else
+	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	fi
+	echo ""
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	if ! [ "$opt_mode" ]; then SubMenuMaintenance; fi
+}
+
+ShimmerGroupFi() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║      DLT.GREEN AUTOMATIC shimmer-inx-groupfi INSTALLATION WITH DOCKER       ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	echo "$ca""GroupFi is a INX-Plugin and can only installed on the same Server as Shimmer!""$xx";
+	CheckIota
+	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
+
+	echo "Stopping Node... $VAR_DIR"
+	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
+
+	echo ""
+	echo "Check Directory... /var/lib/$VAR_DIR"
+
+	if [ ! -d /var/lib/"$VAR_DIR" ]; then mkdir /var/lib/"$VAR_DIR" || exit; fi
+	cd /var/lib/"$VAR_DIR" || exit
+
+	echo "CleanUp Directory... /var/lib/$VAR_DIR"
+	find . -maxdepth 1 -mindepth 1 ! \( -name .env -o -name data \) -exec rm -rf {} +
+
+	echo ""
+	echo "Download Package... install.tar.gz"
+	wget -cO - "$ShimmerGroupfiPackage" -q > install.tar.gz
+
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerGroupfiHash" ]; then
+		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
+	else
+		echo "$rd"; echo 'Checking Hash of Package failed...'
+		echo 'Package has been tampered, Installation aborted for your Security!'
+		echo "Downloaded Package is deleted!"
+		rm -r install.tar.gz
+		echo "$xx"; exit;
+	fi
+
+	if [ -f docker-compose.yml ]; then rm docker-compose.yml; fi
+
+	echo "Unpack Package... install.tar.gz"
+	tar -xzf install.tar.gz
+
+	echo "Delete Package... install.tar.gz"
+	rm -r install.tar.gz
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	CheckConfiguration
+
+	VAR_SHIMMER_INX_GROUPFI_LEDGER_NETWORK='shimmer'
+
+	if [ "$VAR_CONF_RESET" = 1 ]; then
+
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                               Set Parameters                                ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		VAR_HOST=$(cat .env 2>/dev/null | grep INX_Groupfi_HOST= | cut -d '=' -f 2)
+		if [ -z "$VAR_HOST" ]; then
+		  VAR_HOST=$(echo "$VAR_DOMAIN" | xargs)
+		  if [ -n "$VAR_HOST" ]; then
+		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "Press [Enter] to use global domain:"
+		  else
+			echo "Set domain name (example: $ca""vrom.dlt.builders""$xx):";
+		  fi
+		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
+		CheckDomain "$VAR_HOST"
+
+		echo ''
+		VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT=$(cat .env 2>/dev/null | grep INX_GROUPFI_HTTPS_PORT= | cut -d '=' -f 2)
+		VAR_DEFAULT='449';
+		if [ -z "$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT" ]; then
+		  echo "Set https port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set https port (config: $ca""$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT" ]; then VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT=$VAR_DEFAULT; fi
+		echo "$gn""Set https port: $VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT""$xx"
+
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                              Write Parameters                               ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		if [ "$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
+
+		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
+		if [ -f .env ]; then rm .env; fi
+
+		echo "COMPOSE_PROFILES=metrics,debug" >> .env
+		echo "INX_GROUPFI_VERSION=$VAR_SHIMMER_INX_GROUPFI_VERSION" >> .env
+		echo "INX_GROUPFI_HOST=$VAR_HOST" >> .env
+		echo "INX_GROUPFI_HTTPS_PORT=$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT" >> .env
+
+		if [ "$VAR_CERT" = 0 ]
+		then
+			echo "INX_GROUPFI_HTTP_PORT=80" >> .env
+			unset VAR_ACME_EMAIL
+			while [ -z "$VAR_ACME_EMAIL" ]; do
+				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
+			done
+			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
+		else
+			echo "INX_GROUPFI_HTTP_PORT=8089" >> .env
+			echo "SSL_CONFIG=certs" >> .env
+			echo "INX_GROUPFI_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
+			echo "INX_GROUPFI_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
+		fi
+	else
+		if [ -f .env ]; then sed -i "s/INX_GROUPFI_VERSION=.*/INX_GROUPFI_VERSION=$VAR_SHIMMER_INX_GROUPFI_VERSION/g" .env; fi
+		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
+	fi
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                                 Pull Data                                   ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	docker network create shimmer >/dev/null 2>&1
+	docker compose pull
+
+#	if [ "$VAR_CONF_RESET" = 1 ]; then
+
+#		echo ""
+#		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+#		echo "║                               Set Creditials                                ║"
+#		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+#		echo ""
+
+#		echo "INX_GROUPFI_JWT_SALT=$VAR_SHIMMER_INX_GROUPFI_JWT_SALT" >> .env
+#		echo "INX_GROUPFI_JWT_PASSWORD=$VAR_SHIMMER_INX_GROUPFI_JWT_PASSWORD" >> .env
+
+#	fi
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Prepare Docker                                ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
+	./prepare_docker.sh
+
+	if [ "$VAR_CONF_RESET" = 1 ]; then
+
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                             Configure Firewall                              ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		if [ "$VAR_CERT" = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
+
+		echo ufw allow "$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT/tcp"
+	fi
+
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                         Start shimmer-inx-groupfi                           ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
+
+	docker compose up -d
+
+	sleep 3
+
+	RenameContainer
+
+	echo ""
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
+
+	clear
+	echo ""
+
+	if [ "$VAR_CONF_RESET" = 1 ]; then
+
+	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+	    echo ""
+		echo "═══════════════════════════════════════════════════════════════════════════════"
+		echo "domain name: $VAR_HOST"
+		echo "https port:  $VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT"
 	    echo "-------------------------------------------------------------------------------"
 		echo "ledger-connection/txstream: local to shimmer-hornet"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -4053,7 +4295,9 @@ RenameContainer() {
 	docker container rename shimmer-inx-chronicle.mongo-express shimmer-plugins.inx-chronicle.mongo-express >/dev/null 2>&1
 	docker container rename shimmer-inx-chronicle.grafana shimmer-plugins.inx-chronicle.grafana >/dev/null 2>&1
 	docker container rename shimmer-inx-chronicle.telegraf shimmer-plugins.inx-chronicle.telegraf >/dev/null 2>&1
-	
+
+	docker container rename shimmer-inx-groupfi shimmer-plugins.inx-groupfi >/dev/null 2>&1
+	docker container rename shimmer-inx-groupfi.traefik shimmer-plugins.inx-groupfi.traefik >/dev/null 2>&1	
 }
 
 clear
