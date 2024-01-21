@@ -36,7 +36,7 @@ VAR_SHIMMER_INX_POI_VERSION='1.0-rc'
 VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0-rc'
 
 VAR_SHIMMER_INX_CHRONICLE_VERSION='1.0.0-rc.1'
-VAR_SHIMMER_INX_GROUPFI_VERSION='0.0.0'
+VAR_SHIMMER_INX_GROUPFI_VERSION='prerelease'
 
 VAR_CRON_TITLE_1='# DLT.GREEN Node-Installer-Docker: Start all Nodes'
 VAR_CRON_TIME_1_1='@reboot sleep '
@@ -126,7 +126,7 @@ ShimmerChronicleHash='07dd5b973972b22501698942d9557eee87620b1392643669e0e2902bc8
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 ShimmerGroupfiHash=''
-ShimmerGroupfiPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-groupfi.tar.gz"
+ShimmerGroupfiPackage="https://github.com/dlt-green/node-installer-docker/releases/download/inx-groupfi-latest/shimmer-groupfi.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
 
