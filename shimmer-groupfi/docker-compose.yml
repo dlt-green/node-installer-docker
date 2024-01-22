@@ -11,7 +11,7 @@ services:
       - "proxy.constraint=inx-groupfi-${INX_GROUPFI_LEDGER_NETWORK:?INX_GROUPFI_LEDGER_NETWORK is missing}"
       - "traefik.enable=true"
 
-      - "traefik.http.services.inx-groupfi.loadbalancer.server.port=8042"
+      - "traefik.http.services.inx-groupfi.loadbalancer.server.port=9892"
 
       - "traefik.http.routers.inx-groupfi.service=inx-groupfi"
       - "traefik.http.routers.inx-groupfi.rule=Host(`${INX_GROUPFI_HOST:?INX_GROUPFI_HOST is missing}`) && (PathPrefix(`/api`))"
