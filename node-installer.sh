@@ -4115,27 +4115,8 @@ ShimmerGroupFi() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		VAR_HOST=$(cat .env 2>/dev/null | grep INX_Groupfi_HOST= | cut -d '=' -f 2)
-		if [ -z "$VAR_HOST" ]; then
-		  VAR_HOST=$(echo "$VAR_DOMAIN" | xargs)
-		  if [ -n "$VAR_HOST" ]; then
-		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "Press [Enter] to use global domain:"
-		  else
-			echo "Set domain name (example: $ca""vrom.dlt.builders""$xx):";
-		  fi
-		else echo "Set domain name (config: $ca""$VAR_HOST""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_HOST=$VAR_TMP; fi
+		VAR_HOST=$(echo "$VAR_DOMAIN" | xargs)
 		CheckDomain "$VAR_HOST"
-
-		echo ''
-		VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT=$(cat .env 2>/dev/null | grep INX_GROUPFI_HTTPS_PORT= | cut -d '=' -f 2)
-		VAR_DEFAULT='449';
-		if [ -z "$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT" ]; then
-		  echo "Set https port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set https port (config: $ca""$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT" ]; then VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set https port: $VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT""$xx"
 
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -4143,34 +4124,14 @@ ShimmerGroupFi() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ "$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
-
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
-		echo "COMPOSE_PROFILES=metrics,debug" >> .env
 		echo "INX_GROUPFI_VERSION=$VAR_SHIMMER_INX_GROUPFI_VERSION" >> .env
-		echo "INX_GROUPFI_HOST=$VAR_HOST" >> .env
-		echo "INX_GROUPFI_HTTPS_PORT=$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT" >> .env
 		echo "INX_GROUPFI_LEDGER_NETWORK=$VAR_SHIMMER_INX_GROUPFI_LEDGER_NETWORK" >> .env
-
-		if [ "$VAR_CERT" = 0 ]
-		then
-			echo "INX_GROUPFI_HTTP_PORT=80" >> .env
-			unset VAR_ACME_EMAIL
-			while [ -z "$VAR_ACME_EMAIL" ]; do
-				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
-			done
-			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
-		else
-			echo "INX_GROUPFI_HTTP_PORT=8089" >> .env
-			echo "SSL_CONFIG=certs" >> .env
-			echo "INX_GROUPFI_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
-			echo "INX_GROUPFI_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
-		fi
+		
 	else
 		if [ -f .env ]; then sed -i "s/INX_GROUPFI_VERSION=.*/INX_GROUPFI_VERSION=$VAR_SHIMMER_INX_GROUPFI_VERSION/g" .env; fi
-		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -4185,19 +4146,6 @@ ShimmerGroupFi() {
 	docker network create shimmer >/dev/null 2>&1
 	docker compose pull
 
-#	if [ "$VAR_CONF_RESET" = 1 ]; then
-
-#		echo ""
-#		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-#		echo "║                               Set Creditials                                ║"
-#		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-#		echo ""
-
-#		echo "INX_GROUPFI_JWT_SALT=$VAR_SHIMMER_INX_GROUPFI_JWT_SALT" >> .env
-#		echo "INX_GROUPFI_JWT_PASSWORD=$VAR_SHIMMER_INX_GROUPFI_JWT_PASSWORD" >> .env
-
-#	fi
-
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                               Prepare Docker                                ║"
@@ -4206,19 +4154,6 @@ ShimmerGroupFi() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
-
-	if [ "$VAR_CONF_RESET" = 1 ]; then
-
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                             Configure Firewall                              ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-		echo ""
-
-		if [ "$VAR_CERT" = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
-
-		echo ufw allow "$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT/tcp"
-	fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -4237,8 +4172,6 @@ ShimmerGroupFi() {
 	echo ""
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
-	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
-
 	clear
 	echo ""
 
@@ -4248,7 +4181,6 @@ ShimmerGroupFi() {
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
-		echo "https port:  $VAR_SHIMMER_INX_GROUPFI_HTTPS_PORT"
 	    echo "-------------------------------------------------------------------------------"
 		echo "ledger-connection/txstream: local to shimmer-hornet"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -4298,7 +4230,6 @@ RenameContainer() {
 	docker container rename shimmer-inx-chronicle.telegraf shimmer-plugins.inx-chronicle.telegraf >/dev/null 2>&1
 
 	docker container rename shimmer-inx-groupfi shimmer-plugins.inx-groupfi >/dev/null 2>&1
-	docker container rename shimmer-inx-groupfi.traefik shimmer-plugins.inx-groupfi.traefik >/dev/null 2>&1	
 }
 
 clear
