@@ -1476,7 +1476,7 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Starting Node                                ║"
+	   echo "║                                  Starting                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   
 	   echo "$ca"
@@ -1495,7 +1495,7 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Stopping Node                                ║"
+	   echo "║                                  Stopping                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   echo ""	
 	   
@@ -1562,7 +1562,7 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Starting Node                                ║"
+	   echo "║                                  Starting                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   
 	   echo "$ca"
@@ -4137,6 +4137,7 @@ ShimmerGroupFi() {
 
 		echo "INX_GROUPFI_VERSION=$VAR_SHIMMER_INX_GROUPFI_VERSION" >> .env
 		echo "INX_GROUPFI_LEDGER_NETWORK=$VAR_SHIMMER_INX_GROUPFI_LEDGER_NETWORK" >> .env
+		echo "INX_GROUPFI_NETWORK=$VVAR_SHIMMER_HORNET_NETWORK" >> .env
 		
 	else
 		if [ -f .env ]; then sed -i "s/INX_GROUPFI_VERSION=.*/INX_GROUPFI_VERSION=$VAR_SHIMMER_INX_GROUPFI_VERSION/g" .env; fi
