@@ -1673,7 +1673,7 @@ SubMenuConfiguration() {
 	echo "║                              2. Toggle Proof of Work (if Node supports it)  ║"
 	echo "║                              3. Toggle Network (Mainnet/Testnet)            ║"
 	echo "║                              4. Set Node Alias (Name in Dashboard)          ║"
-	echo "║                              5. Edit Node Configuration File (.env)         ║"
+	echo "║                              5. Edit Configuration File (.env)              ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1849,13 +1849,13 @@ SubMenuConfiguration() {
 	   SubMenuConfiguration ;;
 	5) clear
 	   echo "$ca"
-	   echo "Edit Node Configuration File (.env)..."
+	   echo "Edit Configuration File (.env)..."
 	   echo "$xx"
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
        if [ -f .env ]; then
 	      nano .env
 	      ./prepare_docker.sh >/dev/null 2>&1
-	      echo "$rd""Please restart your Node for the changes to take effect!""$xx"
+	      echo "$rd""Please restart for the changes to take effect!""$xx"
        fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
