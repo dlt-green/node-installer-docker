@@ -1397,7 +1397,7 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Stopping Node                                ║"
+	   echo "║                                  Stopping                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   echo ""	
 
@@ -1408,7 +1408,7 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Starting Node                                ║"
+	   echo "║                                  Starting                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   echo ""
 
@@ -1425,7 +1425,7 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Stopping Node                                ║"
+	   echo "║                                  Stopping                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   echo ""	
 
@@ -1441,7 +1441,7 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Stopping Node                                ║"
+	   echo "║                                  Stopping                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   echo ""	
 
@@ -2291,7 +2291,7 @@ IotaHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	echo "Stopping Node... $VAR_DIR"
+	echo "Stopping... $VAR_DIR"
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
@@ -2694,7 +2694,7 @@ IotaWasp() {
 	echo "║                            Prepare Installation                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	echo "Stopping Node... $VAR_DIR"
+	echo "Stopping... $VAR_DIR"
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
@@ -3032,7 +3032,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	echo "Stopping Node... $VAR_DIR"
+	echo "Stopping... $VAR_DIR"
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
@@ -3435,7 +3435,7 @@ ShimmerWasp() {
 	echo "║                            Prepare Installation                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	echo "Stopping Node... $VAR_DIR"
+	echo "Stopping... $VAR_DIR"
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
@@ -3765,7 +3765,7 @@ ShimmerChronicle() {
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
-	echo "Stopping Node... $VAR_DIR"
+	echo "Stopping... $VAR_DIR"
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
@@ -4056,7 +4056,7 @@ ShimmerGroupFi() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║      DLT.GREEN AUTOMATIC shimmer-inx-groupfi INSTALLATION WITH DOCKER       ║"
+	echo "║      DLT.GREEN AUTOMATIC SHIMMER-INX-GROUPFI INSTALLATION WITH DOCKER       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "$ca""GroupFi is a INX-Plugin and can only installed on the same Server as Shimmer!""$xx";
@@ -4066,7 +4066,14 @@ ShimmerGroupFi() {
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
-	echo "Stopping Node... $VAR_DIR"
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                            Prepare Installation                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	echo "Stopping... $VAR_DIR"
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
@@ -4118,6 +4125,7 @@ ShimmerGroupFi() {
 		VAR_HOST=$(echo "$VAR_DOMAIN" | xargs)
 		CheckDomain "$VAR_HOST"
 
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                              Write Parameters                               ║"
