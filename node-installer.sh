@@ -797,7 +797,7 @@ Dashboard() {
 	fi
 
 	if [ "$opt_mode" = 's' ]; then
-	  echo "$ca""unattended: Start all Nodes...""$xx"
+	  echo "$ca""unattended: Start all Nodes/Plugins...""$xx"
 	  VAR_STATUS='system: start all nodes'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
@@ -812,7 +812,7 @@ Dashboard() {
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   clear
 	   echo "$ca"
-	   echo 'Please wait, starting Nodes can take up to 10 minutes...'
+	   echo 'Please wait, starting Nodes/Plugins can take up to 10 minutes...'
 	   echo "$xx"
 
 	   for NODE in $NODES; do
@@ -827,9 +827,9 @@ Dashboard() {
 	           if [ "$NODE" = 'shimmer-hornet' ]; then NETWORK=" $VAR_SHIMMER_HORNET_NETWORK"; fi
 	           docker compose up -d
 	           sleep 30
-	           VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
+	           VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
 
-	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
+	           if ! [ "$VAR_STATUS" = 'healthy' ]; then
 	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             docker compose stop
@@ -851,9 +851,14 @@ Dashboard() {
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
+	             if [ "$NODE" = 'shimmer-plugins/inx-groupfi' ]; then 
+	               VAR_STATUS="$NODE$NETWORK: reset database"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	               rm -rf /var/lib/"$NODE"/data/database/"$VAR_SHIMMER_HORNET_NETWORK"/*
+	             fi
 	             docker compose up -d
 	             sleep 60
-	             VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
+	             VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
 			   fi
 	           if [ "$VAR_STATUS" = 'healthy' ]; then
 	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
