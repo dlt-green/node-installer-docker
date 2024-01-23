@@ -1400,7 +1400,7 @@ SubMenuMaintenance() {
 	   echo "║                                  Stopping                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   echo ""	
-
+	   echo $VAR_DIR
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -1595,7 +1595,7 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                              Deinstalling Node                              ║"
+	   echo "║                                Deinstalling                                 ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   echo ""	
 
