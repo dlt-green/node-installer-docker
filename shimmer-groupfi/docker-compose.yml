@@ -7,69 +7,15 @@ services:
     stop_grace_period: 5m
     restart: unless-stopped
     user: "65532"
-    labels:
-      - "proxy.constraint=inx-groupfi-${INX_GROUPFI_LEDGER_NETWORK:?INX_GROUPFI_LEDGER_NETWORK is missing}"
-      - "traefik.enable=true"
-
-      - "traefik.http.services.inx-groupfi.loadbalancer.server.port=9892"
-
-      - "traefik.http.routers.inx-groupfi.service=inx-groupfi"
-      - "traefik.http.routers.inx-groupfi.rule=Host(`${INX_GROUPFI_HOST:?INX_GROUPFI_HOST is missing}`) && (PathPrefix(`/api`))"
-      - "traefik.http.routers.inx-groupfi.entrypoints=websecure"
-      - "traefik.http.routers.inx-groupfi.tls=true"
-      - "traefik.http.routers.inx-groupfi.tls.certresolver=myresolver"
+    ulimits:
+      nofile:
+        soft: 16384
+        hard: 16384
     command: [ "--config", "/app/config/config.json" ]
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "${INX_GROUPFI_DATA_DIR:-./data}/config/config-${INX_GROUPFI_NETWORK:-mainnet}.json:/app/config/config.json:ro"
       - "${INX_GROUPFI_DATA_DIR:-./data}/database/${INX_GROUPFI_NETWORK:-mainnet}:/database"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-
-  ##################################################################
-  #  Reverse Proxy and SSL                                         #
-  ##################################################################
-
-  traefik:
-    image: traefik:v2.9.8
-    container_name: ${INX_GROUPFI_LEDGER_NETWORK:?INX_GROUPFI_LEDGER_NETWORK is missing}-inx-groupfi.traefik
-    restart: unless-stopped
-    env_file:
-      - .env
-    command:
-      - "--log.level=WARN"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.constraints=Label(`proxy.constraint`,`inx-groupfi-${INX_GROUPFI_LEDGER_NETWORK:?INX_GROUPFI_LEDGER_NETWORK is missing}`)"
-
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.transport.respondingTimeouts.readTimeout=10"
-      - "--entrypoints.web.transport.respondingTimeouts.writeTimeout=10"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-
-      - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.websecure.transport.respondingTimeouts.readTimeout=10"
-      - "--entrypoints.websecure.transport.respondingTimeouts.writeTimeout=10"
-
-      - "--providers.file.directory=/etc/traefik/dynamic"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL:-}"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-
-      - "--experimental.plugins.rewritebody.modulename=github.com/traefik/plugin-rewritebody"
-      - "--experimental.plugins.rewritebody.version=v0.3.1"
-    ports:
-      - "${INX_GROUPFI_HTTP_PORT:-80}:80/tcp"
-      - "${INX_GROUPFI_HTTPS_PORT:-443}:443/tcp"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "${INX_GROUPFI_DATA_DIR:-./data}/letsencrypt:/letsencrypt"
-      - "./assets/traefik:/etc/traefik/dynamic:ro"
-      - "${INX_GROUPFI_SSL_CERT:-./assets/traefik/certs/fake.cert}:/certs/domain.cert:ro"
-      - "${INX_GROUPFI_SSL_KEY:-./assets/traefik/certs/fake.key}:/certs/domain.key:ro"
     logging:
       driver: "json-file"
       options:

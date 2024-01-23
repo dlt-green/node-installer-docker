@@ -176,6 +176,20 @@ set_config () {
   jq "$jsonPath=$value" "$configPath" > "$configPath.tmp" && mv "$configPath.tmp" "$configPath"
 }
 
+add_to_config_array () {
+  local configPath="$1"
+  local jsonPath="$2"
+  local values="$3"
+  local delimiter="$4"
+  local outputCfg="$5"
+
+  i=$(jq "${jsonPath} | length" $configPath)
+  for value in $(echo $values | sed "s/$delimiter/ /g"); do
+    set_config "${configPath}" "$jsonPath[${i}]" "${value}" "$outputCfg"
+    i=$((i+1))
+  done
+}
+
 set_array_config () {
   local configPath="$1"
   local jsonPath="$2"

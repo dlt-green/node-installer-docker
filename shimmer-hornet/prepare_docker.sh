@@ -62,6 +62,8 @@ set_config "${configPath}" ".inx.enabled"                 "true"
 set_config "${configPath}" ".inx.bindAddress"             "\"0.0.0.0:9029\""
 set_config "${configPath}" ".restAPI.jwtAuth.salt"        "\"${RESTAPI_SALT:-$(generate_random_string 80)}\"" "secret"
 
+add_to_config_array "${configPath}" ".restAPI.publicRoutes" "\"/api/groupfi/v1/*\", \"/api/groupfi/mqtt/v1\"" ", "
+
 set_config_if_present_in_env "${configPath}" "HORNET_PRUNING_MAX_MILESTONES_TO_KEEP" ".pruning.milestones.maxMilestonesToKeep"
 if [ ! -z "${HORNET_PRUNING_MAX_MILESTONES_TO_KEEP}" ]; then
   set_config "${configPath}" ".pruning.milestones.enabled" "true"
