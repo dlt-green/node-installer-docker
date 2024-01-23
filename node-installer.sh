@@ -1470,6 +1470,10 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
 	   fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 10 ]
+	   then
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
+	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
