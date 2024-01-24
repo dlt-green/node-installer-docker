@@ -1407,6 +1407,7 @@ SubMenuMaintenance() {
 	   echo ""
 
 	   echo "Check Directory... /var/lib/$VAR_DIR"
+	   echo ""
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -1419,6 +1420,7 @@ SubMenuMaintenance() {
 	   echo ""
 
 	   echo "Check Directory... /var/lib/$VAR_DIR"
+	   echo ""
 	   rm -rf /var/lib/$VAR_DIR/data/peerdb/*
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
 
@@ -1437,6 +1439,7 @@ SubMenuMaintenance() {
 	   echo ""	
 
 	   echo "Check Directory... /var/lib/$VAR_DIR"
+	   echo ""
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
 	   sleep 3
@@ -1454,6 +1457,7 @@ SubMenuMaintenance() {
 	   echo ""	
 
 	   echo "Check Directory... /var/lib/$VAR_DIR"
+	   echo ""
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
@@ -1497,6 +1501,7 @@ SubMenuMaintenance() {
 	   echo "$xx"
 
 	   echo $VAR_DIR
+	   echo ""
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
 
 	   RenameContainer; sleep 3
@@ -1514,6 +1519,7 @@ SubMenuMaintenance() {
 	   echo ""	
 	   
 	   echo "Check Directory... /var/lib/$VAR_DIR"
+	   echo ""
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   
@@ -1585,6 +1591,7 @@ SubMenuMaintenance() {
 	   echo "$xx"
 
 	   echo "Check Directory... /var/lib/$VAR_DIR"
+	   echo ""
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
 
 	   RenameContainer
