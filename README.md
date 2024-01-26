@@ -57,6 +57,12 @@ mode: 6: Update -> Shimmer-Wasp
 ```
 
 ```
+mode: u: mode 0 with unattended recursive Node Updates (if possible)
+         the last 10 releases in the Guthub pipeline are supported (older versions are not updated)
+         this mode is experimental in the moment
+```
+
+```
 time: 0-20 seconds
 default: 10
 ```
