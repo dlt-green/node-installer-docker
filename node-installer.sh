@@ -849,11 +849,6 @@ Dashboard() {
 	  VAR_STATUS='system: maintenance'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  SystemMaintenance
-	  if [ "$opt_mode" = 'u' ]; then
-	    echo "$ca""unattended: Check Node Updates...""$xx"
-	    VAR_STATUS='system: check node updates'
-	    CheckNodeUpdates
-	  fi
 	  if [ "$opt_mode" ]; then opt_mode='s'; fi
 	  sleep 3
 	fi
@@ -2244,6 +2239,13 @@ SystemMaintenance() {
 	fi
 	
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	clear
+	if [ "$opt_mode" = 'u' ]; then
+	  echo "$ca""unattended: Check Node Updates...""$xx"
+	  VAR_STATUS='system: check node updates'
+	  CheckNodeUpdates
+	fi
 
 	clear
 	echo ""
