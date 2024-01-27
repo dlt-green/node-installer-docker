@@ -12,7 +12,11 @@ VAR_NODE=0
 VAR_CONF_RESET=0
 
 VAR_IOTA_HORNET_VERSION='2.0.1'
+VAR_IOTA_HORNET_UPDATE=0
+
 VAR_IOTA_WASP_VERSION='1.0.2-alpha.4'
+VAR_IOTA_WASP_UPDATE=1
+
 VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
 VAR_IOTA_WASP_CLI_VERSION='1.0.2-alpha.4'
 
@@ -24,7 +28,11 @@ VAR_IOTA_INX_POI_VERSION='1.0'
 VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
 
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
+VAR_SHIMMER_HORNET_UPDTAE=0
+
 VAR_SHIMMER_WASP_VERSION='1.0.2-alpha.4'
+VAR_SHIMMER_WASP_UPDTAE=1
+
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
 VAR_SHIMMER_WASP_CLI_VERSION='1.0.2-alpha.4'
 VAR_SHIMMER_CHRONICLE_VERSION='1.0.0-rc.1'
@@ -74,7 +82,7 @@ do
 	 ;;
      m) 
 	 case $OPTARG in
-	 0|1|2|5|6|s) opt_mode="$OPTARG" ;;
+	 0|1|2|5|6|s|u) opt_mode="$OPTARG" ;;
      *) echo "$rd""Invalid Argument for Option -m {0|1|2|5|6|s}""$xx"
         if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
         exit ;;
@@ -529,6 +537,93 @@ CheckEventsIota() {
 	Dashboard
 }
 
+CheckNodeUpdates() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                       DLT.GREEN AUTOMATIC NODE UPDATE                       ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+    VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+
+    INST_VRSN_LIST=$(curl https://api.github.com/repos/dlt-green/node-installer-docker/git/refs/tags | jq -r .[].ref | cut -d / -f 3 | tail -10 | sort -r) >/dev/null 2>&1
+
+    for NODE in $NODES; do
+
+      if [ -f "/var/lib/$NODE/.env" ]; then
+        if [ -d "/var/lib/$NODE" ]; then
+        cd "/var/lib/$NODE" || exit
+        if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
+          if [ "$NODE" = 'iota-hornet' ]; then NODE_VRSN_INST=$(cat .env | grep HORNET_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_IOTA_HORNET_VERSION; VAR_NODE=1; fi
+          if [ "$NODE" = 'iota-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_IOTA_WASP_VERSION; VAR_NODE=2; fi
+          if [ "$NODE" = 'shimmer-hornet' ]; then NODE_VRSN_INST=$(cat .env | grep HORNET_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_HORNET_VERSION; VAR_NODE=5; fi
+          if [ "$NODE" = 'shimmer-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_WASP_VERSION; VAR_NODE=6; fi
+
+          for INSTALLER_VRSN in $INST_VRSN_LIST; do
+
+            if [ "$NODE" = 'iota-hornet' ]; then
+              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_IOTA_HORNET_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+            fi
+            if [ "$NODE" = 'iota-wasp' ]; then
+              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_IOTA_WASP_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+            fi
+            if [ "$NODE" = 'shimmer-hornet' ]; then
+              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_HORNET_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+            fi
+            if [ "$NODE" = 'shimmer-wasp' ]; then
+              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_WASP_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+            fi
+            if [ "$NODE_VRSN_TMP" = "$NODE_VRSN_INST" ]; then NODE_VRSN_LATEST="$NODE_VRSN_TMP"; fi
+            if [ "$NODE_VRSN_INST" = "$NODE_VRSN_LATEST" ]; then NodeUpdate "$INSTALLER_VRSN" "$NODE" "$VAR_NODE"; break;  fi
+
+          done
+        fi
+        fi
+      fi
+    done
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	DashboardHelper
+}
+
+NodeUpdate() {
+    INST_VRSN_LIST_TMP=$(curl https://api.github.com/repos/dlt-green/node-installer-docker/git/refs/tags | jq -r .[].ref | cut -d / -f 3 | tail -10) >/dev/null 2>&1
+	upt=0
+    for INSTALLER_VRSN_TMP in $INST_VRSN_LIST_TMP; do
+      if [ "$upt" -eq 1 ]; then upt=$(echo "($upt+1)" | bc); fi
+      if [ "$upt" -eq 2 ]; then
+ 
+            if [ "$2" = 'iota-hornet' ]; then
+              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_IOTA_HORNET_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+            fi
+            if [ "$2" = 'iota-wasp' ]; then
+              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_IOTA_WASP_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+            fi
+            if [ "$2" = 'shimmer-hornet' ]; then
+              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_HORNET_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+            fi
+            if [ "$2" = 'shimmer-wasp' ]; then
+              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_WASP_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+            fi
+
+            if [ "$NODE_VRSN_UPDATE" = '1' ]; then
+              echo "dlt.green $INSTALLER_VRSN_TMP: Update $2... (unattended)"
+              UPDATE=$(cd /home && sudo wget https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh) >/dev/null 2>&1
+            else
+              echo "dlt.green $INSTALLER_VRSN_TMP: Update $2... (attended)"
+              if [ "$opt_mode" ]; then
+                VAR_STATUS="$2: update available (attended)"
+                NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"
+              fi
+            fi
+	  fi
+      if [ "$INSTALLER_VRSN_TMP" = "$1" ]; then upt=$(echo "($upt+1)" | bc); fi
+    done
+}
+
 CheckEventsShimmer() {
 	clear
 	echo ""
@@ -746,11 +841,16 @@ Dashboard() {
 	echo ""
 	echo "select menu item:"
 
-	if [ "$opt_mode" = 0 ]; then
+	if [ "$opt_mode" = 0 ] || [ "$opt_mode" = 'u' ]; then
 	  echo "$ca""unattended: System Maintenance...""$xx"
 	  VAR_STATUS='system: maintenance'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  SystemMaintenance
+	  if [ "$opt_mode" = 'u' ]; then
+	    echo "$ca""unattended: Check Node Updates...""$xx"
+	    VAR_STATUS='system: check node updates'
+	    CheckNodeUpdates
+	  fi
 	  if [ "$opt_mode" ]; then opt_mode='s'; fi
 	  sleep 3
 	fi
@@ -865,6 +965,8 @@ Dashboard() {
 	   
 	   if [ "$opt_mode" ]; then clear; exit; else DashboardHelper; fi ;;
 
+	u) VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	   CheckNodeUpdates ;;
 	1) VAR_NETWORK=1; VAR_NODE=1; VAR_DIR='iota-hornet'
 	   if [ "$opt_mode" ]; then IotaHornet; clear; exit; else SubMenuMaintenance; fi ;;
 	2) VAR_NETWORK=1; VAR_NODE=2; VAR_DIR='iota-wasp'
@@ -2062,7 +2164,7 @@ SystemMaintenance() {
 	echo ""
 
 	docker stop $(docker ps -a -q) 2>/dev/null
-	if [ "$opt_mode" = 0 ]; then
+	if [ "$opt_mode" ]; then
 	  VAR_STATUS='system: stop all nodes'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	fi
@@ -2080,7 +2182,7 @@ SystemMaintenance() {
 	sudo DEBIAN_FRONTEND=noninteractive apt dist-upgrade -y
 	sudo DEBIAN_FRONTEND=noninteractive apt autoclean -y
 	sudo DEBIAN_FRONTEND=noninteractive apt autoremove -y
-	if [ "$opt_mode" = 0 ]; then
+	if [ "$opt_mode" ]; then
 	  VAR_STATUS='system: update'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	fi
@@ -2109,7 +2211,7 @@ SystemMaintenance() {
 	          cp "/var/lib/$NODE/data/letsencrypt/$HOST.key" "/etc/letsencrypt/live/$HOST/privkey.pem"
 	          echo "$gn""Global Certificate is now updated for all Nodes from $NODE""$xx"
 	          echo "valid until: ""$(openssl x509 -in "$HOST".crt -noout -enddate | cut -d '=' -f 2)"
-	          if [ "$opt_mode" = 0 ]; then
+	          if [ "$opt_mode" ]; then
 	            VAR_STATUS='ssl-certificate: valid until '"$(openssl x509 -in "$HOST".crt -noout -enddate | cut -d '=' -f 2)"
 	            NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
 	          fi
@@ -2122,14 +2224,14 @@ SystemMaintenance() {
 	
 	if [ $CERT = 0 ]; then
 	  echo "$rd""No Let's Encrypt Certificate found, aborted!""$xx"
-	  if [ "$opt_mode" = 0 ]; then
+	  if [ "$opt_mode" ]; then
 	      VAR_STATUS="ssl-certificate: no let's encrypt certificate found"
 	      NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS";
 	  fi
 	fi
 	if [ $CERT -gt 1 ]; then echo "$rd";
 	  echo "Misconfiguration with Certificates from your Nodes detected""$xx"
-	  if [ "$opt_mode" = 0 ]; then
+	  if [ "$opt_mode" ]; then
 	      VAR_STATUS="ssl-certificate: misconfiguration detected!"
 	      NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS";
 	  fi
@@ -2157,7 +2259,7 @@ SystemMaintenance() {
 	if [ "$opt_mode" ]; then if ! [ "$opt_reboot" ]; then opt_reboot=0; fi; fi
 	if [ "$opt_reboot" = 1 ]; then n=1; else if [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
 
-	if [ "$opt_mode" = 0 ]; then if [ "$opt_reboot" = 1 ]; then
+	if [ "$opt_mode" ]; then if [ "$opt_reboot" = 1 ]; then
 	  VAR_STATUS='system: reboot'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
 	  sleep 3
@@ -4097,7 +4199,7 @@ if [ $? -eq 0 ]
 	then
         Dashboard
 	else
-        if [ "$opt_mode" = 0 ]; then
+        if [ "$opt_mode" ]; then
 			echo "$ca""unattended: Install Docker...""$xx"
 			Docker
 			Dashboard
