@@ -1133,9 +1133,9 @@ SubMenuCronJobs() {
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                              1. ""$cja""Autostart all Nodes""$xx""                     ║"
-	echo "║                              2. ""$cjb""Unattended System Maintenance""$xx""           ║"
-	echo "║                              X. ""$cjc""Unattended Node Updates""$xx""                 ║"
-	echo "║                              3. ""$cjz""Edit Cron-Jobs""$xx""                              ║"
+	echo "║                              2. ""$cjb""Automatic System Maintenance""$xx""            ║"
+	echo "║                              3. ""$cjc""Automatic Node Updates""$xx""                  ║"
+	echo "║                              4. ""$cjz""Edit Cron-Jobs""$xx""                              ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1220,6 +1220,43 @@ SubMenuCronJobs() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuCronJobs ;;
 	3) clear
+	   tmp=0
+	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
+		  echo "$ca"
+		  echo "Disable Automatic Node Updates..."
+		  echo "$xx"
+		  sleep 3
+		  (echo "$(crontab -l | sed 's/dlt.green -m u/dlt.green -m 0/g')") | crontab - 
+		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ]; then
+		     echo "$rd""Automatic Node Updates disabled""$xx"
+		  else
+		     echo "$rd""Error disabling Automatic Node Updates!""$xx"
+			 tmp=1
+		  fi
+	   else
+	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ]; then
+		  echo "$ca"
+		  echo "Enable Automatic Node Updates..."
+		  echo "$xx"
+		  sleep 3
+		  (echo "$(crontab -l | sed 's/dlt.green -m 0/dlt.green -m u/g')") | crontab - 
+		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
+		     echo "$gn""Automatic Node Updates enabled""$xx"
+			 tmp=1
+		  else
+		     echo "$rd""Error enabling Automatic Node Updates!""$xx"
+		  fi
+	   fi; fi
+	   if [ "$tmp" = 0 ]; then
+		  echo "$ca"
+		  echo "Automatic Node Updates"
+		  echo "$xx"
+		  sleep 3
+		  echo "$rd""Enable Automatic System Maintenance first...""$xx"
+	   fi
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuCronJobs ;;
+	4) clear
 	   echo "$ca"
 	   echo 'Edit Cron-Jobs:'
 	   echo "$xx"
