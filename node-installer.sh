@@ -610,16 +610,18 @@ NodeUpdate() {
             fi
 
             if [ "$NODE_VRSN_UPDATE" = '1' ]; then
-              echo "$ca""dlt.green $INSTALLER_VRSN_TMP: Update $2... (unattended)" "$xx"
-              UPDATE=$(cd /home && sudo wget https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh) >/dev/null 2>&1
+              echo "$ca""dlt.green release $INSTALLER_VRSN_TMP: Update $2... (unattended)" "$xx"
+              UPDATE=$(cd /home && sudo wget https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh && sh node-installer.sh) >/dev/null 2>&1
             else
               echo "$rd""dlt.green release $INSTALLER_VRSN_TMP: Update $2... (attended)" "$xx"
               if [ "$opt_mode" ]; then
                 VAR_STATUS="$2: update available (attended)"
                 NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"
+				break;
               fi
             fi
 	  fi
+	  
       if [ "$INSTALLER_VRSN_TMP" = "$1" ]; then upt=$(echo "($upt+1)" | bc); fi
     done
 }
