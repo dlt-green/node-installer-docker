@@ -609,7 +609,7 @@ NodeUpdate() {
               NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_SHIMMER_WASP_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
 
-            if [ "$NODE_VRSN_UPDATE" = 1 ]; then
+            if [ "$NODE_VRSN_UPDATE" = '1' ]; then
               echo "$ca""dlt.green $INSTALLER_VRSN_TMP: Update $2... (unattended)" "$xx"
               UPDATE=$(cd /home && sudo wget https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh) >/dev/null 2>&1
             else
