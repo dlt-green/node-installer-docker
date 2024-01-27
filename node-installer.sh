@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.3.1.0"
-BUILD="20240127_125229"
+BUILD="20240127_131132"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -51,7 +51,8 @@ VAR_CRON_JOB_1='cd /home && bash -ic "dlt.green -m s'
 VAR_CRON_END_1=' -t 0"'
 
 VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker: System Maintenance'
-VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0'
+VAR_CRON_JOB_2m='cd /home && bash -ic "dlt.green -m 0'
+VAR_CRON_JOB_2u='cd /home && bash -ic "dlt.green -m u'
 VAR_CRON_END_2=' -t 0 -r 1"'
 
 NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
@@ -116,19 +117,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='429f75348e91f916c4abe146f9bafa67d1969a0038e2fb60bcf2b3a94d486590'
+IotaHornetHash='31609ab55abba48c95e632ff55d322ded20d0edd1ab26eee220e84d225621efd'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='ad9aae804c3c13f678550072a6b5cb4499b7cdb682cbaff7f68111845088751c'
+IotaWaspHash='a98df217d318c2633d2fe9e62541c2a3a2e1052d234a409f27182d64e024706c'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='8011bda718eea96433dbd556c01a60099d76d12507b1344025afab32340a8e43'
+ShimmerHornetHash='8159fb6fd040ef43ec284dc2984f401f45d5053a655c0dfeb3436727f358e5ab'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='67d1aff398b06ae0aa0628c91d36387bf6787f7a02827186444facf80ce60594'
+ShimmerWaspHash='03ec73ebd645e877f0f6920e40b1da2ebfb7fba354d7d4ae16d725617ec50253'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='1387c914b267fe4c308e393b9ecce96e9ac84a61204b91ab406275035eb37ddb'
+ShimmerChronicleHash='fff873c28d6bde1e026662214d629d9b549f010993166ed0b6bc32d4fc32e15a'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -810,7 +811,7 @@ Dashboard() {
 	VAR_NODE=0
 
 	if [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ];  then cja=$gn; else cja=$rd; fi
-	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ];  then cjb=$gn; else cjb=$rd; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ];  then cjb=$gn; else cjb=$rd; fi
 
 	PositionCenter "$VAR_DOMAIN"
 	VAR_DOMAIN=$text
@@ -1127,7 +1128,8 @@ MainMenu() {
 SubMenuCronJobs() {
 
 	if [ "$(crontab -l | grep "$VAR_CRON_TIME_1" | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn"[✓] "; else cja=$rd"[X] "; fi
-	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ];  then cjb=$gn"[✓] "; else cjb=$rd"[X] "; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ];  then cjb=$gn"[✓] "; else cjb=$rd"[X] "; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ];  then cjc=$gn"[✓] "; else cjc=$rd"[X] "; fi
 	
 	clear
 	echo ""
@@ -1137,6 +1139,7 @@ SubMenuCronJobs() {
 	echo "║                                                                             ║"
 	echo "║                              1. ""$cja""Autostart""$xx""                               ║"
 	echo "║                              2. ""$cjb""System Maintenance""$xx""                      ║"
+	echo "║                              2. ""$cjc""Node Updates""$xx""                            ║"
 	echo "║                              3. ""$cjz""Edit Cron-Jobs""$xx""                              ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
@@ -1177,13 +1180,14 @@ SubMenuCronJobs() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuCronJobs ;;
 	2) clear
-	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
 		  echo "$ca"
 		  echo 'Disable System Maintenance...'
 		  echo "$xx"
 		  sleep 3
-		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2") | crontab - 
-		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2m") | crontab - 
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2u") | crontab - 
+		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
 		     echo "$rd""System Maintenance disabled""$xx"
 		  fi
 	   else
@@ -1210,11 +1214,11 @@ SubMenuCronJobs() {
 		     export EDITOR='nano' && echo "# crontab" | crontab -
 		  fi
 
-		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
-		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_JOB_2""$VAR_CRON_END_2") | crontab - 
+		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_JOB_2m""$VAR_CRON_END_2") | crontab - 
 		  fi
 
-		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
 		     echo "$gn""System Maintenance enabled: ""$(printf '%02d' "$VAR_CRON_HOUR_2")"":""$(printf '%02d' "$VAR_CRON_MIN_2")""$xx"
 		  fi
 	   fi
