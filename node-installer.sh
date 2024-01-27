@@ -51,7 +51,8 @@ VAR_CRON_JOB_1='cd /home && bash -ic "dlt.green -m s'
 VAR_CRON_END_1=' -t 0"'
 
 VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker: System Maintenance'
-VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m 0'
+VAR_CRON_JOB_2m='cd /home && bash -ic "dlt.green -m 0'
+VAR_CRON_JOB_2u='cd /home && bash -ic "dlt.green -m u'
 VAR_CRON_END_2=' -t 0 -r 1"'
 
 NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
@@ -810,7 +811,7 @@ Dashboard() {
 	VAR_NODE=0
 
 	if [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ];  then cja=$gn; else cja=$rd; fi
-	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ];  then cjb=$gn; else cjb=$rd; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ];  then cjb=$gn; else cjb=$rd; fi
 
 	PositionCenter "$VAR_DOMAIN"
 	VAR_DOMAIN=$text
@@ -1127,7 +1128,8 @@ MainMenu() {
 SubMenuCronJobs() {
 
 	if [ "$(crontab -l | grep "$VAR_CRON_TIME_1" | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn"[✓] "; else cja=$rd"[X] "; fi
-	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ];  then cjb=$gn"[✓] "; else cjb=$rd"[X] "; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ];  then cjb=$gn"[✓] "; else cjb=$rd"[X] "; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ];  then cjc=$gn"[✓] "; else cjc=$rd"[X] "; fi
 	
 	clear
 	echo ""
@@ -1137,6 +1139,7 @@ SubMenuCronJobs() {
 	echo "║                                                                             ║"
 	echo "║                              1. ""$cja""Autostart""$xx""                               ║"
 	echo "║                              2. ""$cjb""System Maintenance""$xx""                      ║"
+	echo "║                              2. ""$cjc""Node Updates""$xx""                            ║"
 	echo "║                              3. ""$cjz""Edit Cron-Jobs""$xx""                              ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
@@ -1177,13 +1180,14 @@ SubMenuCronJobs() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuCronJobs ;;
 	2) clear
-	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
 		  echo "$ca"
 		  echo 'Disable System Maintenance...'
 		  echo "$xx"
 		  sleep 3
-		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2") | crontab - 
-		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2m") | crontab - 
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2u") | crontab - 
+		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
 		     echo "$rd""System Maintenance disabled""$xx"
 		  fi
 	   else
@@ -1210,11 +1214,11 @@ SubMenuCronJobs() {
 		     export EDITOR='nano' && echo "# crontab" | crontab -
 		  fi
 
-		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
-		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_JOB_2""$VAR_CRON_END_2") | crontab - 
+		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_JOB_2m""$VAR_CRON_END_2") | crontab - 
 		  fi
 
-		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2")" ]; then
+		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
 		     echo "$gn""System Maintenance enabled: ""$(printf '%02d' "$VAR_CRON_HOUR_2")"":""$(printf '%02d' "$VAR_CRON_MIN_2")""$xx"
 		  fi
 	   fi
