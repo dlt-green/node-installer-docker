@@ -1128,8 +1128,8 @@ MainMenu() {
 SubMenuCronJobs() {
 
 	if [ "$(crontab -l | grep "$VAR_CRON_TIME_1" | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn"[✓] "; else cja=$rd"[X] "; fi
-	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ];  then cjb=$gn"[✓] "; else cjb=$rd"[X] "; fi
-	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ];  then cjc=$gn"[✓] "; else cjc=$rd"[X] "; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then cjb=$gn"[✓] "; else cjb=$rd"[X] "; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then cjc=$gn"[✓] "; else cjc=$rd"[X] "; fi
 	
 	clear
 	echo ""
@@ -1139,8 +1139,8 @@ SubMenuCronJobs() {
 	echo "║                                                                             ║"
 	echo "║                              1. ""$cja""Autostart""$xx""                               ║"
 	echo "║                              2. ""$cjb""System Maintenance""$xx""                      ║"
-	echo "║                              2. ""$cjc""Node Updates""$xx""                            ║"
-	echo "║                              3. ""$cjz""Edit Cron-Jobs""$xx""                              ║"
+	echo "║                              3. ""$cjc""Node Updates""$xx""                            ║"
+	echo "║                              4. ""$cjz""Edit Cron-Jobs""$xx""                              ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1224,7 +1224,7 @@ SubMenuCronJobs() {
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuCronJobs ;;
-	3) clear
+	4) clear
 	   echo "$ca"
 	   echo 'Edit Cron-Jobs:'
 	   echo "$xx"
