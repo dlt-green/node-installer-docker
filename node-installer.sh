@@ -12,7 +12,7 @@ VAR_NODE=0
 VAR_CONF_RESET=0
 
 VAR_IOTA_HORNET_VERSION='2.0.1'
-VAR_IOTA_HORNET_UPDATE=0
+VAR_IOTA_HORNET_UPDATE=1
 
 VAR_IOTA_WASP_VERSION='1.0.2-alpha.4'
 VAR_IOTA_WASP_UPDATE=1
@@ -28,7 +28,7 @@ VAR_IOTA_INX_POI_VERSION='1.0'
 VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
 
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
-VAR_SHIMMER_HORNET_UPDATE=0
+VAR_SHIMMER_HORNET_UPDATE=1
 
 VAR_SHIMMER_WASP_VERSION='1.0.2-alpha.4'
 VAR_SHIMMER_WASP_UPDATE=1
@@ -2279,8 +2279,6 @@ SystemMaintenance() {
 
 	clear
 	if [ "$opt_mode" = 'u' ]; then
-	  echo "$ca""unattended: Check Node Updates...""$xx"
-	  VAR_STATUS='system: check node updates'
 	  CheckNodeUpdates
 	fi
 
