@@ -1137,10 +1137,10 @@ SubMenuCronJobs() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                              1. ""$cja""Autostart""$xx""                               ║"
-	echo "║                              2. ""$cjb""System Maintenance""$xx""                      ║"
-	echo "║                              3. ""$cjc""Node Updates""$xx""                            ║"
-	echo "║                              4. ""$cjz""Edit Cron-Jobs""$xx""                              ║"
+	echo "║                              1. ""$cja""Autostart all Nodes""$xx""                     ║"
+	echo "║                              2. ""$cjb""Unattended System Maintenance""$xx""           ║"
+	echo "║                              X. ""$cjc""Unattended Node Updates""$xx""                 ║"
+	echo "║                              3. ""$cjz""Edit Cron-Jobs""$xx""                              ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1224,7 +1224,7 @@ SubMenuCronJobs() {
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuCronJobs ;;
-	4) clear
+	3) clear
 	   echo "$ca"
 	   echo 'Edit Cron-Jobs:'
 	   echo "$xx"
