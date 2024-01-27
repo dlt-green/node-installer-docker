@@ -28,10 +28,10 @@ VAR_IOTA_INX_POI_VERSION='1.0'
 VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
 
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
-VAR_SHIMMER_HORNET_UPDTAE=0
+VAR_SHIMMER_HORNET_UPDATE=0
 
 VAR_SHIMMER_WASP_VERSION='1.0.2-alpha.4'
-VAR_SHIMMER_WASP_UPDTAE=1
+VAR_SHIMMER_WASP_UPDATE=1
 
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
 VAR_SHIMMER_WASP_CLI_VERSION='1.0.2-alpha.4'
@@ -545,7 +545,7 @@ CheckNodeUpdates() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
     VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 
@@ -585,8 +585,8 @@ CheckNodeUpdates() {
       fi
     done
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-	DashboardHelper
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	if ! [ "$opt_mode" ]; then DashboardHelper; fi
 }
 
 NodeUpdate() {
@@ -597,23 +597,23 @@ NodeUpdate() {
       if [ "$upt" -eq 2 ]; then
  
             if [ "$2" = 'iota-hornet' ]; then
-              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_IOTA_HORNET_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_IOTA_HORNET_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$2" = 'iota-wasp' ]; then
-              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_IOTA_WASP_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_IOTA_WASP_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$2" = 'shimmer-hornet' ]; then
-              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_HORNET_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_SHIMMER_HORNET_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$2" = 'shimmer-wasp' ]; then
-              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_WASP_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_SHIMMER_WASP_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
 
-            if [ "$NODE_VRSN_UPDATE" = '1' ]; then
-              echo "dlt.green $INSTALLER_VRSN_TMP: Update $2... (unattended)"
+            if [ "$NODE_VRSN_UPDATE" = 1 ]; then
+              echo "$ca""dlt.green $INSTALLER_VRSN_TMP: Update $2... (unattended)" "$xx"
               UPDATE=$(cd /home && sudo wget https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh) >/dev/null 2>&1
             else
-              echo "dlt.green $INSTALLER_VRSN_TMP: Update $2... (attended)"
+              echo "$rd""dlt.green release $INSTALLER_VRSN_TMP: Update $2... (attended)" "$xx"
               if [ "$opt_mode" ]; then
                 VAR_STATUS="$2: update available (attended)"
                 NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"
