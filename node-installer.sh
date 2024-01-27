@@ -193,7 +193,7 @@ CheckAutostart() {
 		q|Q) clear; exit ;;
 		*) clear
 		     echo "$ca"
-		     echo 'Enable Autostart...'
+		     echo 'Enable Autostart for all Nodes...'
 		     echo "$xx"
 		     sleep 3	   	   
 
@@ -206,7 +206,7 @@ CheckAutostart() {
 		     fi
 
 		     if [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
-		        echo "$gn""Autostart enabled""$xx"
+		        echo "$gn""Autostart for all Nodes enabled""$xx"
 		     fi
 			 
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -1132,7 +1132,7 @@ SubMenuCronJobs() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                              1. ""$cja""Autostart all Nodes""$xx""                     ║"
+	echo "║                              1. ""$cja""Autostart for all Nodes""$xx""                 ║"
 	echo "║                              2. ""$cjb""Automatic System Maintenance""$xx""            ║"
 	echo "║                              3. ""$cjc""Automatic Node Updates""$xx""                  ║"
 	echo "║                              4. ""$cjz""Edit Cron-Jobs""$xx""                              ║"
@@ -1147,16 +1147,16 @@ SubMenuCronJobs() {
 	1) clear
 	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
 		  echo "$ca"
-		  echo 'Disable Autostart...'
+		  echo 'Disable Autostart for all Nodes...'
 		  echo "$xx"
 		  sleep 3
 		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_1")" | grep -v "$VAR_CRON_JOB_1") | crontab - 
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
-		     echo "$rd""Autostart disabled""$xx"
+		     echo "$rd""Autostart for all Nodes disabled""$xx"
 		  fi
 	   else
 		  echo "$ca"
-		  echo 'Enable Autostart...'
+		  echo 'Enable Autostart for all Nodes...'
 		  echo "$xx"
 		  sleep 3	   	   
 
@@ -1169,7 +1169,7 @@ SubMenuCronJobs() {
 		  fi
 
 		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
-		     echo "$gn""Autostart enabled""$xx"
+		     echo "$gn""Autostart for all Nodes enabled""$xx"
 		  fi
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -1177,17 +1177,17 @@ SubMenuCronJobs() {
 	2) clear
 	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
 		  echo "$ca"
-		  echo 'Disable System Maintenance...'
+		  echo 'Disable Automatic System Maintenance...'
 		  echo "$xx"
 		  sleep 3
 		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2m") | crontab - 
 		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2u") | crontab - 
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
-		     echo "$rd""System Maintenance disabled""$xx"
+		     echo "$rd""Automatic System Maintenance disabled""$xx"
 		  fi
 	   else
 		  echo "$ca"
-		  echo 'Enable System Maintenance...'
+		  echo 'Enable Automatic System Maintenance...'
 		  echo "$xx"
 		  unset VAR_CRON_HOUR_2
 		  while [ -z "$VAR_CRON_HOUR_2" ]; do
@@ -1214,7 +1214,7 @@ SubMenuCronJobs() {
 		  fi
 
 		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
-		     echo "$gn""System Maintenance enabled: ""$(printf '%02d' "$VAR_CRON_HOUR_2")"":""$(printf '%02d' "$VAR_CRON_MIN_2")""$xx"
+		     echo "$gn""Automatic System Maintenance enabled: ""$(printf '%02d' "$VAR_CRON_HOUR_2")"":""$(printf '%02d' "$VAR_CRON_MIN_2")""$xx"
 		  fi
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
