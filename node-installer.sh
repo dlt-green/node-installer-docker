@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.3.1.0"
-BUILD="20240127_133223"
+VRSN="v.3.1.1"
+BUILD="20240127_142014"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -117,19 +117,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='0c1e562e4a3c98a8ec314315f27189387b52aa49c5bb314f53c609667df71dad'
+IotaHornetHash='42084f805e70ec3db09a3fbdeff438c7b999e1ba3e11fa756dee49ada68e3216'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='0336c4420f28e0450ced4561b2f78a1a57b420d37e6a7ff3cdd490d09089d093'
+IotaWaspHash='3bd399f062f04d0c1ead83512d44e617c285374edbc260d73c43325699d0d1dc'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='faa277bd99020abc7be87f04a79d4ffe3c8dab666ed96476fefb46f08c2e5772'
+ShimmerHornetHash='858e37249fbfcdb5cc7ed4d6f5bfd0cc91de3d3cd3ab0d526150c7bcf739b8fb'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='15b472e67578e3ecc9d741707b355a68c1a35d002e95a520ae1c129434af3f3d'
+ShimmerWaspHash='bdd47edddf79d91adc1c10774f77c211335be5494b13e1ac160b7c3d5b5ca1b3'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='48716f0a82b6b5f144c24791c1803d130ebf216cafdf3ada579fa747ef581bf8'
+ShimmerChronicleHash='b619f78b5a066ba65ee5c1fb39d3efde14cb8309245338ce390accd39fcf005d'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -849,11 +849,6 @@ Dashboard() {
 	  VAR_STATUS='system: maintenance'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  SystemMaintenance
-	  if [ "$opt_mode" = 'u' ]; then
-	    echo "$ca""unattended: Check Node Updates...""$xx"
-	    VAR_STATUS='system: check node updates'
-	    CheckNodeUpdates
-	  fi
 	  if [ "$opt_mode" ]; then opt_mode='s'; fi
 	  sleep 3
 	fi
@@ -2244,6 +2239,13 @@ SystemMaintenance() {
 	fi
 	
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	clear
+	if [ "$opt_mode" = 'u' ]; then
+	  echo "$ca""unattended: Check Node Updates...""$xx"
+	  VAR_STATUS='system: check node updates'
+	  CheckNodeUpdates
+	fi
 
 	clear
 	echo ""
