@@ -1281,6 +1281,7 @@ SubMenuNotifyMe() {
 	echo "║                              1. Show existing Message Channel               ║"
 	echo "║                              2. Activate new Message Channel                ║"	
 	echo "║                              3. Generate new Message Channel                ║"
+	echo "║                              4. Revoke Notify-Me                            ║"	
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1322,7 +1323,7 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null);
 	   VAR_DEFAULT=$(echo "$VAR_NOTIFY" | jq -r '.channelId')
 	   if [ -z "$VAR_NOTIFY_ID" ]; then
-	     echo "Set message channel (random: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set message channel (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
+	     echo "Set Message channel (random: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set message channel (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
 	   read -r -p '> ' VAR_TMP
 	   if [ -n "$VAR_TMP" ]; then VAR_NOTIFY_ID=$VAR_TMP; elif [ -z "$VAR_NOTIFY_ID" ]; then VAR_NOTIFY_ID=$VAR_DEFAULT; fi
 	   echo "$gn""Set Message Channel: $VAR_NOTIFY_ID""$xx"
@@ -1393,6 +1394,16 @@ SubMenuNotifyMe() {
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
+	4) clear
+	   echo "$ca"
+	   echo "Revoke Notify-Me..."
+	   echo "$xx"
+
+	   sed -i 's/alias dlt.green-msg=.*//g' ~/.bash_aliases
+	   echo "$gn""Notify-Me revoked...""$xx"
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuNotifyMe ;;	*) MainMenu ;;
 	*) MainMenu ;;
 	esac
 }
