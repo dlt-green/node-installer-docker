@@ -1323,7 +1323,7 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null);
 	   VAR_DEFAULT=$(echo "$VAR_NOTIFY" | jq -r '.channelId')
 	   if [ -z "$VAR_NOTIFY_ID" ]; then
-	     echo "Set message channel (random: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set message channel (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
+	     echo "Set Message channel (random: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set message channel (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
 	   read -r -p '> ' VAR_TMP
 	   if [ -n "$VAR_TMP" ]; then VAR_NOTIFY_ID=$VAR_TMP; elif [ -z "$VAR_NOTIFY_ID" ]; then VAR_NOTIFY_ID=$VAR_DEFAULT; fi
 	   echo "$gn""Set Message Channel: $VAR_NOTIFY_ID""$xx"
