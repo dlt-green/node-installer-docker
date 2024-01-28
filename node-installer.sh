@@ -1281,6 +1281,7 @@ SubMenuNotifyMe() {
 	echo "║                              1. Show existing Message Channel               ║"
 	echo "║                              2. Activate new Message Channel                ║"	
 	echo "║                              3. Generate new Message Channel                ║"
+	echo "║                              4. Revoke Notify-Me                            ║"	
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1393,7 +1394,16 @@ SubMenuNotifyMe() {
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
-	*) MainMenu ;;
+	4) clear
+	   echo "$ca"
+	   echo "Revoke Notify-Me..."
+	   echo "$xx"
+
+	   sed -i 's/alias dlt.green-msg=.*//g' ~/.bash_aliases
+	   echo "$gn""Notify-Me revoked...""$xx"
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuNotifyMe ;;	*) MainMenu ;;
 	esac
 }
 
