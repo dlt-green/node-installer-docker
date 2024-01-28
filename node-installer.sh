@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.3.1.1"
-BUILD="20240127_142014"
+VRSN="v.3.1.2"
+BUILD="20240128_164035"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -12,7 +12,7 @@ VAR_NODE=0
 VAR_CONF_RESET=0
 
 VAR_IOTA_HORNET_VERSION='2.0.1'
-VAR_IOTA_HORNET_UPDATE=0
+VAR_IOTA_HORNET_UPDATE=1
 
 VAR_IOTA_WASP_VERSION='1.0.2-alpha.4'
 VAR_IOTA_WASP_UPDATE=1
@@ -28,7 +28,7 @@ VAR_IOTA_INX_POI_VERSION='1.0'
 VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
 
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
-VAR_SHIMMER_HORNET_UPDATE=0
+VAR_SHIMMER_HORNET_UPDATE=1
 
 VAR_SHIMMER_WASP_VERSION='1.0.2-alpha.4'
 VAR_SHIMMER_WASP_UPDATE=1
@@ -117,19 +117,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='42084f805e70ec3db09a3fbdeff438c7b999e1ba3e11fa756dee49ada68e3216'
+IotaHornetHash='eaec30da31d59706f8cd968ab9832d55872b55d24ddbd9ab22fbe7f8a8bcc03b'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='3bd399f062f04d0c1ead83512d44e617c285374edbc260d73c43325699d0d1dc'
+IotaWaspHash='c8bd5198811673ca5fa200f94aed414b3acdd89f1428329547c12be547d7263a'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='858e37249fbfcdb5cc7ed4d6f5bfd0cc91de3d3cd3ab0d526150c7bcf739b8fb'
+ShimmerHornetHash='143c98804632d47f0916641c47b1310fe40df06ca96fb2f4c6584a8684fc25aa'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='bdd47edddf79d91adc1c10774f77c211335be5494b13e1ac160b7c3d5b5ca1b3'
+ShimmerWaspHash='f30992e861a7e490de227c6edd323a3b858ec7d56a96db29c0235c9e0d448d37'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='b619f78b5a066ba65ee5c1fb39d3efde14cb8309245338ce390accd39fcf005d'
+ShimmerChronicleHash='5212d04fc5cdd5b8fd0fccf99fd8a53c98b5b5886ee080441f7c0f9628627d85'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -193,7 +193,7 @@ CheckAutostart() {
 		q|Q) clear; exit ;;
 		*) clear
 		     echo "$ca"
-		     echo 'Enable Autostart...'
+		     echo 'Enable Autostart for all Nodes...'
 		     echo "$xx"
 		     sleep 3	   	   
 
@@ -206,7 +206,7 @@ CheckAutostart() {
 		     fi
 
 		     if [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
-		        echo "$gn""Autostart enabled""$xx"
+		        echo "$gn""Autostart for all Nodes enabled""$xx"
 		     fi
 			 
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -1132,10 +1132,10 @@ SubMenuCronJobs() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                              1. ""$cja""Autostart all Nodes""$xx""                     ║"
-	echo "║                              2. ""$cjb""Unattended System Maintenance""$xx""           ║"
-	echo "║                              X. ""$cjc""Unattended Node Updates""$xx""                 ║"
-	echo "║                              3. ""$cjz""Edit Cron-Jobs""$xx""                              ║"
+	echo "║                              1. ""$cja""Autostart for all Nodes""$xx""                 ║"
+	echo "║                              2. ""$cjb""Automatic System Maintenance""$xx""            ║"
+	echo "║                              3. ""$cjc""Automatic Node Updates""$xx""                  ║"
+	echo "║                              4. ""$cjz""Edit Cron-Jobs""$xx""                              ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1147,16 +1147,16 @@ SubMenuCronJobs() {
 	1) clear
 	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
 		  echo "$ca"
-		  echo 'Disable Autostart...'
+		  echo 'Disable Autostart for all Nodes...'
 		  echo "$xx"
 		  sleep 3
 		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_1")" | grep -v "$VAR_CRON_JOB_1") | crontab - 
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_1")" ]; then
-		     echo "$rd""Autostart disabled""$xx"
+		     echo "$rd""Autostart for all Nodes disabled""$xx"
 		  fi
 	   else
 		  echo "$ca"
-		  echo 'Enable Autostart...'
+		  echo 'Enable Autostart for all Nodes...'
 		  echo "$xx"
 		  sleep 3	   	   
 
@@ -1169,7 +1169,7 @@ SubMenuCronJobs() {
 		  fi
 
 		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
-		     echo "$gn""Autostart enabled""$xx"
+		     echo "$gn""Autostart for all Nodes enabled""$xx"
 		  fi
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -1177,17 +1177,17 @@ SubMenuCronJobs() {
 	2) clear
 	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
 		  echo "$ca"
-		  echo 'Disable System Maintenance...'
+		  echo 'Disable Automatic System Maintenance...'
 		  echo "$xx"
 		  sleep 3
 		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2m") | crontab - 
 		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2u") | crontab - 
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
-		     echo "$rd""System Maintenance disabled""$xx"
+		     echo "$rd""Automatic System Maintenance disabled""$xx"
 		  fi
 	   else
 		  echo "$ca"
-		  echo 'Enable System Maintenance...'
+		  echo 'Enable Automatic System Maintenance...'
 		  echo "$xx"
 		  unset VAR_CRON_HOUR_2
 		  while [ -z "$VAR_CRON_HOUR_2" ]; do
@@ -1214,12 +1214,49 @@ SubMenuCronJobs() {
 		  fi
 
 		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
-		     echo "$gn""System Maintenance enabled: ""$(printf '%02d' "$VAR_CRON_HOUR_2")"":""$(printf '%02d' "$VAR_CRON_MIN_2")""$xx"
+		     echo "$gn""Automatic System Maintenance enabled: ""$(printf '%02d' "$VAR_CRON_HOUR_2")"":""$(printf '%02d' "$VAR_CRON_MIN_2")""$xx"
 		  fi
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuCronJobs ;;
 	3) clear
+	   tmp=0
+	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
+		  echo "$ca"
+		  echo "Disable Automatic Node Updates..."
+		  echo "$xx"
+		  sleep 3
+		  (echo "$(crontab -l | sed 's/dlt.green -m u/dlt.green -m 0/g')") | crontab - 
+		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ]; then
+		     echo "$rd""Automatic Node Updates disabled""$xx"
+		  else
+		     echo "$rd""Error disabling Automatic Node Updates!""$xx"
+			 tmp=1
+		  fi
+	   else
+	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ]; then
+		  echo "$ca"
+		  echo "Enable Automatic Node Updates..."
+		  echo "$xx"
+		  sleep 3
+		  (echo "$(crontab -l | sed 's/dlt.green -m 0/dlt.green -m u/g')") | crontab - 
+		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
+		     echo "$gn""Automatic Node Updates enabled""$xx"
+			 tmp=1
+		  else
+		     echo "$rd""Error enabling Automatic Node Updates!""$xx"
+		  fi
+	   fi; fi
+	   if [ "$tmp" = 0 ]; then
+		  echo "$ca"
+		  echo "Automatic Node Updates"
+		  echo "$xx"
+		  sleep 3
+		  echo "$rd""Enable Automatic System Maintenance first...""$xx"
+	   fi
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuCronJobs ;;
+	4) clear
 	   echo "$ca"
 	   echo 'Edit Cron-Jobs:'
 	   echo "$xx"
@@ -1244,6 +1281,7 @@ SubMenuNotifyMe() {
 	echo "║                              1. Show existing Message Channel               ║"
 	echo "║                              2. Activate new Message Channel                ║"	
 	echo "║                              3. Generate new Message Channel                ║"
+	echo "║                              4. Revoke Notify-Me                            ║"	
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1285,7 +1323,7 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null);
 	   VAR_DEFAULT=$(echo "$VAR_NOTIFY" | jq -r '.channelId')
 	   if [ -z "$VAR_NOTIFY_ID" ]; then
-	     echo "Set message channel (random: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set message channel (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
+	     echo "Set Message Channel (random: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set Message Channel (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
 	   read -r -p '> ' VAR_TMP
 	   if [ -n "$VAR_TMP" ]; then VAR_NOTIFY_ID=$VAR_TMP; elif [ -z "$VAR_NOTIFY_ID" ]; then VAR_NOTIFY_ID=$VAR_DEFAULT; fi
 	   echo "$gn""Set Message Channel: $VAR_NOTIFY_ID""$xx"
@@ -1302,13 +1340,13 @@ SubMenuNotifyMe() {
 	         if [ ! -z "$headerLine" ]; then
 	         insertLine=$(($headerLine))
 	         sed -i "$insertLine a alias dlt.green-msg=\"""$VAR_NOTIFY_ENDPOINT_URL"""\" ~/.bash_aliases
-	         echo "$gn""New message channel: activated...""$xx"
+	         echo "$gn""New Message Channel: activated...""$xx"
 	       else
 	         echo "$rd""Error activating new Message Channel!""$xx"
 	       fi
 	     else
 	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
-	       echo "$gn""New message channel: activated...""$xx"
+	       echo "$gn""New Message Channel: activated...""$xx"
 	     fi
 	   fi
 
@@ -1356,6 +1394,16 @@ SubMenuNotifyMe() {
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
+	4) clear
+	   echo "$ca"
+	   echo "Revoke Notify-Me..."
+	   echo "$xx"
+
+	   sed -i 's/alias dlt.green-msg=.*//g' ~/.bash_aliases
+	   echo "$gn""Notify-Me revoked...""$xx"
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuNotifyMe ;;	*) MainMenu ;;
 	*) MainMenu ;;
 	esac
 }
@@ -2242,8 +2290,6 @@ SystemMaintenance() {
 
 	clear
 	if [ "$opt_mode" = 'u' ]; then
-	  echo "$ca""unattended: Check Node Updates...""$xx"
-	  VAR_STATUS='system: check node updates'
 	  CheckNodeUpdates
 	fi
 

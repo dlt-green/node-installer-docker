@@ -1,30 +1,31 @@
 ![GitHub latest release)](https://img.shields.io/github/v/release/dlt-green/node-installer-docker) ![GitHub release date](https://img.shields.io/github/release-date/dlt-green/node-installer-docker) ![GitHub](https://img.shields.io/github/contributors/dlt-green/node-installer-docker) ![GitHub](https://img.shields.io/github/license/dlt-green/node-installer-docker)
 
 # DLT.GREEN VISION
-Wir sind ein Team von Leuten aus der IOTA Community, welches sich die Vision gesetzt hat, einen DNS Server für das IOTA Ecosystem zur Verbesserung des Nutzererlebnisses ins Leben zu rufen. Dabei steht „DNS“ für „Dynamic Node Selection“. Unser Ziel ist es, dass eine Wallet nicht mehr mit einem statischen Zugangspunkt arbeitet, sondern sich dieser je nach Situation ändern kann. Die Zeit von statischen Zugangspunkten in das IOTA Ecosystem ist vorbei. Stellen Sie sich vor, nie mehr darüber nachzudenken, ob der Zugangspunkt funktioniert oder nicht. Stellen Sie sich Geräte in der IOT vor, welche sich vollautomatisch die Node für ihren individuellen Einsatzzweck aussuchen, dies kann z.B. nach Proof of Work, Unterstützung verschiedener Events, nach Vertrauenswürdigkeit oder nach verfügbarer Zugangsgeschwindigkeit sein. Dabei ist uns wichtig, dass der eigentliche Datenverkehr dann zwischen der Wallet und der Node selbst und nicht über den NodePool geführt wird.
+We are a team of people from the IOTA community who have set themselves the vision of creating a DNS server for the IOTA/Shimmer ecosystem to improve the user experience. “DNS” stands for “Dynamic Node Selection”. Our goal is that a wallet no longer works with a static node, but rather that this can change depending on the situation. The time of static nodes into the IOTA/Shimmer ecosystem is over. Imagine never having to worry about whether the nodes is working or not. Imagine devices in the IOT that fully automatically select the node for their individual purpose; this can be, for example, based on proof of work, support for various events, trustworthiness or available access speed. It is important to us that the actual data traffic is routed between the wallet and the node itself and not via the node pool.
 
 # DLT.GREEN AUTOMATIC NODE-INSTALLER DOCKER
-DLT.GREEN Node-Installer ist ein Skript zur Installation von IOTA/Shimmer Nodes (Hornet, Wasp). Die Installation erfolgt mit Docker im Hintergrund und soll es jedem, auch Anfängern, ermöglichen in kurzer Zeit Iota Nodes auf einem Server oder einem Virtual Private Server (VPS) einrichten zu können.
+DLT.GREEN Node-Installer-Docker is a script for installing IOTA/Shimmer Nodes (Hornet, Wasp). The installation takes place with Docker in the background and should enable everyone, even beginners, to set up IOTA/Shimmer nodes on a server or a virtual private server (VPS) in a short time.
 
-# Voraussetzungen
-### Mindestanforderungen für eine Node
+# HARDWARE RECOMMENDATIONS
+### Minimum recommendation for a node
  - 8 GB RAM 
  - 4 CPU Kerne
  - 160 GB Speicher (SSD)
  - Ubuntu 22.04 LTS
 
-### Mindestanforderungen für Nodes die auch Events (Staking, Voting, etc.) tracken möchten
+### Minimum recommendation for nodes that also want to track events (staking, voting, etc.) or want to load additional plugins
  - 16 GB RAM 
  - 4+ CPU Kerne 
  - 250+ GB Speicher (SSD)
  - Ubuntu 22.04 LTS
 
 # Installation
-### Wichtig
-Die Konfiguration der Nodes sollte immer über den von DLT.GREEN bereitgestellten Node-Installer erfolgen. Es ist nicht ratsam Veränderungen an den Parametern zu machen, da die eingestellten direkten Parameter bei einem Update nicht berücksichtigt werden und somit zurückgesetzt werden.
+### Important
+The nodes should always be configured using the node installer provided by DLT.GREEN. It is not advisable to make changes to the parameters yourself, as your own parameters are not taken into account during an update and are therefore reset.
+If any feature needs to be added or you want to add a plugin to the installer, you are welcome. Please report this via our Discord to dlt.green team.
 
-### Ein Server oder VPS und eine eigene Domain muss vorhanden sein, bevor mit der Installation begonnen wird.
-Es wird automatisch ein SSL Zertifikat über Let's Encrypt generiert, es kann jedoch auch ein eigenes Zertifikat zugewiesen werden.
+### A server or VPS and your own domain must be available before installation begins.
+An SSL certificate is automatically generated via Let's Encrypt, but you can also assign your own certificate.
 
 #
 
@@ -33,9 +34,9 @@ Es wird automatisch ein SSL Zertifikat über Let's Encrypt generiert, es kann je
 sudo wget https://github.com/dlt-green/node-installer-docker/releases/latest/download/node-installer.sh && sudo sh node-installer.sh
 ```
 
-### NODE-INSTALLER mit GUI
+### NODE-INSTALLER with GUI
 
-Mit dem erstmaligen ausführen des Installers wird automatisch ein Alias auf Benutzerebene angelegt, bedeutet, dass under dem angemeldeten Benutzer nach dem erstmaligen starten des Installers alternativ dieser Alias verwendet werden kann:
+When you run the installer for the first time, an alias is automatically created at user level, which means that the logged in user can use this alias as an alternative after starting the installer for the first time:
 
 ```console
 dlt.green
@@ -59,7 +60,6 @@ mode: 6: Update -> Shimmer-Wasp
 ```
 mode: u: mode 0 with unattended recursive Node Updates (if possible)
          the last 10 releases in the Guthub pipeline are supported (older versions are not updated)
-         this mode is experimental in the moment
 ```
 
 ```
@@ -79,9 +79,9 @@ checks: 1: UFW Firewall and Autostart will be automatically enabled (enforced)
 default: 1
 ```
 
-### Bedienung
-Die Bedienung des Skripts erfolgt über die Eingabe der Zahlen, welche im Menü angezeigt werden.  
-Wenn Sie auf das Bild klicken, sehen Sie <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">Video-Tutorials</a> für die Installation von IOTA und Shimmer Nodes:
+### Operation
+The script is operated by entering the numbers that are displayed in the menu.
+If you click on the image you will see <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">video tutorials</a> for installing IOTA/Shimmer Nodes:
 
 <div align="left">
       <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">
@@ -90,18 +90,18 @@ Wenn Sie auf das Bild klicken, sehen Sie <a href="https://www.youtube.com/channe
       </a>
 </div>
 
-# Fehlermeldungen und Vorschläge
-Wenn du Fehler gefunden hast oder Verbesserungsvorschläge für unser Skript hast, erstelle ein Issue auf Github oder wende dich an unser Team in unserem Discord Channel
+# Error messages and suggestions
+If you found any bugs or have suggestions for improving our script, create an issue on Github or contact our team in our Discord channel
 
-<b>Verbesserungsvorschläge: <a href="https://github.com/dlt-green/node-installer-docker/issues">Github Issues</a></b><br>
-<b>Kontakt: <a href="https://discord.gg/XaBnsE5NGb">Discord</a></b>
+<b>Suggestions for improvement: <a href="https://github.com/dlt-green/node-installer-docker/issues">Github Issues</a></b><br>
+<b>Contact: <a href="https://discord.gg/XaBnsE5NGb">Discord</a></b>
 
 # Disclaimer
-Bitte beachten, dass die Verwendung dieses Skripts auf eigenes Risiko erfolgt und DLT.GREEN für eventuelle Schäden nicht haftet.
+Please note that using this script is at your own risk and DLT.GREEN is not liable for any damages.
 
 # Disclosure
-IT'S NO OFFICIAL INSTALLER FROM IF - YOU WILL GET NO SUPPORT BY IF WHEN YOU USE IT  
-BUT YOU WILL GET SUPPORT BY DLT.GREEN IN OUR DISCORD
+We would like to point out that this is not a supported installer by the Iota Foundation and you will not receive any support from the IF if you use this installer.
+You get support in our discord from our team or the community
 
 # Donations
 THIS PROJECT IS DEVELOPED BY DLT.GREEN WITH ITS COMMUNITY.  
