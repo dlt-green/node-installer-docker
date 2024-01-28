@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.3.1.2"
-BUILD="20240127_211731"
+BUILD="20240128_162934"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -117,19 +117,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='8017605e662e66d9f5eccf9aa93f6cce2b7314350985d66be64543c1562b850a'
+IotaHornetHash='c4123a15760b9a57d558bc7a2cab6067c28d4d3eb9f6f76bc5d099bb728debb5'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='ddf7da8b7ee40d36da291126871946cf301bc67c7523673692c29ac4a86e3af5'
+IotaWaspHash='a02435bc64ca5484901fca7c34ec3c48caa72f6be6f70de33f8b35bf445b513b'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='494270cccbfe138c575d3d14f9c723d798ecc5a70059566d82f44b4bdbe6de7a'
+ShimmerHornetHash='deb6584b2384872b1d7c9761ecf8dbef2ced18907b59663812e30214a7174896'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='8e2f1fc4c63156ad67ccea8da7e267471837ce89d2d6e2a060b3e74af3eedfc3'
+ShimmerWaspHash='fc66f9b7671ae3d060a0fdb45ec14fe0f89c3a6a75b089c358a26180841f390a'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='79fee68100ba005f2bf9c9e66af8eaf6c0978a44225e6bb8116d6cf6fcd83dd7'
+ShimmerChronicleHash='361786df873a502bdfde78ea0259438a383c266c2b8ad1a8f14b3795b4cb54c0'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1404,6 +1404,7 @@ SubMenuNotifyMe() {
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;	*) MainMenu ;;
+	*) MainMenu ;;
 	esac
 }
 
