@@ -1228,10 +1228,11 @@ SubMenuCronJobs() {
 		  sleep 3
 		  (echo "$(crontab -l | sed 's/dlt.green -m u/dlt.green -m 0/g')") | crontab - 
 		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ]; then
+			 tmp=1
 		     echo "$rd""Automatic Node Updates disabled""$xx"
 		  else
-		     echo "$rd""Error disabling Automatic Node Updates!""$xx"
 			 tmp=1
+		     echo "$rd""Error disabling Automatic Node Updates!""$xx"
 		  fi
 	   else
 	   if [ "$(crontab -l | grep "$VAR_CRON_JOB_2m")" ]; then
@@ -1241,9 +1242,10 @@ SubMenuCronJobs() {
 		  sleep 3
 		  (echo "$(crontab -l | sed 's/dlt.green -m 0/dlt.green -m u/g')") | crontab - 
 		  if [ "$(crontab -l | grep "$VAR_CRON_JOB_2u")" ]; then
-		     echo "$gn""Automatic Node Updates enabled""$xx"
 			 tmp=1
+		     echo "$gn""Automatic Node Updates enabled""$xx"
 		  else
+			 tmp=1
 		     echo "$rd""Error enabling Automatic Node Updates!""$xx"
 		  fi
 	   fi; fi
