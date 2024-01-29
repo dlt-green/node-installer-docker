@@ -59,7 +59,7 @@ mode: 6: Update -> Shimmer-Wasp
 
 ```
 mode: u: mode 0 with unattended recursive Node Updates (if possible)
-         the last 10 releases in the Guthub pipeline are supported (older versions are not updated)
+         the last 10 releases in the Github pipeline are supported (older versions are not updated)
 ```
 
 ```
