@@ -1,0 +1,304 @@
+version: '3'
+services:
+
+  iota-core:
+    image: iotaledger/iota-core:${IOTA_CORE_VERSION:?IOTA_CORE_VERSION is missing}
+    container_name: shimmer-iota-core
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 16384
+        hard: 16384
+    stop_grace_period: 5m
+    depends_on:
+      traefik:
+        condition: service_started
+    tty: true
+    working_dir: /app
+    ports:
+      - "${IOTA_CORE_GOSSIP_PORT:-15600}:${IOTA_CORE_GOSSIP_PORT:-15600}/tcp"
+      - "${IOTA_CORE_AUTOPEERING_PORT:-14626}:${IOTA_CORE_AUTOPEERING_PORT:-14626}/udp"
+    labels:
+      - "traefik.enable=true"
+      - "proxy.constraint=iota-core-${IOTA_CORE_NETWORK:-mainnet}"
+
+      - "traefik.http.routers.iota-core.service=iota-core"
+      - "traefik.http.routers.iota-core.rule=Host(`${IOTA_CORE_HOST:?IOTA_CORE_HOST is missing}`) && PathPrefix(`/`)"
+      - "traefik.http.routers.iota-core.entrypoints=websecure"
+      - "traefik.http.routers.iota-core.tls=true"
+      - "traefik.http.routers.iota-core.tls.certresolver=myresolver"
+
+      - "traefik.http.services.iota-core.loadbalancer.server.port=14265"
+      - "traefik.http.services.iota-core.loadbalancer.healthCheck.path=/api/core/v2/info"
+      - "traefik.http.services.iota-core.loadbalancer.healthCheck.interval=15s"
+      - "traefik.http.services.iota-core.loadbalancer.healthCheck.timeout=5s"
+
+      - "traefik.http.routers.iota-core.middlewares=security-headers,redirect-dashboard"
+
+      # middlewares
+      - "traefik.http.middlewares.redirect-dashboard.redirectregex.regex=^(https?://[^/]+)/?$$"
+      - "traefik.http.middlewares.redirect-dashboard.redirectregex.replacement=$$1/dashboard/"
+      - "traefik.http.middlewares.redirect-dashboard.redirectregex.permanent=true"
+
+      - "traefik.http.middlewares.security-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.security-headers.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${IOTA_CORE_HOST:?WASP_HOST is missing}:${IOTA_CORE_HTTPS_PORT:-443}"
+      - "traefik.http.middlewares.security-headers.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.security-headers.headers.addvaryheader=true"
+      - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+    cap_drop:
+      - ALL
+    command: [ "--config", "/app/config/config.json" ]
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "${IOTA_CORE_DATA_DIR:-./data}/config/config-${IOTA_CORE_NETWORK:-mainnet}.json:/app/config/config.json:ro"
+      - "${IOTA_CORE_DATA_DIR:-./data}/storage/${IOTA_CORE_NETWORK:-mainnet}:/app/storage"
+      - "${IOTA_CORE_DATA_DIR:-./data}/snapshots/${IOTA_CORE_NETWORK:-mainnet}:/app/snapshots"
+      - "${IOTA_CORE_DATA_DIR:-./data}/p2pstore/${IOTA_CORE_NETWORK:-mainnet}:/app/p2pstore"
+    healthcheck:
+      test: ["CMD", "/app/iota-core", "tools", "node-info"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+
+  ##################################################################
+  #  Reverse Proxy and SSL                                         #
+  ##################################################################
+
+  traefik:
+    image: traefik:v2.9.8
+    container_name: shimmer-iota-core.traefik
+    restart: unless-stopped
+    env_file:
+      - .env
+    command:
+      - "--log.level=WARN"
+      - "--metrics.prometheus=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.constraints=Label(`proxy.constraint`,`iota-core-${IOTA_CORE_NETWORK:-mainnet}`)"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.transport.respondingTimeouts.readTimeout=10"
+      - "--entrypoints.web.transport.respondingTimeouts.writeTimeout=10"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.transport.respondingTimeouts.readTimeout=10"
+      - "--entrypoints.websecure.transport.respondingTimeouts.writeTimeout=10"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL:-}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "${IOTA_CORE_HTTP_PORT:-80}:80/tcp"
+      - "${IOTA_CORE_HTTPS_PORT:-443}:443/tcp"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "${IOTA_CORE_DATA_DIR:-./data}/letsencrypt:/letsencrypt"
+      - "./assets/traefik:/etc/traefik/dynamic:ro"
+      - "${IOTA_CORE_SSL_CERT:-./assets/traefik/certs/fake.cert}:/certs/domain.cert:ro"
+      - "${IOTA_CORE_SSL_KEY:-./assets/traefik/certs/fake.key}:/certs/domain.key:ro"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+
+  ##################################################################
+  #  Monitoring                                                    #
+  ##################################################################
+
+  prometheus:
+    image: prom/prometheus:v2.38.0
+    container_name: prometheus
+    restart: unless-stopped
+    user: "65532"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./assets/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ${IOTA_CORE_DATA_DIR:-./data}/prometheus/:/prometheus
+
+  grafana:
+    image: grafana/grafana:9.1.0
+    container_name: grafana
+    restart: unless-stopped
+    user: "65532"
+    labels:
+      - "proxy.constraint=iota-core-${IOTA_CORE_NETWORK:-mainnet}"
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`${IOTA_CORE_HOST:?IOTA_CORE_HOST is missing}`) && (Path(`/grafana`) || PathPrefix(`/grafana/`))"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+    environment:
+      - GF_SERVER_DOMAIN=${IOTA_CORE_HOST}
+      - GF_SERVER_ROOT_URL=/grafana
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/home.json
+    volumes:
+      - ./assets/grafana/:/etc/grafana/provisioning/
+      - ${IOTA_CORE_DATA_DIR:-./data}/grafana:/var/lib/grafana
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.45.0
+    container_name: cadvisor
+    privileged: true
+    command:
+      - --housekeeping_interval=30s # kubernetes default args
+      - --max_housekeeping_interval=35s
+      - --event_storage_event_limit=default=0
+      - --event_storage_age_limit=default=0
+      - --store_container_labels=false
+      - --global_housekeeping_interval=30s
+      - --event_storage_event_limit=default=0
+      - --event_storage_age_limit=default=0
+      - --disable_metrics=accelerator,advtcp,cpu_topology,disk,hugetlb,memory_numa,percpu,referenced_memory,resctrl,sched,tcp,udp
+      - --enable_load_reader=true
+      - --docker_only=true # only show stats for docker containers
+      - --allow_dynamic_housekeeping=true
+      - --storage_duration=1m0s
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+  ##################################################################
+  #  INX Extensions                                                #
+  ##################################################################
+
+  inx-indexer:
+    image: iotaledger/inx-indexer:${INX_INDEXER_VERSION:?INX_INDEXER_VERSION is missing}
+    container_name: shimmer-iota-core.inx-indexer
+    stop_grace_period: 5m
+    restart: unless-stopped
+    depends_on:
+      iota-core:
+        condition: service_healthy
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "${IOTA_CORE_DATA_DIR:-./data}/indexer/${IOTA_CORE_NETWORK:-mainnet}:/app/data"
+    command:
+      - "--inx.address=iota-core:9029"
+      - "--indexer.db.sqlite.path=/app/data"
+      - "--restAPI.bindAddress=inx-indexer:9091"
+      - "--prometheus.enabled=true"
+      - "--prometheus.bindAddress=inx-indexer:9312"
+
+  inx-mqtt:
+    image: iotaledger/inx-mqtt:${INX_MQTT_VERSION:?INX_MQTT_VERSION is missing}
+    container_name: shimmer-iota-core.inx-mqtt
+    stop_grace_period: 5m
+    restart: unless-stopped
+    depends_on:
+      iota-core:
+        condition: service_healthy
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+    command:
+      - "--inx.address=iota-core:9029"
+      - "--mqtt.websocket.bindAddress=inx-mqtt:1888"
+      - "--prometheus.enabled=true"
+      - "--prometheus.bindAddress=inx-mqtt:9312"
+
+  inx-participation:
+    image: iotaledger/inx-participation:${INX_PARTICIPATION_VERSION:?INX_PARTICIPATION_VERSION is missing}
+    container_name: shimmer-iota-core.inx-participation
+    stop_grace_period: 5m
+    restart: unless-stopped
+    depends_on:
+      iota-core:
+        condition: service_healthy
+    ulimits:
+      nofile:
+        soft: 16384
+        hard: 16384
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "${IOTA_CORE_DATA_DIR:-./data}/participation/${IOTA_CORE_NETWORK:-mainnet}:/app/data"
+    command:
+      - "--inx.address=iota-core:9029"
+      - "--participation.db.path=/app/data/participation"
+      - "--restAPI.bindAddress=inx-participation:9892"
+
+  inx-spammer:
+    image: iotaledger/inx-spammer:${INX_SPAMMER_VERSION:?INX_SPAMMER_VERSION is missing}
+    container_name: shimmer-iota-core.inx-spammer
+    stop_grace_period: 5m
+    restart: unless-stopped
+    depends_on:
+      iota-core:
+        condition: service_healthy
+      inx-indexer:
+        condition: service_started
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+    command:
+      - "--inx.address=iota-core:9029"
+      - "--restAPI.bindAddress=inx-spammer:9092"
+      - "--prometheus.enabled=true"
+      - "--prometheus.bindAddress=inx-spammer:9312"
+
+  inx-poi:
+    image: iotaledger/inx-poi:${INX_POI_VERSION:?INX_POI_VERSION is missing}
+    container_name: shimmer-iota-core.inx-poi
+    stop_grace_period: 5m
+    restart: unless-stopped
+    depends_on:
+      iota-core:
+        condition: service_healthy
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+    command:
+      - "--inx.address=iota-core:9029"
+      - "--restAPI.bindAddress=inx-poi:9687"
+
+  inx-dashboard:
+    image: iotaledger/inx-dashboard:${INX_DASHBOARD_VERSION:?INX_DASHBOARD_VERSION is missing}
+    container_name: shimmer-iota-core.inx-dashboard
+    stop_grace_period: 5m
+    restart: unless-stopped
+    depends_on:
+      iota-core:
+        condition: service_healthy
+      inx-indexer:
+        condition: service_started
+    labels:
+      - "proxy.constraint=iota-core-${IOTA_CORE_NETWORK:-mainnet}"
+      - "traefik.enable=true"
+
+      - "traefik.http.services.iota-core-dashboard.loadbalancer.server.port=8081"
+      - "traefik.http.services.iota-core-dashboard.loadbalancer.healthCheck.path=/"
+      - "traefik.http.services.iota-core-dashboard.loadbalancer.healthCheck.interval=10s"
+      - "traefik.http.services.iota-core-dashboard.loadbalancer.healthCheck.timeout=3s"
+      - "traefik.http.routers.iota-core-dashboard.service=iota-core-dashboard"
+      - "traefik.http.routers.iota-core-dashboard.rule=Host(`${IOTA_CORE_HOST:?IOTA_CORE_HOST is missing}`) && (Path(`/dashboard`) || PathPrefix(`/dashboard/`))"
+      - "traefik.http.routers.iota-core-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.iota-core-dashboard.tls=true"
+      - "traefik.http.routers.iota-core-dashboard.tls.certresolver=myresolver"
+
+      - "traefik.http.routers.iota-core-dashboard.middlewares=security-headers"
+      - "traefik.http.middlewares.security-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.security-headers.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${IOTA_CORE_HOST:?WASP_HOST is missing}:${IOTA_CORE_HTTPS_PORT:-443}"
+      - "traefik.http.middlewares.security-headers.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.security-headers.headers.addvaryheader=true"
+      - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "${IOTA_CORE_DATA_DIR:-./data}/dashboard/${IOTA_CORE_NETWORK:-mainnet}:/app/data"
+    command:
+      - "--inx.address=iota-core:9029"
+      - "--dashboard.bindAddress=inx-dashboard:8081"
+      - "--dashboard.auth.identityFilePath=/app/data/identity.key"
+      - "--dashboard.auth.username=${DASHBOARD_USERNAME}"
+      - "--dashboard.auth.passwordHash=${DASHBOARD_PASSWORD}"
+      - "--dashboard.auth.passwordSalt=${DASHBOARD_SALT}"
+
+networks:
+  default:
+    name: shimmer
+    external: true
