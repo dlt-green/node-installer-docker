@@ -39,13 +39,9 @@ services:
       - "traefik.http.middlewares.redirect-dashboard.redirectregex.regex=^(https?://[^/]+)/?$$"
       - "traefik.http.middlewares.redirect-dashboard.redirectregex.replacement=$$1/dashboard/"
       - "traefik.http.middlewares.redirect-dashboard.redirectregex.permanent=true"
-
-      - "traefik.http.middlewares.security-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
-      - "traefik.http.middlewares.security-headers.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${HORNET_HOST:?WASP_HOST is missing}:${HORNET_HTTPS_PORT:-443}"
-      - "traefik.http.middlewares.security-headers.headers.accesscontrolmaxage=100"
-      - "traefik.http.middlewares.security-headers.headers.addvaryheader=true"
       - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
       - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+      
     cap_drop:
       - ALL
     command: [ "--config", "/app/config/config.json" ]
