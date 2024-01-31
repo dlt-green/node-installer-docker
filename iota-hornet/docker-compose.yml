@@ -33,12 +33,14 @@ services:
       - "traefik.http.services.hornet.loadbalancer.healthCheck.interval=15s"
       - "traefik.http.services.hornet.loadbalancer.healthCheck.timeout=5s"
 
-      - "traefik.http.routers.hornet.middlewares=redirect-dashboard"
+      - "traefik.http.routers.hornet.middlewares=security-headers,redirect-dashboard"
 
       # middlewares
       - "traefik.http.middlewares.redirect-dashboard.redirectregex.regex=^(https?://[^/]+)/?$$"
       - "traefik.http.middlewares.redirect-dashboard.redirectregex.replacement=$$1/dashboard/"
       - "traefik.http.middlewares.redirect-dashboard.redirectregex.permanent=true"
+      - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
       
     cap_drop:
       - ALL
