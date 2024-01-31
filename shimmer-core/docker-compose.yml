@@ -48,7 +48,8 @@ services:
       - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
     cap_drop:
       - ALL
-    command: [ "--config", "/app/config/config.json" ]
+    command:
+      - "--config=/app/config/config.json"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "${IOTA_CORE_DATA_DIR:-./data}/config/config-${IOTA_CORE_NETWORK:-mainnet}.json:/app/config/config.json:ro"

@@ -150,7 +150,8 @@ delete_config () {
   local configPath="$1"
   local jsonPath="$2"
 
-  jq "del($jsonPath)" "$configPath"
+  echo "  $jsonPath: <deleted>"
+  jq "del($jsonPath)" "$configPath" > "$configPath.tmp" && mv "$configPath.tmp" "$configPath"
 }
 
 move_rename_config () {
