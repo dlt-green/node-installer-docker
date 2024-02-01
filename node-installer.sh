@@ -1193,6 +1193,10 @@ SubMenuCronJobs() {
 		  while [ -z "$VAR_CRON_HOUR_2" ]; do
 		    echo "Set Time [Hour] (example: $ca""0-23""$xx""):";
 		    read -r -p '> ' VAR_TMP
+		    case $VAR_TMP in
+		        ''|*[!0-9]*) VAR_TMP='' ;;
+		        *) ;;
+		    esac
 		    if [ "$VAR_TMP" -lt 0 ] || [ "$VAR_TMP" -gt 59 ]; then echo "$rd""Wrong value!"; echo "$xx"; else VAR_CRON_HOUR_2=$VAR_TMP; echo "$gn"" ✓""$xx"; fi
 		  done
   
