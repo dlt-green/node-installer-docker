@@ -1191,10 +1191,11 @@ SubMenuCronJobs() {
 		  echo "$xx"
 		  unset VAR_CRON_HOUR_2
 		  while [ -z "$VAR_CRON_HOUR_2" ]; do
-		    echo "Set Time [Hour] (example: $ca""0-23""$xx""):";
+		    VAR_CRON_HOUR_2="$(shuf --random-source='/dev/urandom' -n 1 -i 0-11)"
+		    echo "Set Time [Hour] (random: $ca""0-11""$xx""):";
 		    read -r -p '> ' VAR_TMP
 		    case $VAR_TMP in
-		        ''|*[!0-9]*) VAR_TMP='' ;;
+		        ''|*[!0-9]*) VAR_TMP=$VAR_CRON_HOUR_2; echo '> '"$VAR_CRON_HOUR_2" ;;
 		        *) ;;
 		    esac
 		    if [ "$VAR_TMP" -lt 0 ] || [ "$VAR_TMP" -gt 59 ]; then echo "$rd""Wrong value!"; echo "$xx"; else VAR_CRON_HOUR_2=$VAR_TMP; echo "$gn"" ✓""$xx"; fi
@@ -1202,7 +1203,7 @@ SubMenuCronJobs() {
   
 		  VAR_CRON_MIN_2="$(shuf --random-source='/dev/urandom' -n 1 -i 0-59)"
 		  echo ""
-		  echo "Set Time [Minute] (random value: $ca""0-59""$xx""):"
+		  echo "Set Time [Minute] (automatic: $ca""0-59""$xx""):"
 		  echo '> '"$VAR_CRON_MIN_2"
 		  echo "$gn"" ✓""$xx"
 		  echo ""
