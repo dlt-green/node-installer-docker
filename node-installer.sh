@@ -51,6 +51,7 @@ VAR_CRON_JOB_1='cd /home && bash -ic "dlt.green -m s'
 VAR_CRON_END_1=' -t 0"'
 
 VAR_CRON_TITLE_2='# DLT.GREEN Node-Installer-Docker: System Maintenance'
+VAR_CRON_JOB_2='cd /home && bash -ic "dlt.green -m '
 VAR_CRON_JOB_2m='cd /home && bash -ic "dlt.green -m 0'
 VAR_CRON_JOB_2u='cd /home && bash -ic "dlt.green -m u'
 VAR_CRON_END_2=' -t 0 -r 1"'
@@ -69,8 +70,9 @@ xx='\033[0m'
 
 opt_time=10
 opt_check=1
+opt_level='info'
 
-while getopts "m:t:r:c:" option
+while getopts "m:t:r:c:l:" option
 do
   case $option in
      c) 
@@ -101,6 +103,16 @@ do
 	 case $OPTARG in
 	 0|1) opt_reboot="$OPTARG" ;;
      *) echo "$rd""Invalid rgument for Option -r {0|1}""$xx"
+        if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
+        exit ;;
+	 esac
+	 ;;
+     l) 
+	 case $OPTARG in
+	 e) opt_level='err!' ;;
+	 w) opt_level='warn' ;;
+	 i) opt_level='info' ;;
+     *) echo "$rd""Invalid rgument for Option -l {i|w|e}""$xx"
         if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
         exit ;;
 	 esac
@@ -308,9 +320,41 @@ NotifyMessage() {
 	NotifyLevel="$1"
 	NotifyAlias=$(cat ~/.bash_aliases | grep "alias dlt.green-msg" | cut -d '=' -f 2 | cut -d '"' -f 2 2>/dev/null)
 	NotifyDomain=$(echo "$2" | tr -d " ")
+
+	send=1
+
+	if [ "$opt_level" = "err!" ]; then
+	case $NotifyLevel in
+	info) send=0 ;;
+	warn) send=0 ;;
+	err!) send=1 ;;
+	*) send=1 ;;
+	esac	
+	fi
+
+	if [ "$opt_level" = "warn" ]; then
+	case $NotifyLevel in
+	info) send=0 ;;
+	warn) send=1 ;;
+	err!) send=1 ;;
+	*) send=1 ;;
+	esac
+	fi
+
+	if [ "$opt_level" = "info" ]; then
+	case $NotifyLevel in
+	info) send=1 ;;
+	warn) send=1 ;;
+	err!) send=1 ;;
+	*) send=1 ;;
+	esac
+	fi
+
+	if [ "$send" = 1 ]; then
 	if ! [ "$NotifyAlias" ]; then echo "$or""Send notification not enabled...""$xx"; else
 		NotifyResult=$($NotifyAlias """$1 | $NotifyDomain | $3""" 2>/dev/null)
 		if [ "$NotifyResult" = 'ok' ]; then echo "$gn""Send notification successfully...""$xx"; else echo "$rd""Send notification failed...""$xx"; fi
+	fi
 	fi
 	sleep 3
 }
@@ -1288,6 +1332,7 @@ SubMenuNotifyMe() {
 	echo "║                              1. Show existing Message Channel               ║"
 	echo "║                              2. Activate new Message Channel                ║"	
 	echo "║                              3. Generate new Message Channel                ║"
+#	echo "║                              4. Set Notify-Level (info/warn/err!)           ║"
 	echo "║                              4. Revoke Notify-Me                            ║"	
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
@@ -1401,7 +1446,7 @@ SubMenuNotifyMe() {
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
-	4) clear
+	   4) clear
 	   echo "$ca"
 	   echo "Revoke Notify-Me..."
 	   echo "$xx"
