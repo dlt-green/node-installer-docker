@@ -1460,7 +1460,7 @@ SubMenuNotifyMe() {
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
-	   4) clear
+	4) clear
 	   echo "$ca"
 	   echo "Revoke Notify-Me..."
 	   echo "$xx"
