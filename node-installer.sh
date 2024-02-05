@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.3.1.6"
-BUILD="20240205_194740"
+BUILD="20240205_200200"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -132,19 +132,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='d39d9fb6b78825616b1ee20d912891309970da516ce9147ec60443d9df322a3a'
+IotaHornetHash='28dc2f63affce37ef4b76d0cafb4faa7f545e85c8e6da2ff4cd2891d71241ddf'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='9df66db11824fa3b4b9053ed9066d43f6789fee413725dfb5e0d0de1f4dc1101'
+IotaWaspHash='b263123a7a6577b499c1d761e67318ab430c1fa254681cc6bd37e736fedc9569'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='7d9e0624f494467dfe692e07b24546d8f88ffd8fb69455d1f02d22c43d5f8a18'
+ShimmerHornetHash='70945ba2034dd3c127c041d8954adddcb9d2d24e8251621ab546b1e88acd397a'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='41186ac66c539bcf7b15b51932f01371ece8aeb6389dd6bcb9961687ebfa62f6'
+ShimmerWaspHash='e3d2036c67f76601e0b6ff6e057e098545226050bcfb967fd7bcc6958759c961'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='da5ac1f05193c5ef25213cd1c34f9c1c4f42db639c62a68e1ff859b88eb4894f'
+ShimmerChronicleHash='3bcfcac09b0f1fba1e69f424dc2f996e8c85ea14f8ebfc123ad090366cd883e8'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -939,7 +939,7 @@ Dashboard() {
 	fi
 
 	if [ "$opt_mode" = 11 ]; then
-	  echo "$ca""unattended: Update Shimmer-INX-Chronicle...""$xx"
+	  echo "$ca""unattended: Update Shimmer-Plugins/INX-Chronicle...""$xx"
 	  VAR_STATUS="shimmer-chronicle: update v.$VAR_SHIMMER_INX_CHRONICLE_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
@@ -1058,7 +1058,7 @@ Dashboard() {
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=0; VAR_DIR='shimmer-plugins'
 	   if [ "$opt_mode" ]; then clear; exit; else SubMenuPlugins; fi ;;
-	11) VAR_NETWORK=2; VAR_NODE=11; VAR_DIR='shimmer-plugins/shimmer-chronicle'
+	11) VAR_NETWORK=2; VAR_NODE=11; VAR_DIR='shimmer-plugins/inx-chronicle'
 	   if [ "$opt_mode" ]; then ShimmerChronicle; clear; exit; else SubMenuMaintenance; fi ;;
 	e|E) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
