@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.3.1.6"
-BUILD="20240205_200200"
+BUILD="20240205_205017"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -132,19 +132,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='28dc2f63affce37ef4b76d0cafb4faa7f545e85c8e6da2ff4cd2891d71241ddf'
+IotaHornetHash='68f15ff0321d2673a88f1108011f13d9b93c7390656ee49ac0de396ef10a0bad'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='b263123a7a6577b499c1d761e67318ab430c1fa254681cc6bd37e736fedc9569'
+IotaWaspHash='5c9c26269da9ae965b85eb58106af0f857a504489b1c9ce682ee43a3fe26bae4'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='70945ba2034dd3c127c041d8954adddcb9d2d24e8251621ab546b1e88acd397a'
+ShimmerHornetHash='52c570d0d9c4e4b157293235df5f73c9a211d102c49a990fae784d788bbe10fa'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='e3d2036c67f76601e0b6ff6e057e098545226050bcfb967fd7bcc6958759c961'
+ShimmerWaspHash='deb762c859de5d6b3832dc73e5e3833b3fd73314b919ef37a3e800193edf28ec'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='3bcfcac09b0f1fba1e69f424dc2f996e8c85ea14f8ebfc123ad090366cd883e8'
+ShimmerChronicleHash='17cac62ad1c792633d0052561f32a43ea2eecf20c50dad65796853e1b376d309'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -626,7 +626,7 @@ CheckNodeUpdates() {
               NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_WASP_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then
-              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_INX_CHRONICLE_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_CHRONICLE_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$NODE_VRSN_TMP" = "$NODE_VRSN_INST" ]; then NODE_VRSN_LATEST="$NODE_VRSN_TMP"; fi
             if [ "$NODE_VRSN_INST" = "$NODE_VRSN_LATEST" ]; then NodeUpdate "$INSTALLER_VRSN" "$NODE" "$VAR_NODE"; break;  fi
@@ -940,7 +940,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 11 ]; then
 	  echo "$ca""unattended: Update Shimmer-Plugins/INX-Chronicle...""$xx"
-	  VAR_STATUS="shimmer-chronicle: update v.$VAR_SHIMMER_INX_CHRONICLE_VERSION"
+	  VAR_STATUS="shimmer-plugins/inx-chronicle: update v.$VAR_SHIMMER_INX_CHRONICLE_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='11'
