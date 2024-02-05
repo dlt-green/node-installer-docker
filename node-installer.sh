@@ -1004,19 +1004,22 @@ Dashboard() {
 	             docker compose up -d
 	             sleep 60
 	             VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
-			   fi
-	           if [ "$VAR_STATUS" = 'null' ]; then
-	             VAR_STATUS="$NODE$NETWORK: healthcheck missing"
-	             if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi	
 	           fi
-	           if [ "$VAR_STATUS" = 'healthy' ]; then
-	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
-	             if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-	           fi
-	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
-	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
-	             if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi	
-	           fi
+
+	           case $VAR_STATUS in
+	               'null')
+	               VAR_STATUS="$NODE$NETWORK: healthcheck missing"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+	               'unhealthy')
+	               VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+	               'healthy')
+	               VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+	               *)
+	               VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+	           esac
 	         fi
 	       fi
 	     fi
