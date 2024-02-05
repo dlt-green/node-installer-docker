@@ -940,7 +940,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 11 ]; then
 	  echo "$ca""unattended: Update Shimmer-Plugins/INX-Chronicle...""$xx"
-	  VAR_STATUS="shimmer-chronicle: update v.$VAR_SHIMMER_INX_CHRONICLE_VERSION"
+	  VAR_STATUS="shimmer-plugins/inx-chronicle: update v.$VAR_SHIMMER_INX_CHRONICLE_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='11'
