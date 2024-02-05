@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.3.1.6"
-BUILD="20240205_223724"
+BUILD="20240205_224008"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -132,19 +132,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='5f43eaeeb5d19bec517b63b4209f90f8d14adf3c016c76696982b32b5909d819'
+IotaHornetHash='3309a3282efa69a7f1f3ea68d6d60b41a52c0ff1a321dce824a96fe0e001ee42'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='ca2bab8ae65e89b42e3ff6e2ca608fcff1aca9042570b45905aa51c9f9b1292d'
+IotaWaspHash='75cd72d14f726f34c18c57f8314fb4326879550a621a3d2a803ebf03d385f862'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='6849ffda69d2d34e8f6d5d89ce5b36a2f363815b3d891aa0f5f892643e29644a'
+ShimmerHornetHash='fe84872dad71c0b1da838d25eb2da90313c9480651c88053f4e716cf60efb2ff'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='ba198acb18aa5a171756b166dc53087cf16d6ff9cb2ecfc8fa64696cda9ed368'
+ShimmerWaspHash='b230fb26931094f28342573bdf24a194cb8430a3234df8231f064e7b79b45898'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='e2ac1a33e18e45592e8cbbcb844fb477794122419ea89b6702780d855c482694'
+ShimmerChronicleHash='14bbc530b9fe073e821e50ba0a3bebaf6a7520464b9ba22ab4ada9ee0b926757'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -943,7 +943,7 @@ Dashboard() {
 	  VAR_STATUS="shimmer-plugins/inx-chronicle: update v.$VAR_SHIMMER_INX_CHRONICLE_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
-	  n='11'
+	  n='21'
 	fi
 
 	if [ "$opt_mode" = 's' ]; then
