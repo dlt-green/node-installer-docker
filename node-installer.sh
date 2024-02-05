@@ -88,8 +88,8 @@ do
 	 ;;
      m) 
 	 case $OPTARG in
-	 0|1|2|5|6|s|u) opt_mode="$OPTARG" ;;
-     *) echo "$rd""Invalid Argument for Option -m {0|1|2|5|6|s}""$xx"
+	 0|1|2|5|6|11|s|u) opt_mode="$OPTARG" ;;
+     *) echo "$rd""Invalid Argument for Option -m {0|1|2|5|6|11|s}""$xx"
         if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
         exit ;;
 	 esac
@@ -609,7 +609,7 @@ CheckNodeUpdates() {
           if [ "$NODE" = 'iota-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_IOTA_WASP_VERSION; VAR_NODE=2; fi
           if [ "$NODE" = 'shimmer-hornet' ]; then NODE_VRSN_INST=$(cat .env | grep HORNET_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_HORNET_VERSION; VAR_NODE=5; fi
           if [ "$NODE" = 'shimmer-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_WASP_VERSION; VAR_NODE=6; fi
-          if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then NODE_VRSN_INST=$(cat .env | grep INX_CHRONICLE_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_INX_CHRONICLE_VERSION; VAR_NODE=9; fi
+          if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then NODE_VRSN_INST=$(cat .env | grep INX_CHRONICLE_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_INX_CHRONICLE_VERSION; VAR_NODE=11; fi
 		  
           for INSTALLER_VRSN in $INST_VRSN_LIST; do
 
@@ -626,7 +626,7 @@ CheckNodeUpdates() {
               NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_WASP_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then
-              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_CHRONICLE_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_INX_CHRONICLE_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$NODE_VRSN_TMP" = "$NODE_VRSN_INST" ]; then NODE_VRSN_LATEST="$NODE_VRSN_TMP"; fi
             if [ "$NODE_VRSN_INST" = "$NODE_VRSN_LATEST" ]; then NodeUpdate "$INSTALLER_VRSN" "$NODE" "$VAR_NODE"; break;  fi
@@ -665,7 +665,7 @@ NodeUpdate() {
             fi
             if [ "$NODE_VRSN_UPDATE" = '1' ]; then
               echo "$ca""dlt.green release $INSTALLER_VRSN_TMP: Update $2... (unattended)" "$xx"
-              UPDATE=$(cd /home && sudo wget https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh && sh node-installer.sh) >/dev/null 2>&1
+              UPDATE=$(cd /home && sudo wget https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh && sh node-installer.sh -m $3 -t 0 -r 0) >/dev/null 2>&1
             else
               echo "$rd""dlt.green release $INSTALLER_VRSN_TMP: Update $2... (attended)" "$xx"
               if [ "$opt_mode" ]; then
@@ -938,6 +938,14 @@ Dashboard() {
 	  n='6'
 	fi
 
+	if [ "$opt_mode" = 11 ]; then
+	  echo "$ca""unattended: Update Shimmer-INX-Chronicle...""$xx"
+	  VAR_STATUS="shimmer-wasp: update v.$VAR_SHIMMER_INX_CHRONICLE_VERSION"
+	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
+	  sleep 3
+	  n='11'
+	fi
+
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
 	  VAR_STATUS='system: start all nodes'
@@ -1050,6 +1058,8 @@ Dashboard() {
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=0; VAR_DIR='shimmer-plugins'
 	   if [ "$opt_mode" ]; then clear; exit; else SubMenuPlugins; fi ;;
+	11) VAR_NETWORK=2; VAR_NODE=11; VAR_DIR='shimmer-plugins/shimmer-chronicle'
+	   if [ "$opt_mode" ]; then ShimmerChronicle; clear; exit; else SubMenuMaintenance; fi ;;
 	e|E) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   if [ -d "/var/lib/iota-hornet" ]; then CheckEventsIota; fi
@@ -1848,7 +1858,7 @@ SubMenuPlugins() {
 	   if [ ! -d /var/lib/$VAR_DIR/inx-chronicle ]; then mkdir /var/lib/$VAR_DIR/inx-chronicle || exit; fi
 	   cd /var/lib/$VAR_DIR/inx-chronicle || exit
 	   VAR_DIR=$VAR_DIR'/inx-chronicle'
-	   VAR_NODE=9;
+	   VAR_NODE=11;
 	   SubMenuMaintenance ;;
 	*) Dashboard ;;
 	esac
