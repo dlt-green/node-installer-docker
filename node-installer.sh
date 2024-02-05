@@ -939,7 +939,7 @@ Dashboard() {
 	fi
 
 	if [ "$opt_mode" = 11 ]; then
-	  echo "$ca""unattended: Update Shimmer-INX-Chronicle...""$xx"
+	  echo "$ca""unattended: Update Shimmer-Plugins/INX-Chronicle...""$xx"
 	  VAR_STATUS="shimmer-chronicle: update v.$VAR_SHIMMER_INX_CHRONICLE_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
@@ -1058,7 +1058,7 @@ Dashboard() {
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=0; VAR_DIR='shimmer-plugins'
 	   if [ "$opt_mode" ]; then clear; exit; else SubMenuPlugins; fi ;;
-	11) VAR_NETWORK=2; VAR_NODE=11; VAR_DIR='shimmer-plugins/shimmer-chronicle'
+	11) VAR_NETWORK=2; VAR_NODE=11; VAR_DIR='shimmer-plugins/inx-chronicle'
 	   if [ "$opt_mode" ]; then ShimmerChronicle; clear; exit; else SubMenuMaintenance; fi ;;
 	e|E) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
