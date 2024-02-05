@@ -88,8 +88,8 @@ do
 	 ;;
      m) 
 	 case $OPTARG in
-	 0|1|2|5|6|11|s|u) opt_mode="$OPTARG" ;;
-     *) echo "$rd""Invalid Argument for Option -m {0|1|2|5|6|11|s}""$xx"
+	 0|1|2|5|6|21|s|u) opt_mode="$OPTARG" ;;
+     *) echo "$rd""Invalid Argument for Option -m {0|1|2|5|6|21|s}""$xx"
         if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
         exit ;;
 	 esac
@@ -609,7 +609,7 @@ CheckNodeUpdates() {
           if [ "$NODE" = 'iota-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_IOTA_WASP_VERSION; VAR_NODE=2; fi
           if [ "$NODE" = 'shimmer-hornet' ]; then NODE_VRSN_INST=$(cat .env | grep HORNET_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_HORNET_VERSION; VAR_NODE=5; fi
           if [ "$NODE" = 'shimmer-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_WASP_VERSION; VAR_NODE=6; fi
-          if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then NODE_VRSN_INST=$(cat .env | grep INX_CHRONICLE_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_INX_CHRONICLE_VERSION; VAR_NODE=11; fi
+          if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then NODE_VRSN_INST=$(cat .env | grep INX_CHRONICLE_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_INX_CHRONICLE_VERSION; VAR_NODE=21; fi
 		  
           for INSTALLER_VRSN in $INST_VRSN_LIST; do
 
@@ -938,7 +938,7 @@ Dashboard() {
 	  n='6'
 	fi
 
-	if [ "$opt_mode" = 11 ]; then
+	if [ "$opt_mode" = 21 ]; then
 	  echo "$ca""unattended: Update Shimmer-Plugins/INX-Chronicle...""$xx"
 	  VAR_STATUS="shimmer-plugins/inx-chronicle: update v.$VAR_SHIMMER_INX_CHRONICLE_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
@@ -1061,7 +1061,7 @@ Dashboard() {
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=0; VAR_DIR='shimmer-plugins'
 	   if [ "$opt_mode" ]; then clear; exit; else SubMenuPlugins; fi ;;
-	11) VAR_NETWORK=2; VAR_NODE=11; VAR_DIR='shimmer-plugins/inx-chronicle'
+	21) VAR_NETWORK=2; VAR_NODE=21; VAR_DIR='shimmer-plugins/inx-chronicle'
 	   if [ "$opt_mode" ]; then ShimmerChronicle; clear; exit; else SubMenuMaintenance; fi ;;
 	e|E) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
@@ -1579,7 +1579,7 @@ SubMenuMaintenance() {
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
 		fi
 	fi
-	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 11 ]; then
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
 			if [ $(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_INX_CHRONICLE_VERSION ]; then
 				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
@@ -1600,7 +1600,7 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then IotaWasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then ShimmerHornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then ShimmerWasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 11 ]; then ShimmerChronicle; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then ShimmerChronicle; fi
 	   ;;
 	2) echo '(re)starting...'; sleep 3
 
@@ -1615,7 +1615,7 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop shimmer-wasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 11 ]; then docker stop shimmer-plugins.inx-chronicle; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then docker stop shimmer-plugins.inx-chronicle; fi
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
@@ -1649,7 +1649,7 @@ SubMenuMaintenance() {
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-wasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop shimmer-wasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 11 ]; then docker stop shimmer-plugins.inx-chronicle; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then docker stop shimmer-plugins.inx-chronicle; fi
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 	   sleep 3;
@@ -1861,7 +1861,7 @@ SubMenuPlugins() {
 	   if [ ! -d /var/lib/$VAR_DIR/inx-chronicle ]; then mkdir /var/lib/$VAR_DIR/inx-chronicle || exit; fi
 	   cd /var/lib/$VAR_DIR/inx-chronicle || exit
 	   VAR_DIR=$VAR_DIR'/inx-chronicle'
-	   VAR_NODE=11;
+	   VAR_NODE=21;
 	   SubMenuMaintenance ;;
 	*) Dashboard ;;
 	esac
@@ -1929,7 +1929,7 @@ SubMenuConfiguration() {
 			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
 		fi
 	fi
-	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 11 ]; then
+	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
 			if [ $(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_INX_CHRONICLE_VERSION ]; then
 				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
