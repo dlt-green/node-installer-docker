@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.3.1.6"
-BUILD="20240205_211150"
+BUILD="20240205_214202"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -132,19 +132,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='daaab9d0b884aa36db40da3ea610d7bb4ba38c7220c1de010f3e6bb98c3b5d8b'
+IotaHornetHash='731e4663f1ddfdcb46d2593bb6d7af7e80ba8bbbfc39edbfd30deb51e1d0ae50'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='b220c3717b90cbc02bdb9fb8681e8a67441c0e6f67ed2a12c5dfe6cc09657ed7'
+IotaWaspHash='b37f008acf7f7855173fc27cf9c13a70f0c1837948da59ad61abdb9eea005b16'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='5b9c7cf025b273b712a1cd4f8d0d3ced9fc9f19327fcce828621a0bb8c609ee9'
+ShimmerHornetHash='7043fb92ee0c3f231de8f51d2ccb672879c9d99eba99c2f55a70686901fbdc21'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='8c3c5be86f21f431d7805eea814ce6509872fdc53f28d29fbd3516adf2c984de'
+ShimmerWaspHash='7d549266c977220dc2f5880d5d71c77bb3039837f383997364b0b6f62c62826e'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='16b4f1dc8f13843f0eaf52bf41648d8305fac00afa093034c07e62b2c5513ec4'
+ShimmerChronicleHash='ed1190a0e6de44a08f9f03318e6f948055a0ca4e7ecb88516e72d2570704b171'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1004,19 +1004,22 @@ Dashboard() {
 	             docker compose up -d
 	             sleep 60
 	             VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
-			   fi
-	           if [ "$VAR_STATUS" = 'null' ]; then
-	             VAR_STATUS="$NODE$NETWORK: healthcheck missing"
-	             if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi	
 	           fi
-	           if [ "$VAR_STATUS" = 'healthy' ]; then
-	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
-	             if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-	           fi
-	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
-	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
-	             if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi	
-	           fi
+
+	           case $VAR_STATUS in
+	               'null')
+	               VAR_STATUS="$NODE$NETWORK: healthcheck missing"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+	               'unhealthy')
+	               VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+	               'healthy')
+	               VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+	               *)
+	               VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+	           esac
 	         fi
 	       fi
 	     fi
