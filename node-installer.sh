@@ -969,7 +969,7 @@ Dashboard() {
 	           if [ "$NODE" = 'shimmer-hornet' ]; then NETWORK=" $VAR_SHIMMER_HORNET_NETWORK"; fi
 	           docker compose up -d
 	           sleep 30
-	           VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
+	           VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
 
 	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
 	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
@@ -995,12 +995,17 @@ Dashboard() {
 	             fi
 	             docker compose up -d
 	             sleep 60
-	             VAR_STATUS="$(docker inspect "$NODE" | jq -r '.[] .State .Health .Status')"
+	             VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
 			   fi
+	           if [ "$VAR_STATUS" = 'null' ]; then
+	             VAR_STATUS="$NODE$NETWORK: healthcheck missing"
+	             if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi	
+	           fi
 	           if [ "$VAR_STATUS" = 'healthy' ]; then
 	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
-	             if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi				 
-	           else
+	             if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	           fi
+	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
 	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi	
 	           fi
