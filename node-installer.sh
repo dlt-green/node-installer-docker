@@ -661,6 +661,7 @@ NodeUpdate() {
               NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_SHIMMER_WASP_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$2" = 'shimmer-plugins/inx-chronicle' ]; then
+              echo $2
               NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_SHIMMER_INX_CHRONICLE_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$NODE_VRSN_UPDATE" = '1' ]; then
