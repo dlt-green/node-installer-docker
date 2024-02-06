@@ -1350,6 +1350,12 @@ SubMenuCronJobs() {
 
 SubMenuNotifyMe() {
 
+	nmi=$xx; nmw=$xx; nme=$xx;
+	if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l')" ]; then (echo "$(crontab -l | sed 's/-m/-l i -m/g')") | crontab -; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l i')" ]; then nmi=$gn; nmw=$or; nme=$rd; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l w')" ]; then nmw=$or; nme=$rd; fi
+	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l e')" ]; then nme=$rd; fi
+
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1359,8 +1365,8 @@ SubMenuNotifyMe() {
 	echo "║                              1. Show existing Message Channel               ║"
 	echo "║                              2. Activate new Message Channel                ║"	
 	echo "║                              3. Generate new Message Channel                ║"
-#	echo "║                              4. Set Notify-Level (info/warn/err!)           ║"
-	echo "║                              4. Revoke Notify-Me                            ║"	
+	echo "║                              4. Switch Notify-Level: [""$nmi""info""$xx""|""$nmw""warn""$xx""|""$nme""err!""$xx""]       ║"
+	echo "║                              5. Revoke Notify-Me                            ║"	
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1474,6 +1480,12 @@ SubMenuNotifyMe() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
 	4) clear
+	   unset tmp
+	   if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l e')" ] && [ -z "$tmp" ]; then (echo "$(crontab -l | sed 's/-l e/-l i/g')") | crontab -; tmp=1; fi
+	   if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l w')" ] && [ -z "$tmp" ]; then (echo "$(crontab -l | sed 's/-l w/-l e/g')") | crontab -; tmp=1; fi
+	   if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l i')" ] && [ -z "$tmp" ]; then (echo "$(crontab -l | sed 's/-l i/-l w/g')") | crontab -; tmp=1; fi
+	   SubMenuNotifyMe ;;
+	5) clear
 	   echo "$ca"
 	   echo "Revoke Notify-Me..."
 	   echo "$xx"
