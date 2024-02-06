@@ -92,7 +92,7 @@ If you click on the image you will see <a href="https://www.youtube.com/channel/
 
 <div align="left">
       <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">
-      <img src="https://github.com/dlt-green/node-installer-docker/assets/89119285/bb3afc0b-7534-4963-b920-cb01fc4e38ef"
+      <img src="https://github.com/dlt-green/node-installer-docker/assets/89119285/e6bb308b-29a7-48e6-8eac-809e3069139a"
       alt="Installation">
       </a>
 </div>
