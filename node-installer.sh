@@ -1350,7 +1350,7 @@ SubMenuCronJobs() {
 
 SubMenuNotifyMe() {
 
-	nmi=$xx; nmw=$xx; nme=$xx;
+	nmi=$gr; nmw=$gr; nme=$gr;
 	if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l')" ]; then (echo "$(crontab -l | sed 's/-m/-l i -m/g')") | crontab -; fi
 	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l i')" ]; then nmi=$gn; nmw=$or; nme=$rd; fi
 	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l w')" ]; then nmw=$or; nme=$rd; fi
