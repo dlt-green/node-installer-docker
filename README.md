@@ -44,7 +44,7 @@ dlt.green
 ### NODE-INSTALLER unattended
 
 ```
-dlt.green [-m mode/optional] [-t time/optional] [-r reboot/optional] [-c checks/optional]
+dlt.green [-m mode/optional] [-t time/optional] [-r reboot/optional] [-c checks/optional] [-l logs/optional]
 ```
 
 ```
@@ -77,6 +77,13 @@ default: 0
 checks: 0: checks disabled (not recommended)
 checks: 1: UFW Firewall and Autostart will be automatically enabled (enforced)
 default: 1
+```
+
+```
+logs: i: all logs
+logs: w: only warning and error logs
+logs: e: only error logs
+default: i
 ```
 
 ### Operation
