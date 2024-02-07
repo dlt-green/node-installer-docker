@@ -44,7 +44,7 @@ dlt.green
 ### NODE-INSTALLER unattended
 
 ```
-dlt.green [-m mode/optional] [-t time/optional] [-r reboot/optional] [-c checks/optional]
+dlt.green [-m mode/optional] [-t time/optional] [-r reboot/optional] [-c checks/optional] [-l logs/optional]
 ```
 
 ```
@@ -79,13 +79,20 @@ checks: 1: UFW Firewall and Autostart will be automatically enabled (enforced)
 default: 1
 ```
 
+```
+logs: i: all logs
+logs: w: only warning and error logs
+logs: e: only error logs
+default: i
+```
+
 ### Operation
 The script is operated by entering the numbers that are displayed in the menu.
 If you click on the image you will see <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">video tutorials</a> for installing IOTA/Shimmer Nodes:
 
 <div align="left">
       <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">
-      <img src="https://github.com/dlt-green/node-installer-docker/assets/89119285/bb3afc0b-7534-4963-b920-cb01fc4e38ef"
+      <img src="https://github.com/dlt-green/node-installer-docker/assets/89119285/e6bb308b-29a7-48e6-8eac-809e3069139a"
       alt="Installation">
       </a>
 </div>
