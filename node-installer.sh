@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.3.1.7"
-BUILD="20240209_222240"
+BUILD="20240209_224011"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -132,19 +132,19 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
-IotaHornetHash='01181c11e4e0513f247c69c0f1010a81ee4392c6f92bb76eb6b3f1b97f4d48c5'
+IotaHornetHash='21cd004c018e6f442ada6108e099b45760d299e741e9c96d334097af7c6275e5'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='1b1ad56ee0a5d764c6af93418d12fdce552957d49287bdd5345826b2523e7d74'
+IotaWaspHash='49cf139e35d064bca0114224f624bf2f034b6fe82d8550deaf2ffb9092cfbe63'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='163575309d2aba69d1bfd3e5b7ceffabe8f9fbdb650213adfbfb0e09fb69ab73'
+ShimmerHornetHash='7de2dcd09fb039fb8393e2d14841ec52fdd4885b3965f66ca1f9d1131bf837ef'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='6b64ed6156a7088937453b683499febc57a8a4e8c4082ecb37baead483c09919'
+ShimmerWaspHash='3e3abc77d1ca92c8209d6b9891b8c614a8da3f30ee203dbbdf8643a716709800'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='1e36cb4f753ee36134d6ee3db7f115ee4051bd2a5c116ed664b0ecd1ed941085'
+ShimmerChronicleHash='aed6496b1b8d7c1c619e67fc4cd337736c8b3a6dd974ee8cb7ddd23c5acb0178'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -3469,7 +3469,7 @@ ShimmerHornet() {
 			echo "$gn""Set mail for certificate renewal: $VAR_ACME_EMAIL""$xx"
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "HORNET_HTTP_PORT=8085" >> .env
+			echo "HORNET_HTTP_PORT=8081" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "HORNET_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
@@ -3840,7 +3840,7 @@ ShimmerWasp() {
 			echo "$gn""Set mail for certificate renewal: $VAR_ACME_EMAIL""$xx"
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "WASP_HTTP_PORT=8086" >> .env
+			echo "WASP_HTTP_PORT=8082" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "WASP_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
@@ -4210,7 +4210,7 @@ ShimmerChronicle() {
 			echo "$gn""Set mail for certificate renewal: $VAR_ACME_EMAIL""$xx"
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "INX_CHRONICLE_HTTP_PORT=8087" >> .env
+			echo "INX_CHRONICLE_HTTP_PORT=8084" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "INX_CHRONICLE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "INX_CHRONICLE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
