@@ -3469,7 +3469,7 @@ ShimmerHornet() {
 			echo "$gn""Set mail for certificate renewal: $VAR_ACME_EMAIL""$xx"
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "HORNET_HTTP_PORT=8085" >> .env
+			echo "HORNET_HTTP_PORT=8081" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "HORNET_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
@@ -3840,7 +3840,7 @@ ShimmerWasp() {
 			echo "$gn""Set mail for certificate renewal: $VAR_ACME_EMAIL""$xx"
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "WASP_HTTP_PORT=8086" >> .env
+			echo "WASP_HTTP_PORT=8082" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "WASP_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
@@ -4210,7 +4210,7 @@ ShimmerChronicle() {
 			echo "$gn""Set mail for certificate renewal: $VAR_ACME_EMAIL""$xx"
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "INX_CHRONICLE_HTTP_PORT=8087" >> .env
+			echo "INX_CHRONICLE_HTTP_PORT=8084" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "INX_CHRONICLE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "INX_CHRONICLE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
