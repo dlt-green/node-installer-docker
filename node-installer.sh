@@ -129,7 +129,7 @@ done
 echo "$xx"
 
 clear
-echo "refresh the list of available packages..."
+echo "preparing installer..."
 sudo apt update >/dev/null 2>&1
 sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 clear
