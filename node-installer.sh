@@ -790,6 +790,7 @@ SetCertificateGlobal() {
 	echo "select menu item: "
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] for [X]... Press [P] to pause / [C] to cancel"
 	case $W in
+	1) ;;
 	*)
 	   echo "$ca"'Update Certificate for all Nodes...'"$xx"
 	   sleep 15
@@ -810,7 +811,6 @@ SetCertificateGlobal() {
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   ;;
-	1) ;;
 	esac
 }
 
