@@ -128,12 +128,6 @@ done
 
 echo "$xx"
 
-clear
-echo "preparing installer..."
-sudo apt update >/dev/null 2>&1
-sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
-clear
-
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
 IotaHornetHash='e00fe217410ebe951e758b1acabd5b1da5d920519221e0eb4029c9a17bc48c9a'
@@ -4403,7 +4397,9 @@ echo ""
 echo "> $gn""Checking Hash of Installer successful...""$xx"
 echo "> $gn""$InstallerHash""$xx"
 
-sleep 3
+sudo apt update >/dev/null 2>&1
+sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+sleep 1
 
 if [ "$opt_check" = 1 ]; then
 	CheckFirewall;
