@@ -78,7 +78,7 @@ opt_level='info'
 while getopts "m:t:r:c:l:" option
 do
   case $option in
-     c) 
+     c)
 	 case $OPTARG in
 	 0|1) opt_check="$OPTARG" ;;
      *) echo "$rd""Invalid rgument for Option -c {0|1}""$xx"
@@ -86,7 +86,7 @@ do
         exit ;;
 	 esac
 	 ;;
-     m) 
+     m)
 	 case $OPTARG in
 	 0|1|2|5|6|21|s|u) opt_mode="$OPTARG" ;;
      *) echo "$rd""Invalid Argument for Option -m {0|1|2|5|6|21|s}""$xx"
@@ -94,7 +94,7 @@ do
         exit ;;
 	 esac
 	 ;;
-     t) 
+     t)
 	 case $OPTARG in
 	 0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20) opt_time="$OPTARG" ;;
      *) echo "$rd""Invalid Argument for Option -t {0-20}""$xx"
@@ -102,7 +102,7 @@ do
         exit ;;
 	 esac
 	 ;;
-     r) 
+     r)
 	 case $OPTARG in
 	 0|1) opt_reboot="$OPTARG" ;;
      *) echo "$rd""Invalid rgument for Option -r {0|1}""$xx"
@@ -110,7 +110,7 @@ do
         exit ;;
 	 esac
 	 ;;
-     l) 
+     l)
 	 case $OPTARG in
 	 e) opt_level='err!' ;;
 	 w) opt_level='warn' ;;
