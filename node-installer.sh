@@ -981,7 +981,7 @@ Dashboard() {
 	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             docker compose stop
-	             docker compose pull
+	             docker compose pull 2>&1 | grep -v "Pulling" | sort
 	             ./prepare_docker.sh
 	             if [ "$NODE" = 'iota-hornet' ]; then
 	               VAR_STATUS="$NODE$NETWORK: reset database"
@@ -2744,9 +2744,7 @@ IotaHornet() {
 	echo ""
 
 	docker network create iota >/dev/null 2>&1
-	docker compose pull
-
-	echo "done..."
+	docker compose pull 2>&1 | grep -v "Pulling" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3133,9 +3131,7 @@ IotaWasp() {
 	echo ""
 
 	docker network create iota >/dev/null 2>&1
-	docker compose pull
-
-	echo "done..."
+	docker compose pull 2>&1 | grep -v "Pulling" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3503,9 +3499,7 @@ ShimmerHornet() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull
-
-	echo "done..."
+	docker compose pull 2>&1 | grep -v "Pulling" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3892,9 +3886,7 @@ ShimmerWasp() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull
-
-	echo "done..."
+	docker compose pull 2>&1 | grep -v "Pulling" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4228,9 +4220,7 @@ ShimmerChronicle() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull
-
-	echo "done..."
+	docker compose pull 2>&1 | grep -v "Pulling" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
