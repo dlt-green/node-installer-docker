@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.3.1.7"
-BUILD="20240210_125757"
+BUILD="20240210_131938"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -128,27 +128,21 @@ done
 
 echo "$xx"
 
-clear
-echo "preparing installer..."
-sudo apt update >/dev/null 2>&1
-sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
-clear
-
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='9888abe870c85a1337e02859fdbae4862b5c74a3ad7d7cee77e62fd2c5c31419'
+IotaHornetHash='8717d9b55252dc1c9a40d93111340b5f247abdda5ea238df9fb774840625a5be'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='c4212c097af3416ae23415e157d2ea3a13cc2a3c9c8fa41c4ae944c1f8570c85'
+IotaWaspHash='361fccd8673b2827eca571c10b25a45b843772b4fbbd83ace7425de920e873f8'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='470d7c88567b53b79fedd8855dfff72f51dd5d0102d347c2128a46f89b863a56'
+ShimmerHornetHash='4c47c17ac8af9fd089faf8f624389649aaa310671ca331d265eee4b354184a4e'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='5ae817ebfcaec42ffb2a0790fe5f84bacf702c4fb1e6c1f95a74de85796bd540'
+ShimmerWaspHash='9e1d6962209cace28b1232a02dc2e8fa15099c70b2a4fd55e17b2463203002bc'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='285dafa1e28ed610e32e70ba4d3f6c9ff4a64b37b8b63a68432dc4af9563c1ef'
+ShimmerChronicleHash='984c1c7a8af02041d2520af3a7350bffc4619cd00d97af5407e4c236bdb345bb'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -4403,7 +4397,9 @@ echo ""
 echo "> $gn""Checking Hash of Installer successful...""$xx"
 echo "> $gn""$InstallerHash""$xx"
 
-sleep 3
+sudo apt update >/dev/null 2>&1
+sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+sleep 1
 
 if [ "$opt_check" = 1 ]; then
 	CheckFirewall;
