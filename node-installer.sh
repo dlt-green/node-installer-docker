@@ -983,7 +983,7 @@ Dashboard() {
 	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             docker compose stop
-	             docker compose pull 2>/dev/null
+	             docker compose pull
 	             ./prepare_docker.sh
 	             if [ "$NODE" = 'iota-hornet' ]; then
 	               VAR_STATUS="$NODE$NETWORK: reset database"
@@ -2746,7 +2746,7 @@ IotaHornet() {
 	echo ""
 
 	docker network create iota >/dev/null 2>&1
-	docker compose pull 2>/dev/null
+	docker compose pull
 
 	echo "done..."
 
@@ -2761,7 +2761,7 @@ IotaHornet() {
 		echo ""
 
 		if [ -n "$VAR_PASSWORD" ]; then
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') 2>/dev/null
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		fi
@@ -3135,7 +3135,7 @@ IotaWasp() {
 	echo ""
 
 	docker network create iota >/dev/null 2>&1
-	docker compose pull 2>/dev/null
+	docker compose pull
 
 	echo "done..."
 
@@ -3151,7 +3151,7 @@ IotaWasp() {
 
 		if [ -n "$VAR_PASSWORD" ]; then
 		  if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || VAR_PASSWORD=''; fi
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') 2>/dev/null
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
@@ -3505,7 +3505,7 @@ ShimmerHornet() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull 2>/dev/null
+	docker compose pull
 
 	echo "done..."
 
@@ -3520,7 +3520,7 @@ ShimmerHornet() {
 		echo ""
 
 		if [ -n "$VAR_PASSWORD" ]; then
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') 2>/dev/null
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		fi
@@ -3894,7 +3894,7 @@ ShimmerWasp() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull 2>/dev/null
+	docker compose pull
 
 	echo "done..."
 
@@ -3910,7 +3910,7 @@ ShimmerWasp() {
 
 		if [ -n "$VAR_PASSWORD" ]; then
 		  if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') 2>/dev/null
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
@@ -4230,7 +4230,7 @@ ShimmerChronicle() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull 2>/dev/null
+	docker compose pull
 
 	echo "done..."
 
