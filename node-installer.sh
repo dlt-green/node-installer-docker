@@ -128,8 +128,10 @@ done
 
 echo "$xx"
 
+echo "refresh the list of available packages..."
 sudo apt update >/dev/null 2>&1
 sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+clear
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
 
