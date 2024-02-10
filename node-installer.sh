@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.3.1.6"
-BUILD="20240206_223145"
+VRSN="v.3.1.7"
+BUILD="20240210_131938"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -78,7 +78,7 @@ opt_level='info'
 while getopts "m:t:r:c:l:" option
 do
   case $option in
-     c) 
+     c)
 	 case $OPTARG in
 	 0|1) opt_check="$OPTARG" ;;
      *) echo "$rd""Invalid rgument for Option -c {0|1}""$xx"
@@ -86,7 +86,7 @@ do
         exit ;;
 	 esac
 	 ;;
-     m) 
+     m)
 	 case $OPTARG in
 	 0|1|2|5|6|21|s|u) opt_mode="$OPTARG" ;;
      *) echo "$rd""Invalid Argument for Option -m {0|1|2|5|6|21|s}""$xx"
@@ -94,7 +94,7 @@ do
         exit ;;
 	 esac
 	 ;;
-     t) 
+     t)
 	 case $OPTARG in
 	 0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20) opt_time="$OPTARG" ;;
      *) echo "$rd""Invalid Argument for Option -t {0-20}""$xx"
@@ -102,7 +102,7 @@ do
         exit ;;
 	 esac
 	 ;;
-     r) 
+     r)
 	 case $OPTARG in
 	 0|1) opt_reboot="$OPTARG" ;;
      *) echo "$rd""Invalid rgument for Option -r {0|1}""$xx"
@@ -110,7 +110,7 @@ do
         exit ;;
 	 esac
 	 ;;
-     l) 
+     l)
 	 case $OPTARG in
 	 e) opt_level='err!' ;;
 	 w) opt_level='warn' ;;
@@ -128,23 +128,21 @@ done
 
 echo "$xx"
 
-sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt)
-
-IotaHornetHash='ad2eb8deb3832bb4520192cf77310d835163988f61ec12fb43a2c483019b45af'
+IotaHornetHash='8717d9b55252dc1c9a40d93111340b5f247abdda5ea238df9fb774840625a5be'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='47a55aed419b8b9b80e6c1fd73363c438f8027bfebcf7c5fee35e04d7ac90215'
+IotaWaspHash='361fccd8673b2827eca571c10b25a45b843772b4fbbd83ace7425de920e873f8'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='235afd9acbe9fdb588f399b0444292fdbcd60b2d14c3596a5374e4fd91f4c8d3'
+ShimmerHornetHash='4c47c17ac8af9fd089faf8f624389649aaa310671ca331d265eee4b354184a4e'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='32d0ac5ce67d031cf4f1693a867eb0ecfae1d2b98fc5ba2163604f8f5498aad5'
+ShimmerWaspHash='9e1d6962209cace28b1232a02dc2e8fa15099c70b2a4fd55e17b2463203002bc'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='eed96e87b6e47cea87278ebd925d6a0bb8b3f0c95d02d8a53ba7faaae78df417'
+ShimmerChronicleHash='984c1c7a8af02041d2520af3a7350bffc4619cd00d97af5407e4c236bdb345bb'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -210,7 +208,7 @@ CheckAutostart() {
 		     echo "$ca"
 		     echo 'Enable Autostart for all Nodes...'
 		     echo "$xx"
-		     sleep 3	   	   
+		     sleep 3
 
 		     if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
 		        export EDITOR='nano' && echo "# crontab" | crontab -
@@ -223,7 +221,7 @@ CheckAutostart() {
 		     if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
 		        echo "$gn""Autostart for all Nodes enabled""$xx"
 		     fi
-			 
+
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 ;;
 		esac
@@ -276,7 +274,7 @@ CheckFirewall() {
 
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
-			 
+
 			 sudo ufw --force enable
 
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -301,7 +299,7 @@ PromptMessage() {
 		echo "$or"
 		echo "Action paused by user..."
 		echo "$fl"; echo 'Press [Enter] to continue... Press [C] to cancel';read -p '> ' W
-	fi	
+	fi
 
 	if [ "$W" = 'C' ] || [ "$W" = 'c' ]; then
 		echo "$rd"
@@ -310,7 +308,7 @@ PromptMessage() {
 		echo "$xx"
 		clear
 		VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
-		DashboardHelper	
+		DashboardHelper
 	fi
 
 	echo "$gn"
@@ -332,7 +330,7 @@ NotifyMessage() {
 	warn) send=0 ;;
 	err!) send=1 ;;
 	*) send=1 ;;
-	esac	
+	esac
 	fi
 
 	if [ "$opt_level" = "warn" ]; then
@@ -367,7 +365,7 @@ FormatToBytes() {
 	if [ -n "$1" ]; then
 		unit=$(echo "$1" | sed -e 's/[^a-zA-Z_]//g' | tr '[:lower:]' '[:upper:]');
 		value=$(echo "$1" | sed -e "s/$unit//g");
-		
+
 		case $unit in
 		KB) bytes=$(echo "$value*1024" | bc);;
 		MB) bytes=$(echo "$value*1024*1024" | bc);;
@@ -429,7 +427,7 @@ CheckCertificate() {
 		echo ""
 		echo "select menu item: "
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"
-		
+
 		case $W in
 		1) VAR_CERT=1
 		   rm -rf /var/lib/"$VAR_DIR"/data/letsencrypt/* ;;
@@ -502,29 +500,29 @@ CheckEventsIota() {
 	echo "$ca"
 	echo "Verify Event Results..."
 	echo "$xx"
-		
+
 	VAR_DIR='iota-hornet'
-	
+
 	cd /var/lib/$VAR_DIR >/dev/null 2>&1 || Dashboard;
-	
+
 	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
 	if [ -z "$VAR_RESTAPI_SALT" ]; then echo "$rd""IOTA-Hornet: No Salt found!""$xx"
 	else
 	   echo "Event IDs can be found at:"
 	   echo 'https://github.com/iotaledger/participation-events'
-	   echo "Event Data will be saved locally under '/var/lib/iota-hornet/verify-events'"	   
+	   echo "Event Data will be saved locally under '/var/lib/iota-hornet/verify-events'"
 	   echo ''
 	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
 	   read -r -p '> ' EVENTS
 	   echo ''
-	   
+
 	   ADDR=$(cat .env 2>/dev/null | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
 	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt "$VAR_RESTAPI_SALT" | awk '{ print $5 }')
 	   echo "$ca""Address: ""$xx""$ADDR"" ($ca""JWT-Token for API Access randomly generated""$xx)"
 	   echo ''
 	   sleep 5
 
-	   if [ -z "$EVENTS" ]; then 
+	   if [ -z "$EVENTS" ]; then
 	   EVENTS=$(curl https://"${ADDR}"/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
 
@@ -558,7 +556,7 @@ CheckEventsIota() {
 	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > "${EVENT_ID}")
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
-	        
+
 	        if [ $(jq '.totalRewards' "${EVENT_ID}") = 'null' ]; then
 			  if [ "$EVENT_SYMBOL" = 'null' ]; then
 			    echo "$gn""Checksum: ""$EVENT_CHECKSUM""$xx"
@@ -610,7 +608,7 @@ CheckNodeUpdates() {
           if [ "$NODE" = 'shimmer-hornet' ]; then NODE_VRSN_INST=$(cat .env | grep HORNET_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_HORNET_VERSION; VAR_NODE=5; fi
           if [ "$NODE" = 'shimmer-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_WASP_VERSION; VAR_NODE=6; fi
           if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then NODE_VRSN_INST=$(cat .env | grep INX_CHRONICLE_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_INX_CHRONICLE_VERSION; VAR_NODE=21; fi
-		  
+
           for INSTALLER_VRSN in $INST_VRSN_LIST; do
 
             if [ "$NODE" = 'iota-hornet' ]; then
@@ -647,7 +645,7 @@ NodeUpdate() {
     for INSTALLER_VRSN_TMP in $INST_VRSN_LIST_TMP; do
       if [ "$upt" -eq 1 ]; then upt=$(echo "($upt+1)" | bc); fi
       if [ "$upt" -eq 2 ]; then
- 
+
             if [ "$2" = 'iota-hornet' ]; then
               NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_IOTA_HORNET_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
@@ -675,7 +673,7 @@ NodeUpdate() {
               fi
             fi
 	  fi
-	  
+
       if [ "$INSTALLER_VRSN_TMP" = "$1" ]; then upt=$(echo "($upt+1)" | bc); fi
     done
 }
@@ -689,22 +687,22 @@ CheckEventsShimmer() {
 	echo "$ca"
 	echo "Verify Event Results..."
 	echo "$xx"
-		
+
 	VAR_DIR='shimmer-hornet'
-	
+
 	cd /var/lib/$VAR_DIR >/dev/null 2>&1 || Dashboard;
-	
+
 	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
 	if [ -z "$VAR_RESTAPI_SALT" ]; then echo "$rd""Shimmer-Hornet: No Salt found!""$xx"
 	else
 	   echo "Event IDs can be found at:"
 	   echo "'https://github.com/iota-community/Shimmer-governance-participation-events'"
-	   echo "Event Data will be saved locally under '/var/lib/shimmer-hornet/verify-events'"	   
+	   echo "Event Data will be saved locally under '/var/lib/shimmer-hornet/verify-events'"
 	   echo ''
 	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
 	   read -r -p '> ' EVENTS
 	   echo ''
-	   
+
 	   ADDR=$(cat .env 2>/dev/null | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
 	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt "$VAR_RESTAPI_SALT" | awk '{ print $5 }')
 	   echo "$ca""Address: ""$xx""$ADDR"" ($ca""JWT-Token for API Access randomly generated""$xx)"
@@ -745,7 +743,7 @@ CheckEventsShimmer() {
 	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > "${EVENT_ID}")
 	        echo ""
 	        echo "$xx""Event ID: ""$EVENT_ID"
-	        
+
 	        if [ $(jq '.totalRewards' "${EVENT_ID}") = 'null' ]; then
 			  if [ "$EVENT_SYMBOL" = 'null' ]; then
 			    echo "$gn""Checksum: ""$EVENT_CHECKSUM""$xx"
@@ -790,6 +788,7 @@ SetCertificateGlobal() {
 	echo "select menu item: "
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] for [X]... Press [P] to pause / [C] to cancel"
 	case $W in
+	1) ;;
 	*)
 	   echo "$ca"'Update Certificate for all Nodes...'"$xx"
 	   sleep 15
@@ -810,14 +809,13 @@ SetCertificateGlobal() {
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   ;;
-	1) ;;
 	esac
 }
 
 Dashboard() {
 
 	VAR_DOMAIN=''
-	
+
 	VAR_NODE=1; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/iota-hornet/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/iota-hornet/.env | grep _HOST | cut -d '=' -f 2)
@@ -835,7 +833,7 @@ Dashboard() {
 	  VAR_PORT=$(cat "/var/lib/iota-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
 	  if [ -z "$VAR_PORT" ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	fi
-	if ! [ "$VAR_NodeHealthy" = "false" ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ]; then iw=$rd; else iw=$gr; fi	
+	if ! [ "$VAR_NodeHealthy" = "false" ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ]; then iw=$rd; else iw=$gr; fi
 
 	VAR_NODE=3; if [ -f "/var/lib/iota-wasp/data/config/wasp-cli.json" ]; then ic=$gn; elif [ -d /var/lib/iota-wasp ]; then ic=$or; else ic=$gr; fi
 
@@ -848,7 +846,7 @@ Dashboard() {
 	else
 	  VAR_SHIMMER_HORNET_NETWORK='mainnet'
 	fi
-	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi	
+	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi
 
 	VAR_NODE=6; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-wasp/.env" ]; then
@@ -856,7 +854,7 @@ Dashboard() {
 	  VAR_PORT=$(cat "/var/lib/shimmer-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
 	  if [ -z "$VAR_PORT" ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	fi
-	
+
 	if ! [ "$VAR_NodeHealthy" = "false" ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sw=$rd; else sw=$gr; fi
 
 	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then sc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sc=$or; else sc=$gr; fi
@@ -913,7 +911,7 @@ Dashboard() {
 	  sleep 3
 	  n='1'
 	fi
-	
+
 	if [ "$opt_mode" = 2 ]; then
 	  echo "$ca""unattended: Update IOTA-Wasp...""$xx"
 	  VAR_STATUS="iota-wasp: update v.$VAR_IOTA_WASP_VERSION"
@@ -921,7 +919,7 @@ Dashboard() {
 	  sleep 3
 	  n='2'
 	fi
-	
+
 	if [ "$opt_mode" = 5 ]; then
 	  echo "$ca""unattended: Update Shimmer-Hornet...""$xx"
 	  VAR_STATUS="shimmer-hornet $VAR_SHIMMER_HORNET_NETWORK: update v.$VAR_SHIMMER_HORNET_VERSION"
@@ -985,7 +983,7 @@ Dashboard() {
 	             docker compose stop
 	             docker compose pull
 	             ./prepare_docker.sh
-	             if [ "$NODE" = 'iota-hornet' ]; then 
+	             if [ "$NODE" = 'iota-hornet' ]; then
 	               VAR_STATUS="$NODE$NETWORK: reset database"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_IOTA_HORNET_NETWORK"/*
@@ -993,7 +991,7 @@ Dashboard() {
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
-	             if [ "$NODE" = 'shimmer-hornet' ]; then 
+	             if [ "$NODE" = 'shimmer-hornet' ]; then
 	               VAR_STATUS="$NODE$NETWORK: reset database"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
@@ -1029,7 +1027,7 @@ Dashboard() {
 	   RenameContainer
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-	   
+
 	   if [ "$opt_mode" ]; then clear; exit; else DashboardHelper; fi ;;
 
 	u) VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
@@ -1144,7 +1142,7 @@ MainMenu() {
 	     else
 	       sed -i 's/alias dlt.green-dev=.*/alias dlt.green-dev="sudo wget https:\/\/github.com\/dlt-green\/node-installer-docker\/releases\/download\/dev-latest\/node-installer.sh \&\& sudo sh node-installer.sh"/g' ~/.bash_aliases
 	       echo "$gn""Alias set!""$xx"
-	     fi	     
+	     fi
 
 		 echo ""
 		 echo "$rd""Attention! Please reconnect so that the alias works!""$xx"
@@ -1167,7 +1165,7 @@ MainMenu() {
 		  sleep 5
 	      docker stats ;;
 	   *) ;;
-	   esac	   
+	   esac
 	   echo "$xx"
 	   MainMenu ;;
 	4) clear
@@ -1196,7 +1194,7 @@ SubMenuCronJobs() {
 	if [ "$(crontab -l | grep "$VAR_CRON_TIME_1" | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn"[✓] "; else cja=$rd"[X] "; fi
 	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then cjb=$gn"[✓] "; else cjb=$rd"[X] "; fi
 	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then cjc=$gn"[✓] "; else cjc=$rd"[X] "; fi
-	
+
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -1229,7 +1227,7 @@ SubMenuCronJobs() {
 		  echo "$ca"
 		  echo 'Enable Autostart for all Nodes...'
 		  echo "$xx"
-		  sleep 3	   	   
+		  sleep 3
 
 		  if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
 		     export EDITOR='nano' && echo "# crontab" | crontab -
@@ -1271,15 +1269,15 @@ SubMenuCronJobs() {
 		    esac
 		    if [ "$VAR_TMP" -lt 0 ] || [ "$VAR_TMP" -gt 59 ]; then echo "$rd""Wrong value!"; echo "$xx"; else VAR_CRON_HOUR_2=$VAR_TMP; echo "$gn"" ✓""$xx"; fi
 		  done
-  
+
 		  VAR_CRON_MIN_2="$(shuf --random-source='/dev/urandom' -n 1 -i 0-59)"
 		  echo ""
 		  echo "Set Time [Minute] (automatic: $ca""0-59""$xx""):"
 		  echo '> '"$VAR_CRON_MIN_2"
 		  echo "$gn"" ✓""$xx"
 		  echo ""
-		  
-		  sleep 3	  	   
+
+		  sleep 3
 
 		  if [ "$(crontab -l 2>&1 | grep 'no crontab')" ]; then
 		     export EDITOR='nano' && echo "# crontab" | crontab -
@@ -1302,7 +1300,7 @@ SubMenuCronJobs() {
 		  echo "Disable Automatic Node Updates..."
 		  echo "$xx"
 		  sleep 3
-		  (echo "$(crontab -l | sed 's/dlt.green -m u/dlt.green -m 0/g')") | crontab - 
+		  (echo "$(crontab -l | sed 's/dlt.green -m u/dlt.green -m 0/g')") | crontab -
 		  if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ]; then
 			 tmp=1
 		     echo "$rd""Automatic Node Updates disabled""$xx"
@@ -1316,7 +1314,7 @@ SubMenuCronJobs() {
 		  echo "Enable Automatic Node Updates..."
 		  echo "$xx"
 		  sleep 3
-		  (echo "$(crontab -l | sed 's/dlt.green -m 0/dlt.green -m u/g')") | crontab - 
+		  (echo "$(crontab -l | sed 's/dlt.green -m 0/dlt.green -m u/g')") | crontab -
 		  if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
 			 tmp=1
 		     echo "$gn""Automatic Node Updates enabled""$xx"
@@ -1363,10 +1361,10 @@ SubMenuNotifyMe() {
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                              1. Show existing Message Channel               ║"
-	echo "║                              2. Activate new Message Channel                ║"	
+	echo "║                              2. Activate new Message Channel                ║"
 	echo "║                              3. Generate new Message Channel                ║"
 	echo "║                              4. Switch Notify-Level: [""$nmi""info""$xx""|""$nmw""warn""$xx""|""$nme""err!""$xx""]       ║"
-	echo "║                              5. Revoke Notify-Me                            ║"	
+	echo "║                              5. Revoke Notify-Me                            ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1379,7 +1377,7 @@ SubMenuNotifyMe() {
 	   echo "$ca"
 	   echo "Show existing Message Channel..."
 	   echo "$xx"
-	
+
 	   VAR_NOTIFY_URL='https://notify.run'
 	   VAR_NOTIFY_ENDPOINT=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2 | cut -d ' ' -f 2)
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
@@ -1412,7 +1410,7 @@ SubMenuNotifyMe() {
 	   read -r -p '> ' VAR_TMP
 	   if [ -n "$VAR_TMP" ]; then VAR_NOTIFY_ID=$VAR_TMP; elif [ -z "$VAR_NOTIFY_ID" ]; then VAR_NOTIFY_ID=$VAR_DEFAULT; fi
 	   echo "$gn""Set Message Channel: $VAR_NOTIFY_ID""$xx"
-	   
+
 	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.run/'"$VAR_NOTIFY_ID"' -d'
 
 	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """info | $VAR_DOMAIN | message channel: activated""" 2>/dev/null)
@@ -1455,7 +1453,7 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY_ENDPOINT=$(echo "$VAR_NOTIFY" | jq -r '.endpoint')
 	   VAR_NOTIFY_ENDPOINT_URL='curl '$VAR_NOTIFY_ENDPOINT' -d'
 	   VAR_NOTIFY_ID=$(echo "$VAR_NOTIFY" | jq -r '.channelId')
-	   
+
 	   echo ""
 	   qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
 	   echo ""
@@ -1474,7 +1472,7 @@ SubMenuNotifyMe() {
 	     else
 	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
 	       echo "$gn""New Message Channel generated...""$xx"
-	     fi	     
+	     fi
 	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -1545,7 +1543,7 @@ SubMenuMaintenance() {
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	   
+
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || Dashboard; fi
 	if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
@@ -1619,9 +1617,9 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Stopping Node                                ║"
+	   echo "║                                  Stopping                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	   echo ""	
+	   echo ""
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-wasp; fi
@@ -1636,7 +1634,7 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Starting Node                                ║"
+	   echo "║                                  Starting                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   echo ""
 
@@ -1649,13 +1647,13 @@ SubMenuMaintenance() {
 	   SubMenuMaintenance
 	   ;;
 	3) echo 'stopping...'; sleep 3
-	
+
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Stopping Node                                ║"
+	   echo "║                                  Stopping                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	   echo ""	
+	   echo ""
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-wasp; fi
@@ -1674,9 +1672,9 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Stopping Node                                ║"
+	   echo "║                                  Stopping                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	   echo ""	
+	   echo ""
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -1686,9 +1684,9 @@ SubMenuMaintenance() {
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	   echo "║                              Resetting Database                             ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	   echo ""	
+	   echo ""
 
-	   echo "done..."	
+	   echo "done..."
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_IOTA_HORNET_NETWORK/*
@@ -1709,9 +1707,9 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Starting Node                                ║"
+	   echo "║                                  Starting                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	   
+
 	   echo "$ca"
 	   echo 'Please wait, importing snapshot can take up to 10 minutes...'
 	   echo "$xx"
@@ -1728,19 +1726,19 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Stopping Node                                ║"
+	   echo "║                                  Stopping                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	   echo ""	
-	   
+	   echo ""
+
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-	   
+
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	   echo "║                              Download Snapshot                              ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	
+
 	   echo "$ca"
 	   echo 'Please wait, downloading snapshots may take some time...'
 	   echo "$xx"
@@ -1753,15 +1751,15 @@ SubMenuMaintenance() {
 	      VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_IOTA_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].full')
 	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/full_snapshot.bin
 	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/full_snapshot.bin
-	
+
 	      echo ""
-	
+
 	      echo "Download latest delta snapshot... $VAR_IOTA_HORNET_NETWORK"
 	      VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_IOTA_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].delta')
 	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR//data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/delta_snapshot.bin
 	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/delta_snapshot.bin
 	   fi
-	   
+
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
 	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_SHIMMER_HORNET_NETWORK/*
@@ -1770,9 +1768,9 @@ SubMenuMaintenance() {
 	      VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_SHIMMER_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].full')
 	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/full_snapshot.bin
 	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/full_snapshot.bin
-	
+
 	      echo ""
-	
+
 	      echo "Download latest delta snapshot... $VAR_SHIMMER_HORNET_NETWORK"
 	      VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_SHIMMER_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].delta')
 	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR//data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
@@ -1791,17 +1789,17 @@ SubMenuMaintenance() {
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-	   
+
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                                Starting Node                                ║"
+	   echo "║                                  Starting                                   ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	   
+
 	   echo "$ca"
 	   echo 'Please wait, importing snapshot can take up to 10 minutes...'
 	   echo "$xx"
-	   
+
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
 
 	   RenameContainer
@@ -1814,8 +1812,8 @@ SubMenuMaintenance() {
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	   echo "║                                    Logs                                     ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	   echo ""		   
-	   
+	   echo ""
+
 	   VAR_LOGS=$(echo "$VAR_DIR" | sed 's/\//./g')
 	   docker logs -f --tail 300 $VAR_LOGS
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -1828,9 +1826,9 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                              Deinstalling Node                              ║"
+	   echo "║                                Deinstalling                                 ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	   echo ""	
+	   echo ""
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down >/dev/null 2>&1; fi
 	   if [ -d /var/lib/$VAR_DIR ]; then rm -r /var/lib/$VAR_DIR; fi
@@ -1858,7 +1856,7 @@ SubMenuPlugins() {
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	
+
 	if [ ! -d /var/lib/$VAR_DIR ]; then mkdir /var/lib/$VAR_DIR || exit; fi
 	if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || Dashboard; fi
 
@@ -1975,24 +1973,24 @@ SubMenuConfiguration() {
 		  fi
 	   else
 	      echo "$rd""Generate JWT-Token is not supportet, aborted! ""$xx"
-	   fi	
+	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
 	2) clear
 	   echo "$ca"
 	   echo "Toggle Proof of Work..."
 	   echo "$xx""$fl"
-	   
+
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
 		  read -r -p 'Press [P] to enable Proof of Work... Press [X] key to disable... ' K; echo "$xx"
-		  if  [ "$K" = 'p' ] || [ "$K" = 'P' ]; then 
+		  if  [ "$K" = 'p' ] || [ "$K" = 'P' ]; then
 	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; K='P'; fi
 		  fi
-		  if  [ "$K" = 'x' ] || [ "$K" = 'X' ]; then 		  
-	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; K='X'; fi	  
+		  if  [ "$K" = 'x' ] || [ "$K" = 'X' ]; then
+	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; K='X'; fi
 		  fi
-		  if  [ "$K" = 'P' ] || [ "$K" = 'X' ]; then		  
+		  if  [ "$K" = 'P' ] || [ "$K" = 'X' ]; then
 		     ./prepare_docker.sh >/dev/null 2>&1
 	         if  [ "$K" = 'P' ]; then echo "$gn""Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
@@ -2001,24 +1999,24 @@ SubMenuConfiguration() {
 		  fi
 	   else
 	      echo "$rd""Toggle Proof of Work is not supportet, aborted!""$xx"
-	   fi	
+	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
 	3) clear
 	   echo "$ca"
 	   echo "Toggle Network..."
 	   echo "$xx""$fl"
-	   
+
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
 		  read -r -p 'Press [M] to enable Mainnet... Press [T] to enable Testnet... ' K; echo "$xx"
-		  if  [ "$K" = 'm' ] || [ "$K" = 'M' ]; then 
+		  if  [ "$K" = 'm' ] || [ "$K" = 'M' ]; then
 	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=mainnet/g" .env; K='M'; fi
 		  fi
-		  if  [ "$K" = 't' ] || [ "$K" = 'T' ]; then 		  
-	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=testnet/g" .env; K='T'; fi	  
+		  if  [ "$K" = 't' ] || [ "$K" = 'T' ]; then
+	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=testnet/g" .env; K='T'; fi
 		  fi
-		  if  [ "$K" = 'M' ] || [ "$K" = 'T' ]; then		  
+		  if  [ "$K" = 'M' ] || [ "$K" = 'T' ]; then
 		     ./prepare_docker.sh >/dev/null 2>&1
 			 VAR_SHIMMER_HORNET_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
 	         if  [ "$K" = 'M' ]; then echo "$gn""Mainnet of your Node successfully enabled""$xx"; else echo "$gn""Testnet of your Node successfully enabled""$xx"; fi
@@ -2028,20 +2026,20 @@ SubMenuConfiguration() {
 		  fi
 	   else
 	      echo "$rd""Toggle Network is not supportet, aborted!""$xx"
-	   fi	
+	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
 	4) clear
 	   echo "$ca"
 	   echo "Set Node Alias..."
 	   echo "$xx"
-	   
+
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if [ "$VAR_NODE" = 1 ] || [ "$VAR_NODE" = 5 ]; then
 	      echo "Set the node alias (example: $ca""DLT.GREEN Node""$xx):"
 	      read -r -p '> ' VAR_NODE_ALIAS
 	      echo ''
-	      if [ "$VAR_NODE" = 1 ] || [ "$VAR_NODE" = 5 ]; then  
+	      if [ "$VAR_NODE" = 1 ] || [ "$VAR_NODE" = 5 ]; then
 		     fgrep -q "HORNET_NODE_ALIAS" .env || echo "HORNET_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
 	         if [ -f .env ]; then sed -i "s/HORNET_NODE_ALIAS=.*/HORNET_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
 		  fi
@@ -2213,7 +2211,7 @@ SubMenuWaspCLI() {
 
 			echo "PubKey:     " $VAR_WASP_CLI_PUBKEY
 			echo "PeeringURL: " $VAR_WASP_CLI_PEERING_URL
-			
+
 		  else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	  else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
@@ -2278,7 +2276,7 @@ SystemMaintenance() {
 	echo "║                      Check necessary Docker Containers                      ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	
+
 	for NODE in $NODES; do
 	  if [ -f "/var/lib/$NODE/.env" ]; then
 	    if [ -d "/var/lib/$NODE" ]; then
@@ -2336,7 +2334,7 @@ SystemMaintenance() {
 	echo ""
 
 	CERT=0
-	
+
 	for NODE in $NODES; do
 	  if [ -f "/var/lib/$NODE/data/letsencrypt/acme.json" ]; then
 	    if [ -d "/var/lib/$NODE" ]; then cd "/var/lib/$NODE" || exit; fi
@@ -2361,7 +2359,7 @@ SystemMaintenance() {
 	    fi
 	  fi
 	done
-	
+
 	if [ $CERT = 0 ]; then
 	  echo "$rd""No Let's Encrypt Certificate found, aborted!""$xx"
 	  if [ "$opt_mode" ]; then
@@ -2376,7 +2374,7 @@ SystemMaintenance() {
 	      NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS";
 	  fi
 	fi
-	
+
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
@@ -2506,7 +2504,7 @@ IotaHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	echo "Stopping Node... $VAR_DIR"
+	echo "Stopping... $VAR_DIR"
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
@@ -2582,11 +2580,11 @@ IotaHornet() {
 		FormatToBytes $(cat /var/lib/shimmer-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
 		if [ -z "$bytes" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=0; else VAR_SHIMMER_HORNET_PRUNING_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
-		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi		
+		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
-		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi			
+		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi
 		FormatToBytes "$(df -h /var/lib/"$VAR_DIR" | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
-		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi	
+		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi
 		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_SHIMMER_HORNET_PRUNING_SIZE)*9/10" | bc)
 		RESERVED_SPACE=$(echo "($VAR_SHIMMER_HORNET_PRUNING_SIZE)" | bc)
 		FormatFromBytes "$RESERVED_SPACE"; RESERVED_SPACE=$fbytes
@@ -2618,7 +2616,7 @@ IotaHornet() {
 		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_IOTA_HORNET_POW=$VAR_TMP
-		  if  [ "$VAR_IOTA_HORNET_POW" = 'p' ] || [ "$VAR_IOTA_HORNET_POW" = 'P' ]; then 
+		  if  [ "$VAR_IOTA_HORNET_POW" = 'p' ] || [ "$VAR_IOTA_HORNET_POW" = 'P' ]; then
 		    VAR_IOTA_HORNET_POW='true'
 		  else
 		    VAR_IOTA_HORNET_POW='false'
@@ -2628,7 +2626,7 @@ IotaHornet() {
 		if  [ "$VAR_IOTA_HORNET_POW" ]; then
 		  echo "$gn""Set PoW / proof of work: $VAR_IOTA_HORNET_POW""$xx"
 		else
-		  echo "$rd""Set PoW / proof of work: $VAR_IOTA_HORNET_POW""$xx"		
+		  echo "$rd""Set PoW / proof of work: $VAR_IOTA_HORNET_POW""$xx"
 		fi
 
 		echo ''
@@ -2748,6 +2746,8 @@ IotaHornet() {
 	docker network create iota >/dev/null 2>&1
 	docker compose pull
 
+	echo "done..."
+
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
@@ -2763,10 +2763,12 @@ IotaHornet() {
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		fi
-		
+
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
+		echo "done..."
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -2780,8 +2782,6 @@ IotaHornet() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
-
-	echo "done..."
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -2807,7 +2807,7 @@ IotaHornet() {
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                              Download Snapshot                              ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	
+
 		echo "$ca"
 		echo 'Please wait, downloading snapshots may take some time...'
 		echo "$xx"
@@ -2816,14 +2816,14 @@ IotaHornet() {
 		VAR_SNAPSHOT=$(cat /var/lib/"$VAR_DIR"/data/config/config-"$VAR_IOTA_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].full')
 		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/full_snapshot.bin
 		chmod 744 /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/full_snapshot.bin
-	
+
 		echo ""
-	
+
 		echo "Download latest delta snapshot... $VAR_IOTA_HORNET_NETWORK"
 		VAR_SNAPSHOT=$(cat /var/lib/"$VAR_DIR"/data/config/config-"$VAR_IOTA_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].delta')
 		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/"$VAR_DIR"//data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/delta_snapshot.bin
 		chmod 744 /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/delta_snapshot.bin
-		
+
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	fi
@@ -2837,7 +2837,7 @@ IotaHornet() {
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 
 	echo "$ca"
-	echo 'Please wait, importing snapshot can take up to 10 minutes...'
+	echo 'Please wait, if importing snapshot, it can take up to 10 minutes...'
 	echo "$xx"
 
 	docker compose up -d
@@ -2850,14 +2850,14 @@ IotaHornet() {
 	echo "║                           Set external Parameters                           ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	
+
 	RenameContainer
 
 	if [ -n "$VAR_PASSWORD" ]; then
 	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
-	else echo 'done...'; fi
+	else echo 'done...'; VAR_PASSWORD='********'; fi
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear	
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -2869,17 +2869,22 @@ IotaHornet() {
 		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " IOTA-Hornet Dashboard: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/dashboard"
-		echo " IOTA-Hornet Dashboard Username: $VAR_USERNAME"
-		echo " IOTA-Hornet Dashboard Password: <set during install>"
-		echo " IOTA-Hornet API: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/api/core/v2/info"
-		echo " Grafana Dashboard: https://$VAR_HOST/grafana"
-		echo " Grafana Username: admin"
-		echo " Grafana Password: <same as hornet password>"
+		echo "domain name: $VAR_HOST"
+		echo "https port:  $VAR_IOTA_HORNET_HTTPS_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "hornet dashboard: https://$VAR_HOST/dashboard"
+		echo "hornet username:  $VAR_USERNAME"
+		echo "hornet password:  $VAR_PASSWORD"
+		echo "-------------------------------------------------------------------------------"
+		echo "api: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/api/core/v2/info"
+		echo "-------------------------------------------------------------------------------"
+		echo "grafana dashboard: https://$VAR_HOST/grafana"
+		echo "grafana username:  admin"
+		echo "grafana password:  <same as hornet password>"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
-	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	    echo "------------------------------ UPDATE IS FINISH -------------------------------"
 	    echo ""
 	fi
 
@@ -2909,7 +2914,7 @@ IotaWasp() {
 	echo "║                            Prepare Installation                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	echo "Stopping Node... $VAR_DIR"
+	echo "Stopping... $VAR_DIR"
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
@@ -3037,7 +3042,7 @@ IotaWasp() {
 		echo ""
 
 		if [ "$VAR_IOTA_WASP_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
-		
+
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
@@ -3108,7 +3113,7 @@ IotaWasp() {
 			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 
 			    if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
-				
+
 			    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD=.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
 			    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
@@ -3130,7 +3135,10 @@ IotaWasp() {
 	docker network create iota >/dev/null 2>&1
 	docker compose pull
 
+	echo "done..."
+
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
 		echo ""
@@ -3151,6 +3159,8 @@ IotaWasp() {
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
+		echo "done..."
+
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	fi
 
@@ -3163,9 +3173,8 @@ IotaWasp() {
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
 
-	echo "done..."
-
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
 		echo ""
@@ -3197,6 +3206,8 @@ IotaWasp() {
 	clear
 	RenameContainer
 
+	if [ -z "$VAR_PASSWORD" ]; then VAR_PASSWORD='********'; fi
+
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
 	clear
@@ -3207,16 +3218,21 @@ IotaWasp() {
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " IOTA-Wasp Dashboard: https://$VAR_HOST:$VAR_IOTA_WASP_HTTPS_PORT"
-		echo " IOTA-Wasp Dashboard Username: $VAR_USERNAME"
-		echo " IOTA-Wasp Dashboard Password: <set during install>"
-		echo " IOTA-Wasp API: https://$VAR_HOST:$VAR_IOTA_WASP_API_PORT/info"
-		echo " IOTA-Wasp peering: $VAR_HOST:$VAR_IOTA_WASP_PEERING_PORT"
-		echo " IOTA-Wasp ledger-connection/txstream: local to IOTA-Hornet"
+		echo "domain name: $VAR_HOST"
+		echo "https port:  $VAR_IOTA_WASP_HTTPS_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "dashboard username: $VAR_USERNAME"
+		echo "dashboard password: $VAR_PASSWORD"
+		echo "-------------------------------------------------------------------------------"
+		echo "api port: $VAR_IOTA_WASP_API_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "peering port: $VAR_IOTA_WASP_PEERING_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "ledger-connection/txstream: local to iota-hornet"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
-	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	    echo "------------------------------ UPDATE IS FINISH -------------------------------"
 	    echo ""
 	fi
 
@@ -3236,7 +3252,7 @@ ShimmerHornet() {
 	CheckIota
 	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
-	echo "$ca""Starting Installation or Update...""$xx";													 
+	echo "$ca""Starting Installation or Update...""$xx";
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
@@ -3247,7 +3263,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	echo "Stopping Node... $VAR_DIR"
+	echo "Stopping... $VAR_DIR"
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
@@ -3323,11 +3339,11 @@ ShimmerHornet() {
 		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
 		if [ -z "$bytes" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=0; else VAR_IOTA_HORNET_PRUNING_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
-		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi		
+		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
-		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi			
+		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi
 		FormatToBytes "$(df -h /var/lib/"$VAR_DIR" | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
-		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi	
+		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi
 		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_IOTA_HORNET_PRUNING_SIZE)*9/10" | bc)
 		RESERVED_SPACE=$(echo "($VAR_IOTA_HORNET_PRUNING_SIZE)" | bc)
 		FormatFromBytes "$RESERVED_SPACE"; RESERVED_SPACE=$fbytes
@@ -3359,7 +3375,7 @@ ShimmerHornet() {
 		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_SHIMMER_HORNET_POW=$VAR_TMP
-		  if  [ "$VAR_SHIMMER_HORNET_POW" = 'p' ] || [ "$VAR_SHIMMER_HORNET_POW" = 'P' ]; then 
+		  if  [ "$VAR_SHIMMER_HORNET_POW" = 'p' ] || [ "$VAR_SHIMMER_HORNET_POW" = 'P' ]; then
 		    VAR_SHIMMER_HORNET_POW='true'
 		  else
 		    VAR_SHIMMER_HORNET_POW='false'
@@ -3369,7 +3385,7 @@ ShimmerHornet() {
 		if  [ "$VAR_SHIMMER_HORNET_POW" ]; then
 		  echo "$gn""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"
 		else
-		  echo "$rd""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"		
+		  echo "$rd""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"
 		fi
 
 		echo ''
@@ -3451,7 +3467,7 @@ ShimmerHornet() {
 			echo "$gn""Set mail for certificate renewal: $VAR_ACME_EMAIL""$xx"
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "HORNET_HTTP_PORT=8085" >> .env
+			echo "HORNET_HTTP_PORT=8081" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "HORNET_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
@@ -3489,6 +3505,8 @@ ShimmerHornet() {
 	docker network create shimmer >/dev/null 2>&1
 	docker compose pull
 
+	echo "done..."
+
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
@@ -3504,10 +3522,12 @@ ShimmerHornet() {
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		fi
-		
+
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
+		echo "done..."
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3521,8 +3541,6 @@ ShimmerHornet() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
-
-	echo "done..."
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3548,7 +3566,7 @@ ShimmerHornet() {
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 		echo "║                              Download Snapshot                              ║"
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	
+
 		echo "$ca"
 		echo 'Please wait, downloading snapshots may take some time...'
 		echo "$xx"
@@ -3557,14 +3575,14 @@ ShimmerHornet() {
 		VAR_SNAPSHOT=$(cat /var/lib/"$VAR_DIR"/data/config/config-"$VAR_SHIMMER_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].full')
 		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/full_snapshot.bin
 		chmod 744 /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/full_snapshot.bin
-	
+
 		echo ""
-	
+
 		echo "Download latest delta snapshot... $VAR_SHIMMER_HORNET_NETWORK"
 		VAR_SNAPSHOT=$(cat /var/lib/"$VAR_DIR"/data/config/config-"$VAR_SHIMMER_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].delta')
 		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/"$VAR_DIR"//data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
 		chmod 744 /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
-		
+
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	fi
@@ -3578,7 +3596,7 @@ ShimmerHornet() {
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 
 	echo "$ca"
-	echo 'Please wait, importing snapshot can take up to 10 minutes...'
+	echo 'Please wait, if importing snapshot, it can take up to 10 minutes...'
 	echo "$xx"
 
 	docker compose up -d
@@ -3591,14 +3609,14 @@ ShimmerHornet() {
 	echo "║                           Set external Parameters                           ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	
+
 	RenameContainer
 
 	if [ -n "$VAR_PASSWORD" ]; then
 	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
-	else echo 'done...'; fi
+	else echo 'done...'; VAR_PASSWORD='********'; fi
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear	
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -3610,17 +3628,22 @@ ShimmerHornet() {
 		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " SHIMMER-Hornet Dashboard: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/dashboard"
-		echo " SHIMMER-Hornet Dashboard Username: $VAR_USERNAME"
-		echo " SHIMMER-Hornet Dashboard Password: <set during install>"
-		echo " SHIMMER-Hornet API: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/api/core/v2/info"
-		echo " Grafana Dashboard: https://$VAR_HOST/grafana"
-		echo " Grafana Username: admin"
-		echo " Grafana Password: <same as hornet password>"
+		echo "domain name: $VAR_HOST"
+		echo "https port:  $VAR_SHIMMER_HORNET_HTTPS_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "hornet dashboard: https://$VAR_HOST/dashboard"
+		echo "hornet username:  $VAR_USERNAME"
+		echo "hornet password:  $VAR_PASSWORD"
+		echo "-------------------------------------------------------------------------------"
+		echo "api: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/api/core/v2/info"
+		echo "-------------------------------------------------------------------------------"
+		echo "grafana dashboard: https://$VAR_HOST/grafana"
+		echo "grafana username:  admin"
+		echo "grafana password:  <same as hornet password>"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
-	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	    echo "------------------------------ UPDATE IS FINISH -------------------------------"
 	    echo ""
 	fi
 
@@ -3650,7 +3673,7 @@ ShimmerWasp() {
 	echo "║                            Prepare Installation                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	echo "Stopping Node... $VAR_DIR"
+	echo "Stopping... $VAR_DIR"
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
@@ -3778,7 +3801,7 @@ ShimmerWasp() {
 		echo ""
 
 		if [ "$VAR_SHIMMER_WASP_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
-		
+
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
@@ -3815,7 +3838,7 @@ ShimmerWasp() {
 			echo "$gn""Set mail for certificate renewal: $VAR_ACME_EMAIL""$xx"
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "WASP_HTTP_PORT=8086" >> .env
+			echo "WASP_HTTP_PORT=8082" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "WASP_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
@@ -3849,7 +3872,7 @@ ShimmerWasp() {
 			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 
 			    if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
-				
+
 			    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD=.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
 			    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
@@ -3871,7 +3894,10 @@ ShimmerWasp() {
 	docker network create shimmer >/dev/null 2>&1
 	docker compose pull
 
+	echo "done..."
+
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
 		echo ""
@@ -3892,6 +3918,8 @@ ShimmerWasp() {
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
+		echo "done..."
+
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	fi
 
@@ -3904,9 +3932,8 @@ ShimmerWasp() {
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
 
-	echo "done..."
-
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
 		echo ""
@@ -3938,6 +3965,8 @@ ShimmerWasp() {
 	clear
 	RenameContainer
 
+	if [ -z "$VAR_PASSWORD" ]; then VAR_PASSWORD='********'; fi
+
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
 	clear
@@ -3948,16 +3977,21 @@ ShimmerWasp() {
 	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
-		echo " SHIMMER-Wasp Dashboard: https://$VAR_HOST:$VAR_SHIMMER_WASP_HTTPS_PORT"
-		echo " SHIMMER-Wasp Dashboard Username: $VAR_USERNAME"
-		echo " SHIMMER-Wasp Dashboard Password: <set during install>"
-		echo " SHIMMER-Wasp API: https://$VAR_HOST:$VAR_SHIMMER_WASP_API_PORT/info"
-		echo " SHIMMER-Wasp peering: $VAR_HOST:$VAR_SHIMMER_WASP_PEERING_PORT"
-		echo " SHIMMER-Wasp ledger-connection/txstream: local to Shimmer-Hornet"
+		echo "domain name: $VAR_HOST"
+		echo "https port:  $VAR_SHIMMER_WASP_HTTPS_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "dashboard username: $VAR_USERNAME"
+		echo "dashboard password: $VAR_PASSWORD"
+		echo "-------------------------------------------------------------------------------"
+		echo "api port: $VAR_SHIMMER_WASP_API_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "peering port: $VAR_SHIMMER_WASP_PEERING_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "ledger-connection/txstream: local to shimmer-hornet"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
-	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	    echo "------------------------------ UPDATE IS FINISH -------------------------------"
 	    echo ""
 	fi
 
@@ -3970,17 +4004,24 @@ ShimmerChronicle() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║       DLT.GREEN AUTOMATIC SHIMMER-CHRONICLE INSTALLATION WITH DOCKER        ║"
+	echo "║     DLT.GREEN AUTOMATIC SHIMMER-INX-CHRONICLE INSTALLATION WITH DOCKER      ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "$ca""Chronicle is a INX-Plugin and can only installed on the same Server as Shimmer!""$xx";
 	CheckIota
 	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	echo "$ca""Starting Installation or Update...""$xx";
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
-	echo "Stopping Node... $VAR_DIR"
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                            Prepare Installation                             ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+	echo "Stopping... $VAR_DIR"
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; if [ -f "/var/lib/$VAR_DIR/docker-compose.yml" ]; then docker compose down >/dev/null 2>&1; fi; fi
 
 	echo ""
@@ -4018,7 +4059,7 @@ ShimmerChronicle() {
 
 	CheckConfiguration
 
-	VAR_CHRONICLE_LEDGER_NETWORK='shimmer'
+	VAR_SHIMMER_INX_CHRONICLE_LEDGER_NETWORK='shimmer'
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
@@ -4043,86 +4084,87 @@ ShimmerChronicle() {
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_HTTPS_PORT=$(cat .env 2>/dev/null | grep INX_CHRONICLE_HTTPS_PORT= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT=$(cat .env 2>/dev/null | grep INX_CHRONICLE_HTTPS_PORT= | cut -d '=' -f 2)
 		VAR_DEFAULT='449';
-		if [ -z "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT" ]; then
-		  echo "Set https port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set https port (config: $ca""$VAR_SHIMMER_CHRONICLE_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT" ]; then
+		  echo "Set https port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set https port (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT" ]; then VAR_SHIMMER_CHRONICLE_HTTPS_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set https port: $VAR_SHIMMER_CHRONICLE_HTTPS_PORT""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT" ]; then VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT=$VAR_DEFAULT; fi
+		echo "$gn""Set https port: $VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME=$(cat .env 2>/dev/null | grep INX_CHRONICLE_MONGODB_USERNAME= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME=$(cat .env 2>/dev/null | grep INX_CHRONICLE_MONGODB_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME" ]; then
-		echo "Set MongoDB username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set MongoDB username (config: $ca""$VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME" ]; then
+		echo "Set MongoDB username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set MongoDB username (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME=$VAR_TMP; elif [ -z "$MONGODB_USERNAME" ]; then VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME=$VAR_DEFAULT; fi
-		echo "$gn""Set MongoDB username: $VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME" ]; then VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME=$VAR_DEFAULT; fi
+		echo "$gn""Set MongoDB username: $VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_MONGODB_PASSWORD= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_MONGODB_PASSWORD= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD" ]; then
-		echo "Set MongoDB password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set MongoDB password (config: $ca""$VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD" ]; then
+		echo "Set MongoDB password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set MongoDB password (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD" ]; then VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD=$VAR_DEFAULT; fi
-		echo "$gn""Set MongoDB password: $VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD" ]; then VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD=$VAR_DEFAULT; fi
+		echo "$gn""Set MongoDB password: $VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_USERNAME= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME" ]; then
-		echo "Set InfluxDB username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set InfluxDB username (config: $ca""$VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME" ]; then
+		echo "Set InfluxDB username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set InfluxDB username (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME=$VAR_TMP; elif [ -z "$INFLUXDB_USERNAME" ]; then VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME=$VAR_DEFAULT; fi
-		echo "$gn""Set InfluxDB username: $VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_DEFAULT; fi
+		echo "$gn""Set InfluxDB username: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_PASSWORD= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_PASSWORD= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD" ]; then
-		echo "Set InfluxDB password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set InfluxDB password (config: $ca""$VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD" ]; then
+		echo "Set InfluxDB password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set InfluxDB password (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD" ]; then VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD=$VAR_DEFAULT; fi
-		echo "$gn""Set InfluxDB password: $VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_DEFAULT; fi
+		echo "$gn""Set InfluxDB password: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_TOKEN= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_TOKEN= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN" ]; then
-		echo "Set InfluxDB token (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set InfluxDB token (config: $ca""$VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN" ]; then
+		echo "Set InfluxDB token (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set InfluxDB token (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN" ]; then VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN=$VAR_DEFAULT; fi
-		echo "$gn""Set InfluxDB password: $VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_DEFAULT; fi
+		echo "$gn""Set InfluxDB password: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_JWT_SALT=$(cat .env 2>/dev/null | grep INX_CHRONICLE_JWT_SALT= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_JWT_SALT=$(cat .env 2>/dev/null | grep INX_CHRONICLE_JWT_SALT= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_JWT_SALT" ]; then
-		echo "Set JWT salt (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set JWT salt (config: $ca""$VAR_SHIMMER_CHRONICLE_JWT_SALT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_JWT_SALT" ]; then
+		echo "Set JWT salt (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set JWT salt (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_JWT_SALT""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_JWT_SALT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_JWT_SALT" ]; then VAR_SHIMMER_CHRONICLE_JWT_SALT=$VAR_DEFAULT; fi
-		echo "$gn""Set JWT salt: $VAR_SHIMMER_CHRONICLE_JWT_SALT""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_JWT_SALT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_JWT_SALT" ]; then VAR_SHIMMER_INX_CHRONICLE_JWT_SALT=$VAR_DEFAULT; fi
+		echo "$gn""Set JWT salt: $VAR_SHIMMER_INX_CHRONICLE_JWT_SALT""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_JWT_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_JWT_PASSWORD= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_JWT_PASSWORD= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_JWT_PASSWORD" ]; then
-		echo "Set JWT password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set JWT password (config: $ca""$VAR_SHIMMER_CHRONICLE_JWT_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD" ]; then
+		echo "Set JWT password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set JWT password (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_JWT_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_JWT_PASSWORD" ]; then VAR_SHIMMER_CHRONICLE_JWT_PASSWORD=$VAR_DEFAULT; fi
-		echo "$gn""Set JWT password: $VAR_SHIMMER_CHRONICLE_JWT_PASSWORD""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD" ]; then VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD=$VAR_DEFAULT; fi
+		echo "$gn""Set JWT password: $VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD""$xx"
 
 		echo ''
-		VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD= | cut -d '=' -f 2)
+		VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then
-		echo "Set grafana password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set grafana password (config: $ca""$VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then
+		echo "Set grafana password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [ENTER]:"; else echo "Set grafana password (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_DEFAULT; fi
-		echo "$gn""Set grafana password: $VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx"
-		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_DEFAULT; fi
+		echo "$gn""Set grafana password: $VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx"
+
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -4130,7 +4172,7 @@ ShimmerChronicle() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
+		if [ "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 		if [ -f .env ]; then rm .env; fi
@@ -4138,20 +4180,35 @@ ShimmerChronicle() {
 		echo "COMPOSE_PROFILES=metrics,debug" >> .env
 		echo "INX_CHRONICLE_VERSION=$VAR_SHIMMER_INX_CHRONICLE_VERSION" >> .env
 		echo "INX_CHRONICLE_HOST=$VAR_HOST" >> .env
-		echo "INX_CHRONICLE_HTTPS_PORT=$VAR_SHIMMER_CHRONICLE_HTTPS_PORT" >> .env
-		echo "INX_CHRONICLE_LEDGER_NETWORK=$VAR_CHRONICLE_LEDGER_NETWORK" >> .env
-		echo "INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD" >> .env
+		echo "INX_CHRONICLE_HTTPS_PORT=$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT" >> .env
+		echo "INX_CHRONICLE_LEDGER_NETWORK=$VAR_SHIMMER_INX_CHRONICLE_LEDGER_NETWORK" >> .env
+		echo "INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
 			echo "INX_CHRONICLE_HTTP_PORT=80" >> .env
+			clear
+			echo ""
+			echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+			echo "║                     Retrieve Let's Encrypt Certificate                      ║"
+			echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+			echo ""
 			unset VAR_ACME_EMAIL
-			while [ -z "$VAR_ACME_EMAIL" ]; do
-				read -r -p 'Set mail for certificat renewal (e.g. info@dlt.green): ' VAR_ACME_EMAIL
-			done
+				while [ -z "$VAR_ACME_EMAIL" ]; do
+			 	 VAR_ACME_EMAIL=$(cat .env 2>/dev/null | grep ACME_EMAIL= | cut -d '=' -f 2)
+				  if [ -z "$ACME_EMAIL" ]; then
+				    echo "Set mail for certificate renewal:"; else echo "Set mail for certificate renewal (config: $ca""$ACME_EMAIL""$xx)"; echo "Press [Enter] to use existing config:"; fi
+				  read -r -p '> ' VAR_TMP
+				  if [ -n "$VAR_TMP" ]; then VAR_ACME_EMAIL=$VAR_TMP; fi
+				  if ! [ -z "${VAR_ACME_EMAIL##*@*}" ]; then
+				    VAR_ACME_EMAIL=''
+				    echo "$rd""Set mail for certificate renewal: Please insert correct mail!"; echo "$xx"
+				  fi
+				done
+			echo "$gn""Set mail for certificate renewal: $VAR_ACME_EMAIL""$xx"
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "INX_CHRONICLE_HTTP_PORT=8089" >> .env
+			echo "INX_CHRONICLE_HTTP_PORT=8084" >> .env
 			echo "SSL_CONFIG=certs" >> .env
 			echo "INX_CHRONICLE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "INX_CHRONICLE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
@@ -4173,6 +4230,10 @@ ShimmerChronicle() {
 	docker network create shimmer >/dev/null 2>&1
 	docker compose pull
 
+	echo "done..."
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
 		echo ""
@@ -4181,14 +4242,17 @@ ShimmerChronicle() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		echo "INX_CHRONICLE_MONGODB_USERNAME=$VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME" >> .env
-		echo "INX_CHRONICLE_MONGODB_PASSWORD=$VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD" >> .env	
-		echo "INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME" >> .env
-		echo "INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD" >> .env		
-		echo "INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN" >> .env		
-		echo "INX_CHRONICLE_JWT_SALT=$VAR_SHIMMER_CHRONICLE_JWT_SALT" >> .env
-		echo "INX_CHRONICLE_JWT_PASSWORD=$VAR_SHIMMER_CHRONICLE_JWT_PASSWORD" >> .env
+		echo "INX_CHRONICLE_MONGODB_USERNAME=$VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME" >> .env
+		echo "INX_CHRONICLE_MONGODB_PASSWORD=$VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD" >> .env
+		echo "INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME" >> .env
+		echo "INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD" >> .env
+		echo "INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN" >> .env
+		echo "INX_CHRONICLE_JWT_SALT=$VAR_SHIMMER_INX_CHRONICLE_JWT_SALT" >> .env
+		echo "INX_CHRONICLE_JWT_PASSWORD=$VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD" >> .env
 
+		echo "done..."
+
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	fi
 
 	echo ""
@@ -4200,6 +4264,8 @@ ShimmerChronicle() {
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
 
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
 		echo ""
@@ -4210,12 +4276,13 @@ ShimmerChronicle() {
 
 		if [ "$VAR_CERT" = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
 
-		echo ufw allow "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_CHRONICLE_HTTPS_PORT/tcp"
+		echo ufw allow "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT/tcp"
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                          Start SHIMMER-CHRONICLE                            ║"
+	echo "║                             Start INX-Chronicle                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
@@ -4223,12 +4290,10 @@ ShimmerChronicle() {
 
 	docker compose up -d
 
-	sleep 3
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
+	clear
 	RenameContainer
-
-	echo ""
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -4241,26 +4306,26 @@ ShimmerChronicle() {
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
-		echo "https port:  $VAR_SHIMMER_CHRONICLE_HTTPS_PORT"
-	    echo "-------------------------------------------------------------------------------"
-		echo "MongoDB username: $VAR_SHIMMER_CHRONICLE_MONGODB_USERNAME"
-		echo "MongoDB password: $VAR_SHIMMER_CHRONICLE_MONGODB_PASSWORD"
-	    echo "-------------------------------------------------------------------------------"
-		echo "InfluxDB username: $VAR_SHIMMER_CHRONICLE_INFLUXDB_USERNAME"
-		echo "InfluxDB password: $VAR_SHIMMER_CHRONICLE_INFLUXDB_PASSWORD"
-		echo "InfluxDB token:    $VAR_SHIMMER_CHRONICLE_INFLUXDB_TOKEN"
-	    echo "-------------------------------------------------------------------------------"
-		echo "JWT salt:     $VAR_SHIMMER_CHRONICLE_JWT_SALT"
-		echo "JWT password: $VAR_SHIMMER_CHRONICLE_JWT_PASSWORD"
-	    echo "-------------------------------------------------------------------------------"
-		echo "grafana password: $VAR_SHIMMER_CHRONICLE_GRAFANA_ADMIN_PASSWORD"
-	    echo "-------------------------------------------------------------------------------"
+		echo "https port:  $VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "mongoDB username: $VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME"
+		echo "mongoDB password: $VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD"
+		echo "-------------------------------------------------------------------------------"
+		echo "influxDB username: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME"
+		echo "influxDB password: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD"
+		echo "influxDB token:    $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN"
+		echo "-------------------------------------------------------------------------------"
+		echo "JWT salt:     $VAR_SHIMMER_INX_CHRONICLE_JWT_SALT"
+		echo "JWT password: $VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD"
+		echo "-------------------------------------------------------------------------------"
+		echo "grafana password: $VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD"
+		echo "-------------------------------------------------------------------------------"
 		echo "ledger-connection/txstream: local to shimmer-hornet"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
-	    echo "------------------------------ UPDATE IS FINISH - -----------------------------"
+	    echo "------------------------------ UPDATE IS FINISH -------------------------------"
+	    echo ""
 	fi
-	echo ""
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
@@ -4301,7 +4366,7 @@ RenameContainer() {
 	docker container rename shimmer-inx-chronicle.mongo-express shimmer-plugins.inx-chronicle.mongo-express >/dev/null 2>&1
 	docker container rename shimmer-inx-chronicle.grafana shimmer-plugins.inx-chronicle.grafana >/dev/null 2>&1
 	docker container rename shimmer-inx-chronicle.telegraf shimmer-plugins.inx-chronicle.telegraf >/dev/null 2>&1
-	
+
 }
 
 clear
@@ -4332,7 +4397,9 @@ echo ""
 echo "> $gn""Checking Hash of Installer successful...""$xx"
 echo "> $gn""$InstallerHash""$xx"
 
-sleep 3
+sudo apt update >/dev/null 2>&1
+sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+sleep 1
 
 if [ "$opt_check" = 1 ]; then
 	CheckFirewall;
