@@ -2818,7 +2818,10 @@ IotaHornet() {
 
 		echo ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
-		echo ufw allow '14626/udp' && ufw allow '14626/udp'
+		if [ "$VAR_IOTA_HORNET_AUTOPEERING" = "true" ]; then
+		  echo ufw allow '14626/udp' && ufw allow '14626/udp'
+		fi
+
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3595,7 +3598,9 @@ ShimmerHornet() {
 
 		echo ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
-		echo ufw allow '14626/udp' && ufw allow '14626/udp'
+		if [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = "true" ]; then
+		  echo ufw allow '14626/udp' && ufw allow '14626/udp'
+		fi
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
