@@ -3408,8 +3408,8 @@ ShimmerHornet() {
 		else
 		  echo "$rd""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"
 		fi
+  
 		echo ''
-
 		VAR_SHIMMER_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
 		VAR_DEFAULT='true'
 		if [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
