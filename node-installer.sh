@@ -3335,7 +3335,7 @@ ShimmerHornet() {
 		echo ""
 
 		VAR_HOST=$(cat .env 2>/dev/null | grep HORNET_HOST= | cut -d '=' -f 2)
-		if [ -z "$VAR_HOST" ]; thenSHIMME
+		if [ -z "$VAR_HOST" ]; then
 		  VAR_HOST=$(echo "$VAR_DOMAIN" | xargs)
 		  if [ -n "$VAR_HOST" ]; then
 		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "Press [Enter] to use global domain:"
