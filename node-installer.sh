@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.3.1.7"
-BUILD="20240210_131938"
+VRSN="v.3.1.8"
+BUILD="20240210_231311"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -130,19 +130,19 @@ echo "$xx"
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='8717d9b55252dc1c9a40d93111340b5f247abdda5ea238df9fb774840625a5be'
+IotaHornetHash='18fe50c7098335ef20b9ceb4fc8aa55e5c8c056991c5cf355b7e4e6a775629c7'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='361fccd8673b2827eca571c10b25a45b843772b4fbbd83ace7425de920e873f8'
+IotaWaspHash='58ff26fc01b1eb3986523326eab59d42bae43947e0cf835bb55dfb7f3bfca603'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='4c47c17ac8af9fd089faf8f624389649aaa310671ca331d265eee4b354184a4e'
+ShimmerHornetHash='6275801bfbf9c729eed36e1e2084c317c359b2c4acb1bc73d4c8fbb87009ac81'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='9e1d6962209cace28b1232a02dc2e8fa15099c70b2a4fd55e17b2463203002bc'
+ShimmerWaspHash='f818b3efdd29f8acf2d6b5396b9484c8fc2bd1daba502ee64316caff42b886b7'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='984c1c7a8af02041d2520af3a7350bffc4619cd00d97af5407e4c236bdb345bb'
+ShimmerChronicleHash='21d9c027739a32117c42792f5dd36febf8befa7380069e958c4423335397dcb1'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -981,7 +981,7 @@ Dashboard() {
 	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             docker compose stop
-	             docker compose pull
+	             docker compose pull 2>&1 | grep -v "Pulling" | sort
 	             ./prepare_docker.sh
 	             if [ "$NODE" = 'iota-hornet' ]; then
 	               VAR_STATUS="$NODE$NETWORK: reset database"
@@ -2630,6 +2630,27 @@ IotaHornet() {
 		fi
 
 		echo ''
+		VAR_IOTA_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
+		VAR_DEFAULT='true' # Standardwert für Autopeering
+		if [ -z "$VAR_IOTA_HORNET_AUTOPEERING" ]; then
+			echo "Set autopeering (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set autopeering (config: $ca""$VAR_IOTA_HORNET_AUTOPEERING""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> Press [A] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
+		if [ -n "$VAR_TMP" ]; then
+			VAR_IOTA_HORNET_AUTOPEERING=$VAR_TMP
+			if  [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'a' ] || [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'A' ]; then
+				VAR_IOTA_HORNET_AUTOPEERING='true'
+			else
+				VAR_IOTA_HORNET_AUTOPEERING='false'
+			fi
+		elif [ -z "$VAR_IOTA_HORNET_AUTOPEERING" ]; then VAR_IOTA_HORNET_AUTOPEERING=$VAR_DEFAULT; fi
+
+		if  [ "$VAR_IOTA_HORNET_AUTOPEERING" ]; then
+		  echo "$gn""Set autopeering: $VAR_IOTA_HORNET_AUTOPEERING""$xx"
+		else
+		  echo "$rd""Set autopeering: $VAR_IOTA_HORNET_AUTOPEERING""$xx"
+		fi
+
+		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1);
 		if [ -z "$VAR_USERNAME" ]; then
@@ -2680,6 +2701,7 @@ IotaHornet() {
 		echo "HORNET_POW_ENABLED=$VAR_IOTA_HORNET_POW" >> .env
 		echo "HORNET_HTTPS_PORT=$VAR_IOTA_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
+		echo "HORNET_AUTOPEERING_ENABLED=$VAR_IOTA_HORNET_AUTOPEERING" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
 		echo "RESTAPI_SALT=$VAR_SALT" >> .env
 
@@ -2744,9 +2766,7 @@ IotaHornet() {
 	echo ""
 
 	docker network create iota >/dev/null 2>&1
-	docker compose pull
-
-	echo "done..."
+	docker compose pull 2>&1 | grep -v "Pulling" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3133,9 +3153,7 @@ IotaWasp() {
 	echo ""
 
 	docker network create iota >/dev/null 2>&1
-	docker compose pull
-
-	echo "done..."
+	docker compose pull 2>&1 | grep -v "Pulling" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3314,7 +3332,7 @@ ShimmerHornet() {
 		echo ""
 
 		VAR_HOST=$(cat .env 2>/dev/null | grep HORNET_HOST= | cut -d '=' -f 2)
-		if [ -z "$VAR_HOST" ]; then
+		if [ -z "$VAR_HOST" ]; thenSHIMME
 		  VAR_HOST=$(echo "$VAR_DOMAIN" | xargs)
 		  if [ -n "$VAR_HOST" ]; then
 		    echo "Set domain name (global: $ca""$VAR_HOST""$xx):"; echo "Press [Enter] to use global domain:"
@@ -3387,6 +3405,27 @@ ShimmerHornet() {
 		else
 		  echo "$rd""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"
 		fi
+		echo ''
+
+		VAR_SHIMMER_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
+		VAR_DEFAULT='true' # Standardwert für Autopeering
+		if [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
+			echo "Set autopeering (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set autopeering (config: $ca""$VAR_SHIMMER_HORNET_AUTOPEERING""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> Press [A] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
+		if [ -n "$VAR_TMP" ]; then
+			VAR_SHIMMER_HORNET_AUTOPEERING=$VAR_TMP
+			if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'a' ] || [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'A' ]; then
+				VAR_SHIMMER_HORNET_AUTOPEERING='true'
+			else
+				VAR_SHIMMER_HORNET_AUTOPEERING='false'
+			fi
+		elif [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then VAR_SHIMMER_HORNET_AUTOPEERING=$VAR_DEFAULT; fi
+
+		if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
+		  echo "$gn""Set autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING""$xx"
+		else
+		  echo "$rd""Set autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING""$xx"
+		fi
 
 		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
@@ -3439,6 +3478,7 @@ ShimmerHornet() {
 		echo "HORNET_POW_ENABLED=$VAR_SHIMMER_HORNET_POW" >> .env
 		echo "HORNET_HTTPS_PORT=$VAR_SHIMMER_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
+		echo "HORNET_AUTOPEERING_ENABLED=$VAR_SHIMMER_HORNET_AUTOPEERING" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
 		echo "RESTAPI_SALT=$VAR_SALT" >> .env
 
@@ -3503,9 +3543,7 @@ ShimmerHornet() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull
-
-	echo "done..."
+	docker compose pull 2>&1 | grep -v "Pulling" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3892,9 +3930,7 @@ ShimmerWasp() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull
-
-	echo "done..."
+	docker compose pull 2>&1 | grep -v "Pulling" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4228,9 +4264,7 @@ ShimmerChronicle() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull
-
-	echo "done..."
+	docker compose pull 2>&1 | grep -v "Pulling" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
