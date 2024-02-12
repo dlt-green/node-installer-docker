@@ -2752,6 +2752,11 @@ IotaHornet() {
 		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_IOTA_INX_POI_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_IOTA_INX_DASHBOARD_VERSION/g" .env; fi
 
+		VAR_IOTA_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_HORNET_AUTOPEERING" ]; then
+		    echo "HORNET_AUTOPEERING_ENABLED=true" >> .env
+		fi
+   
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
@@ -2818,10 +2823,10 @@ IotaHornet() {
 
 		echo ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
+  
 		if [ "$VAR_IOTA_HORNET_AUTOPEERING" = "true" ]; then
 		  echo ufw allow '14626/udp' && ufw allow '14626/udp'
 		fi
-
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -2894,6 +2899,8 @@ IotaHornet() {
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
 		echo "https port:  $VAR_IOTA_HORNET_HTTPS_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "autopeering: $VAR_IOTA_HORNET_AUTOPEERING"
 		echo "-------------------------------------------------------------------------------"
 		echo "hornet dashboard: https://$VAR_HOST/dashboard"
 		echo "hornet username:  $VAR_USERNAME"
@@ -3532,6 +3539,11 @@ ShimmerHornet() {
 		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_SHIMMER_INX_POI_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_SHIMMER_INX_DASHBOARD_VERSION/g" .env; fi
 
+		VAR_SHIMMER_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED | cut -d '=' -f 2)
+		if [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
+		    echo "HORNET_AUTOPEERING_ENABLED=true" >> .env
+		fi
+  
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
@@ -3598,6 +3610,7 @@ ShimmerHornet() {
 
 		echo ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
+  
 		if [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = "true" ]; then
 		  echo ufw allow '14626/udp' && ufw allow '14626/udp'
 		fi
@@ -3673,6 +3686,8 @@ ShimmerHornet() {
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
 		echo "https port:  $VAR_SHIMMER_HORNET_HTTPS_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING"
 		echo "-------------------------------------------------------------------------------"
 		echo "hornet dashboard: https://$VAR_HOST/dashboard"
 		echo "hornet username:  $VAR_USERNAME"
