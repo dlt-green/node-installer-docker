@@ -2633,15 +2633,15 @@ IotaHornet() {
 		VAR_IOTA_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
 		VAR_DEFAULT='true'
 		if [ -z "$VAR_IOTA_HORNET_AUTOPEERING" ]; then
-			echo "Set autopeering (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set autopeering (config: $ca""$VAR_IOTA_HORNET_AUTOPEERING""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		  echo "Set autopeering (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set autopeering (config: $ca""$VAR_IOTA_HORNET_AUTOPEERING""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> Press [A] to enable autopeering... Press [X] key to disable... ' VAR_TMP;
 		if [ -n "$VAR_TMP" ]; then
-			VAR_IOTA_HORNET_AUTOPEERING=$VAR_TMP
-			if  [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'a' ] || [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'A' ]; then
-				VAR_IOTA_HORNET_AUTOPEERING='true'
-			else
-				VAR_IOTA_HORNET_AUTOPEERING='false'
-			fi
+		  VAR_IOTA_HORNET_AUTOPEERING=$VAR_TMP
+		  if  [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'a' ] || [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'A' ]; then
+		    VAR_IOTA_HORNET_AUTOPEERING='true'
+		  else
+		    VAR_IOTA_HORNET_AUTOPEERING='false'
+		  fi
 		elif [ -z "$VAR_IOTA_HORNET_AUTOPEERING" ]; then VAR_IOTA_HORNET_AUTOPEERING=$VAR_DEFAULT; fi
 
 		if  [ "$VAR_IOTA_HORNET_AUTOPEERING" ]; then
@@ -3413,15 +3413,15 @@ ShimmerHornet() {
 		VAR_SHIMMER_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
 		VAR_DEFAULT='true'
 		if [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
-			echo "Set autopeering (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set autopeering (config: $ca""$VAR_SHIMMER_HORNET_AUTOPEERING""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		  echo "Set autopeering (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set autopeering (config: $ca""$VAR_SHIMMER_HORNET_AUTOPEERING""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> Press [A] to enable autopeering... Press [X] key to disable... ' VAR_TMP;
 		if [ -n "$VAR_TMP" ]; then
-			VAR_SHIMMER_HORNET_AUTOPEERING=$VAR_TMP
-			if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'a' ] || [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'A' ]; then
-				VAR_SHIMMER_HORNET_AUTOPEERING='true'
-			else
-				VAR_SHIMMER_HORNET_AUTOPEERING='false'
-			fi
+		  VAR_SHIMMER_HORNET_AUTOPEERING=$VAR_TMP
+		  if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'a' ] || [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'A' ]; then
+		    VAR_SHIMMER_HORNET_AUTOPEERING='true'
+		  else
+		    VAR_SHIMMER_HORNET_AUTOPEERING='false'
+		  fi
 		elif [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then VAR_SHIMMER_HORNET_AUTOPEERING=$VAR_DEFAULT; fi
 
 		if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
