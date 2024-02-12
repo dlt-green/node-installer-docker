@@ -2634,7 +2634,7 @@ IotaHornet() {
 		VAR_DEFAULT='true'
 		if [ -z "$VAR_IOTA_HORNET_AUTOPEERING" ]; then
 			echo "Set autopeering (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set autopeering (config: $ca""$VAR_IOTA_HORNET_AUTOPEERING""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> Press [A] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
+		read -r -p '> Press [A] to enable autopeering... Press [X] key to disable... ' VAR_TMP;
 		if [ -n "$VAR_TMP" ]; then
 			VAR_IOTA_HORNET_AUTOPEERING=$VAR_TMP
 			if  [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'a' ] || [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'A' ]; then
@@ -3414,7 +3414,7 @@ ShimmerHornet() {
 		VAR_DEFAULT='true'
 		if [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
 			echo "Set autopeering (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set autopeering (config: $ca""$VAR_SHIMMER_HORNET_AUTOPEERING""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> Press [A] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
+		read -r -p '> Press [A] to enable autopeering... Press [X] key to disable... ' VAR_TMP;
 		if [ -n "$VAR_TMP" ]; then
 			VAR_SHIMMER_HORNET_AUTOPEERING=$VAR_TMP
 			if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'a' ] || [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'A' ]; then
