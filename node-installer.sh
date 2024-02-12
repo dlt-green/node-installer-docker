@@ -4403,8 +4403,8 @@ sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/n
 sleep 1
 
 if [ "$opt_check" = 1 ]; then
-	CheckFirewall;
-	CheckAutostart;
+	CheckFirewall
+	CheckAutostart
 fi
 
 docker --version | grep "Docker version" >/dev/null 2>&1
