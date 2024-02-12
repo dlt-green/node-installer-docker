@@ -4397,6 +4397,7 @@ echo "╚═══════════════════════�
 echo ""
 echo "> $gn""Checking Hash of Installer successful...""$xx"
 echo "> $gn""$InstallerHash""$xx"
+echo "  $gr""$VAR_DISTRIBUTION | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
 sudo apt update >/dev/null 2>&1
 sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
