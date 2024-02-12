@@ -166,6 +166,15 @@ fi
 
 if [ "$(id -u)" -ne 0 ]; then echo "$rd" && echo 'Please run DLT.GREEN Automatic Node-Installer with sudo or as root' && echo "$xx"; exit; fi
 
+CheckDistribution() {
+	tmp="$(cat /etc/issue | cut -d ' ' -f 1)"
+	case $tmp in
+	'Ubuntu') VAR_DISTRIBUTION='Ubuntu' ;;
+#	'Debian') VAR_DISTRIBUTION='Debian' ;;
+	*) echo "$rd"; echo "Distribution $tmp is not supported!"; echo "$xx"; exit ;;
+	esac
+}
+
 CheckIota() {
 	if [ -s "/var/lib/iota-hornet/.env" ];    then VAR_NETWORK=1; fi
 	if [ -s "/var/lib/iota-wasp/.env" ];      then VAR_NETWORK=1; fi
@@ -4362,6 +4371,7 @@ RenameContainer() {
 
 clear
 
+CheckDistribution
 PositionVersion "$VRSN"
 VAR_VRN=$text
 
