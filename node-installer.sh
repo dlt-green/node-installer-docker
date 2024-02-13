@@ -170,7 +170,7 @@ CheckDistribution() {
 	tmp="$(cat /etc/issue | cut -d ' ' -f 1)"
 	case $tmp in
 	'Ubuntu') VAR_DISTRIBUTION='Ubuntu' ;;
-#	'Debian') VAR_DISTRIBUTION='Debian' ;;
+	'Debian') VAR_DISTRIBUTION='Debian' ;;
 	*) echo "$rd"; echo "Distribution $tmp is not supported!"; echo "$xx"; exit ;;
 	esac
 }
