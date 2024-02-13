@@ -128,6 +128,8 @@ done
 
 echo "$xx"
 
+sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
+
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
 IotaHornetHash='18fe50c7098335ef20b9ceb4fc8aa55e5c8c056991c5cf355b7e4e6a775629c7'
@@ -991,7 +993,7 @@ Dashboard() {
 	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             docker compose stop
-	             docker compose pull 2>&1 | grep -v "Pulling" | sort
+	             docker compose pull 2>&1 | grep "Pulled" | sort
 	             ./prepare_docker.sh
 	             if [ "$NODE" = 'iota-hornet' ]; then
 	               VAR_STATUS="$NODE$NETWORK: reset database"
@@ -2447,36 +2449,30 @@ Docker() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║   Update and install packages to allow apt to use a repository over HTTPS   ║"
+	echo "║                            Prepare docker engine                            ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
 	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get update
 
-	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install \
-		ca-certificates \
-		curl \
-		gnupg \
-		lsb-release
+	if [ "$VAR_DISTRIBUTION" = 'Ubuntu' ]; then
+		sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install ca-certificates curl gnupg lsb-release
+		sudo DEBIAN_FRONTEND=noninteractive sudo mkdir -p /etc/apt/keyrings
+		sudo DEBIAN_FRONTEND=noninteractive curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg
+		echo \
+			"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+			$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	fi
 
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                        Add dockers official GPG key                         ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	sudo mkdir -p /etc/apt/keyrings
-	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg
-
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                          Now set up the repository                          ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	echo \
-	"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-	$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	if [ "$VAR_DISTRIBUTION" = 'Debian' ]; then
+		sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install ca-certificates curl
+		sudo DEBIAN_FRONTEND=noninteractive sudo install -m 0755 -d /etc/apt/keyrings
+		sudo DEBIAN_FRONTEND=noninteractive curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+		sudo DEBIAN_FRONTEND=noninteractive sudo chmod a+r /etc/apt/keyrings/docker.asc
+		echo \
+			"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+			$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -2754,7 +2750,7 @@ IotaHornet() {
 	echo ""
 
 	docker network create iota >/dev/null 2>&1
-	docker compose pull 2>&1 | grep -v "Pulling" | sort
+	docker compose pull 2>&1 | grep "Pulled" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -2767,7 +2763,7 @@ IotaHornet() {
 		echo ""
 
 		if [ -n "$VAR_PASSWORD" ]; then
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		fi
@@ -3115,7 +3111,7 @@ IotaWasp() {
 
 			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
 			if [ -n "$VAR_PASSWORD" ]; then
-			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 
 			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
@@ -3141,7 +3137,7 @@ IotaWasp() {
 	echo ""
 
 	docker network create iota >/dev/null 2>&1
-	docker compose pull 2>&1 | grep -v "Pulling" | sort
+	docker compose pull 2>&1 | grep "Pulled" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3155,7 +3151,7 @@ IotaWasp() {
 
 		if [ -n "$VAR_PASSWORD" ]; then
 		  if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || VAR_PASSWORD=''; fi
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
@@ -3509,7 +3505,7 @@ ShimmerHornet() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull 2>&1 | grep -v "Pulling" | sort
+	docker compose pull 2>&1 | grep "Pulled" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3522,7 +3518,7 @@ ShimmerHornet() {
 		echo ""
 
 		if [ -n "$VAR_PASSWORD" ]; then
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		fi
@@ -3870,7 +3866,7 @@ ShimmerWasp() {
 
 			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
 			if [ -n "$VAR_PASSWORD" ]; then
-			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 
 			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
@@ -3896,7 +3892,7 @@ ShimmerWasp() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull 2>&1 | grep -v "Pulling" | sort
+	docker compose pull 2>&1 | grep "Pulled" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3910,7 +3906,7 @@ ShimmerWasp() {
 
 		if [ -n "$VAR_PASSWORD" ]; then
 		  if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
@@ -4230,7 +4226,7 @@ ShimmerChronicle() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull 2>&1 | grep -v "Pulling" | sort
+	docker compose pull 2>&1 | grep "Pulled" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4399,8 +4395,8 @@ echo "> $gn""Checking Hash of Installer successful...""$xx"
 echo "> $gn""$InstallerHash""$xx"
 echo "  $gr""$VAR_DISTRIBUTION | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
-sudo apt update >/dev/null 2>&1
-sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+sudo DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
+sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 sleep 1
 
 if [ "$opt_check" = 1 ]; then
