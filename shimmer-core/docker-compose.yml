@@ -22,24 +22,33 @@ services:
       - "traefik.enable=true"
       - "proxy.constraint=iota-core-${IOTA_CORE_NETWORK:-mainnet}"
 
-      - "traefik.http.routers.iota-core.service=iota-core"
-      - "traefik.http.routers.iota-core.rule=Host(`${IOTA_CORE_HOST:?IOTA_CORE_HOST is missing}`) && PathPrefix(`/`)"
-      - "traefik.http.routers.iota-core.entrypoints=websecure"
-      - "traefik.http.routers.iota-core.tls=true"
-      - "traefik.http.routers.iota-core.tls.certresolver=myresolver"
+      # api
+      - "traefik.http.routers.iota-core-api.service=iota-core-api"
+      - "traefik.http.routers.iota-core-api.rule=Host(`${IOTA_CORE_HOST:?IOTA_CORE_HOST is missing}`) && (Path(`/health`) || Path(`/api`) || PathPrefix(`/api`))"
+      - "traefik.http.routers.iota-core-api.entrypoints=websecure"
+      - "traefik.http.routers.iota-core-api.tls=true"
+      - "traefik.http.routers.iota-core-api.tls.certresolver=myresolver"
 
-      - "traefik.http.services.iota-core.loadbalancer.server.port=14265"
-      - "traefik.http.services.iota-core.loadbalancer.healthCheck.path=/api/core/v2/info"
-      - "traefik.http.services.iota-core.loadbalancer.healthCheck.interval=15s"
-      - "traefik.http.services.iota-core.loadbalancer.healthCheck.timeout=5s"
+      - "traefik.http.services.iota-core-api.loadbalancer.server.port=14265"
+      - "traefik.http.services.iota-core-api.loadbalancer.healthCheck.path=/api/core/v3/info"
+      - "traefik.http.services.iota-core-api.loadbalancer.healthCheck.interval=15s"
+      - "traefik.http.services.iota-core-api.loadbalancer.healthCheck.timeout=5s"
 
-      - "traefik.http.routers.iota-core.middlewares=security-headers,redirect-dashboard"
+      # dashboard
+      - "traefik.http.routers.iota-core-app.service=iota-core-app"
+      - "traefik.http.routers.iota-core-app.rule=Host(`${IOTA_CORE_HOST:?IOTA_CORE_HOST is missing}`)"
+      - "traefik.http.routers.iota-core-app.entrypoints=websecure"
+      - "traefik.http.routers.iota-core-app.tls=true"
+      - "traefik.http.routers.iota-core-app.tls.certresolver=myresolver"
+
+      - "traefik.http.services.iota-core-app.loadbalancer.server.port=8081"
+      - "traefik.http.services.iota-core-app.loadbalancer.healthCheck.path=/"
+      - "traefik.http.services.iota-core-app.loadbalancer.healthCheck.interval=10s"
+      - "traefik.http.services.iota-core-app.loadbalancer.healthCheck.timeout=3s"
+
+      - "traefik.http.routers.iota-core-app.middlewares=security-headers"
 
       # middlewares
-      - "traefik.http.middlewares.redirect-dashboard.redirectregex.regex=^(https?://[^/]+)/?$$"
-      - "traefik.http.middlewares.redirect-dashboard.redirectregex.replacement=$$1/dashboard/"
-      - "traefik.http.middlewares.redirect-dashboard.redirectregex.permanent=true"
-
       - "traefik.http.middlewares.security-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
       - "traefik.http.middlewares.security-headers.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${IOTA_CORE_HOST:?WASP_HOST is missing}:${IOTA_CORE_HTTPS_PORT:-443}"
       - "traefik.http.middlewares.security-headers.headers.accesscontrolmaxage=100"
@@ -54,7 +63,8 @@ services:
       - "/etc/localtime:/etc/localtime:ro"
       - "${IOTA_CORE_DATA_DIR:-./data}/config/config-${IOTA_CORE_NETWORK:-mainnet}.json:/app/config/config.json:ro"
       - "${IOTA_CORE_DATA_DIR:-./data}/storage/${IOTA_CORE_NETWORK:-mainnet}:/app/storage"
-      - "${IOTA_CORE_DATA_DIR:-./data}/snapshots/${IOTA_CORE_NETWORK:-mainnet}:/app/snapshots"
+#      - "${IOTA_CORE_DATA_DIR:-./data}/snapshots/${IOTA_CORE_NETWORK:-mainnet}:/app/snapshots"
+      - "${IOTA_CORE_DATA_DIR:-./assets}/dlt-green.snapshot:/app/snapshots/snapshot.bin"
       - "${IOTA_CORE_DATA_DIR:-./data}/p2pstore/${IOTA_CORE_NETWORK:-mainnet}:/app/p2pstore"
     healthcheck:
       test: ["CMD", "/app/iota-core", "tools", "node-info"]
@@ -113,18 +123,26 @@ services:
   ##################################################################
 
   prometheus:
-    image: prom/prometheus:v2.38.0
-    container_name: prometheus
+    image: prom/prometheus:latest
+    container_name: shimmer-iota-core.prometheus
+    stop_grace_period: 1m
     restart: unless-stopped
+    depends_on:
+      iota-core:
+        condition: service_started
     user: "65532"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./assets/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ${IOTA_CORE_DATA_DIR:-./data}/prometheus/:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    profiles:
+      - monitoring
 
   grafana:
-    image: grafana/grafana:9.1.0
-    container_name: grafana
+    image: grafana/grafana:9.5.6
+    container_name: shimmer-iota-core.grafana
     restart: unless-stopped
     user: "65532"
     labels:
@@ -138,34 +156,12 @@ services:
       - GF_SERVER_DOMAIN=${IOTA_CORE_HOST}
       - GF_SERVER_ROOT_URL=/grafana
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
-      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/home.json
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/local_dashboard.json
     volumes:
-      - ./assets/grafana/:/etc/grafana/provisioning/
+      - ./assets/grafana/:/etc/grafana/
       - ${IOTA_CORE_DATA_DIR:-./data}/grafana:/var/lib/grafana
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.45.0
-    container_name: cadvisor
-    privileged: true
-    command:
-      - --housekeeping_interval=30s # kubernetes default args
-      - --max_housekeeping_interval=35s
-      - --event_storage_event_limit=default=0
-      - --event_storage_age_limit=default=0
-      - --store_container_labels=false
-      - --global_housekeeping_interval=30s
-      - --event_storage_event_limit=default=0
-      - --event_storage_age_limit=default=0
-      - --disable_metrics=accelerator,advtcp,cpu_topology,disk,hugetlb,memory_numa,percpu,referenced_memory,resctrl,sched,tcp,udp
-      - --enable_load_reader=true
-      - --docker_only=true # only show stats for docker containers
-      - --allow_dynamic_housekeeping=true
-      - --storage_duration=1m0s
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
+    profiles:
+      - monitoring
 
   ##################################################################
   #  INX Extensions                                                #
@@ -179,20 +175,18 @@ services:
     depends_on:
       iota-core:
         condition: service_healthy
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "${IOTA_CORE_DATA_DIR:-./data}/indexer/${IOTA_CORE_NETWORK:-mainnet}:/app/data"
+    ulimits:
+      nofile:
+        soft: 16384
+        hard: 16384
     command:
       - "--inx.address=iota-core:9029"
-      - "--indexer.db.sqlite.path=/app/data"
       - "--restAPI.bindAddress=inx-indexer:9091"
-      - "--prometheus.enabled=true"
-      - "--prometheus.bindAddress=inx-indexer:9312"
 
   inx-mqtt:
     image: iotaledger/inx-mqtt:${INX_MQTT_VERSION:?INX_MQTT_VERSION is missing}
     container_name: shimmer-iota-core.inx-mqtt
-    stop_grace_period: 5m
+    stop_grace_period: 1m
     restart: unless-stopped
     depends_on:
       iota-core:
@@ -202,102 +196,41 @@ services:
     command:
       - "--inx.address=iota-core:9029"
       - "--mqtt.websocket.bindAddress=inx-mqtt:1888"
-      - "--prometheus.enabled=true"
-      - "--prometheus.bindAddress=inx-mqtt:9312"
 
-  inx-participation:
-    image: iotaledger/inx-participation:${INX_PARTICIPATION_VERSION:?INX_PARTICIPATION_VERSION is missing}
-    container_name: shimmer-iota-core.inx-participation
-    stop_grace_period: 5m
-    restart: unless-stopped
-    depends_on:
-      iota-core:
-        condition: service_healthy
-    ulimits:
-      nofile:
-        soft: 16384
-        hard: 16384
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "${IOTA_CORE_DATA_DIR:-./data}/participation/${IOTA_CORE_NETWORK:-mainnet}:/app/data"
-    command:
-      - "--inx.address=iota-core:9029"
-      - "--participation.db.path=/app/data/participation"
-      - "--restAPI.bindAddress=inx-participation:9892"
-
-  inx-spammer:
-    image: iotaledger/inx-spammer:${INX_SPAMMER_VERSION:?INX_SPAMMER_VERSION is missing}
-    container_name: shimmer-iota-core.inx-spammer
-    stop_grace_period: 5m
+  inx-blockissuer:
+    image: iotaledger/inx-blockissuer:${INX_BLOCKISSUER_VERSION:?INX_BLOCKISSUER_VERSION is missing}
+    container_name: shimmer-iota-core.inx-blockissuer
+    stop_grace_period: 1m
     restart: unless-stopped
     depends_on:
       iota-core:
         condition: service_healthy
       inx-indexer:
         condition: service_started
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-    command:
-      - "--inx.address=iota-core:9029"
-      - "--restAPI.bindAddress=inx-spammer:9092"
-      - "--prometheus.enabled=true"
-      - "--prometheus.bindAddress=inx-spammer:9312"
+    environment:
+      - "BLOCKISSUER_PRV_KEY=432c624ca3260f910df35008d5c740593b222f1e196e6cdb8cd1ad080f0d4e33997be92a22b1933f36e26fba5f721756f95811d6b4ae21564197c2bfa4f28270"
+    command: >
+      --inx.address=iota-core:9029
+      --restAPI.bindAddress=inx-blockissuer:9086
+      --blockIssuer.accountAddress=rms1prkursay9fs2qjmfctamd6yxg9x8r3ry47786x0mvwek4qr9xd9d5c6gkun
+      --blockIssuer.proofOfWork.targetTrailingZeros=5
 
-  inx-poi:
-    image: iotaledger/inx-poi:${INX_POI_VERSION:?INX_POI_VERSION is missing}
-    container_name: shimmer-iota-core.inx-poi
-    stop_grace_period: 5m
-    restart: unless-stopped
+  inx-validator:
+    image: iotaledger/inx-validator:${INX_VALIDATOR_VERSION:?INX_VALIDATOR_VERSION is missing}
+    container_name: shimmer-iota-core.inx-validator
+    stop_grace_period: 1m
+    restart: no
     depends_on:
       iota-core:
-        condition: service_healthy
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-    command:
-      - "--inx.address=iota-core:9029"
-      - "--restAPI.bindAddress=inx-poi:9687"
-
-  inx-dashboard:
-    image: iotaledger/inx-dashboard:${INX_DASHBOARD_VERSION:?INX_DASHBOARD_VERSION is missing}
-    container_name: shimmer-iota-core.inx-dashboard
-    stop_grace_period: 5m
-    restart: unless-stopped
-    depends_on:
-      iota-core:
-        condition: service_healthy
-      inx-indexer:
         condition: service_started
-    labels:
-      - "proxy.constraint=iota-core-${IOTA_CORE_NETWORK:-mainnet}"
-      - "traefik.enable=true"
-
-      - "traefik.http.services.iota-core-dashboard.loadbalancer.server.port=8081"
-      - "traefik.http.services.iota-core-dashboard.loadbalancer.healthCheck.path=/"
-      - "traefik.http.services.iota-core-dashboard.loadbalancer.healthCheck.interval=10s"
-      - "traefik.http.services.iota-core-dashboard.loadbalancer.healthCheck.timeout=3s"
-      - "traefik.http.routers.iota-core-dashboard.service=iota-core-dashboard"
-      - "traefik.http.routers.iota-core-dashboard.rule=Host(`${IOTA_CORE_HOST:?IOTA_CORE_HOST is missing}`) && (Path(`/dashboard`) || PathPrefix(`/dashboard/`))"
-      - "traefik.http.routers.iota-core-dashboard.entrypoints=websecure"
-      - "traefik.http.routers.iota-core-dashboard.tls=true"
-      - "traefik.http.routers.iota-core-dashboard.tls.certresolver=myresolver"
-
-      - "traefik.http.routers.iota-core-dashboard.middlewares=security-headers"
-      - "traefik.http.middlewares.security-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
-      - "traefik.http.middlewares.security-headers.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${IOTA_CORE_HOST:?WASP_HOST is missing}:${IOTA_CORE_HTTPS_PORT:-443}"
-      - "traefik.http.middlewares.security-headers.headers.accesscontrolmaxage=100"
-      - "traefik.http.middlewares.security-headers.headers.addvaryheader=true"
-      - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
-      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro"
-      - "${IOTA_CORE_DATA_DIR:-./data}/dashboard/${IOTA_CORE_NETWORK:-mainnet}:/app/data"
-    command:
-      - "--inx.address=iota-core:9029"
-      - "--dashboard.bindAddress=inx-dashboard:8081"
-      - "--dashboard.auth.identityFilePath=/app/data/identity.key"
-      - "--dashboard.auth.username=${DASHBOARD_USERNAME}"
-      - "--dashboard.auth.passwordHash=${DASHBOARD_PASSWORD}"
-      - "--dashboard.auth.passwordSalt=${DASHBOARD_SALT}"
+    environment:
+      - "VALIDATOR_PRV_KEY=443a988ea61797651217de1f4662d4d6da11fd78e67f94511453bf6576045a05293dc170d9a59474e6d81cfba7f7d924c09b25d7166bcfba606e53114d0a758b"
+    command: >
+      --logger.level=debug
+      --inx.address=iota-core:9029
+      --validator.ignoreBootstrapped=true
+      --validator.accountAddress=rms1pzg8cqhfxqhq7pt37y8cs4v5u4kcc48lquy2k73ehsdhf5ukhya3y5rx2w6
+      --validator.issueCandidacyPayload=${ISSUE_CANDIDACY_PAYLOAD_V1:-true}
 
 networks:
   default:

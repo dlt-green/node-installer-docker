@@ -27,9 +27,6 @@ prepare_data_dir "${dataDir}" \
                  "storage/${IOTA_CORE_NETWORK:-mainnet}" \
                  "p2pstore/${IOTA_CORE_NETWORK:-mainnet}" \
                  "snapshots/${IOTA_CORE_NETWORK:-mainnet}" \
-                 "indexer/${IOTA_CORE_NETWORK:-mainnet}" \
-                 "participation/${IOTA_CORE_NETWORK:-mainnet}" \
-                 "dashboard/${IOTA_CORE_NETWORK:-mainnet}" \
                  "prometheus" \
                  "grafana" \
                  "letsencrypt"
@@ -48,6 +45,8 @@ set_config "${configPath}" ".db.pruning.size.targetSize"      "\"${IOTA_CORE_PRU
 set_config "${configPath}" ".protocol.snapshot.path"          "\"/app/snapshots/snapshot.bin\""
 set_config "${configPath}" ".protocol.protocolParametersPath" "\"/app/protocol_parameters.json\""
 set_config "${configPath}" ".inx.enabled"                     "true"
+set_config "${configPath}" ".inx.bindAddress"                 "\"0.0.0.0:9029\""
+
 
 rm -f "${tmp}"
 
