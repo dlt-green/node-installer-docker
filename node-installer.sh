@@ -2328,11 +2328,11 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	sudo DEBIAN_FRONTEND=noninteractive apt update
-	sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
-	sudo DEBIAN_FRONTEND=noninteractive apt dist-upgrade -y
-	sudo DEBIAN_FRONTEND=noninteractive apt autoclean -y
-	sudo DEBIAN_FRONTEND=noninteractive apt autoremove -y
+	DEBIAN_FRONTEND=noninteractive sudo apt update
+	DEBIAN_FRONTEND=noninteractive sudo apt upgrade -y
+	DEBIAN_FRONTEND=noninteractive sudo apt dist-upgrade -y
+	DEBIAN_FRONTEND=noninteractive sudo apt autoclean -y
+	DEBIAN_FRONTEND=noninteractive sudo apt autoremove -y
 	if [ "$opt_mode" ]; then
 	  VAR_STATUS='system: update'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
@@ -2454,22 +2454,22 @@ Docker() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get update
+	DEBIAN_FRONTEND=noninteractive sudo apt-get update
 
 	if [ "$VAR_DISTRIBUTION" = 'Ubuntu' ]; then
-		sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install ca-certificates curl gnupg lsb-release
-		sudo DEBIAN_FRONTEND=noninteractive sudo mkdir -p /etc/apt/keyrings
-		sudo DEBIAN_FRONTEND=noninteractive curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg
+		DEBIAN_FRONTEND=noninteractive sudo apt-get install ca-certificates curl gnupg lsb-release
+		DEBIAN_FRONTEND=noninteractive sudo mkdir -p /etc/apt/keyrings
+		DEBIAN_FRONTEND=noninteractive sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg
 		echo \
 			"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
 			$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 	fi
 
 	if [ "$VAR_DISTRIBUTION" = 'Debian' ]; then
-		sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install ca-certificates curl
-		sudo DEBIAN_FRONTEND=noninteractive sudo install -m 0755 -d /etc/apt/keyrings
-		sudo DEBIAN_FRONTEND=noninteractive curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-		sudo DEBIAN_FRONTEND=noninteractive sudo chmod a+r /etc/apt/keyrings/docker.asc
+		DEBIAN_FRONTEND=noninteractive sudo apt-get install ca-certificates curl
+		DEBIAN_FRONTEND=noninteractive sudo install -m 0755 -d /etc/apt/keyrings
+		DEBIAN_FRONTEND=noninteractive sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+		DEBIAN_FRONTEND=noninteractive sudo chmod a+r /etc/apt/keyrings/docker.asc
 		echo \
 			"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
 			$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
@@ -2481,8 +2481,8 @@ Docker() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get update
-	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
+	DEBIAN_FRONTEND=noninteractive sudo apt-get update
+	DEBIAN_FRONTEND=noninteractive sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
@@ -4396,8 +4396,8 @@ echo "> $gn""Checking Hash of Installer successful...""$xx"
 echo "> $gn""$InstallerHash""$xx"
 echo "  $gr""$VAR_DISTRIBUTION | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
-sudo DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
-sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 sleep 1
 
 if [ "$opt_check" = 1 ]; then
