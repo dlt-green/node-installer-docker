@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.4.0.0"
-BUILD="20240214_104840"
+BUILD="20240214_192607"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -132,25 +132,25 @@ sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='be29a55100880d73a292fb4ce4c356c3f3c7b22409db59e5f4e293e02c12759f'
+IotaHornetHash='aadc5b3fe6d9c6e8f63b29f42e11016a77b02cfee4961194e5c622e631dd06ec'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='0b2928c3cf0795164b72c81cf4855f6ae435ce79987bb82332439e7607b7dfe4'
+IotaWaspHash='92a3d9726fa78deb44613a1f68ba09c58e195a478485ceb25ba83353fcc182be'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='0c4379655afd4a43f02ab9f4f3cd36fa39055e1dac0446588b9a64fc3be2a957'
+ShimmerHornetHash='d882e419ed2937e0c9fb3216745d93563609fd59e63e849253f1624556f1f9ca'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='ea135fc3fe01f5c517e54f6cb0893dce5b5b15002d8a61a9d81f4952f7110442'
+ShimmerWaspHash='e9ae8adee6271f5f18bc1b52b75337eb41627b8d34ef931600f7ced6193b0b04'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='568ee094428cc6b6a2ec2db1648baa0da9317389465d1643f4a1d6142e48cab4'
+ShimmerChronicleHash='52c754f3a3d289bb69b4f92bc5005dc14d0c8bc4da7220370fed29140c1eb172'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
 
 clear
-if [ -f "node-installer.sh" ]; then 
+if [ -f "node-installer.sh" ]; then
 
 	fgrep -q "alias dlt.green=" ~/.bash_aliases >/dev/null 2>&1 || (echo "" >> ~/.bash_aliases && echo "# DLT.GREEN Node-Installer-Docker" >> ~/.bash_aliases && echo "alias dlt.green=" >> ~/.bash_aliases)
 	if [ -f ~/.bash_aliases ]; then sed -i 's/alias dlt.green=.*/alias dlt.green="sudo wget https:\/\/github.com\/dlt-green\/node-installer-docker\/releases\/latest\/download\/node-installer.sh \&\& sudo sh node-installer.sh"/g' ~/.bash_aliases; fi
@@ -227,7 +227,7 @@ CheckAutostart() {
 		     fi
 
 		     if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ]; then
-		        (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1_1""$VAR_CRON_TIME_1_2""$VAR_CRON_URL""$VAR_CRON_JOB_1""$VAR_CRON_END_1") | crontab - 
+		        (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1_1""$VAR_CRON_TIME_1_2""$VAR_CRON_URL""$VAR_CRON_JOB_1""$VAR_CRON_END_1") | crontab -
 		     fi
 
 		     if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
@@ -721,7 +721,7 @@ CheckEventsShimmer() {
 	   echo ''
 	   sleep 5
 
-	   if [ -z "$EVENTS" ]; then 
+	   if [ -z "$EVENTS" ]; then
 	   EVENTS=$(curl https://"${ADDR}"/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
 
@@ -1053,7 +1053,7 @@ Dashboard() {
 	   echo "$ca"
 	   echo 'Please wait, checking for Updates...'
 	   echo "$xx"
-	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi 
+	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
 	   SubMenuWaspCLI ;;
 	4) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
@@ -1067,7 +1067,7 @@ Dashboard() {
 	   echo "$ca"
 	   echo 'Please wait, checking for Updates...'
 	   echo "$xx"
-	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi 
+	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=0; VAR_DIR='shimmer-plugins'
 	   if [ "$opt_mode" ]; then clear; exit; else SubMenuPlugins; fi ;;
@@ -1231,7 +1231,7 @@ SubMenuCronJobs() {
 		  echo 'Disable Autostart for all Nodes...'
 		  echo "$xx"
 		  sleep 3
-		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_1")" | grep -v "$VAR_CRON_JOB_1") | crontab - 
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_1")" | grep -v "$VAR_CRON_JOB_1") | crontab -
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ]; then
 		     echo "$rd""Autostart for all Nodes disabled""$xx"
 		  fi
@@ -1246,7 +1246,7 @@ SubMenuCronJobs() {
 		  fi
 
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ]; then
-		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1_1""$VAR_CRON_TIME_1_2""$VAR_CRON_URL""$VAR_CRON_JOB_1""$VAR_CRON_END_1") | crontab - 
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1_1""$VAR_CRON_TIME_1_2""$VAR_CRON_URL""$VAR_CRON_JOB_1""$VAR_CRON_END_1") | crontab -
 		  fi
 
 		  if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
@@ -1261,8 +1261,8 @@ SubMenuCronJobs() {
 		  echo 'Disable Automatic System Maintenance...'
 		  echo "$xx"
 		  sleep 3
-		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2m") | crontab - 
-		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2u") | crontab - 
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2m") | crontab -
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2u") | crontab -
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
 		     echo "$rd""Automatic System Maintenance disabled""$xx"
 		  fi
@@ -1296,7 +1296,7 @@ SubMenuCronJobs() {
 		  fi
 
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
-		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_URL""$VAR_CRON_JOB_2m""$VAR_CRON_END_2") | crontab - 
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_URL""$VAR_CRON_JOB_2m""$VAR_CRON_END_2") | crontab -
 		  fi
 
 		  if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
@@ -1522,7 +1522,7 @@ SubMenuLicense() {
 	echo "║                                                                             ║"
 	echo "║                                 MIT License                                 ║"
 	echo "║                                                                             ║"
-	echo "║        https://github.com/notify-run/notify-run-rs/blob/main/LICENSE        ║"	
+	echo "║        https://github.com/notify-run/notify-run-rs/blob/main/LICENSE        ║"
 	echo "║                                                                             ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
@@ -2087,13 +2087,13 @@ SubMenuWaspCLI() {
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                              1. Install/Prepare Wasp-CLI                    ║"
-	echo "║                              2. Run Wasp-CLI | alias: wasp-cli {commands}   ║"	
-	echo "║                              3. Login (Authenticate against a Wasp node)    ║"	
+	echo "║                              2. Run Wasp-CLI | alias: wasp-cli {commands}   ║"
+	echo "║                              3. Login (Authenticate against a Wasp node)    ║"
 	echo "║                              4. Initialize a new wallet                     ║"
-	echo "║                              5. Show the wallet address                     ║"	
-	echo "║                              6. Show the wallet balance                     ║"	
-	echo "║                              7. Show the committee peering info             ║"	
-	echo "║                              8. Help                                        ║"	
+	echo "║                              5. Show the wallet address                     ║"
+	echo "║                              6. Show the wallet balance                     ║"
+	echo "║                              7. Show the committee peering info             ║"
+	echo "║                              8. Help                                        ║"
 	echo "║                              9. Deinstall/Remove                            ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
@@ -2115,7 +2115,7 @@ SubMenuWaspCLI() {
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		     if  [ "$VAR_NETWORK" = 2 ]; then
 		        echo "$fl"; read -r -p 'Press [F] to enable Faucet... Press [ENTER] key to skip... ' F; echo "$xx"
-		        if  [ "$F" = 'f' ] && ! [ "$F" = 'F' ]; then 
+		        if  [ "$F" = 'f' ] && ! [ "$F" = 'F' ]; then
 	               fgrep -q "WASP_CLI_FAUCET_ADDRESS" .env || echo "WASP_CLI_FAUCET_ADDRESS=https://faucet.testnet.shimmer.network" >> .env
 		        fi
 		     fi
@@ -2412,7 +2412,7 @@ SystemMaintenance() {
 	echo "select menu item: "
 
 	if [ "$opt_mode" ]; then if ! [ "$opt_reboot" ]; then opt_reboot=0; fi; fi
-	if [ "$opt_reboot" = 1 ]; then n=1; else if [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
+	if [ "$opt_reboot" = 1 ]; then n=1; elif [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi
 
 	if [ "$opt_mode" ]; then if [ "$opt_reboot" = 1 ]; then
 	  VAR_STATUS='system: reboot'
@@ -4404,17 +4404,14 @@ if [ "$opt_check" = 1 ]; then
 	CheckAutostart
 fi
 
-docker --version | grep "Docker version" >/dev/null 2>&1
-if [ $? -eq 0 ]
-	then
+if docker --version | grep "Docker version" >/dev/null 2>&1; then
+    Dashboard
+else
+    if [ "$opt_mode" ]; then
+        echo "Unattended: Install Docker..."
+        Docker
         Dashboard
-	else
-        if [ "$opt_mode" ]; then
-			echo "$ca""unattended: Install Docker...""$xx"
-			Docker
-			Dashboard
-		else
-			MainMenu
-		fi
-	fi
+    else
+        MainMenu
+    fi
 fi
