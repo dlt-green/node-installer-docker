@@ -128,7 +128,8 @@ done
 
 echo "$xx"
 
-DEBIAN_FRONTEND=noninteractive sudo apt-get install sudo curl -y -qq >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive apt-get install sudo -y -qq >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
