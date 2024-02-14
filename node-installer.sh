@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.4.0.0"
-BUILD="20240214_202544"
+BUILD="20240214_204253"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -133,19 +133,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='91a70f394d0abce72b2cda17f28800aac906492e4d8b761cc8457602382e9b8f'
+IotaHornetHash='fcd5efe2e0ea2a10812bab4d1f508be49050c9c51787f4ad11757a73ea095a68'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='01a9a7bb44907b0174b9416e3f0d28303da1a3231bda0de5c0f23a6448af86d3'
+IotaWaspHash='fd8b1a1f2e725d1d714ae64fb972014c75c3ab87b85ddfb445e4be47172e5ae0'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='2548b66d98c37532eb73995bc9874ea36357ae58034daaa36fef3cfb74747423'
+ShimmerHornetHash='1d968d205d9dc76edb917dc94ea0e6287e2a3346bf4fa20f325a257e5cabb2d0'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='c0be8b50a2ec16b2ff1cb4c9540c38b223d528a07db091ceb74bc0ac17ee153c'
+ShimmerWaspHash='a52c344f7d641ac4255546b3d2ef28f01b5a337e14871fc0e37285fe768c2bf5'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='069ac164ced61302244a519bc586e6e511853ba2813edfe937d044002c8aed05'
+ShimmerChronicleHash='7785917eeade5c5e649f40211eb6d668e8d8fc8ce4661ec638266510eb93a013'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -2328,11 +2328,11 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	sudo DEBIAN_FRONTEND=noninteractive apt update
-	sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
-	sudo DEBIAN_FRONTEND=noninteractive apt dist-upgrade -y
-	sudo DEBIAN_FRONTEND=noninteractive apt autoclean -y
-	sudo DEBIAN_FRONTEND=noninteractive apt autoremove -y
+	DEBIAN_FRONTEND=noninteractive sudo apt update
+	DEBIAN_FRONTEND=noninteractive sudo apt upgrade -y
+	DEBIAN_FRONTEND=noninteractive sudo apt dist-upgrade -y
+	DEBIAN_FRONTEND=noninteractive sudo apt autoclean -y
+	DEBIAN_FRONTEND=noninteractive sudo apt autoremove -y
 	if [ "$opt_mode" ]; then
 	  VAR_STATUS='system: update'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
@@ -2454,22 +2454,22 @@ Docker() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get update
+	DEBIAN_FRONTEND=noninteractive sudo apt-get update
 
 	if [ "$VAR_DISTRIBUTION" = 'Ubuntu' ]; then
-		sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install ca-certificates curl gnupg lsb-release
-		sudo DEBIAN_FRONTEND=noninteractive sudo mkdir -p /etc/apt/keyrings
-		sudo DEBIAN_FRONTEND=noninteractive curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg
+		DEBIAN_FRONTEND=noninteractive sudo apt-get install ca-certificates curl gnupg lsb-release
+		DEBIAN_FRONTEND=noninteractive sudo mkdir -p /etc/apt/keyrings
+		DEBIAN_FRONTEND=noninteractive sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg
 		echo \
 			"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
 			$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 	fi
 
 	if [ "$VAR_DISTRIBUTION" = 'Debian' ]; then
-		sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install ca-certificates curl
-		sudo DEBIAN_FRONTEND=noninteractive sudo install -m 0755 -d /etc/apt/keyrings
-		sudo DEBIAN_FRONTEND=noninteractive curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-		sudo DEBIAN_FRONTEND=noninteractive sudo chmod a+r /etc/apt/keyrings/docker.asc
+		DEBIAN_FRONTEND=noninteractive sudo apt-get install ca-certificates curl
+		DEBIAN_FRONTEND=noninteractive sudo install -m 0755 -d /etc/apt/keyrings
+		DEBIAN_FRONTEND=noninteractive sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+		DEBIAN_FRONTEND=noninteractive sudo chmod a+r /etc/apt/keyrings/docker.asc
 		echo \
 			"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
 			$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
@@ -2481,8 +2481,8 @@ Docker() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get update
-	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
+	DEBIAN_FRONTEND=noninteractive sudo apt-get update
+	DEBIAN_FRONTEND=noninteractive sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
@@ -4396,8 +4396,8 @@ echo "> $gn""Checking Hash of Installer successful...""$xx"
 echo "> $gn""$InstallerHash""$xx"
 echo "  $gr""$VAR_DISTRIBUTION | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
-sudo DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
-sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 sleep 1
 
 if [ "$opt_check" = 1 ]; then
