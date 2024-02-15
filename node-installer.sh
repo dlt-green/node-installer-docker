@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.3.1.8"
-BUILD="20240210_231311"
+VRSN="v.4.0.1"
+BUILD="20240215_190331"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -128,30 +128,34 @@ done
 
 echo "$xx"
 
+DEBIAN_FRONTEND=noninteractive apt-get install sudo -y -qq >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
+
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='18fe50c7098335ef20b9ceb4fc8aa55e5c8c056991c5cf355b7e4e6a775629c7'
+IotaHornetHash='7d341325706df8096b12068e372f28be15f9185a1a930418ded85bd4f23a45e8'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='58ff26fc01b1eb3986523326eab59d42bae43947e0cf835bb55dfb7f3bfca603'
+IotaWaspHash='c14475d8367d737a6452ff109cd822e39f94b8de5a0e517740a4558ecb61fc45'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='6275801bfbf9c729eed36e1e2084c317c359b2c4acb1bc73d4c8fbb87009ac81'
+ShimmerHornetHash='4bb62666cfa5504277beea58cdeb6df13c9236bfaac218c523b334e1c703211b'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='f818b3efdd29f8acf2d6b5396b9484c8fc2bd1daba502ee64316caff42b886b7'
+ShimmerWaspHash='1ca04596aac76affaadc97df2e164b84b4adebc70f1bcf625c9ecf95e2a913ea'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='21d9c027739a32117c42792f5dd36febf8befa7380069e958c4423335397dcb1'
+ShimmerChronicleHash='95b605f8903c34a8b61b7780ec69c2143349ad55dae554c8a3268fe5cc441af1'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
 
 clear
-if [ -f "node-installer.sh" ]; then 
+if [ -f "node-installer.sh" ]; then
 
 	fgrep -q "alias dlt.green=" ~/.bash_aliases >/dev/null 2>&1 || (echo "" >> ~/.bash_aliases && echo "# DLT.GREEN Node-Installer-Docker" >> ~/.bash_aliases && echo "alias dlt.green=" >> ~/.bash_aliases)
 	if [ -f ~/.bash_aliases ]; then sed -i 's/alias dlt.green=.*/alias dlt.green="sudo wget https:\/\/github.com\/dlt-green\/node-installer-docker\/releases\/latest\/download\/node-installer.sh \&\& sudo sh node-installer.sh"/g' ~/.bash_aliases; fi
+	if [ -z "$(cat ~/.bashrc | grep bash_aliases)" ]; then echo 'if [ -f ~/.bash_aliases ]; then . ~/.bash_aliases; fi' >> ~/.bashrc; fi
 
 	if [ "$(shasum -a 256 './node-installer.sh' | cut -d ' ' -f 1)" != "$InstallerHash" ]; then
 		echo "$rd"; echo 'Checking Hash of Installer failed...'
@@ -164,6 +168,15 @@ if [ -f "node-installer.sh" ]; then
 fi
 
 if [ "$(id -u)" -ne 0 ]; then echo "$rd" && echo 'Please run DLT.GREEN Automatic Node-Installer with sudo or as root' && echo "$xx"; exit; fi
+
+CheckDistribution() {
+	tmp="$(cat /etc/issue | cut -d ' ' -f 1)"
+	case $tmp in
+	'Ubuntu') VAR_DISTRIBUTION='Ubuntu' ;;
+	'Debian') VAR_DISTRIBUTION='Debian' ;;
+	*) echo "$rd"; echo "Distribution $tmp is not supported!"; echo "$xx"; exit ;;
+	esac
+}
 
 CheckIota() {
 	if [ -s "/var/lib/iota-hornet/.env" ];    then VAR_NETWORK=1; fi
@@ -215,7 +228,7 @@ CheckAutostart() {
 		     fi
 
 		     if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ]; then
-		        (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1_1""$VAR_CRON_TIME_1_2""$VAR_CRON_URL""$VAR_CRON_JOB_1""$VAR_CRON_END_1") | crontab - 
+		        (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1_1""$VAR_CRON_TIME_1_2""$VAR_CRON_URL""$VAR_CRON_JOB_1""$VAR_CRON_END_1") | crontab -
 		     fi
 
 		     if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
@@ -709,7 +722,7 @@ CheckEventsShimmer() {
 	   echo ''
 	   sleep 5
 
-	   if [ -z "$EVENTS" ]; then 
+	   if [ -z "$EVENTS" ]; then
 	   EVENTS=$(curl https://"${ADDR}"/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
 	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
 
@@ -798,6 +811,7 @@ SetCertificateGlobal() {
 	   cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$VAR_HOST"'") | .key' | base64 -d > "$VAR_HOST.key"
 
 	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" ]; then
+	     rm -rf "/etc/letsencrypt/live/$VAR_HOST/*"
 	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
 	   fi
 	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" ]; then
@@ -863,6 +877,8 @@ Dashboard() {
 
 	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ];  then cja=$gn; else cja=$rd; fi
 	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ];  then cjb=$gn; else cjb=$rd; fi
+
+	if [ "$opt_mode" ]; then VAR_STATUS="installer: $VRSN"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 
 	PositionCenter "$VAR_DOMAIN"
 	VAR_DOMAIN=$text
@@ -981,7 +997,7 @@ Dashboard() {
 	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
 	             if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             docker compose stop
-	             docker compose pull 2>&1 | grep -v "Pulling" | sort
+	             docker compose pull 2>&1 | grep "Pulled" | sort
 	             ./prepare_docker.sh
 	             if [ "$NODE" = 'iota-hornet' ]; then
 	               VAR_STATUS="$NODE$NETWORK: reset database"
@@ -1041,7 +1057,7 @@ Dashboard() {
 	   echo "$ca"
 	   echo 'Please wait, checking for Updates...'
 	   echo "$xx"
-	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi 
+	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
 	   SubMenuWaspCLI ;;
 	4) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
@@ -1055,7 +1071,7 @@ Dashboard() {
 	   echo "$ca"
 	   echo 'Please wait, checking for Updates...'
 	   echo "$xx"
-	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi 
+	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
 	   SubMenuWaspCLI ;;
 	8) VAR_NETWORK=2; VAR_NODE=0; VAR_DIR='shimmer-plugins'
 	   if [ "$opt_mode" ]; then clear; exit; else SubMenuPlugins; fi ;;
@@ -1219,7 +1235,7 @@ SubMenuCronJobs() {
 		  echo 'Disable Autostart for all Nodes...'
 		  echo "$xx"
 		  sleep 3
-		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_1")" | grep -v "$VAR_CRON_JOB_1") | crontab - 
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_1")" | grep -v "$VAR_CRON_JOB_1") | crontab -
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ]; then
 		     echo "$rd""Autostart for all Nodes disabled""$xx"
 		  fi
@@ -1234,7 +1250,7 @@ SubMenuCronJobs() {
 		  fi
 
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ]; then
-		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1_1""$VAR_CRON_TIME_1_2""$VAR_CRON_URL""$VAR_CRON_JOB_1""$VAR_CRON_END_1") | crontab - 
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1_1""$VAR_CRON_TIME_1_2""$VAR_CRON_URL""$VAR_CRON_JOB_1""$VAR_CRON_END_1") | crontab -
 		  fi
 
 		  if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
@@ -1249,8 +1265,8 @@ SubMenuCronJobs() {
 		  echo 'Disable Automatic System Maintenance...'
 		  echo "$xx"
 		  sleep 3
-		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2m") | crontab - 
-		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2u") | crontab - 
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2m") | crontab -
+		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2u") | crontab -
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
 		     echo "$rd""Automatic System Maintenance disabled""$xx"
 		  fi
@@ -1284,7 +1300,7 @@ SubMenuCronJobs() {
 		  fi
 
 		  if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
-		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_URL""$VAR_CRON_JOB_2m""$VAR_CRON_END_2") | crontab - 
+		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_URL""$VAR_CRON_JOB_2m""$VAR_CRON_END_2") | crontab -
 		  fi
 
 		  if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
@@ -1510,7 +1526,7 @@ SubMenuLicense() {
 	echo "║                                                                             ║"
 	echo "║                                 MIT License                                 ║"
 	echo "║                                                                             ║"
-	echo "║        https://github.com/notify-run/notify-run-rs/blob/main/LICENSE        ║"	
+	echo "║        https://github.com/notify-run/notify-run-rs/blob/main/LICENSE        ║"
 	echo "║                                                                             ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
@@ -2075,13 +2091,13 @@ SubMenuWaspCLI() {
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║                              1. Install/Prepare Wasp-CLI                    ║"
-	echo "║                              2. Run Wasp-CLI | alias: wasp-cli {commands}   ║"	
-	echo "║                              3. Login (Authenticate against a Wasp node)    ║"	
+	echo "║                              2. Run Wasp-CLI | alias: wasp-cli {commands}   ║"
+	echo "║                              3. Login (Authenticate against a Wasp node)    ║"
 	echo "║                              4. Initialize a new wallet                     ║"
-	echo "║                              5. Show the wallet address                     ║"	
-	echo "║                              6. Show the wallet balance                     ║"	
-	echo "║                              7. Show the committee peering info             ║"	
-	echo "║                              8. Help                                        ║"	
+	echo "║                              5. Show the wallet address                     ║"
+	echo "║                              6. Show the wallet balance                     ║"
+	echo "║                              7. Show the committee peering info             ║"
+	echo "║                              8. Help                                        ║"
 	echo "║                              9. Deinstall/Remove                            ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
@@ -2103,7 +2119,7 @@ SubMenuWaspCLI() {
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		     if  [ "$VAR_NETWORK" = 2 ]; then
 		        echo "$fl"; read -r -p 'Press [F] to enable Faucet... Press [ENTER] key to skip... ' F; echo "$xx"
-		        if  [ "$F" = 'f' ] && ! [ "$F" = 'F' ]; then 
+		        if  [ "$F" = 'f' ] && ! [ "$F" = 'F' ]; then
 	               fgrep -q "WASP_CLI_FAUCET_ADDRESS" .env || echo "WASP_CLI_FAUCET_ADDRESS=https://faucet.testnet.shimmer.network" >> .env
 		        fi
 		     fi
@@ -2315,11 +2331,11 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	sudo DEBIAN_FRONTEND=noninteractive apt update
-	sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
-	sudo DEBIAN_FRONTEND=noninteractive apt dist-upgrade -y
-	sudo DEBIAN_FRONTEND=noninteractive apt autoclean -y
-	sudo DEBIAN_FRONTEND=noninteractive apt autoremove -y
+	DEBIAN_FRONTEND=noninteractive sudo apt update
+	DEBIAN_FRONTEND=noninteractive sudo apt upgrade -y
+	DEBIAN_FRONTEND=noninteractive sudo apt dist-upgrade -y
+	DEBIAN_FRONTEND=noninteractive sudo apt autoclean -y
+	DEBIAN_FRONTEND=noninteractive sudo apt autoremove -y
 	if [ "$opt_mode" ]; then
 	  VAR_STATUS='system: update'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
@@ -2344,6 +2360,7 @@ SystemMaintenance() {
 	      cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .certificate' | base64 -d > "$HOST.crt"
 	      cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .key' | base64 -d > "$HOST.key"
 	      if [ -s "/var/lib/$NODE/data/letsencrypt/$HOST.crt" ]; then
+	        rm -rf "/etc/letsencrypt/live/$HOST/*"
 	        cp "/var/lib/$NODE/data/letsencrypt/$HOST.crt" "/etc/letsencrypt/live/$HOST/fullchain.pem"
 	        if [ -s "/var/lib/$NODE/data/letsencrypt/$HOST.key" ]; then
 	          cp "/var/lib/$NODE/data/letsencrypt/$HOST.key" "/etc/letsencrypt/live/$HOST/privkey.pem"
@@ -2400,7 +2417,7 @@ SystemMaintenance() {
 	echo "select menu item: "
 
 	if [ "$opt_mode" ]; then if ! [ "$opt_reboot" ]; then opt_reboot=0; fi; fi
-	if [ "$opt_reboot" = 1 ]; then n=1; else if [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi; fi
+	if [ "$opt_reboot" = 1 ]; then n=1; elif [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi
 
 	if [ "$opt_mode" ]; then if [ "$opt_reboot" = 1 ]; then
 	  VAR_STATUS='system: reboot'
@@ -2437,36 +2454,30 @@ Docker() {
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║   Update and install packages to allow apt to use a repository over HTTPS   ║"
+	echo "║                            Prepare docker engine                            ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get update
+	DEBIAN_FRONTEND=noninteractive sudo apt-get update
 
-	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install \
-		ca-certificates \
-		curl \
-		gnupg \
-		lsb-release
+	if [ "$VAR_DISTRIBUTION" = 'Ubuntu' ]; then
+		DEBIAN_FRONTEND=noninteractive sudo apt-get install ca-certificates curl gnupg lsb-release
+		DEBIAN_FRONTEND=noninteractive sudo mkdir -p /etc/apt/keyrings
+		DEBIAN_FRONTEND=noninteractive sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg
+		echo \
+			"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+			$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	fi
 
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                        Add dockers official GPG key                         ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	sudo mkdir -p /etc/apt/keyrings
-	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg
-
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                          Now set up the repository                          ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	echo \
-	"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-	$(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	if [ "$VAR_DISTRIBUTION" = 'Debian' ]; then
+		DEBIAN_FRONTEND=noninteractive sudo apt-get install ca-certificates curl
+		DEBIAN_FRONTEND=noninteractive sudo install -m 0755 -d /etc/apt/keyrings
+		DEBIAN_FRONTEND=noninteractive sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+		DEBIAN_FRONTEND=noninteractive sudo chmod a+r /etc/apt/keyrings/docker.asc
+		echo \
+			"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+			$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -2474,8 +2485,8 @@ Docker() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get update
-	sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
+	DEBIAN_FRONTEND=noninteractive sudo apt-get update
+	DEBIAN_FRONTEND=noninteractive sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-compose -y
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
@@ -2771,7 +2782,7 @@ IotaHornet() {
 	echo ""
 
 	docker network create iota >/dev/null 2>&1
-	docker compose pull 2>&1 | grep -v "Pulling" | sort
+	docker compose pull 2>&1 | grep "Pulled" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -2784,7 +2795,7 @@ IotaHornet() {
 		echo ""
 
 		if [ -n "$VAR_PASSWORD" ]; then
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		fi
@@ -3137,7 +3148,7 @@ IotaWasp() {
 
 			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
 			if [ -n "$VAR_PASSWORD" ]; then
-			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 
 			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
@@ -3163,7 +3174,7 @@ IotaWasp() {
 	echo ""
 
 	docker network create iota >/dev/null 2>&1
-	docker compose pull 2>&1 | grep -v "Pulling" | sort
+	docker compose pull 2>&1 | grep "Pulled" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3177,7 +3188,7 @@ IotaWasp() {
 
 		if [ -n "$VAR_PASSWORD" ]; then
 		  if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || VAR_PASSWORD=''; fi
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
@@ -3558,7 +3569,7 @@ ShimmerHornet() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull 2>&1 | grep -v "Pulling" | sort
+	docker compose pull 2>&1 | grep "Pulled" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3571,7 +3582,7 @@ ShimmerHornet() {
 		echo ""
 
 		if [ -n "$VAR_PASSWORD" ]; then
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		fi
@@ -3924,7 +3935,7 @@ ShimmerWasp() {
 
 			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
 			if [ -n "$VAR_PASSWORD" ]; then
-			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 
 			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
@@ -3950,7 +3961,7 @@ ShimmerWasp() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull 2>&1 | grep -v "Pulling" | sort
+	docker compose pull 2>&1 | grep "Pulled" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3964,7 +3975,7 @@ ShimmerWasp() {
 
 		if [ -n "$VAR_PASSWORD" ]; then
 		  if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g')
+		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
@@ -4284,7 +4295,7 @@ ShimmerChronicle() {
 	echo ""
 
 	docker network create shimmer >/dev/null 2>&1
-	docker compose pull 2>&1 | grep -v "Pulling" | sort
+	docker compose pull 2>&1 | grep "Pulled" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4425,6 +4436,7 @@ RenameContainer() {
 
 clear
 
+CheckDistribution
 PositionVersion "$VRSN"
 VAR_VRN=$text
 
@@ -4450,27 +4462,26 @@ echo "╚═══════════════════════�
 echo ""
 echo "> $gn""Checking Hash of Installer successful...""$xx"
 echo "> $gn""$InstallerHash""$xx"
+echo "  $gr""$VAR_DISTRIBUTION | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
-sudo apt update >/dev/null 2>&1
-sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+
 sleep 1
 
 if [ "$opt_check" = 1 ]; then
-	CheckFirewall;
-	CheckAutostart;
+	CheckFirewall
+	CheckAutostart
 fi
 
-docker --version | grep "Docker version" >/dev/null 2>&1
-if [ $? -eq 0 ]
-	then
+if docker --version | grep "Docker version" >/dev/null 2>&1; then
+    Dashboard
+else
+    if [ "$opt_mode" ]; then
+        echo "Unattended: Install Docker..."
+        Docker
         Dashboard
-	else
-        if [ "$opt_mode" ]; then
-			echo "$ca""unattended: Install Docker...""$xx"
-			Docker
-			Dashboard
-		else
-			MainMenu
-		fi
-	fi
+    else
+        MainMenu
+    fi
 fi

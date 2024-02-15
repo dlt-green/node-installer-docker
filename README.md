@@ -11,13 +11,13 @@ DLT.GREEN Node-Installer-Docker is a script for installing IOTA/Shimmer Nodes (H
  - 8 GB RAM 
  - 4 CPU Kerne
  - 160 GB Speicher (SSD)
- - Ubuntu 22.04 LTS
+ - Ubuntu 22.04.03 LTS (Jammy Jellyfish) or Debian 12 (bookworm)
 
 ### Minimum recommendation for nodes that also want to track events (staking, voting, etc.) or want to load additional plugins
  - 16 GB RAM 
  - 4+ CPU Kerne 
  - 250+ GB Speicher (SSD)
- - Ubuntu 22.04 LTS
+ - Ubuntu 22.04.03 LTS (Jammy Jellyfish) or Debian 12 (bookworm)
 
 # Installation
 ### Important
