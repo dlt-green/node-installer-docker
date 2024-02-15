@@ -25,7 +25,7 @@ jobs:
           tagName=${branchName##*/}
           echo "value=$tagName" >> $GITHUB_OUTPUT
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.CI_TOKEN }}
 
@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.ref_type == 'branch' && contains(github.event.ref, 'feature/') }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.CI_TOKEN }}
 

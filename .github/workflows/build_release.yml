@@ -14,7 +14,7 @@ jobs:
     name: Build release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.ref }}
           token: ${{ secrets.CI_TOKEN }}
@@ -59,7 +59,7 @@ jobs:
           # generate installer checksum.txt          
           shasum -a 256 ./node-installer.sh | cut -d ' ' -f 1 > ./build/checksum.txt
 
-      - uses: xresloader/upload-to-github-release@v1
+      - uses: xresloader/upload-to-github-release@v1.4.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -162,7 +162,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set commit status
-        uses: myrotvorets/set-commit-status-action@1.1.5
+        uses: myrotvorets/set-commit-status-action@v2.0.0
         if: always()
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.0.0"
-BUILD="20240214_204253"
+VRSN="v.4.0.1"
+BUILD="20240215_190331"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -133,19 +133,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='fcd5efe2e0ea2a10812bab4d1f508be49050c9c51787f4ad11757a73ea095a68'
+IotaHornetHash='7d341325706df8096b12068e372f28be15f9185a1a930418ded85bd4f23a45e8'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='fd8b1a1f2e725d1d714ae64fb972014c75c3ab87b85ddfb445e4be47172e5ae0'
+IotaWaspHash='c14475d8367d737a6452ff109cd822e39f94b8de5a0e517740a4558ecb61fc45'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='1d968d205d9dc76edb917dc94ea0e6287e2a3346bf4fa20f325a257e5cabb2d0'
+ShimmerHornetHash='4bb62666cfa5504277beea58cdeb6df13c9236bfaac218c523b334e1c703211b'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='a52c344f7d641ac4255546b3d2ef28f01b5a337e14871fc0e37285fe768c2bf5'
+ShimmerWaspHash='1ca04596aac76affaadc97df2e164b84b4adebc70f1bcf625c9ecf95e2a913ea'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='7785917eeade5c5e649f40211eb6d668e8d8fc8ce4661ec638266510eb93a013'
+ShimmerChronicleHash='95b605f8903c34a8b61b7780ec69c2143349ad55dae554c8a3268fe5cc441af1'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -811,6 +811,7 @@ SetCertificateGlobal() {
 	   cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$VAR_HOST"'") | .key' | base64 -d > "$VAR_HOST.key"
 
 	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" ]; then
+	     rm -rf "/etc/letsencrypt/live/$VAR_HOST/*"
 	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
 	   fi
 	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" ]; then
@@ -876,6 +877,8 @@ Dashboard() {
 
 	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ];  then cja=$gn; else cja=$rd; fi
 	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ];  then cjb=$gn; else cjb=$rd; fi
+
+	if [ "$opt_mode" ]; then VAR_STATUS="installer: $VRSN"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 
 	PositionCenter "$VAR_DOMAIN"
 	VAR_DOMAIN=$text
@@ -2357,6 +2360,7 @@ SystemMaintenance() {
 	      cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .certificate' | base64 -d > "$HOST.crt"
 	      cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .key' | base64 -d > "$HOST.key"
 	      if [ -s "/var/lib/$NODE/data/letsencrypt/$HOST.crt" ]; then
+	        rm -rf "/etc/letsencrypt/live/$HOST/*"
 	        cp "/var/lib/$NODE/data/letsencrypt/$HOST.crt" "/etc/letsencrypt/live/$HOST/fullchain.pem"
 	        if [ -s "/var/lib/$NODE/data/letsencrypt/$HOST.key" ]; then
 	          cp "/var/lib/$NODE/data/letsencrypt/$HOST.key" "/etc/letsencrypt/live/$HOST/privkey.pem"
@@ -4398,6 +4402,7 @@ echo "  $gr""$VAR_DISTRIBUTION | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_re
 
 DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
 DEBIAN_FRONTEND=noninteractive sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+
 sleep 1
 
 if [ "$opt_check" = 1 ]; then
