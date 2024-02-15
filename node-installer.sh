@@ -878,6 +878,8 @@ Dashboard() {
 	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ];  then cja=$gn; else cja=$rd; fi
 	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ];  then cjb=$gn; else cjb=$rd; fi
 
+	if [ "$opt_mode" ]; then VAR_STATUS="installer: $VRSN"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+
 	PositionCenter "$VAR_DOMAIN"
 	VAR_DOMAIN=$text
 
@@ -887,9 +889,6 @@ Dashboard() {
 	elif [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then ix=$rd; else ix=$gr; fi
 
 	clear
-
-	if [ "$opt_mode" ]; then VAR_STATUS="installer: $VRSN"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
