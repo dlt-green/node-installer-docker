@@ -811,6 +811,7 @@ SetCertificateGlobal() {
 	   cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$VAR_HOST"'") | .key' | base64 -d > "$VAR_HOST.key"
 
 	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" ]; then
+	     rm -rf "/etc/letsencrypt/live/$VAR_HOST/*"
 	     cp "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.crt" "/etc/letsencrypt/live/$VAR_HOST/fullchain.pem"
 	   fi
 	   if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/$VAR_HOST.key" ]; then
@@ -2359,7 +2360,7 @@ SystemMaintenance() {
 	      cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .certificate' | base64 -d > "$HOST.crt"
 	      cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .key' | base64 -d > "$HOST.key"
 	      if [ -s "/var/lib/$NODE/data/letsencrypt/$HOST.crt" ]; then
-	        rm -r "/etc/letsencrypt/live/$HOST/*"
+	        rm -rf "/etc/letsencrypt/live/$HOST/*"
 	        cp "/var/lib/$NODE/data/letsencrypt/$HOST.crt" "/etc/letsencrypt/live/$HOST/fullchain.pem"
 	        if [ -s "/var/lib/$NODE/data/letsencrypt/$HOST.key" ]; then
 	          cp "/var/lib/$NODE/data/letsencrypt/$HOST.key" "/etc/letsencrypt/live/$HOST/privkey.pem"
