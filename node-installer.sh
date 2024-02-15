@@ -2357,6 +2357,7 @@ SystemMaintenance() {
 	      cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .certificate' | base64 -d > "$HOST.crt"
 	      cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .key' | base64 -d > "$HOST.key"
 	      if [ -s "/var/lib/$NODE/data/letsencrypt/$HOST.crt" ]; then
+	        rm -r "/etc/letsencrypt/live/$HOST/*"
 	        cp "/var/lib/$NODE/data/letsencrypt/$HOST.crt" "/etc/letsencrypt/live/$HOST/fullchain.pem"
 	        if [ -s "/var/lib/$NODE/data/letsencrypt/$HOST.key" ]; then
 	          cp "/var/lib/$NODE/data/letsencrypt/$HOST.key" "/etc/letsencrypt/live/$HOST/privkey.pem"
