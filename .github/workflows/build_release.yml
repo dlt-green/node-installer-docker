@@ -162,7 +162,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set commit status
-        uses: myrotvorets/set-commit-status-action@2.0.0
+        uses: myrotvorets/set-commit-status-action@v2.0.0
         if: always()
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
