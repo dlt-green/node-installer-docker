@@ -37,16 +37,23 @@ create_docker_network "shimmer"
 extract_file_from_image "iotaledger/iota-core" "${IOTA_CORE_VERSION}" "/app/${configFilenameInContainer}" "${configPath}"
 
 echo "Adapting config with values from .env..."
-#set_config "${configPath}" ".node.alias"                      "\"${IOTA_CORE_NODE_ALIAS:-IOTA-CORE node}\""
-set_config "${configPath}" ".p2p.db.path"                     "\"/app/p2pstore\""
-set_config "${configPath}" ".restAPI.jwtAuth.salt"            "\"${RESTAPI_SALT:-$(generate_random_string 80)}\"" "secret"
-set_config "${configPath}" ".db.path"                         "\"/app/storage\""
-set_config "${configPath}" ".db.pruning.size.targetSize"      "\"${IOTA_CORE_PRUNING_TARGET_SIZE:-64GB}\""
-set_config "${configPath}" ".protocol.snapshot.path"          "\"/app/snapshots/snapshot.bin\""
-set_config "${configPath}" ".protocol.protocolParametersPath" "\"/app/protocol_parameters.json\""
-set_config "${configPath}" ".inx.enabled"                     "true"
-set_config "${configPath}" ".inx.bindAddress"                 "\"0.0.0.0:9029\""
+set_config "${configPath}" ".p2p.db.path"                          "\"/app/p2pstore\""
 
+set_config "${configPath}" ".restAPI.jwtAuth.salt"                 "\"${RESTAPI_SALT:-$(generate_random_string 80)}\"" "secret"
+set_config "${configPath}" ".db.path"                              "\"/app/storage\""
+set_config "${configPath}" ".db.pruning.size.targetSize"           "\"${IOTA_CORE_PRUNING_TARGET_SIZE:-64GB}\""
+set_config "${configPath}" ".protocol.snapshot.path"               "\"/app/snapshots/snapshot.bin\""
+set_config "${configPath}" ".protocol.protocolParametersPath"      "\"/app/protocol_parameters.json\""
+set_config "${configPath}" ".inx.enabled"                          "true"
+set_config "${configPath}" ".inx.bindAddress"                      "\"0.0.0.0:9029\""
+
+set_config "${configPath}" ".p2p.autopeering.enabled"              "true"
+set_config "${configPath}" ".p2p.autopeering.bindAddress"          "\"0.0.0.0:14626\""
+set_config "${configPath}" ".p2p.autopeering.entryNodesPreferIPv6" "false"
+set_config "${configPath}" ".p2p.autopeering.runAsEntryNode"       "${IOTA_CORE_RUN_AS_ENTRY_NODE:-false}"
+if [ ! -z "${IOTA_CORE_ENTRY_NODE}" ]; then
+  set_config "${configPath}" ".p2p.autopeering.entryNodes"         "\"${IOTA_CORE_ENTRY_NODE}\""
+fi
 
 rm -f "${tmp}"
 
