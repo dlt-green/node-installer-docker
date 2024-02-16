@@ -3449,30 +3449,6 @@ ShimmerCore() {
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
-		clear
-		echo ""
-		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-		echo "║                              Download Snapshot                              ║"
-		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-
-		echo "$ca"
-		echo 'Please wait, downloading snapshots may take some time...'
-		echo "$xx"
-
-		echo "Download latest full snapshot... $VAR_SHIMMER_CORE_NETWORK"
-		VAR_SNAPSHOT=$(cat /var/lib/"$VAR_DIR"/data/config/config-"$VAR_SHIMMER_CORE_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].full')
-		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/full_snapshot.bin
-		chmod 744 /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/full_snapshot.bin
-
-		echo ""
-
-		echo "Download latest delta snapshot... $VAR_SHIMMER_CORE_NETWORK"
-		VAR_SNAPSHOT=$(cat /var/lib/"$VAR_DIR"/data/config/config-"$VAR_SHIMMER_CORE_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].delta')
-		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/"$VAR_DIR"//data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/delta_snapshot.bin
-		chmod 744 /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/delta_snapshot.bin
-
-		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
-
 	fi
 
 	clear
