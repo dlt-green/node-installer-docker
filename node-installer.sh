@@ -853,7 +853,7 @@ Dashboard() {
 	if [ -f "/var/lib/shimmer-core/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-core/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/shimmer-core/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
-	  VAR_SHIMMER_HORNET_NETWORK=$(cat "/var/lib/shimmer-core/.env" | grep HORNET_NETWORK | cut -d '=' -f 2)
+	  VAR_SHIMMER_HORNET_NETWORK=$(cat "/var/lib/shimmer-core/.env" | grep IOTA_CORE_NETWORK | cut -d '=' -f 2)
 	  if [ -z "$VAR_PORT" ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	else
 	  VAR_SHIMMER_HORNET_NETWORK='mainnet'
