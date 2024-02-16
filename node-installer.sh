@@ -704,7 +704,7 @@ CheckEventsShimmer() {
 	cd /var/lib/$VAR_DIR >/dev/null 2>&1 || Dashboard;
 
 	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
-	if [ -z "$VAR_RESTAPI_SALT" ]; then echo "$rd""Shimmer-Hornet: No Salt found!""$xx"
+	if [ -z "$VAR_RESTAPI_SALT" ]; then echo "$rd""Shimmer-Core: No Salt found!""$xx"
 	else
 	   echo "Event IDs can be found at:"
 	   echo "'https://github.com/iota-community/Shimmer-governance-participation-events'"
@@ -853,10 +853,10 @@ Dashboard() {
 	if [ -f "/var/lib/shimmer-core/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-core/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/shimmer-core/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
-	  VAR_SHIMMER_HORNET_NETWORK=$(cat "/var/lib/shimmer-core/.env" | grep IOTA_CORE_NETWORK | cut -d '=' -f 2)
+	  VAR_SHIMMER_CORE_NETWORK=$(cat "/var/lib/shimmer-core/.env" | grep IOTA_CORE_NETWORK | cut -d '=' -f 2)
 	  if [ -z "$VAR_PORT" ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	else
-	  VAR_SHIMMER_HORNET_NETWORK='mainnet'
+	  VAR_SHIMMER_CORE_NETWORK='mainnet'
 	fi
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-core ]; then sh=$rd; else sh=$gr; fi
 
@@ -897,7 +897,7 @@ Dashboard() {
 	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│   ""$ic""WASP-CLI""$xx""   │ │4│      -       │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
-	echo "║           ┌──────────────────┬ Shimmer ""$(echo "$VAR_SHIMMER_HORNET_NETWORK" | sed 's/.*/\u&/')"" ┬──────────────────┐         ║"
+	echo "║           ┌────────────────┬ Shimmer 2.0 ""$(echo "$VAR_SHIMMER_CORE_NETWORK" | sed 's/.*/\u&/')"" ┬────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
 	echo "║ │5│     ""$sh""HORNET""$xx""     │6│      ""$sw""WASP""$xx""      │7│   ""$sc""WASP-CLI""$xx""   │ │8│    ""$ix""PLUGINS""$xx""   │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
@@ -936,7 +936,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 5 ]; then
 	  echo "$ca""unattended: Update Shimmer-Hornet...""$xx"
-	  VAR_STATUS="shimmer-core $VAR_SHIMMER_HORNET_NETWORK: update v.$VAR_SHIMMER_CORE_VERSION"
+	  VAR_STATUS="shimmer-core $VAR_SHIMMER_CORE_NETWORK: update v.$VAR_SHIMMER_CORE_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='5'
@@ -986,7 +986,7 @@ Dashboard() {
 	           CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; fi
 			   NETWORK='';
 	           if [ "$NODE" = 'iota-hornet' ]; then NETWORK=" $VAR_IOTA_HORNET_NETWORK"; fi
-	           if [ "$NODE" = 'shimmer-core' ]; then NETWORK=" $VAR_SHIMMER_HORNET_NETWORK"; fi
+	           if [ "$NODE" = 'shimmer-core' ]; then NETWORK=" $VAR_SHIMMER_CORE_NETWORK"; fi
 	           docker compose up -d
 	           sleep 30
 	           VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
@@ -1008,8 +1008,8 @@ Dashboard() {
 	             if [ "$NODE" = 'shimmer-core' ]; then
 	               VAR_STATUS="$NODE$NETWORK: reset database"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
-	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_CORE_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/*
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
@@ -1710,7 +1710,7 @@ SubMenuMaintenance() {
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_CORE_NETWORK/*
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
@@ -1775,20 +1775,20 @@ SubMenuMaintenance() {
 	   fi
 
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_SHIMMER_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_CORE_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_SHIMMER_CORE_NETWORK/*
 
-	      echo "Download latest full snapshot... $VAR_SHIMMER_HORNET_NETWORK"
-	      VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_SHIMMER_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].full')
-	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/full_snapshot.bin
-	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/full_snapshot.bin
+	      echo "Download latest full snapshot... $VAR_SHIMMER_CORE_NETWORK"
+	      VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_SHIMMER_CORE_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].full')
+	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/full_snapshot.bin
+	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/full_snapshot.bin
 
 	      echo ""
 
-	      echo "Download latest delta snapshot... $VAR_SHIMMER_HORNET_NETWORK"
-	      VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_SHIMMER_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].delta')
-	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR//data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
-	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
+	      echo "Download latest delta snapshot... $VAR_SHIMMER_CORE_NETWORK"
+	      VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_SHIMMER_CORE_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].delta')
+	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR//data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/delta_snapshot.bin
+	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/delta_snapshot.bin
 	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2032,7 +2032,7 @@ SubMenuConfiguration() {
 		  fi
 		  if  [ "$K" = 'M' ] || [ "$K" = 'T' ]; then
 		     ./prepare_docker.sh >/dev/null 2>&1
-			 VAR_SHIMMER_HORNET_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
+			 VAR_SHIMMER_CORE_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
 	         if  [ "$K" = 'M' ]; then echo "$gn""Mainnet of your Node successfully enabled""$xx"; else echo "$gn""Testnet of your Node successfully enabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
