@@ -219,7 +219,7 @@ services:
     image: iotaledger/inx-validator:${INX_VALIDATOR_VERSION:?INX_VALIDATOR_VERSION is missing}
     container_name: shimmer-iota-core.inx-validator
     stop_grace_period: 1m
-    restart: no
+    restart: unless-stopped
     depends_on:
       iota-core:
         condition: service_started

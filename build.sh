@@ -49,7 +49,7 @@ build_node () {
   # verify package content
   verify_package_content "${sourceDir}" "${BUILD_DIR}/${node}"
 
-  find ${BUILD_DIR}/${node} -type f -exec sed -i 's/\r//' {} \;
+  find ${BUILD_DIR}/${node} -type f ! -name '*.snapshot' -exec sed -i 's/\r//' {} \;
   (cd ${BUILD_DIR}/${node}; tar -pcz -f ../${node}.tar.gz *)
   rm -Rf ${BUILD_DIR}/${node}
 
