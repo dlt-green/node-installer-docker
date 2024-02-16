@@ -3360,7 +3360,7 @@ ShimmerCore() {
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
 		echo "IOTA_CORE_AUTOPEERING_PORT=14626" >> .env
 		echo "IOTA_CORE_RUN_AS_ENTRY_NODE=false" >> .env
-		echo "IOTA_CORE_ENTRY_NODE=false" >> .env
+		echo "IOTA_CORE_ENTRY_NODE=" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
