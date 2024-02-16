@@ -4196,7 +4196,7 @@ RenameContainer() {
 	docker container rename iota-hornet_grafana_1 grafana >/dev/null 2>&1
 	docker container rename iota-hornet_prometheus_1 prometheus >/dev/null 2>&1
 
-	docker container rename shimmer-core shimmer-core >/dev/null 2>&1
+	docker container rename shimmer-iota-core shimmer-core >/dev/null 2>&1
 	docker container rename shimmer-iota-core.traefik shimmer-core.traefik >/dev/null 2>&1
 	docker container rename shimmer-iota-core.inx-blockissuer shimmer-core.inx-blockissuer >/dev/null 2>&1
 	docker container rename shimmer-iota-core.inx-indexer shimmer-core.inx-indexer >/dev/null 2>&1
