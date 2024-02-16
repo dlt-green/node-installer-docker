@@ -1061,7 +1061,7 @@ Dashboard() {
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   DashboardHelper ;;
 	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-core'
-	   if [ "$opt_mode" ]; then ShimmerHornet; clear; exit; else SubMenuMaintenance; fi ;;
+	   if [ "$opt_mode" ]; then ShimmerCore; clear; exit; else SubMenuMaintenance; fi ;;
 	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-wasp'
 	   if [ "$opt_mode" ]; then ShimmerWasp; clear; exit; else SubMenuMaintenance; fi ;;
 	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='shimmer-wasp'
@@ -1622,7 +1622,7 @@ SubMenuMaintenance() {
 	case $n in
 	1) if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then IotaHornet; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then IotaWasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then ShimmerHornet; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then ShimmerCore; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then ShimmerWasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then ShimmerChronicle; fi
 	   ;;
