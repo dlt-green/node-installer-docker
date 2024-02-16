@@ -4196,12 +4196,12 @@ RenameContainer() {
 	docker container rename iota-hornet_grafana_1 grafana >/dev/null 2>&1
 	docker container rename iota-hornet_prometheus_1 prometheus >/dev/null 2>&1
 
-	docker container rename shimmer-iota-core_1 shimmer-core >/dev/null 2>&1
-	docker container rename shimmer-iota-core_traefik_1 shimmer-core.traefik >/dev/null 2>&1
-	docker container rename shimmer-iota-core_inx-blockissuer_1 shimmer-core.inx-blockissuer >/dev/null 2>&1
-	docker container rename shimmer-iota-core_inx-indexer_1 shimmer-core.inx-indexer >/dev/null 2>&1
-	docker container rename shimmer-iota-core_inx-validator_1 shimmer-core.inx-validator >/dev/null 2>&1
-	docker container rename shimmer-iota-core_inx-mqtt_1 shimmer-core.inx-mqtt >/dev/null 2>&1
+	docker container rename shimmer-iota-core shimmer-core >/dev/null 2>&1
+	docker container rename shimmer-iota-core_traefik shimmer-core.traefik >/dev/null 2>&1
+	docker container rename shimmer-iota-core_inx-blockissuer shimmer-core.inx-blockissuer >/dev/null 2>&1
+	docker container rename shimmer-iota-core_inx-indexer shimmer-core.inx-indexer >/dev/null 2>&1
+	docker container rename shimmer-iota-core_inx-validator shimmer-core.inx-validator >/dev/null 2>&1
+	docker container rename shimmer-iota-core_inx-mqtt shimmer-core.inx-mqtt >/dev/null 2>&1
 	docker container rename shimmer-wasp_traefik_1 shimmer-wasp.traefik >/dev/null 2>&1
 	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
 
