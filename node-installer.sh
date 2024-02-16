@@ -494,7 +494,7 @@ CheckNodeHealthy() {
 	1) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
 	2) VAR_API="info"; OBJ=".Version" ;;
 	3) VAR_API="info"; OBJ=".tangleTime.synced" ;;
-	5) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
+	5) VAR_API="api/core/v3/info"; OBJ=".status.isHealthy" ;;
 	6) VAR_API="v1/node/version"; OBJ=".version" ;;
 	*) ;;
 	esac
