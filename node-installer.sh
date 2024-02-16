@@ -70,7 +70,7 @@ fl='\033[1m'
 xx='\033[0m'
 
 opt_time=10
-opt_check=1
+opt_check=0
 opt_level='info'
 
 while getopts "m:t:r:c:l:" option
