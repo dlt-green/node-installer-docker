@@ -3360,7 +3360,7 @@ ShimmerCore() {
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
 		echo "IOTA_CORE_AUTOPEERING_PORT=14626" >> .env
 		echo "IOTA_CORE_RUN_AS_ENTRY_NODE=false" >> .env
-		echo "IOTA_CORE_ENTRY_NODE=" >> .env
+		echo "IOTA_CORE_ENTRY_NODE=\"\"" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
@@ -4196,12 +4196,12 @@ RenameContainer() {
 	docker container rename iota-hornet_grafana_1 grafana >/dev/null 2>&1
 	docker container rename iota-hornet_prometheus_1 prometheus >/dev/null 2>&1
 
-	docker container rename shimmer-core_hornet_1 shimmer-core >/dev/null 2>&1
-	docker container rename shimmer-core_traefik_1 shimmer-core.traefik >/dev/null 2>&1
-	docker container rename shimmer-core_inx-blockissuer_1 shimmer-core.inx-blockissuer >/dev/null 2>&1
-	docker container rename shimmer-core_inx-indexer_1 shimmer-core.inx-indexer >/dev/null 2>&1
-	docker container rename shimmer-core_inx-validator_1 shimmer-core.inx-validator >/dev/null 2>&1
-	docker container rename shimmer-core_inx-mqtt_1 shimmer-core.inx-mqtt >/dev/null 2>&1
+	docker container rename shimmer-iota-core_1 shimmer-core >/dev/null 2>&1
+	docker container rename shimmer-iota-core_traefik_1 shimmer-core.traefik >/dev/null 2>&1
+	docker container rename shimmer-iota-core_inx-blockissuer_1 shimmer-core.inx-blockissuer >/dev/null 2>&1
+	docker container rename shimmer-iota-core_inx-indexer_1 shimmer-core.inx-indexer >/dev/null 2>&1
+	docker container rename shimmer-iota-core_inx-validator_1 shimmer-core.inx-validator >/dev/null 2>&1
+	docker container rename shimmer-iota-core_inx-mqtt_1 shimmer-core.inx-mqtt >/dev/null 2>&1
 	docker container rename shimmer-wasp_traefik_1 shimmer-wasp.traefik >/dev/null 2>&1
 	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
 
