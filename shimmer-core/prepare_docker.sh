@@ -47,6 +47,7 @@ set_config "${configPath}" ".protocol.protocolParametersPath"      "\"/app/proto
 set_config "${configPath}" ".inx.enabled"                          "true"
 set_config "${configPath}" ".inx.bindAddress"                      "\"0.0.0.0:9029\""
 
+set_array_config "${configPath}" ".p2p.peers"                      "\"${IOTA_CORE_ENTRY_NODE}\"" ","
 set_config "${configPath}" ".p2p.autopeering.enabled"              "true"
 set_config "${configPath}" ".p2p.autopeering.bindAddress"          "\"0.0.0.0:${IOTA_CORE_AUTOPEERING_PORT:-14626}\""
 set_config "${configPath}" ".p2p.autopeering.entryNodesPreferIPv6" "false"
