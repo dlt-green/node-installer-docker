@@ -3358,7 +3358,6 @@ ShimmerCore() {
 		echo "IOTA_CORE_HOST=$VAR_HOST" >> .env
 		echo "IOTA_CORE_HTTPS_PORT=$VAR_SHIMMER_CORE_HTTPS_PORT" >> .env
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
-		echo "IOTA_CORE_AUTOPEERING_PORT=14626" >> .env
 		echo "IOTA_CORE_RUN_AS_ENTRY_NODE=false" >> .env
 		echo "IOTA_CORE_ENTRY_NODE=\"/dns/iota-core-testnet.dlt.green/tcp/15600/p2p/12D3KooWLPWi29KgYxCrYudVjkVRyfQXDLskb3JQgy5wUf8zzwB9\"" >> .env
 
@@ -3445,7 +3444,6 @@ ShimmerCore() {
 
 		echo ufw allow "$VAR_SHIMMER_CORE_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_CORE_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
-		echo ufw allow '14626/udp' && ufw allow '14626/udp'
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
