@@ -74,7 +74,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "500m"
+        max-size: "20m"
 
   ##################################################################
   #  Reverse Proxy and SSL                                         #
@@ -116,7 +116,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "200m"
+        max-size: "10m"
 
   ##################################################################
   #  Monitoring                                                    #
@@ -139,6 +139,10 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
     profiles:
       - monitoring
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
 
   grafana:
     image: grafana/grafana:9.5.6
@@ -162,6 +166,10 @@ services:
       - ${IOTA_CORE_DATA_DIR:-./data}/grafana:/var/lib/grafana
     profiles:
       - monitoring
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
 
   ##################################################################
   #  INX Extensions                                                #
@@ -182,6 +190,10 @@ services:
     command:
       - "--inx.address=iota-core:9029"
       - "--restAPI.bindAddress=inx-indexer:9091"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
 
   inx-mqtt:
     image: iotaledger/inx-mqtt:${INX_MQTT_VERSION:?INX_MQTT_VERSION is missing}
@@ -196,6 +208,10 @@ services:
     command:
       - "--inx.address=iota-core:9029"
       - "--mqtt.websocket.bindAddress=inx-mqtt:1888"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
 
   inx-blockissuer:
     image: iotaledger/inx-blockissuer:${INX_BLOCKISSUER_VERSION:?INX_BLOCKISSUER_VERSION is missing}
@@ -214,6 +230,10 @@ services:
       --restAPI.bindAddress=inx-blockissuer:9086
       --blockIssuer.accountAddress=rms1prkursay9fs2qjmfctamd6yxg9x8r3ry47786x0mvwek4qr9xd9d5c6gkun
       --blockIssuer.proofOfWork.targetTrailingZeros=5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
 
   inx-validator:
     image: iotaledger/inx-validator:${INX_VALIDATOR_VERSION:?INX_VALIDATOR_VERSION is missing}
@@ -231,6 +251,10 @@ services:
       --validator.ignoreBootstrapped=true
       --validator.accountAddress=rms1pzg8cqhfxqhq7pt37y8cs4v5u4kcc48lquy2k73ehsdhf5ukhya3y5rx2w6
       --validator.issueCandidacyPayload=${ISSUE_CANDIDACY_PAYLOAD_V1:-true}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
 
 networks:
   default:
