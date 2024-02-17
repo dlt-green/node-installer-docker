@@ -32,6 +32,9 @@ prepare_data_dir "${dataDir}" \
                  "letsencrypt"
 
 # create empty peering json if it does not exist yet
+if [ -d "${dataDir}/config/peering-${IOTA_CORE_NETWORK:-mainnet}.json" ]; then
+  rm -rf "${dataDir}/config/peering-${IOTA_CORE_NETWORK:-mainnet}.json"
+fi
 if [ ! -f "${dataDir}/config/peering-${IOTA_CORE_NETWORK:-mainnet}.json" ]; then
   echo "{\"peers\": []}" > "${dataDir}/config/peering-${IOTA_CORE_NETWORK:-mainnet}.json"
 fi
