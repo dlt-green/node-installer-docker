@@ -47,14 +47,15 @@ set_config "${configPath}" ".protocol.protocolParametersPath"      "\"/app/proto
 set_config "${configPath}" ".inx.enabled"                          "true"
 set_config "${configPath}" ".inx.bindAddress"                      "\"0.0.0.0:9029\""
 
-set_array_config "${configPath}" ".p2p.peers"                      "\"${IOTA_CORE_ENTRY_NODE}\"" ","
-set_config "${configPath}" ".p2p.autopeering.enabled"              "true"
-set_config "${configPath}" ".p2p.autopeering.bindAddress"          "\"0.0.0.0:${IOTA_CORE_AUTOPEERING_PORT:-14626}\""
-set_config "${configPath}" ".p2p.autopeering.entryNodesPreferIPv6" "false"
-set_config "${configPath}" ".p2p.autopeering.runAsEntryNode"       "${IOTA_CORE_RUN_AS_ENTRY_NODE:-false}"
-if [ ! -z "${IOTA_CORE_ENTRY_NODE}" ]; then
-  set_config "${configPath}" ".p2p.autopeering.entryNodes"         "\"${IOTA_CORE_ENTRY_NODE}\""
-fi
+#set_array_config "${configPath}" ".p2p.peers"                      "\"${IOTA_CORE_ENTRY_NODE}\"" ","
+#set_config "${configPath}" ".p2p.peers"                      "\"${IOTA_CORE_ENTRY_NODE}\""
+#set_config "${configPath}" ".p2p.autopeering.enabled"              "true"
+#set_config "${configPath}" ".p2p.autopeering.bindAddress"          "\"0.0.0.0:${IOTA_CORE_AUTOPEERING_PORT:-14626}\""
+#set_config "${configPath}" ".p2p.autopeering.entryNodesPreferIPv6" "false"
+#set_config "${configPath}" ".p2p.autopeering.runAsEntryNode"       "${IOTA_CORE_RUN_AS_ENTRY_NODE:-false}"
+#if [ ! -z "${IOTA_CORE_ENTRY_NODE}" ]; then
+#  set_config "${configPath}" ".p2p.autopeering.entryNodes"         "\"${IOTA_CORE_ENTRY_NODE}\""
+#fi
 set_array_config "${configPath}" ".p2p.bindMultiAddresses"         "\"/ip4/0.0.0.0/tcp/${IOTA_CORE_GOSSIP_PORT:-15600}\",\"/ip6/::/tcp/${IOTA_CORE_GOSSIP_PORT:-15600}\"" ","
 
 rm -f "${tmp}"

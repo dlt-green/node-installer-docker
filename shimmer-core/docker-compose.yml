@@ -59,6 +59,7 @@ services:
       - ALL
     command:
       - "--config=/app/config/config.json"
+      - "--p2p.peers=${IOTA_CORE_ENTRY_NODE}"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "${IOTA_CORE_DATA_DIR:-./data}/config/config-${IOTA_CORE_NETWORK:-mainnet}.json:/app/config/config.json:ro"
