@@ -58,11 +58,12 @@ services:
     cap_drop:
       - ALL
     command:
-      - "--config=/app/config/config.json"
+      - "--config=/app/config.json"
       - "--p2p.peers=${IOTA_CORE_ENTRY_NODE}"
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
-      - "${IOTA_CORE_DATA_DIR:-./data}/config/config-${IOTA_CORE_NETWORK:-mainnet}.json:/app/config/config.json:ro"
+      - "${IOTA_CORE_DATA_DIR:-./data}/config/config-${IOTA_CORE_NETWORK:-mainnet}.json:/app/config.json:ro"
+      - "${IOTA_CORE_DATA_DIR:-./data}/config/peering-${IOTA_CORE_NETWORK:-mainnet}.json:/app/peering.json:ro"
       - "${IOTA_CORE_DATA_DIR:-./data}/storage/${IOTA_CORE_NETWORK:-mainnet}:/app/storage"
 #      - "${IOTA_CORE_DATA_DIR:-./data}/snapshots/${IOTA_CORE_NETWORK:-mainnet}:/app/snapshots"
       - "${IOTA_CORE_DATA_DIR:-./assets}/dlt-green.snapshot:/app/snapshots/snapshot.bin"

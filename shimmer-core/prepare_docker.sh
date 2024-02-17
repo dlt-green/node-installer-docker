@@ -31,6 +31,11 @@ prepare_data_dir "${dataDir}" \
                  "grafana" \
                  "letsencrypt"
 
+# create empty peering json if it does not exist yet
+if [ ! -f "${dataDir}/config/peering-${IOTA_CORE_NETWORK:-mainnet}.json" ]; then
+  echo "{\"peers\": []}" > "${dataDir}/config/peering-${IOTA_CORE_NETWORK:-mainnet}.json"
+fi
+
 create_docker_network "shimmer"
 
 # Generate config
