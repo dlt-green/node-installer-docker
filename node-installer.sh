@@ -2649,7 +2649,7 @@ IotaHornet() {
 		  echo "Set autopeering (config: $ca$VAR_IOTA_HORNET_AUTOPEERING$xx)"; echo "Press [Enter] to use existing config:"
 		fi
 		read -r -p '> Press [E] to enable Autopeering... Press [X] key to disable... ' VAR_TMP;
-        if [ -n "$VAR_TMP" ]; then
+		if [ -n "$VAR_TMP" ]; then
 		  VAR_IOTA_HORNET_AUTOPEERING=$VAR_TMP
 		  if  [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'e' ] || [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'E' ]; then
 		    VAR_IOTA_HORNET_AUTOPEERING='true'
