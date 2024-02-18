@@ -12,6 +12,9 @@ dataDir="${HORNET_DATA_DIR:-$scriptDir/data}"
 configFilenameInContainer="config.json"
 configFilename="config-${HORNET_NETWORK:-mainnet}.json"
 configPath="${dataDir}/config/${configFilename}"
+peeringFilenameInContainer="peering.json"
+peeringFilename="peering-${HORNET_NETWORK:-mainnet}.json"
+peeringFilePath="${dataDir}/config/${peeringFilename}"
 
 validate_ssl_config "HORNET_SSL_CERT" "HORNET_SSL_KEY"
 copy_common_assets
@@ -66,6 +69,7 @@ set_config_if_present_in_env "${configPath}" "HORNET_PRUNING_MAX_MILESTONES_TO_K
 if [ ! -z "${HORNET_PRUNING_MAX_MILESTONES_TO_KEEP}" ]; then
   set_config "${configPath}" ".pruning.milestones.enabled" "true"
 fi
+generate_peering_json "$peeringFilePath" "${HORNET_STATIC_NEIGHBORS:-""}"
 rm -f "${tmp}"
 
 echo "Finished"

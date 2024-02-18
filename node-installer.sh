@@ -2644,21 +2644,58 @@ IotaHornet() {
 		VAR_IOTA_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
 		VAR_DEFAULT='true'
 		if [ -z "$VAR_IOTA_HORNET_AUTOPEERING" ]; then
-		  echo "Set autopeering (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set autopeering (config: $ca""$VAR_IOTA_HORNET_AUTOPEERING""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> Press [A] to enable autopeering... Press [X] key to disable... ' VAR_TMP;
+		  echo "Set autopeering (default: $ca$VAR_DEFAULT$xx):"; echo "Press [Enter] to use default value:"
+		else
+		  echo "Set autopeering (config: $ca$VAR_IOTA_HORNET_AUTOPEERING$xx)"; echo "Press [Enter] to use existing config:"
+		fi
+		read -r -p '> Press [E] to enable Autopeering... Press [X] key to disable... ' VAR_TMP;
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_IOTA_HORNET_AUTOPEERING=$VAR_TMP
-		  if  [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'a' ] || [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'A' ]; then
+		  if  [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'e' ] || [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'E' ]; then
 		    VAR_IOTA_HORNET_AUTOPEERING='true'
 		  else
 		    VAR_IOTA_HORNET_AUTOPEERING='false'
-		  fi
+		fi
 		elif [ -z "$VAR_IOTA_HORNET_AUTOPEERING" ]; then VAR_IOTA_HORNET_AUTOPEERING=$VAR_DEFAULT; fi
 
-		if  [ "$VAR_IOTA_HORNET_AUTOPEERING" ]; then
+		if  [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'true'  ]; then
 		  echo "$gn""Set autopeering: $VAR_IOTA_HORNET_AUTOPEERING""$xx"
 		else
 		  echo "$rd""Set autopeering: $VAR_IOTA_HORNET_AUTOPEERING""$xx"
+		fi
+
+		if [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'false' ]; then
+		  echo ''
+		  VAR_DEFAULT_STATIC_NEIGHBORS=''
+		  VAR_IOTA_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
+			
+		  if [ -n "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then
+		    echo "Set static neighbor(s):"
+		    echo "(config: static neighbor(s):"
+		    echo "$ca""$VAR_IOTA_HORNET_STATIC_NEIGHBORS""$xx" | tr ',' '\n'
+		    echo ')'
+		    echo ''
+		    echo "Press [Enter] to confirm the above static neighbors or enter new ones (alias:multiAddress,):"
+		    read -r STATIC_NEIGHBORS_INPUT
+		  else
+		    echo "Set static neighbor(s):"
+		    echo "No static neighbors configured. Please enter static neighbors (alias:multiAddress,):"
+		    read -r STATIC_NEIGHBORS_INPUT
+		  fi
+
+		  STATIC_NEIGHBORS_INPUT=$(echo "$STATIC_NEIGHBORS_INPUT" | tr -d ' ')
+
+		  if [ -n "$STATIC_NEIGHBORS_INPUT" ]; then
+		    VAR_IOTA_HORNET_STATIC_NEIGHBORS=$STATIC_NEIGHBORS_INPUT
+		  elif [ -z "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then
+		    VAR_IOTA_HORNET_STATIC_NEIGHBORS=$VAR_DEFAULT_STATIC_NEIGHBORS
+		  fi
+
+		  if [ -n "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then
+		    echo ''
+		    echo "New static neighbor(s):"
+		    echo "$gn""$VAR_IOTA_HORNET_STATIC_NEIGHBORS""$xx" | tr ',' '\n'
+		  fi
 		fi
 
 		echo ''
@@ -2713,6 +2750,7 @@ IotaHornet() {
 		echo "HORNET_HTTPS_PORT=$VAR_IOTA_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
 		echo "HORNET_AUTOPEERING_ENABLED=$VAR_IOTA_HORNET_AUTOPEERING" >> .env
+		echo "HORNET_STATIC_NEIGHBORS=$VAR_IOTA_HORNET_STATIC_NEIGHBORS" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
 		echo "RESTAPI_SALT=$VAR_SALT" >> .env
 
@@ -3431,21 +3469,56 @@ ShimmerHornet() {
 		VAR_SHIMMER_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
 		VAR_DEFAULT='true'
 		if [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
-		  echo "Set autopeering (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set autopeering (config: $ca""$VAR_SHIMMER_HORNET_AUTOPEERING""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> Press [A] to enable autopeering... Press [X] key to disable... ' VAR_TMP;
+		  echo "Set autopeering (default: $ca$VAR_DEFAULT$xx):"; echo "Press [Enter] to use default value:"
+		else
+		  echo "Set autopeering (config: $ca$VAR_SHIMMER_HORNET_AUTOPEERING$xx)"; echo "Press [Enter] to use existing config:"
+		fi
+		read -r -p '> Press [E] to enable Autopeering... Press [X] key to disable... ' VAR_TMP;
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_SHIMMER_HORNET_AUTOPEERING=$VAR_TMP
-		  if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'a' ] || [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'A' ]; then
+		  if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'e' ] || [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'E' ]; then
 		    VAR_SHIMMER_HORNET_AUTOPEERING='true'
 		  else
 		    VAR_SHIMMER_HORNET_AUTOPEERING='false'
-		  fi
+		fi
 		elif [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then VAR_SHIMMER_HORNET_AUTOPEERING=$VAR_DEFAULT; fi
 
-		if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
+		if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'true'  ]; then
 		  echo "$gn""Set autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING""$xx"
 		else
 		  echo "$rd""Set autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING""$xx"
+		fi
+
+		if [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'false' ]; then
+		  echo ''
+		  VAR_DEFAULT_STATIC_NEIGHBORS=''
+		  VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
+			
+		  if [ -n "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
+		    echo "Set static neighbor(s):"
+		    echo "(config: static neighbor(s):"
+		    echo "$ca""$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS""$xx" | tr ',' '\n'
+		    echo ')'
+		    echo ''
+		    echo "Press [Enter] to confirm the above static neighbors or enter new ones (alias:multiAddress,):"
+		    read -r STATIC_NEIGHBORS_INPUT
+		  else
+		    echo "Set static neighbor(s):"
+		    echo "No static neighbors configured. Please enter static neighbors (alias:multiAddress,):"
+		    read -r STATIC_NEIGHBORS_INPUT
+		  fi
+
+		  STATIC_NEIGHBORS_INPUT=$(echo "$STATIC_NEIGHBORS_INPUT" | tr -d ' ')
+		  if [ -n "$STATIC_NEIGHBORS_INPUT" ]; then
+		  VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$STATIC_NEIGHBORS_INPUT
+		  elif [ -z "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
+		    VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$VAR_DEFAULT_STATIC_NEIGHBORS
+		  fi
+		  if [ -n "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
+		    echo ''
+		    echo "New static neighbor(s):"
+		    echo "$gn""$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS""$xx" | tr ',' '\n'
+		  fi
 		fi
 
 		echo ''
@@ -3500,6 +3573,7 @@ ShimmerHornet() {
 		echo "HORNET_HTTPS_PORT=$VAR_SHIMMER_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
 		echo "HORNET_AUTOPEERING_ENABLED=$VAR_SHIMMER_HORNET_AUTOPEERING" >> .env
+		echo "HORNET_STATIC_NEIGHBORS=$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" >> .env
 		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
 		echo "RESTAPI_SALT=$VAR_SALT" >> .env
 
