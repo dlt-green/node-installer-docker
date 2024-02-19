@@ -2732,7 +2732,7 @@ IotaHornet() {
 			echo "HORNET_AUTOPEERING_PORT=14626" >> .env
 		fi
 
-		if [ -n "$HORNET_STATIC_NEIGHBORS" ]; then
+		if [ -n "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then
 			echo "HORNET_STATIC_NEIGHBORS=$VAR_IOTA_HORNET_STATIC_NEIGHBORS" >> .env
 		fi
 
