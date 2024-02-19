@@ -2667,12 +2667,12 @@ IotaHornet() {
 		if [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'false' ]; then
 		echo ''
 		VAR_IOTA_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
-		VAR_DEFAULT='';
+		VAR_DEFAULT='{nodeName}:/dns/{nodeURL}/tcp/15600/p2p/{nodeId},...';
 		if [ -z "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then
-		  echo "Set static neighbor(s):"; echo "Press [Enter] to use default value:"; else echo "Set static neighbor(s) (config: $ca""$VAR_IOTA_HORNET_STATIC_NEIGHBORS | tr ',' '\n'""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		  echo "Set static neighbor(s) (template: $ca""$VAR_DEFAULT""$xx):"; else echo "Set static neighbor(s) (config: ""$ca""\n""$(echo "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" | tr ',' '\n')""\n""$xx)"; echo "Press [Enter] to use existing config (template: $ca""$VAR_DEFAULT""$xx):"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_STATIC_NEIGHBORS=$VAR_TMP; elif [ -z "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then VAR_IOTA_HORNET_STATIC_NEIGHBORS=$VAR_DEFAULT; fi
-		echo "$gn""Set static neighbor(s): $VAR_IOTA_HORNET_STATIC_NEIGHBORS""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_STATIC_NEIGHBORS=$VAR_TMP; elif [ -z "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then VAR_IOTA_HORNET_STATIC_NEIGHBORS=''; fi
+		echo "$gn""Set static neighbor(s): ""\n""$(echo "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" | tr ',' '\n')""$xx"
 		fi
 
 		echo ''
@@ -3477,12 +3477,12 @@ ShimmerHornet() {
 
 		echo ''
 		VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
-		VAR_DEFAULT='';
+		VAR_DEFAULT='{nodeName}:/dns/{nodeURL}/tcp/15600/p2p/{nodeId},...';
 		if [ -z "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
-		  echo "Set static neighbor(s):"; echo "Press [Enter] to use default value:"; else echo "Set static neighbor(s) (config: $ca""$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS | tr ',' '\n'""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		  echo "Set static neighbor(s) (template: $ca""$VAR_DEFAULT""$xx):"; else echo "Set static neighbor(s) (config: ""$ca""\n""$(echo "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" | tr ',' '\n')""\n""$xx)"; echo "Press [Enter] to use existing config (template: $ca""$VAR_DEFAULT""$xx):"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$VAR_TMP; elif [ -z "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$VAR_DEFAULT; fi
-		echo "$gn""Set static neighbor(s): $VAR_SHIMMER_HORNET_STATIC_NEIGHBORS""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$VAR_TMP; elif [ -z "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=''; fi
+		echo "$gn""Set static neighbor(s): ""\n""$(echo "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" | tr ',' '\n')""$xx"
 		fi
 
 		echo ''
