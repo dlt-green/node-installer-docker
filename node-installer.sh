@@ -2735,6 +2735,7 @@ IotaHornet() {
 		if [ -n "$HORNET_STATIC_NEIGHBORS" ]; then
 			echo "HORNET_STATIC_NEIGHBORS=$VAR_IOTA_HORNET_STATIC_NEIGHBORS" >> .env
 		fi
+
 		echo "RESTAPI_SALT=$VAR_SALT" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
@@ -2855,7 +2856,7 @@ IotaHornet() {
 
 		echo ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
-  
+
 		if [ "$VAR_IOTA_HORNET_AUTOPEERING" = "true" ]; then
 		  echo ufw allow '14626/udp' && ufw allow '14626/udp'
 		fi
@@ -3447,7 +3448,7 @@ ShimmerHornet() {
 		else
 		  echo "$rd""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"
 		fi
-  
+
 		echo ''
 		VAR_SHIMMER_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
 		VAR_DEFAULT='true'
@@ -3544,6 +3545,7 @@ ShimmerHornet() {
 		if [ -n "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
 			echo "HORNET_STATIC_NEIGHBORS=$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" >> .env
 		fi
+
 		echo "RESTAPI_SALT=$VAR_SALT" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
@@ -3664,7 +3666,7 @@ ShimmerHornet() {
 
 		echo ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
-  
+
 		if [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = "true" ]; then
 		  echo ufw allow '14626/udp' && ufw allow '14626/udp'
 		fi
