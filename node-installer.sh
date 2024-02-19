@@ -2665,37 +2665,14 @@ IotaHornet() {
 		fi
 
 		if [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'false' ]; then
-		  echo ''
-		  VAR_DEFAULT_STATIC_NEIGHBORS=''
-		  VAR_IOTA_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
-			
-		  if [ -n "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then
-		    echo "Set static neighbor(s):"
-		    echo "(config: static neighbor(s):"
-		    echo "$ca""$VAR_IOTA_HORNET_STATIC_NEIGHBORS""$xx" | tr ',' '\n'
-		    echo ')'
-		    echo ''
-		    echo "Press [Enter] to confirm the above static neighbors or enter new ones (alias:multiAddress,):"
-		    read -r STATIC_NEIGHBORS_INPUT
-		  else
-		    echo "Set static neighbor(s):"
-		    echo "No static neighbors configured. Please enter static neighbors (alias:multiAddress,):"
-		    read -r STATIC_NEIGHBORS_INPUT
-		  fi
-
-		  STATIC_NEIGHBORS_INPUT=$(echo "$STATIC_NEIGHBORS_INPUT" | tr -d ' ')
-
-		  if [ -n "$STATIC_NEIGHBORS_INPUT" ]; then
-		    VAR_IOTA_HORNET_STATIC_NEIGHBORS=$STATIC_NEIGHBORS_INPUT
-		  elif [ -z "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then
-		    VAR_IOTA_HORNET_STATIC_NEIGHBORS=$VAR_DEFAULT_STATIC_NEIGHBORS
-		  fi
-
-		  if [ -n "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then
-		    echo ''
-		    echo "New static neighbor(s):"
-		    echo "$gn""$VAR_IOTA_HORNET_STATIC_NEIGHBORS""$xx" | tr ',' '\n'
-		  fi
+		echo ''
+		VAR_IOTA_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
+		VAR_DEFAULT='';
+		if [ -z "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then
+		  echo "Set static neighbor(s):"; echo "Press [Enter] to use default value:"; else echo "Set static neighbor(s) (config: $ca""$VAR_IOTA_HORNET_STATIC_NEIGHBORS | tr ',' '\n'""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_STATIC_NEIGHBORS=$VAR_TMP; elif [ -z "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then VAR_IOTA_HORNET_STATIC_NEIGHBORS=$VAR_DEFAULT; fi
+		echo "$gn""Set static neighbor(s): $VAR_IOTA_HORNET_STATIC_NEIGHBORS""$xx"
 		fi
 
 		echo ''
@@ -3490,35 +3467,15 @@ ShimmerHornet() {
 		fi
 
 		if [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'false' ]; then
-		  echo ''
-		  VAR_DEFAULT_STATIC_NEIGHBORS=''
-		  VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
-			
-		  if [ -n "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
-		    echo "Set static neighbor(s):"
-		    echo "(config: static neighbor(s):"
-		    echo "$ca""$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS""$xx" | tr ',' '\n'
-		    echo ')'
-		    echo ''
-		    echo "Press [Enter] to confirm the above static neighbors or enter new ones (alias:multiAddress,):"
-		    read -r STATIC_NEIGHBORS_INPUT
-		  else
-		    echo "Set static neighbor(s):"
-		    echo "No static neighbors configured. Please enter static neighbors (alias:multiAddress,):"
-		    read -r STATIC_NEIGHBORS_INPUT
-		  fi
 
-		  STATIC_NEIGHBORS_INPUT=$(echo "$STATIC_NEIGHBORS_INPUT" | tr -d ' ')
-		  if [ -n "$STATIC_NEIGHBORS_INPUT" ]; then
-		  VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$STATIC_NEIGHBORS_INPUT
-		  elif [ -z "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
-		    VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$VAR_DEFAULT_STATIC_NEIGHBORS
-		  fi
-		  if [ -n "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
-		    echo ''
-		    echo "New static neighbor(s):"
-		    echo "$gn""$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS""$xx" | tr ',' '\n'
-		  fi
+		echo ''
+		VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
+		VAR_DEFAULT='';
+		if [ -z "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
+		  echo "Set static neighbor(s):"; echo "Press [Enter] to use default value:"; else echo "Set static neighbor(s) (config: $ca""$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS | tr ',' '\n'""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$VAR_TMP; elif [ -z "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$VAR_DEFAULT; fi
+		echo "$gn""Set static neighbor(s): $VAR_SHIMMER_HORNET_STATIC_NEIGHBORS""$xx"
 		fi
 
 		echo ''
