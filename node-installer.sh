@@ -377,7 +377,7 @@ FormatToBytes() {
 	unset bytes;
 	if [ -n "$1" ]; then
 		unit=$(echo "$1" | sed -e 's/[^a-zA-Z_]//g' | tr '[:lower:]' '[:upper:]');
-		value=$(echo "$1" | sed -e "s/$unit//g");
+		value=$(echo "$1" | sed -e "s/$unit//g" | sed "s/,/./g");
 
 		case $unit in
 		KB) bytes=$(echo "$value*1024" | bc);;
@@ -395,8 +395,9 @@ FormatToBytes() {
 FormatFromBytes() {
 	unset fbytes;
 	if [ -n "$1" ]; then
-		fbytes=$(numfmt --to iec --format "%8f" "$1")B;
-		fbytes=$(echo "$fbytes" | sed 's/ *$//g');
+		fbytes=$(echo "$1" | cut -d '.' -f 1);
+		fbytes=$(numfmt --to iec --format "%8f" "$fbytes")B;
+		fbytes=$(echo "$fbytes" | sed 's/ *$//g' | sed 's/ //g');
 	fi
 }
 
