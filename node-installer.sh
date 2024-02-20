@@ -1981,7 +1981,7 @@ SubMenuConfiguration() {
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
 		  VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
-	      if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""Generate JWT-Token is not supportet, please update your Node! ""$xx"
+	      if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""Generate JWT-Token is not supported, please update your Node! ""$xx"
 		  else
 		     VAR_JWT=$(docker compose run --rm hornet tool jwt-api --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
 		     echo "Your JWT-Token for secured API Access is generated:"
@@ -1989,7 +1989,7 @@ SubMenuConfiguration() {
 		     echo "$VAR_JWT""$xx"
 		  fi
 	   else
-	      echo "$rd""Generate JWT-Token is not supportet, aborted! ""$xx"
+	      echo "$rd""Generate JWT-Token is not supported, aborted! ""$xx"
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
@@ -2015,7 +2015,7 @@ SubMenuConfiguration() {
 	         echo "$rd""Toggle Proof of Work aborted!""$xx"
 		  fi
 	   else
-	      echo "$rd""Toggle Proof of Work is not supportet, aborted!""$xx"
+	      echo "$rd""Toggle Proof of Work is not supported, aborted!""$xx"
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
@@ -2042,7 +2042,7 @@ SubMenuConfiguration() {
 	         echo "$rd""Toggle Network aborted!""$xx"
 		  fi
 	   else
-	      echo "$rd""Toggle Network is not supportet, aborted!""$xx"
+	      echo "$rd""Toggle Network is not supported, aborted!""$xx"
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
@@ -2064,7 +2064,7 @@ SubMenuConfiguration() {
 		  echo "$gn""Node Alias of your Node successfully set""$xx"
 		  echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 	   else
-	      echo "$rd""Set Node Alias is not supportet, aborted!""$xx"
+	      echo "$rd""Set Node Alias is not supported, aborted!""$xx"
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
