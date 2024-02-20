@@ -48,7 +48,7 @@ services:
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "${HORNET_DATA_DIR:-./data}/config/config-${HORNET_NETWORK:-mainnet}.json:/app/config/config.json:ro"
-      - "${HORNET_DATA_DIR:-./data}/config/peering-${HORNET_NETWORK:-mainnet}.json:/app/config/peering.json:ro"
+      - "${HORNET_DATA_DIR:-./data}/config/peering-${HORNET_NETWORK:-mainnet}.json:/app/peering.json:ro"
       - "${HORNET_DATA_DIR:-./data}/storage/${HORNET_NETWORK:-mainnet}:/app/storage"
       - "${HORNET_DATA_DIR:-./data}/snapshots/${HORNET_NETWORK:-mainnet}:/app/snapshots"
       - "${HORNET_DATA_DIR:-./data}/p2pstore/${HORNET_NETWORK:-mainnet}:/app/p2pstore"
