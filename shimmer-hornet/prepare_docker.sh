@@ -12,7 +12,6 @@ dataDir="${HORNET_DATA_DIR:-$scriptDir/data}"
 configFilenameInContainer="config.json"
 configFilename="config-${HORNET_NETWORK:-mainnet}.json"
 configPath="${dataDir}/config/${configFilename}"
-peeringFilenameInContainer="peering.json"
 peeringFilename="peering-${HORNET_NETWORK:-mainnet}.json"
 peeringFilePath="${dataDir}/config/${peeringFilename}"
 

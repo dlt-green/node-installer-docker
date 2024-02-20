@@ -292,6 +292,10 @@ generate_peering_json() {
   local peeringFilePath="$1"
   local staticNeighbors="$2"
 
+  if [ -d "$peeringFilePath" ]; then
+    rm -Rf "$peeringFilePath"
+  fi
+
   if [ -z "$staticNeighbors" ]; then
     echo -e "No static neighbors defined"
     jq -n '{peers: []}' > "$peeringFilePath"
