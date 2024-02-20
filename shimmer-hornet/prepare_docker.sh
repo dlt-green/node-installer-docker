@@ -12,6 +12,8 @@ dataDir="${HORNET_DATA_DIR:-$scriptDir/data}"
 configFilenameInContainer="config.json"
 configFilename="config-${HORNET_NETWORK:-mainnet}.json"
 configPath="${dataDir}/config/${configFilename}"
+peeringFilename="peering-${HORNET_NETWORK:-mainnet}.json"
+peeringFilePath="${dataDir}/config/${peeringFilename}"
 
 validate_ssl_config "HORNET_SSL_CERT" "HORNET_SSL_KEY"
 copy_common_assets
@@ -54,7 +56,7 @@ set_config "${configPath}" ".p2p.db.path"                 "\"/app/p2pstore\""
 set_config "${configPath}" ".snapshots.fullPath"          "\"/app/snapshots/full_snapshot.bin\""
 set_config "${configPath}" ".snapshots.deltaPath"         "\"/app/snapshots/delta_snapshot.bin\""
 set_config "${configPath}" ".pruning.size.targetSize"     "\"${HORNET_PRUNING_TARGET_SIZE:-64GB}\""
-set_config "${configPath}" ".p2p.autopeering.enabled"     "true"
+set_config "${configPath}" ".p2p.autopeering.enabled"     "${HORNET_AUTOPEERING_ENABLED:-true}"
 set_config "${configPath}" ".restAPI.pow.enabled"         "${HORNET_POW_ENABLED:-true}"
 set_config "${configPath}" ".prometheus.enabled"          "true"
 set_config "${configPath}" ".prometheus.bindAddress"      "\"0.0.0.0:9311\""
@@ -66,6 +68,7 @@ set_config_if_present_in_env "${configPath}" "HORNET_PRUNING_MAX_MILESTONES_TO_K
 if [ ! -z "${HORNET_PRUNING_MAX_MILESTONES_TO_KEEP}" ]; then
   set_config "${configPath}" ".pruning.milestones.enabled" "true"
 fi
+generate_peering_json "$peeringFilePath" "${HORNET_STATIC_NEIGHBORS:-""}"
 rm -f "${tmp}"
 
 echo "Finished"

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.0.1"
-BUILD="20240215_190331"
+VRSN="v.4.0.2"
+BUILD="20240220_184147"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -14,11 +14,11 @@ VAR_CONF_RESET=0
 VAR_IOTA_HORNET_VERSION='2.0.1'
 VAR_IOTA_HORNET_UPDATE=1
 
-VAR_IOTA_WASP_VERSION='1.0.2-alpha.4'
+VAR_IOTA_WASP_VERSION='1.0.2-rc.1'
 VAR_IOTA_WASP_UPDATE=1
 
 VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_IOTA_WASP_CLI_VERSION='1.0.2-alpha.4'
+VAR_IOTA_WASP_CLI_VERSION='1.0.2-rc.1'
 
 VAR_IOTA_INX_INDEXER_VERSION='1.0'
 VAR_IOTA_INX_MQTT_VERSION='1.0'
@@ -30,11 +30,11 @@ VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
 VAR_SHIMMER_HORNET_UPDATE=1
 
-VAR_SHIMMER_WASP_VERSION='1.0.2-alpha.4'
+VAR_SHIMMER_WASP_VERSION='1.0.2-rc.1'
 VAR_SHIMMER_WASP_UPDATE=1
 
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_SHIMMER_WASP_CLI_VERSION='1.0.2-alpha.4'
+VAR_SHIMMER_WASP_CLI_VERSION='1.0.2-rc.1'
 
 VAR_SHIMMER_INX_INDEXER_VERSION='1.0-rc'
 VAR_SHIMMER_INX_MQTT_VERSION='1.0-rc'
@@ -133,19 +133,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='7d341325706df8096b12068e372f28be15f9185a1a930418ded85bd4f23a45e8'
+IotaHornetHash='3ad26bac0ac128619e7d8962b77f97538359e3fedddd7a606fcdeb005d35bd79'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='c14475d8367d737a6452ff109cd822e39f94b8de5a0e517740a4558ecb61fc45'
+IotaWaspHash='9b16460a140bd0274f2529888abec6a197b0a3bc5177d7cd392997b1779b4e4d'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='4bb62666cfa5504277beea58cdeb6df13c9236bfaac218c523b334e1c703211b'
+ShimmerHornetHash='6860139a665d3d4ea4bcd689b5fb72c95d7417719e4d15c9cc629d150d4480a7'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='1ca04596aac76affaadc97df2e164b84b4adebc70f1bcf625c9ecf95e2a913ea'
+ShimmerWaspHash='def32def00c9f32cb43e106e9cfa60da3a6e1def964dff2b0b899a7ba118ea1d'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='95b605f8903c34a8b61b7780ec69c2143349ad55dae554c8a3268fe5cc441af1'
+ShimmerChronicleHash='96c045c15f64de0e10b8168af51664358e946395ae7b89cc7ecf7386c4c4c21a'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -377,7 +377,7 @@ FormatToBytes() {
 	unset bytes;
 	if [ -n "$1" ]; then
 		unit=$(echo "$1" | sed -e 's/[^a-zA-Z_]//g' | tr '[:lower:]' '[:upper:]');
-		value=$(echo "$1" | sed -e "s/$unit//g");
+		value=$(echo "$1" | sed -e "s/$unit//g" | sed "s/,/./g");
 
 		case $unit in
 		KB) bytes=$(echo "$value*1024" | bc);;
@@ -395,8 +395,9 @@ FormatToBytes() {
 FormatFromBytes() {
 	unset fbytes;
 	if [ -n "$1" ]; then
-		fbytes=$(numfmt --to iec --format "%8f" "$1")B;
-		fbytes=$(echo "$fbytes" | sed 's/ *$//g');
+		fbytes=$(echo "$1" | cut -d '.' -f 1);
+		fbytes=$(numfmt --to iec --format "%8f" "$fbytes")B;
+		fbytes=$(echo "$fbytes" | sed 's/ *$//g' | sed 's/ //g');
 	fi
 }
 
@@ -2641,6 +2642,41 @@ IotaHornet() {
 		fi
 
 		echo ''
+		VAR_IOTA_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
+		VAR_DEFAULT='true'
+		if [ -z "$VAR_IOTA_HORNET_AUTOPEERING" ]; then
+		  echo "Set autopeering (default: $ca$VAR_DEFAULT$xx):"; echo "Press [Enter] to use default value:"
+		else
+		  echo "Set autopeering (config: $ca$VAR_IOTA_HORNET_AUTOPEERING$xx)"; echo "Press [Enter] to use existing config:"
+		fi
+		read -r -p '> Press [E] to enable Autopeering... Press [X] key to disable... ' VAR_TMP;
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_IOTA_HORNET_AUTOPEERING=$VAR_TMP
+		  if  [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'e' ] || [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'E' ]; then
+		    VAR_IOTA_HORNET_AUTOPEERING='true'
+		  else
+		    VAR_IOTA_HORNET_AUTOPEERING='false'
+		fi
+		elif [ -z "$VAR_IOTA_HORNET_AUTOPEERING" ]; then VAR_IOTA_HORNET_AUTOPEERING=$VAR_DEFAULT; fi
+
+		if  [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'true'  ]; then
+		  echo "$gn""Set autopeering: $VAR_IOTA_HORNET_AUTOPEERING""$xx"
+		else
+		  echo "$rd""Set autopeering: $VAR_IOTA_HORNET_AUTOPEERING""$xx"
+		fi
+
+		if [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'false' ]; then
+		echo ''
+		VAR_IOTA_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
+		VAR_DEFAULT='{nodeName}:/dns/{nodeURL}/tcp/15600/p2p/{nodeId},...';
+		if [ -z "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then
+		  echo "Set static neighbor(s) (template: $ca""$VAR_DEFAULT""$xx):"; else echo "Set static neighbor(s) (config: ""$ca""\n""$(echo "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" | tr ',' '\n')""\n""$xx)"; echo "Press [Enter] to use existing config (template: $ca""$VAR_DEFAULT""$xx):"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_STATIC_NEIGHBORS=$VAR_TMP; elif [ -z "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then VAR_IOTA_HORNET_STATIC_NEIGHBORS=''; fi
+		echo "$gn""Set static neighbor(s): ""\n""$(echo "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" | tr ',' '\n')""$xx"
+		fi
+
+		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1);
 		if [ -z "$VAR_USERNAME" ]; then
@@ -2691,7 +2727,16 @@ IotaHornet() {
 		echo "HORNET_POW_ENABLED=$VAR_IOTA_HORNET_POW" >> .env
 		echo "HORNET_HTTPS_PORT=$VAR_IOTA_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
-		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
+		echo "HORNET_AUTOPEERING_ENABLED=$VAR_IOTA_HORNET_AUTOPEERING" >> .env
+
+		if [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'true' ]; then
+			echo "HORNET_AUTOPEERING_PORT=14626" >> .env
+		fi
+
+		if [ -n "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then
+			echo "HORNET_STATIC_NEIGHBORS=$VAR_IOTA_HORNET_STATIC_NEIGHBORS" >> .env
+		fi
+
 		echo "RESTAPI_SALT=$VAR_SALT" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
@@ -2741,6 +2786,11 @@ IotaHornet() {
 		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_IOTA_INX_POI_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_IOTA_INX_DASHBOARD_VERSION/g" .env; fi
 
+		VAR_IOTA_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_HORNET_AUTOPEERING" ]; then
+		    echo "HORNET_AUTOPEERING_ENABLED=true" >> .env
+		fi
+   
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
@@ -2807,7 +2857,10 @@ IotaHornet() {
 
 		echo ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_IOTA_HORNET_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
-		echo ufw allow '14626/udp' && ufw allow '14626/udp'
+
+		if [ "$VAR_IOTA_HORNET_AUTOPEERING" = "true" ]; then
+		  echo ufw allow '14626/udp' && ufw allow '14626/udp'
+		fi
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -2880,6 +2933,8 @@ IotaHornet() {
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
 		echo "https port:  $VAR_IOTA_HORNET_HTTPS_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "autopeering: $VAR_IOTA_HORNET_AUTOPEERING"
 		echo "-------------------------------------------------------------------------------"
 		echo "hornet dashboard: https://$VAR_HOST/dashboard"
 		echo "hornet username:  $VAR_USERNAME"
@@ -3396,6 +3451,42 @@ ShimmerHornet() {
 		fi
 
 		echo ''
+		VAR_SHIMMER_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
+		VAR_DEFAULT='true'
+		if [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
+		  echo "Set autopeering (default: $ca$VAR_DEFAULT$xx):"; echo "Press [Enter] to use default value:"
+		else
+		  echo "Set autopeering (config: $ca$VAR_SHIMMER_HORNET_AUTOPEERING$xx)"; echo "Press [Enter] to use existing config:"
+		fi
+		read -r -p '> Press [E] to enable Autopeering... Press [X] key to disable... ' VAR_TMP;
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_SHIMMER_HORNET_AUTOPEERING=$VAR_TMP
+		  if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'e' ] || [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'E' ]; then
+		    VAR_SHIMMER_HORNET_AUTOPEERING='true'
+		  else
+		    VAR_SHIMMER_HORNET_AUTOPEERING='false'
+		fi
+		elif [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then VAR_SHIMMER_HORNET_AUTOPEERING=$VAR_DEFAULT; fi
+
+		if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'true'  ]; then
+		  echo "$gn""Set autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING""$xx"
+		else
+		  echo "$rd""Set autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING""$xx"
+		fi
+
+		if [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'false' ]; then
+
+		echo ''
+		VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
+		VAR_DEFAULT='{nodeName}:/dns/{nodeURL}/tcp/15600/p2p/{nodeId},...';
+		if [ -z "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
+		  echo "Set static neighbor(s) (template: $ca""$VAR_DEFAULT""$xx):"; else echo "Set static neighbor(s) (config: ""$ca""\n""$(echo "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" | tr ',' '\n')""\n""$xx)"; echo "Press [Enter] to use existing config (template: $ca""$VAR_DEFAULT""$xx):"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$VAR_TMP; elif [ -z "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=''; fi
+		echo "$gn""Set static neighbor(s): ""\n""$(echo "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" | tr ',' '\n')""$xx"
+		fi
+
+		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1);
 		if [ -z "$VAR_USERNAME" ]; then
@@ -3446,7 +3537,16 @@ ShimmerHornet() {
 		echo "HORNET_POW_ENABLED=$VAR_SHIMMER_HORNET_POW" >> .env
 		echo "HORNET_HTTPS_PORT=$VAR_SHIMMER_HORNET_HTTPS_PORT" >> .env
 		echo "HORNET_GOSSIP_PORT=15600" >> .env
-		echo "HORNET_AUTOPEERING_PORT=14626" >> .env
+		echo "HORNET_AUTOPEERING_ENABLED=$VAR_SHIMMER_HORNET_AUTOPEERING" >> .env
+
+		if [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'true' ]; then
+			echo "HORNET_AUTOPEERING_PORT=14626" >> .env
+		fi
+
+		if [ -n "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
+			echo "HORNET_STATIC_NEIGHBORS=$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" >> .env
+		fi
+
 		echo "RESTAPI_SALT=$VAR_SALT" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
@@ -3496,6 +3596,11 @@ ShimmerHornet() {
 		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_SHIMMER_INX_POI_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_SHIMMER_INX_DASHBOARD_VERSION/g" .env; fi
 
+		VAR_SHIMMER_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED | cut -d '=' -f 2)
+		if [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
+		    echo "HORNET_AUTOPEERING_ENABLED=true" >> .env
+		fi
+  
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
@@ -3562,7 +3667,10 @@ ShimmerHornet() {
 
 		echo ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
-		echo ufw allow '14626/udp' && ufw allow '14626/udp'
+
+		if [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = "true" ]; then
+		  echo ufw allow '14626/udp' && ufw allow '14626/udp'
+		fi
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3635,6 +3743,8 @@ ShimmerHornet() {
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
 		echo "https port:  $VAR_SHIMMER_HORNET_HTTPS_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING"
 		echo "-------------------------------------------------------------------------------"
 		echo "hornet dashboard: https://$VAR_HOST/dashboard"
 		echo "hornet username:  $VAR_USERNAME"

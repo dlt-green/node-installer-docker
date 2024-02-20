@@ -287,3 +287,38 @@ stop_node () {
 show_logs () {
   docker compose logs -f --tail 1000
 }
+
+generate_peering_json() {
+  local peeringFilePath="$1"
+  local staticNeighbors="$2"
+
+  if [ -d "$peeringFilePath" ]; then
+    rm -Rf "$peeringFilePath"
+  fi
+
+  if [ -z "$staticNeighbors" ]; then
+    echo -e "No static neighbors defined"
+    jq -n '{peers: []}' > "$peeringFilePath"
+    return
+  fi
+  echo "Generating peering.json..."
+  local peersJson="[]"
+  IFS=','
+  for neighbor in $staticNeighbors; do
+    local cleanedNeighbor=$(echo "$neighbor" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    local alias=""
+    local multiAddress=""
+
+    if [[ "$cleanedNeighbor" =~ .*:.* ]]; then
+        alias=$(echo "$cleanedNeighbor" | cut -d ':' -f 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+        multiAddress=$(echo "$cleanedNeighbor" | cut -d ':' -f 2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    else
+        alias="Node-$(date +%s%N | sha256sum | head -c 8)"
+        multiAddress="$cleanedNeighbor"
+    fi
+
+    peersJson=$(jq --arg alias "$alias" --arg multiAddress "$multiAddress" '. += [{"alias": $alias, "multiAddress": $multiAddress}]' <<< "$peersJson")
+  done
+  unset IFS
+  echo "$peersJson" | jq '{peers: .}' > "$peeringFilePath" && echo "${peeringFilePath} successfully generated" || echo "Failed to generate peering.json"
+}
