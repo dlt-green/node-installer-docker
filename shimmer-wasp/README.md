@@ -42,8 +42,7 @@ DASHBOARD_SALT=<password salt>
 | SSL_CONFIG    |           | letsencrypt | Allowed values: `certs`, `letsencrypt`. Default: `letsencrypt`. If set to certs `WASP_SSL_CERT` and `WASP_SSL_KEY` are used otherwise letsencrypt is used by default. |
 | WASP_SSL_CERT |    (x)    |             | Absolute path to SSL certificate (mandatory if `SSL_CONFIG=certs`)                                                                                                    |
 | WASP_SSL_KEY  |    (x)    |             | Absolute path to SSL private key (mandatory if `SSL_CONFIG=certs`)                                                                                                    |
-| ACME_EMAIL    |    (x)    |             | Mail address used to fetch SSL certificate from letsencrypt (mandatory if `SSL_CONFIG` not set or is set to `letsencrypt`).                                           |
-
+| ACME_EMAIL    |    (x)    |             | Mail address used to fetch SSL certificate from letsencrypt (mandatory if `SSL_CONFIG` not set or is set to `letsencrypt`).           |                                |
 | WASP_VERSION                      |     x     |             | Version of `iotaledger/wasp` docker image to use                                                                                                                                                                   |
 | WASP_DASHBOARD_VERSION            |     x     |             | Version of `iotaledger/wasp-dashboard` docker image to use                                                                                                                                                         |
 | WASP_HOST                         |     x     |             | Host domain name e.g. `wasp.dlt.green`                                                                                                                                                                             |
