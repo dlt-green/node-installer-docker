@@ -2777,6 +2777,8 @@ IotaHornet() {
 		echo "INX_POI_VERSION=$VAR_IOTA_INX_POI_VERSION" >> .env
 		echo "INX_DASHBOARD_VERSION=$VAR_IOTA_INX_DASHBOARD_VERSION" >> .env
 
+		echo "done..."
+
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_IOTA_HORNET_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_IOTA_INX_INDEXER_VERSION/g" .env; fi
@@ -3148,6 +3150,9 @@ IotaWasp() {
 			echo "WASP_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
+
+		echo "done..."
+
 	else
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_IOTA_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
@@ -3587,6 +3592,8 @@ ShimmerHornet() {
 		echo "INX_POI_VERSION=$VAR_SHIMMER_INX_POI_VERSION" >> .env
 		echo "INX_DASHBOARD_VERSION=$VAR_SHIMMER_INX_DASHBOARD_VERSION" >> .env
 
+		echo "done..."
+
 	else
 		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_SHIMMER_INX_INDEXER_VERSION/g" .env; fi
@@ -3958,6 +3965,9 @@ ShimmerWasp() {
 			echo "WASP_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "WASP_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
+
+		echo "done..."
+
 	else
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
@@ -4326,6 +4336,9 @@ ShimmerChronicle() {
 			echo "INX_CHRONICLE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "INX_CHRONICLE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
+
+		echo "done..."
+
 	else
 		if [ -f .env ]; then sed -i "s/INX_CHRONICLE_VERSION=.*/INX_CHRONICLE_VERSION=$VAR_SHIMMER_INX_CHRONICLE_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
