@@ -81,7 +81,7 @@ do
      c)
 	 case $OPTARG in
 	 0|1) opt_check="$OPTARG" ;;
-     *) echo "$rd""Invalid rgument for Option -c {0|1}""$xx"
+     *) echo "$rd""Invalid Argument for Option -c {0|1}""$xx"
         if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
         exit ;;
 	 esac
@@ -105,7 +105,7 @@ do
      r)
 	 case $OPTARG in
 	 0|1) opt_reboot="$OPTARG" ;;
-     *) echo "$rd""Invalid rgument for Option -r {0|1}""$xx"
+     *) echo "$rd""Invalid Argument for Option -r {0|1}""$xx"
         if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
         exit ;;
 	 esac
@@ -115,7 +115,7 @@ do
 	 e) opt_level='err!' ;;
 	 w) opt_level='warn' ;;
 	 i) opt_level='info' ;;
-     *) echo "$rd""Invalid rgument for Option -l {i|w|e}""$xx"
+     *) echo "$rd""Invalid Argument for Option -l {i|w|e}""$xx"
         if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
         exit ;;
 	 esac
@@ -2928,7 +2928,7 @@ IotaHornet() {
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
-		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+		echo "--------------------------- INSTALLATION IS FINISHED --------------------------"
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
@@ -2948,7 +2948,7 @@ IotaHornet() {
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
-	    echo "------------------------------ UPDATE IS FINISH -------------------------------"
+	    echo "------------------------------ UPDATE IS FINISHED -----------------------------"
 	    echo ""
 	fi
 
@@ -3277,7 +3277,7 @@ IotaWasp() {
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
-	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+	    echo "--------------------------- INSTALLATION IS FINISHED --------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
@@ -3294,7 +3294,7 @@ IotaWasp() {
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
-	    echo "------------------------------ UPDATE IS FINISH -------------------------------"
+	    echo "------------------------------ UPDATE IS FINISHED -----------------------------"
 	    echo ""
 	fi
 
@@ -3738,7 +3738,7 @@ ShimmerHornet() {
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
-		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+		echo "--------------------------- INSTALLATION IS FINISHED --------------------------"
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
@@ -3758,7 +3758,7 @@ ShimmerHornet() {
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
-	    echo "------------------------------ UPDATE IS FINISH -------------------------------"
+	    echo "------------------------------ UPDATE IS FINISHED -----------------------------"
 	    echo ""
 	fi
 
@@ -4087,7 +4087,7 @@ ShimmerWasp() {
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
-	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+	    echo "--------------------------- INSTALLATION IS FINISHED --------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
@@ -4104,7 +4104,7 @@ ShimmerWasp() {
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
-	    echo "------------------------------ UPDATE IS FINISH -------------------------------"
+	    echo "------------------------------ UPDATE IS FINISHED -----------------------------"
 	    echo ""
 	fi
 
@@ -4413,7 +4413,7 @@ ShimmerChronicle() {
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
-	    echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+	    echo "--------------------------- INSTALLATION IS FINISHED --------------------------"
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
@@ -4434,7 +4434,7 @@ ShimmerChronicle() {
 		echo "ledger-connection/txstream: local to shimmer-hornet"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
-	    echo "------------------------------ UPDATE IS FINISH -------------------------------"
+	    echo "------------------------------ UPDATE IS FINISHED -----------------------------"
 	    echo ""
 	fi
 
