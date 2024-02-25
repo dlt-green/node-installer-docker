@@ -55,6 +55,9 @@ jobs:
           # set timestamp
           timestamp=$(TZ=CET date +%Y%m%d_%H%M%S)
           sed -i "s/^BUILD=.*/BUILD=\"$timestamp\"/g" ./node-installer.sh
+          
+          # comment update flags (will be reverted right after upload to release)
+          sed -i "/^VAR_.*_UPDATE=/ s/^/# /" node-installer.sh
 
           # generate installer checksum.txt          
           shasum -a 256 ./node-installer.sh | cut -d ' ' -f 1 > ./build/checksum.txt
@@ -68,6 +71,12 @@ jobs:
           draft: false
           prerelease: true
           overwrite: true
+
+      - name: Revert update flags in installer
+        id: revert_update_flags_in_installer
+        run: |          
+          # uncomment update flags (this should not be commited)
+          sed -i "s/^# \(VAR_.*_UPDATE=\)/\1/" node-installer.sh
 
       - name: Get release type
         id: get_release_type
