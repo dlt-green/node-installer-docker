@@ -3359,7 +3359,7 @@ ShimmerCore() {
 		echo "IOTA_CORE_HTTPS_PORT=$VAR_SHIMMER_CORE_HTTPS_PORT" >> .env
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
 		echo "IOTA_CORE_RUN_AS_ENTRY_NODE=false" >> .env
-		echo "IOTA_CORE_ENTRY_NODE=\"/dns/iota-core-testnet.dlt.green/tcp/15600/p2p/12D3KooWKkXRg7ReJiCj76GYjD7e7hCuPpqR4TJ9WkChNjLFfae3\"" >> .env
+		echo "IOTA_CORE_ENTRY_NODE=\"/dns/iota-core-testnet.dlt.green/tcp/15600/p2p/12D3KooWLJ1T8DBaQfV2qiuV2TjhoeDjq28V4qWTQGgTVv2SxMbH\"" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
