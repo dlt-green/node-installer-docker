@@ -2332,11 +2332,12 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	DEBIAN_FRONTEND=noninteractive sudo apt update
-	DEBIAN_FRONTEND=noninteractive sudo apt upgrade -y
-	DEBIAN_FRONTEND=noninteractive sudo apt dist-upgrade -y
-	DEBIAN_FRONTEND=noninteractive sudo apt autoclean -y
-	DEBIAN_FRONTEND=noninteractive sudo apt autoremove -y
+	DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a sudo apt update
+	DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a sudo apt upgrade -y
+	DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a sudo apt dist-upgrade -y
+	DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a sudo apt autoclean -y
+	DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a sudo apt autoremove -y
+
 	if [ "$opt_mode" ]; then
 	  VAR_STATUS='system: update'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
