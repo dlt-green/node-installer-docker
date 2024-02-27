@@ -67,7 +67,7 @@ Each flag represents a different configuration option:
 - `time`: Sets the delay in seconds before executing an action (0-20 seconds, default: 10).
 - `reboot`:
    - `0`: No reboot after operations.
-   - `1`: Executes a system reboot (only if needed) with automatic node shutdown prior to it (default: 0).
+   - `1`: Executes a system reboot with automatic node shutdown prior to it (default: 0).
 - `checks`:
    - `0`: Disables checks (not recommended).
    - `1`: Enforces UFW Firewall and Autostart setup (default: 1).
