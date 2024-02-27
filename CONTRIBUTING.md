@@ -5,7 +5,7 @@
 
 # DLT.GREEN Decentralized collaboration
 
-Decentralized collaboration in particular requires rules that are followed by everyone but also monitored by everyone. These rules must be adhered to by every collabrator, changes to these rules require a minimum number of reviews and there must be no objection (changes requested)
+Decentralized collaboration in particular requires rules that are followed by everyone but also monitored by everyone. These rules must be adhered to by every collaborator, changes to these rules require a minimum number of reviews and there must be no objection (changes requested).
 
 ## DLT.GREEN Automatic Node-Installer for Docker - Branches
 
@@ -15,7 +15,9 @@ We have different branches in our repo, it is important to understand which bran
 
 This branch reflects the currently published release. By default it is not possible for a single person to merge into this branch. It is subsequently also forbidden. Merges into this branch are exclusively done by a Github bot via a pull request, which must be reviewed through the collaborators before. A minimum number of reviews from the collaborators are necessary for a successful merge into the main branch.
 
-This branch reflects the "dlt.green" installer
+This branch reflects the "dlt.green" installer.
+
+Latest release from this branch can be found at:
 
 ```console
 https://github.com/dlt-green/node-installer-docker/releases/latest
@@ -23,9 +25,11 @@ https://github.com/dlt-green/node-installer-docker/releases/latest
 
 ### Branch: dev
 
-This branch is intended as an intermediate step for testing further developments before it is released. Major changes may not be made directly in this branch. This is more intended to test the release beforehand. It must be possible at any time to release the dev branch promptly or immediately (e.g. for node updates or hotfixes).  Small changes without objection from the collaborators can be pushed directly, which have no impact on functionality. If it is uncertain whether the necessary number of reviews will be achieved, or if there are changes to the functionality, open a feature branch for that.
+This branch is intended as an intermediate step for testing further developments before it is released. Major changes may not be made directly in this branch. This is more intended to test the release beforehand. It must be possible at any time to release the dev branch promptly or immediately (e.g. for node updates or hotfixes).  Small changes without objection from the collaborators can be pushed directly, which have no impact on functionality. If it is uncertain whether the necessary number of reviews will be achieved, or if there are changes to the functionality, open a feature branch for that (see next section).
 
-This branch can be tested with the "dlt.green-dev" installer
+This branch can be tested with the "dlt.green-dev" installer.
+
+Latest release from this branch can be found at:
 
 ```console
 https://github.com/dlt-green/node-installer-docker/releases/tag/dev-latest
@@ -35,7 +39,9 @@ https://github.com/dlt-green/node-installer-docker/releases/tag/dev-latest
 
 Feature branches are used for further development of the installer and should always be copied from the dev branch. Such a branch may only be opened with the consent of the collaborators or no objection from a collaborator. If you create a branch for a feature "xyz", then name it "feature/xyz" without exception. This branch will also be built immediately for testing, and the installer can also be started from this branch. You see the files under ”xyz-latest” as pre-release. If the feature is to be released soon, a pull request can be made into the dev branch. A pull request in the main branch will be deleted immediately without prior notice.
 
-This branch can be tested with direct access to the pre-release
+This branch can be tested with direct access to the pre-release.
+
+Latest release from a specific feature branch can be found at:
 
 ```console
 https://github.com/dlt-green/node-installer-docker/releases/tag/xyz-latest
@@ -47,7 +53,7 @@ A pre-release for testing is automatically built for each branch. Since the inst
 
 ### Prepare release:
 
-It is used for generating a pull request from dev branch into the main branch, after running the workflow a pull request is automatically generated to review from the collaborators, before it can be merged into the main branch. At the same time, a pre-release with the specified version was published, which becomes a release after review. In every pre-release version, the update flags are commented out in the installer
+It is used for generating a pull request from dev branch into the main branch, after running the workflow a pull request is automatically generated to review from the collaborators, before it can be merged into the main branch. At the same time, a pre-release with the specified version was published, which becomes a release after review. In every pre-release version, the update flags (=the various `VAR_[NETWORK]_[COMPONENT]_UPDATE=1` lines at the top of the installer script) are commented out in the installer
 
 ### Build wasp-cli docker image:
 
@@ -70,7 +76,7 @@ Since the image for the wasp cli on dockerhub is provided by dlt.green, this mus
 4.	Titles of pull requests must be meaningful, and a description would be good to get faster reviews
 5.	You need the approval (review) of at least 3 contributors and there must be no objection from any contributor (changes requested)
 6.	It is advisable to find a consensus in our dlt.green x-team with the collabrators before acting in the repo, in order to subsequently receive the necessary reviews
-7.	A new collabrator can be added with 75% approval via a vote with no objection from an active collabrator
-8.	A collabrator can be deleted with 75% approval via a vote
-9.	This rules must be reviewed from every collabrator
+7.	A new collaborator can be added with 75% approval via a vote with no objection from an active collaborator
+8.	A collaborator can be deleted with 75% approval via a vote
+9.	These rules must be reviewed by every collaborator
 10.	Failure to comply with the rules will result in immediate exclusion without prior notice
