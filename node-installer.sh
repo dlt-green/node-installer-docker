@@ -2430,8 +2430,8 @@ SystemMaintenance() {
 	     if [ "$opt_mode" ]; then
 	       VAR_STATUS='system: reboot'
 	       NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
+	       sleep 3
 	     fi
-	     sleep 3
 	     sudo reboot
 	     n='q'
 	   else
@@ -2442,8 +2442,8 @@ SystemMaintenance() {
 	     if [ "$opt_mode" ]; then
 	       VAR_STATUS='system: reboot not needed'
 	       NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
+	       sleep 3
 	     fi
-	     sleep 3
 	     n='s'
 	     if ! [ "$opt_mode" ]; then DashboardHelper; fi
 	   fi ;;
