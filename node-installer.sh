@@ -2407,7 +2407,7 @@ SystemMaintenance() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                            1. System Reboot (recommended)                   ║"
+	echo "║                            1. System Reboot (if necessary, recommended)     ║"
 	echo "║                            X. Maintenance Menu                              ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -2421,21 +2421,33 @@ SystemMaintenance() {
 	if [ "$opt_mode" ]; then if ! [ "$opt_reboot" ]; then opt_reboot=0; fi; fi
 	if [ "$opt_reboot" = 1 ]; then n=1; elif [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi
 
-	if [ "$opt_mode" ]; then if [ "$opt_reboot" = 1 ]; then
-	  VAR_STATUS='system: reboot'
-	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
-	  sleep 3
-	fi; fi
-
 	case $n in
-	1) 	echo 'rebooting...'; sleep 3
-	    echo "$rd"
-	    echo "System rebooted, dont't forget to reconnect and start your Nodes again,"
-	    echo "if you don't have Autostart enabled!"
-	    echo "$xx"
-		sudo reboot
-		n='q'
-		;;
+	1) if [ -f /var/run/reboot-required ]; then
+	     echo 'rebooting...'; sleep 3
+	     echo "$rd"
+	     echo "System rebooted, dont't forget to reconnect and start your Nodes again,"
+	     echo "if you don't have Autostart enabled!"
+	     echo "$xx"
+	     if [ "$opt_mode" ]; then
+	       VAR_STATUS='system: reboot'
+	       NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
+	     fi
+	     sleep 3
+	     sudo reboot
+	     n='q'
+	   else
+	     echo 'rebooting...'; sleep 3
+	     echo "$gn"
+	     echo "System reboot not necessary, your nodes will be started again!"
+	     echo "$xx"
+	     if [ "$opt_mode" ]; then
+	       VAR_STATUS='system: reboot not necessary'
+	       NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
+	     fi
+	     sleep 3
+	     n='s'
+	     if ! [ "$opt_mode" ]; then DashboardHelper; fi
+	   fi ;;
 	*) n='s'
 		if ! [ "$opt_mode" ]; then DashboardHelper; fi
 	   ;;
