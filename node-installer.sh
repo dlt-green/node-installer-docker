@@ -2406,7 +2406,7 @@ SystemMaintenance() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                            1. System Reboot (if necessary, recommended)     ║"
+	echo "║                            1. System Reboot (recommended)                   ║"
 	echo "║                            X. Maintenance Menu                              ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -2437,10 +2437,10 @@ SystemMaintenance() {
 	   else
 	     echo 'rebooting...'; sleep 3
 	     echo "$gn"
-	     echo "System reboot not necessary, your nodes will be started again!"
+	     echo "System reboot not needed, your nodes will be started again!"
 	     echo "$xx"
 	     if [ "$opt_mode" ]; then
-	       VAR_STATUS='system: reboot not necessary'
+	       VAR_STATUS='system: reboot not needed'
 	       NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
 	     fi
 	     sleep 3
