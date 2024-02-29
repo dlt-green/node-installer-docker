@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.0.6"
-BUILD="20240227_200407"
+VRSN="v.4.0.4"
+BUILD="20240225_184820"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -14,11 +14,11 @@ VAR_CONF_RESET=0
 VAR_IOTA_HORNET_VERSION='2.0.1'
 VAR_IOTA_HORNET_UPDATE=1
 
-VAR_IOTA_WASP_VERSION='1.0.3-alpha.3'
+VAR_IOTA_WASP_VERSION='1.0.3-alpha.2'
 VAR_IOTA_WASP_UPDATE=1
 
 VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_IOTA_WASP_CLI_VERSION='1.0.3-alpha.3'
+VAR_IOTA_WASP_CLI_VERSION='1.0.3-alpha.2'
 
 VAR_IOTA_INX_INDEXER_VERSION='1.0'
 VAR_IOTA_INX_MQTT_VERSION='1.0'
@@ -30,11 +30,11 @@ VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
 VAR_SHIMMER_HORNET_UPDATE=1
 
-VAR_SHIMMER_WASP_VERSION='1.0.3-alpha.3'
+VAR_SHIMMER_WASP_VERSION='1.0.3-alpha.2'
 VAR_SHIMMER_WASP_UPDATE=1
 
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_SHIMMER_WASP_CLI_VERSION='1.0.3-alpha.3'
+VAR_SHIMMER_WASP_CLI_VERSION='1.0.3-alpha.2'
 
 VAR_SHIMMER_INX_INDEXER_VERSION='1.0-rc'
 VAR_SHIMMER_INX_MQTT_VERSION='1.0-rc'
@@ -133,19 +133,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='b9eaff4cdaf2d13a2679622f00c590b1b2ba0e73e9a3f503db136a9f7d88e081'
+IotaHornetHash='53181f1c008e2e1da7ac508e7c7f0619ddf770fe94976427bc2587e10902dbf1'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='d251d6973445bdc435420f1a70025eae73a259d617d79dac01ec847f4d78e85f'
+IotaWaspHash='c3b463fa71c95038572a6df8d63b90c3ff5a8ee70f2968a1600841e9d8f31de1'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='8054f1f3bb3dc02987adc2425c00b2bb1c14c5cf6b278ae63803f0b706412946'
+ShimmerHornetHash='92a2ceeeaf64274e0f13dc509458af1e3f41392566972b8a9e9fc84354df45d1'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='6741e6b269f8f07074241c2679a6889da34afbab7321275f55284c9c5c1ac74d'
+ShimmerWaspHash='87edcca16f97109aee776fb1d5724b5545f58cee67b216a60c80629aa6bd2676'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='f1745f77b5e0090e9482feeb9e17c2276010ffb02d27aa4c80555de96b1cebfa'
+ShimmerChronicleHash='63f1d2df6fa0fca3ff32387c5684b5d10ca50576a7e32c666d5b05bba76e7331'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -2332,12 +2332,11 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a sudo apt update
-	DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a sudo apt upgrade -y
-	DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a sudo apt dist-upgrade -y
-	DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a sudo apt autoclean -y
-	DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a sudo apt autoremove -y
-
+	DEBIAN_FRONTEND=noninteractive sudo apt update
+	DEBIAN_FRONTEND=noninteractive sudo apt upgrade -y
+	DEBIAN_FRONTEND=noninteractive sudo apt dist-upgrade -y
+	DEBIAN_FRONTEND=noninteractive sudo apt autoclean -y
+	DEBIAN_FRONTEND=noninteractive sudo apt autoremove -y
 	if [ "$opt_mode" ]; then
 	  VAR_STATUS='system: update'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
@@ -2407,7 +2406,7 @@ SystemMaintenance() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                            1. System Reboot (if necessary, recommended)     ║"
+	echo "║                            1. System Reboot (recommended)                   ║"
 	echo "║                            X. Maintenance Menu                              ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -2421,33 +2420,21 @@ SystemMaintenance() {
 	if [ "$opt_mode" ]; then if ! [ "$opt_reboot" ]; then opt_reboot=0; fi; fi
 	if [ "$opt_reboot" = 1 ]; then n=1; elif [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi
 
+	if [ "$opt_mode" ]; then if [ "$opt_reboot" = 1 ]; then
+	  VAR_STATUS='system: reboot'
+	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
+	  sleep 3
+	fi; fi
+
 	case $n in
-	1) if [ -f /var/run/reboot-required ]; then
-	     echo 'rebooting...'; sleep 3
-	     echo "$rd"
-	     echo "System rebooted, dont't forget to reconnect and start your Nodes again,"
-	     echo "if you don't have Autostart enabled!"
-	     echo "$xx"
-	     if [ "$opt_mode" ]; then
-	       VAR_STATUS='system: reboot'
-	       NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
-	     fi
-	     sleep 3
-	     sudo reboot
-	     n='q'
-	   else
-	     echo 'rebooting...'; sleep 3
-	     echo "$gn"
-	     echo "System reboot not necessary, your nodes will be started again!"
-	     echo "$xx"
-	     if [ "$opt_mode" ]; then
-	       VAR_STATUS='system: reboot not necessary'
-	       NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
-	     fi
-	     sleep 3
-	     n='s'
-	     if ! [ "$opt_mode" ]; then DashboardHelper; fi
-	   fi ;;
+	1) 	echo 'rebooting...'; sleep 3
+	    echo "$rd"
+	    echo "System rebooted, dont't forget to reconnect and start your Nodes again,"
+	    echo "if you don't have Autostart enabled!"
+	    echo "$xx"
+		sudo reboot
+		n='q'
+		;;
 	*) n='s'
 		if ! [ "$opt_mode" ]; then DashboardHelper; fi
 	   ;;
