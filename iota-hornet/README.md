@@ -34,6 +34,7 @@ HORNET_HOST=node.your-domain.com
 # HORNET_PRUNING_TARGET_SIZE=64GB
 # HORNET_PRUNING_MAX_MILESTONES_TO_KEEP=60480
 # HORNET_POW_ENABLED=false
+# HORNET_AUTOPEERING_ENABLED=true
 # HORNET_STATIC_NEIGHBORS=my-alias:/ip4/127.0.0.1/tcp/15600/p2p/12D3KooWCKWcTWevORKa2KEBputEGASvEBuDfRDSbe8t1DWugUmL
 
 # DASHBOARD_USERNAME=admin
@@ -64,6 +65,7 @@ INX_DASHBOARD_VERSION=1.0.0-beta.5
 | HORNET_PRUNING_TARGET_SIZE            |           |      64GB       | Target size of database                                                                                                                                                                                                                   |
 | HORNET_PRUNING_MAX_MILESTONES_TO_KEEP |           |      60480      | Max umber of milestones to keep in database. Milestone pruning is disabled by default. It's activated if this parameter is set.                                                                                                           |
 | HORNET_POW_ENABLED                    |           |      false      | Whether the node does PoW if messages are received via API                                                                                                                                                                                |
+| HORNET_AUTOPEERING_ENABLED            |           |      true       | Whether the node should automatically connect to other nodes (see [docs](https://wiki.iota.org/hornet/references/peering#autopeering) for further infos)    |
 | HORNET_STATIC_NEIGHBORS               |           |                 | Comma separated list of static neighbors. Format example: `my-alias:/ip4/127.0.0.1/tcp/15600/p2p/12D3KooWCKWcTWevORKa2KEBputEGASvEBuDfRDSbe8t1DWugUmL` (see [docs](https://wiki.iota.org/hornet/references/peering/) for further infos)   |
 | DASHBOARD_USERNAME                    |           |      admin      | Username to access dashboard                                                                                                                                                                                                              |
 | DASHBOARD_PASSWORD                    |     x     |                 | Password hash (can be generated with `docker compose run hornet tool pwd-hash` or non-interactively with `docker compose run hornet tool pwd-hash --json --password <password>`)                                                          |
