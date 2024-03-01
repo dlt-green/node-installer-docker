@@ -21,7 +21,7 @@ The DLT.GREEN Node-Installer-Docker provides an easy-to-use script that streamli
 
 #### For Event-Tracking Nodes or Additional Plugins
 - **RAM:** 16 GB minimum
-- **CPU Cores:** 4+
+- **CPU Cores:** 6+
 - **Storage:** 250 GB SSD minimum
 - **Operating System:** Ubuntu 22.04.04 LTS (Jammy Jellyfish) or Debian 12 (Bookworm)
 
