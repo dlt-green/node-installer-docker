@@ -64,6 +64,7 @@ Each flag represents a different configuration option:
    - `5`: Update – Updates Shimmer-Hornet nodes.
    - `6`: Update – Updates Shimmer-Wasp nodes.
    - `u`: Executes Mode 0 and performs unattended recursive Node Updates when possible. Supports the last 10 releases in the GitHub pipeline (older versions are not updated).
+   - `d`: Debugging with output to CLI
 - `time`: Sets the delay in seconds before executing an action (0-20 seconds, default: 10).
 - `reboot`:
    - `0`: No reboot after operations.
