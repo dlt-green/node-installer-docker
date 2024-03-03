@@ -721,8 +721,8 @@ DebugInfo() {
                 if [ "$(cat .env 2>/dev/null | grep SSL_CONFIG | cut -d '=' -f 2)" = 'certs' ]; then
                     TMP="certificate: ""global"
                     if [ -d "/etc/letsencrypt/live/$HOST" ]; then cd "/etc/letsencrypt/live/$HOST" || exit; fi
-                    if [ -s "fullchain.pem" ]; then TMP=$TMP" | cert=""$gn""ok""$xx"; else TMP=$TMP" | cert=""$rd""err""$xx"; fi
-                    if [ -s "privkey.pem" ]; then TMP=$TMP" | key=""$gn""ok""$xx"; else TMP=$TMP" | key=""$rd""err""$xx"; fi
+                    if [ -s "fullchain.pem" ]; then TMP=$TMP" | cert [""$gn""ok""$xx""]"; else TMP=$TMP" | cert [""$rd""error""$xx""]"; fi
+                    if [ -s "privkey.pem" ]; then TMP=$TMP" | key [""$gn""ok""$xx""]"; else TMP=$TMP" | key [""$rd""error""$xx""]"; fi
                     echo "$TMP"
                     if [ -s "fullchain.pem" ]; then
                         echo "valid until: ""$(openssl x509 -in "fullchain".pem -noout -enddate | cut -d '=' -f 2)"
@@ -730,8 +730,8 @@ DebugInfo() {
                 else
                     TMP="certificate: ""let's encrypt"
                     if [ -d "/var/lib/$NODE/data/letsencrypt" ]; then cd "/var/lib/$NODE/data/letsencrypt" || exit; fi
-                    if [ -s "$HOST.crt" ]; then TMP=$TMP" | cert=""$gn""ok""$xx"; else TMP=$TMP" | cert=""$rd""err""$xx"; fi
-                    if [ -s "$HOST.key" ]; then TMP=$TMP" | key=""$gn""ok""$xx"; else TMP=$TMP" | key=""$rd""err""$xx"; fi
+                    if [ -s "$HOST.crt" ]; then TMP=$TMP" | cert [""$gn""ok""$xx""]"; else TMP=$TMP" | cert [""$rd""error""$xx""]"; fi
+                    if [ -s "$HOST.key" ]; then TMP=$TMP" | key [""$gn""ok""$xx""]"; else TMP=$TMP" | key [""$rd""error""$xx""]"; fi
                     echo "$TMP"
                     if [ -s "$HOST.crt" ]; then
                         echo "valid until: ""$(openssl x509 -in "$HOST".crt -noout -enddate | cut -d '=' -f 2)"
