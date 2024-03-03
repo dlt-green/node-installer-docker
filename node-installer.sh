@@ -88,8 +88,8 @@ do
 	 ;;
      m)
 	 case $OPTARG in
-	 0|1|2|5|6|21|s|u) opt_mode="$OPTARG" ;;
-     *) echo "$rd""Invalid Argument for Option -m {0|1|2|5|6|21|s}""$xx"
+	 0|1|2|5|6|21|s|u|d) opt_mode="$OPTARG" ;;
+     *) echo "$rd""Invalid Argument for Option -m {0|1|2|5|6|21|d|s}""$xx"
         if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
         exit ;;
 	 esac
@@ -692,6 +692,67 @@ NodeUpdate() {
     done
 }
 
+DebugInfo() {
+    clear
+    echo ""
+    echo "$ca""=== System Information ===""$xx"
+    echo "Operating System: $(lsb_release -d | cut -f 2)"
+    echo "Kernel Version: $(uname -r)"
+    echo "Date and Time: $(date)"
+    echo "$ca""=== CPU ===""$xx"
+    echo "Model: $(grep 'model name' /proc/cpuinfo | head -n 1 | cut -d ':' -f 2 | sed 's/^[ \t]*//')"
+    echo "Number of Processor Cores: $(grep -c processor /proc/cpuinfo)"
+    echo "$ca""=== Memory ===""$xx"
+    echo "Installed RAM: $(free -h | awk '/Mem/{print $2}')"
+    echo "$ca""=== Storage ===""$xx"
+    df -h --output=size,used,avail / | awk 'NR==2 {printf "Total: %s, Used: %s, Free: %s\n", $1, $2, $3}'
+    echo "$ca""=== Docker ===""$xx"
+    docker --version
+    echo "$ca""=== Nodes/Plugins ===""$xx"
+    for NODE in $NODES; do
+        if [ -d "/var/lib/$NODE" ]; then
+            cd "/var/lib/$NODE" || exit
+            if [ -f .env ]; then
+                HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
+                VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
+                if [ "$VAR_STATUS" = 'healthy' ]; then VAR_STATUS="$gn"$VAR_STATUS"$xx"; else VAR_STATUS="$rd"$VAR_STATUS"$xx"; fi
+                echo "$NODE"": $VAR_STATUS"
+                echo "$(cat .env 2>/dev/null | grep _VERSION | sed 's/\([A-Z]\)/\L\1/g')"
+                if [ "$(cat .env 2>/dev/null | grep SSL_CONFIG | cut -d '=' -f 2)" = 'certs' ]; then
+                    TMP="certificate: ""global"
+                    if [ -d "/etc/letsencrypt/live/$HOST" ]; then cd "/etc/letsencrypt/live/$HOST" || exit; fi
+                    if [ -s "fullchain.pem" ]; then TMP=$TMP" | cert=""$gn""ok""$xx"; else TMP=$TMP" | cert=""$rd""err""$xx"; fi
+                    if [ -s "privkey.pem" ]; then TMP=$TMP" | key=""$gn""ok""$xx"; else TMP=$TMP" | key=""$rd""err""$xx"; fi
+                    echo "$TMP"
+                    if [ -s "fullchain.pem" ]; then
+                        echo "valid until: ""$(openssl x509 -in "fullchain".pem -noout -enddate | cut -d '=' -f 2)"
+                    else echo "valid until: ""$rd""err""$xx"; fi
+                else
+                    TMP="certificate: ""let's encrypt"
+                    if [ -d "/var/lib/$NODE/data/letsencrypt" ]; then cd "/var/lib/$NODE/data/letsencrypt" || exit; fi
+                    if [ -s "$HOST.crt" ]; then TMP=$TMP" | cert=""$gn""ok""$xx"; else TMP=$TMP" | cert=""$rd""err""$xx"; fi
+                    if [ -s "$HOST.key" ]; then TMP=$TMP" | key=""$gn""ok""$xx"; else TMP=$TMP" | key=""$rd""err""$xx"; fi
+                    echo "$TMP"
+                    if [ -s "$HOST.crt" ]; then
+                        echo "valid until: ""$(openssl x509 -in "$HOST".crt -noout -enddate | cut -d '=' -f 2)"
+                    else echo "valid until: ""$rd""err""$xx"; fi
+                fi
+            fi
+            echo ""
+        fi
+    done
+    echo "$ca""=== DLT.GREEN Installer  ===""$xx"
+    echo "Version: $VRSN"
+    echo "Build: $BUILD"
+    echo "$ca""=== APT Up-to-date Check ===""$xx"
+    apt update > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "APT is up-to-date."
+    else
+        echo "APT is not up-to-date."
+    fi
+}
+
 CheckEventsShimmer() {
 	clear
 	echo ""
@@ -912,6 +973,15 @@ Dashboard() {
 	echo ""
 	echo "select menu item:"
 
+	if [ "$opt_mode" = 'd' ]; then
+	  echo "$ca""unattended: Debugging...""$xx"
+	  VAR_STATUS='system: debug'
+	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
+	  DebugInfo
+	  sleep 3
+	  n='q'
+	fi
+
 	if [ "$opt_mode" = 0 ] || [ "$opt_mode" = 'u' ]; then
 	  echo "$ca""unattended: System Maintenance...""$xx"
 	  VAR_STATUS='system: maintenance'
@@ -1086,7 +1156,8 @@ Dashboard() {
 	r|R) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   DashboardHelper ;;
-	q|Q) clear; exit ;;
+	q|Q) if [ ! "$opt_mode" = 'd' ]; then clear; else echo ""; fi
+	   exit ;;
 	*) MainMenu ;;
 	esac
 }
@@ -1130,7 +1201,8 @@ MainMenu() {
 	echo "║                              4. Firewall Status/Ports                       ║"
 	echo "║                              5. Cron-Jobs                                   ║"
 	echo "║                              6. Notify-Me                                   ║"
-	echo "║                              7. License Information                         ║"
+	echo "║                              7. Debug Information (for reporting an Issue)  ║"
+	echo "║                              8. License Information                         ║"	
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                              Q. Quit                                        ║"
 	echo "║                                                                             ║"
@@ -1194,7 +1266,11 @@ MainMenu() {
 	   MainMenu ;;
 	5) SubMenuCronJobs ;;
 	6) SubMenuNotifyMe ;;
-	7) SubMenuLicense ;;
+	7) clear
+	   DebugInfo
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   MainMenu ;;
+	8) SubMenuLicense ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
 	   if [ $? -eq 0 ]; then Dashboard; else
