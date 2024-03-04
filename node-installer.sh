@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.0.6"
-BUILD="20240227_200407"
+VRSN="v.4.0.7"
+BUILD="20240303_223534"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -14,11 +14,11 @@ VAR_CONF_RESET=0
 VAR_IOTA_HORNET_VERSION='2.0.1'
 VAR_IOTA_HORNET_UPDATE=1
 
-VAR_IOTA_WASP_VERSION='1.0.3-alpha.3'
+VAR_IOTA_WASP_VERSION='1.0.3-alpha.4'
 VAR_IOTA_WASP_UPDATE=1
 
 VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_IOTA_WASP_CLI_VERSION='1.0.3-alpha.3'
+VAR_IOTA_WASP_CLI_VERSION='1.0.3-alpha.4'
 
 VAR_IOTA_INX_INDEXER_VERSION='1.0'
 VAR_IOTA_INX_MQTT_VERSION='1.0'
@@ -30,11 +30,11 @@ VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
 VAR_SHIMMER_HORNET_UPDATE=1
 
-VAR_SHIMMER_WASP_VERSION='1.0.3-alpha.3'
+VAR_SHIMMER_WASP_VERSION='1.0.3-alpha.4'
 VAR_SHIMMER_WASP_UPDATE=1
 
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_SHIMMER_WASP_CLI_VERSION='1.0.3-alpha.3'
+VAR_SHIMMER_WASP_CLI_VERSION='1.0.3-alpha.4'
 
 VAR_SHIMMER_INX_INDEXER_VERSION='1.0-rc'
 VAR_SHIMMER_INX_MQTT_VERSION='1.0-rc'
@@ -88,8 +88,8 @@ do
 	 ;;
      m)
 	 case $OPTARG in
-	 0|1|2|5|6|21|s|u) opt_mode="$OPTARG" ;;
-     *) echo "$rd""Invalid Argument for Option -m {0|1|2|5|6|21|s}""$xx"
+	 0|1|2|5|6|21|s|u|d) opt_mode="$OPTARG" ;;
+     *) echo "$rd""Invalid Argument for Option -m {0|1|2|5|6|21|d|s}""$xx"
         if [ -f "node-installer.sh" ]; then sudo rm node-installer.sh -f; fi
         exit ;;
 	 esac
@@ -133,19 +133,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='b9eaff4cdaf2d13a2679622f00c590b1b2ba0e73e9a3f503db136a9f7d88e081'
+IotaHornetHash='5f3bcb130bf034b38299d67d78b208ee8ce02cce6e3f1bf07bef359963b6f9f8'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='d251d6973445bdc435420f1a70025eae73a259d617d79dac01ec847f4d78e85f'
+IotaWaspHash='265bb797544284c855c6d44c8a24d38f3e96b4f612fff103bb3c0ee16156e4ba'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='8054f1f3bb3dc02987adc2425c00b2bb1c14c5cf6b278ae63803f0b706412946'
+ShimmerHornetHash='08f2ba294dc7134054ecd353e6c96b793cb74e768b21ddad0950e3782873a9d8'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='6741e6b269f8f07074241c2679a6889da34afbab7321275f55284c9c5c1ac74d'
+ShimmerWaspHash='3ad0cda6edfb6fc79138483f2912c534ef4f12ee7f9070646d8465444f0fe5cd'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='f1745f77b5e0090e9482feeb9e17c2276010ffb02d27aa4c80555de96b1cebfa'
+ShimmerChronicleHash='725cb14ee15463c38b9e71c5fb2986b966a8ea06a628855836be6939d333fac2'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -692,6 +692,67 @@ NodeUpdate() {
     done
 }
 
+DebugInfo() {
+    clear
+    echo ""
+    echo "$ca""=== System Information ===""$xx"
+    echo "Operating System: $(lsb_release -d | cut -f 2)"
+    echo "Kernel Version: $(uname -r)"
+    echo "Date and Time: $(date)"
+    echo "$ca""=== CPU ===""$xx"
+    echo "Model: $(grep 'model name' /proc/cpuinfo | head -n 1 | cut -d ':' -f 2 | sed 's/^[ \t]*//')"
+    echo "Number of Processor Cores: $(grep -c processor /proc/cpuinfo)"
+    echo "$ca""=== Memory ===""$xx"
+    echo "Installed RAM: $(free -h | awk '/Mem/{print $2}')"
+    echo "$ca""=== Storage ===""$xx"
+    df -h --output=size,used,avail / | awk 'NR==2 {printf "Total: %s, Used: %s, Free: %s\n", $1, $2, $3}'
+    echo "$ca""=== Docker ===""$xx"
+    docker --version
+    echo "$ca""=== Nodes/Plugins ===""$xx"
+    for NODE in $NODES; do
+        if [ -d "/var/lib/$NODE" ]; then
+            cd "/var/lib/$NODE" || exit
+            if [ -f .env ]; then
+                HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
+                VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
+                if [ "$VAR_STATUS" = 'healthy' ]; then VAR_STATUS="$gn"$VAR_STATUS"$xx"; else VAR_STATUS="$rd"$VAR_STATUS"$xx"; fi
+                echo "$NODE"": $VAR_STATUS"
+                echo "$(cat .env 2>/dev/null | grep _VERSION | sed 's/\([A-Z]\)/\L\1/g')"
+                if [ "$(cat .env 2>/dev/null | grep SSL_CONFIG | cut -d '=' -f 2)" = 'certs' ]; then
+                    TMP="certificate: ""global"
+                    if [ -d "/etc/letsencrypt/live/$HOST" ]; then cd "/etc/letsencrypt/live/$HOST" || exit; fi
+                    if [ -s "fullchain.pem" ]; then TMP=$TMP" | cert [""$gn""ok""$xx""]"; else TMP=$TMP" | cert [""$rd""error""$xx""]"; fi
+                    if [ -s "privkey.pem" ]; then TMP=$TMP" | key [""$gn""ok""$xx""]"; else TMP=$TMP" | key [""$rd""error""$xx""]"; fi
+                    echo "$TMP"
+                    if [ -s "fullchain.pem" ]; then
+                        echo "valid until: ""$(openssl x509 -in "fullchain".pem -noout -enddate | cut -d '=' -f 2)"
+                    else echo "valid until: ""$rd""err""$xx"; fi
+                else
+                    TMP="certificate: ""let's encrypt"
+                    if [ -d "/var/lib/$NODE/data/letsencrypt" ]; then cd "/var/lib/$NODE/data/letsencrypt" || exit; fi
+                    if [ -s "$HOST.crt" ]; then TMP=$TMP" | cert [""$gn""ok""$xx""]"; else TMP=$TMP" | cert [""$rd""error""$xx""]"; fi
+                    if [ -s "$HOST.key" ]; then TMP=$TMP" | key [""$gn""ok""$xx""]"; else TMP=$TMP" | key [""$rd""error""$xx""]"; fi
+                    echo "$TMP"
+                    if [ -s "$HOST.crt" ]; then
+                        echo "valid until: ""$(openssl x509 -in "$HOST".crt -noout -enddate | cut -d '=' -f 2)"
+                    else echo "valid until: ""$rd""err""$xx"; fi
+                fi
+            fi
+            echo ""
+        fi
+    done
+    echo "$ca""=== DLT.GREEN Installer  ===""$xx"
+    echo "Version: $VRSN"
+    echo "Build: $BUILD"
+    echo "$ca""=== APT Up-to-date Check ===""$xx"
+    apt update > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "APT is up-to-date."
+    else
+        echo "APT is not up-to-date."
+    fi
+}
+
 CheckEventsShimmer() {
 	clear
 	echo ""
@@ -912,6 +973,15 @@ Dashboard() {
 	echo ""
 	echo "select menu item:"
 
+	if [ "$opt_mode" = 'd' ]; then
+	  echo "$ca""unattended: Debugging...""$xx"
+	  VAR_STATUS='system: debug'
+	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
+	  DebugInfo
+	  sleep 3
+	  n='q'
+	fi
+
 	if [ "$opt_mode" = 0 ] || [ "$opt_mode" = 'u' ]; then
 	  echo "$ca""unattended: System Maintenance...""$xx"
 	  VAR_STATUS='system: maintenance'
@@ -1086,7 +1156,8 @@ Dashboard() {
 	r|R) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   DashboardHelper ;;
-	q|Q) clear; exit ;;
+	q|Q) if [ ! "$opt_mode" = 'd' ]; then clear; else echo ""; fi
+	   exit ;;
 	*) MainMenu ;;
 	esac
 }
@@ -1130,7 +1201,8 @@ MainMenu() {
 	echo "║                              4. Firewall Status/Ports                       ║"
 	echo "║                              5. Cron-Jobs                                   ║"
 	echo "║                              6. Notify-Me                                   ║"
-	echo "║                              7. License Information                         ║"
+	echo "║                              7. Debug Information (for reporting an Issue)  ║"
+	echo "║                              8. License Information                         ║"	
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                              Q. Quit                                        ║"
 	echo "║                                                                             ║"
@@ -1194,7 +1266,11 @@ MainMenu() {
 	   MainMenu ;;
 	5) SubMenuCronJobs ;;
 	6) SubMenuNotifyMe ;;
-	7) SubMenuLicense ;;
+	7) clear
+	   DebugInfo
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   MainMenu ;;
+	8) SubMenuLicense ;;
 	q|Q) clear; exit ;;
 	*) docker --version | grep "Docker version" >/dev/null 2>&1
 	   if [ $? -eq 0 ]; then Dashboard; else
@@ -2407,7 +2483,7 @@ SystemMaintenance() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                            1. System Reboot (recommended)                   ║"
+	echo "║                            1. System Reboot (if necessary, recommended)     ║"
 	echo "║                            X. Maintenance Menu                              ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -2421,21 +2497,33 @@ SystemMaintenance() {
 	if [ "$opt_mode" ]; then if ! [ "$opt_reboot" ]; then opt_reboot=0; fi; fi
 	if [ "$opt_reboot" = 1 ]; then n=1; elif [ "$opt_reboot" = 0 ]; then n=0; else read -r -p '> ' n; fi
 
-	if [ "$opt_mode" ]; then if [ "$opt_reboot" = 1 ]; then
-	  VAR_STATUS='system: reboot'
-	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
-	  sleep 3
-	fi; fi
-
 	case $n in
-	1) 	echo 'rebooting...'; sleep 3
-	    echo "$rd"
-	    echo "System rebooted, dont't forget to reconnect and start your Nodes again,"
-	    echo "if you don't have Autostart enabled!"
-	    echo "$xx"
-		sudo reboot
-		n='q'
-		;;
+	1) if [ -f /var/run/reboot-required ]; then
+	     echo 'rebooting...'; sleep 3
+	     echo "$rd"
+	     echo "System rebooted, dont't forget to reconnect and start your Nodes again,"
+	     echo "if you don't have Autostart enabled!"
+	     echo "$xx"
+	     if [ "$opt_mode" ]; then
+	       VAR_STATUS='system: reboot'
+	       NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
+	     fi
+	     sleep 3
+	     sudo reboot
+	     n='q'
+	   else
+	     echo 'rebooting...'; sleep 3
+	     echo "$gn"
+	     echo "System reboot not necessary, your nodes will be started again!"
+	     echo "$xx"
+	     if [ "$opt_mode" ]; then
+	       VAR_STATUS='system: reboot not necessary'
+	       NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS";
+	     fi
+	     sleep 3
+	     n='s'
+	     if ! [ "$opt_mode" ]; then DashboardHelper; fi
+	   fi ;;
 	*) n='s'
 		if ! [ "$opt_mode" ]; then DashboardHelper; fi
 	   ;;

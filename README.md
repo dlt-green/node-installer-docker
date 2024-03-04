@@ -17,13 +17,13 @@ The DLT.GREEN Node-Installer-Docker provides an easy-to-use script that streamli
 - **RAM:** 8 GB minimum
 - **CPU Cores:** 4
 - **Storage:** 160 GB SSD minimum
-- **Operating System:** Ubuntu 22.04.03 LTS (Jammy Jellyfish) or Debian 12 (Bookworm)
+- **Operating System:** Ubuntu 22.04.04 LTS (Jammy Jellyfish) or Debian 12 (Bookworm)
 
 #### For Event-Tracking Nodes or Additional Plugins
 - **RAM:** 16 GB minimum
-- **CPU Cores:** 4+
+- **CPU Cores:** 6+
 - **Storage:** 250 GB SSD minimum
-- **Operating System:** Ubuntu 22.04.03 LTS (Jammy Jellyfish) or Debian 12 (Bookworm)
+- **Operating System:** Ubuntu 22.04.04 LTS (Jammy Jellyfish) or Debian 12 (Bookworm)
 
 ## Installation Guide
 
@@ -64,10 +64,11 @@ Each flag represents a different configuration option:
    - `5`: Update – Updates Shimmer-Hornet nodes.
    - `6`: Update – Updates Shimmer-Wasp nodes.
    - `u`: Executes Mode 0 and performs unattended recursive Node Updates when possible. Supports the last 10 releases in the GitHub pipeline (older versions are not updated).
+   - `d`: Debugging with output to CLI
 - `time`: Sets the delay in seconds before executing an action (0-20 seconds, default: 10).
 - `reboot`:
    - `0`: No reboot after operations.
-   - `1`: Executes a system reboot with automatic node shutdown prior to it (default: 0).
+   - `1`: Executes a system reboot (only if necessary) with automatic node shutdown prior to it (default: 0).
 - `checks`:
    - `0`: Disables checks (not recommended).
    - `1`: Enforces UFW Firewall and Autostart setup (default: 1).
