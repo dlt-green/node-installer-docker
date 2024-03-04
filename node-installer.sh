@@ -14,11 +14,11 @@ VAR_CONF_RESET=0
 VAR_IOTA_HORNET_VERSION='2.0.1'
 VAR_IOTA_HORNET_UPDATE=1
 
-VAR_IOTA_WASP_VERSION='1.0.3-alpha.5'
+VAR_IOTA_WASP_VERSION='1.0.3-rc.1'
 VAR_IOTA_WASP_UPDATE=1
 
 VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_IOTA_WASP_CLI_VERSION='1.0.3-alpha.5'
+VAR_IOTA_WASP_CLI_VERSION='1.0.3-rc.1'
 
 VAR_IOTA_INX_INDEXER_VERSION='1.0'
 VAR_IOTA_INX_MQTT_VERSION='1.0'
@@ -30,11 +30,11 @@ VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
 VAR_SHIMMER_HORNET_UPDATE=1
 
-VAR_SHIMMER_WASP_VERSION='1.0.3-alpha.5'
+VAR_SHIMMER_WASP_VERSION='1.0.3-rc.1'
 VAR_SHIMMER_WASP_UPDATE=1
 
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_SHIMMER_WASP_CLI_VERSION='1.0.3-alpha.5'
+VAR_SHIMMER_WASP_CLI_VERSION='1.0.3-rc.1'
 
 VAR_SHIMMER_INX_INDEXER_VERSION='1.0-rc'
 VAR_SHIMMER_INX_MQTT_VERSION='1.0-rc'
@@ -730,6 +730,8 @@ DebugInfo() {
                 else
                     TMP="certificate: ""let's encrypt"
                     if [ -d "/var/lib/$NODE/data/letsencrypt" ]; then cd "/var/lib/$NODE/data/letsencrypt" || exit; fi
+                    cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .certificate' | base64 -d > "$HOST.crt"
+                    cat acme.json | jq -r '.myresolver .Certificates[]? | select(.domain.main=="'"$HOST"'") | .key' | base64 -d > "$HOST.key"
                     if [ -s "$HOST.crt" ]; then TMP=$TMP" | cert [""$gn""ok""$xx""]"; else TMP=$TMP" | cert [""$rd""error""$xx""]"; fi
                     if [ -s "$HOST.key" ]; then TMP=$TMP" | key [""$gn""ok""$xx""]"; else TMP=$TMP" | key [""$rd""error""$xx""]"; fi
                     echo "$TMP"
