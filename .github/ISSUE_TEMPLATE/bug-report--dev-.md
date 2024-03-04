@@ -1,8 +1,8 @@
 ---
-name: Bug report [main]
-about: Create a report to help us improve
+name: Bug report [dev]
+about: Generate a report after helping us test
 title: ''
-labels: ["main-bug"]
+labels: ["dev-bug"]
 assignees: ''
 
 ---
@@ -21,8 +21,8 @@ assignees: ''
 ### Current Behavior
 [Describe what actually happened]
 
-### Installer Debug Output
-Output of GUI: `Installer->Maintenance->Debug Information` or CLI: `dlt.green -m d`
+### Installer Debug Output (Dev-Installer)
+Output of GUI: `Installer->Maintenance->Debug Information` or CLI: `dlt.green-dev -m d`
 
 [Insert output here]
 
