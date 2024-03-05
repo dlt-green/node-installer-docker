@@ -8,6 +8,7 @@
 
 Your dashboard under (mind eventually configured port):
 https://node.your-domain.com/
+
 ## .env
 
 ```
@@ -32,17 +33,18 @@ DASHBOARD_PASSWORD=<password hash>
 DASHBOARD_SALT=<password salt>
 # WASP_WEBAPI_AUTH_SCHEME=jwt
 # WASP_JWT_DURATION=24h
+# WASP_PRUNING_MIN_STATES_TO_KEEP=10000
 
 # WASP_TRUSTED_NODE_0_NETID=trusted.node:4000
 # WASP_TRUSTED_NODE_0_PUBKEY=<pubkey>
 ```
 
-| Parameter     | Mandatory |   Default   | Description                                                                                                                                                           |
-| ------------- | :-------: | :---------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SSL_CONFIG    |           | letsencrypt | Allowed values: `certs`, `letsencrypt`. Default: `letsencrypt`. If set to certs `WASP_SSL_CERT` and `WASP_SSL_KEY` are used otherwise letsencrypt is used by default. |
-| WASP_SSL_CERT |    (x)    |             | Absolute path to SSL certificate (mandatory if `SSL_CONFIG=certs`)                                                                                                    |
-| WASP_SSL_KEY  |    (x)    |             | Absolute path to SSL private key (mandatory if `SSL_CONFIG=certs`)                                                                                                    |
-| ACME_EMAIL    |    (x)    |             | Mail address used to fetch SSL certificate from letsencrypt (mandatory if `SSL_CONFIG` not set or is set to `letsencrypt`).           |                                |
+| Parameter                         | Mandatory |   Default   | Description                                                                                                                                                                                                        |
+|-----------------------------------|:---------:|:-----------:|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SSL_CONFIG                        |           | letsencrypt | Allowed values: `certs`, `letsencrypt`. Default: `letsencrypt`. If set to certs `WASP_SSL_CERT` and `WASP_SSL_KEY` are used otherwise letsencrypt is used by default.                                              |
+| WASP_SSL_CERT                     |    (x)    |             | Absolute path to SSL certificate (mandatory if `SSL_CONFIG=certs`)                                                                                                                                                 |
+| WASP_SSL_KEY                      |    (x)    |             | Absolute path to SSL private key (mandatory if `SSL_CONFIG=certs`)                                                                                                                                                 |
+| ACME_EMAIL                        |    (x)    |             | Mail address used to fetch SSL certificate from letsencrypt (mandatory if `SSL_CONFIG` not set or is set to `letsencrypt`).                                                                                        |                                |
 | WASP_VERSION                      |     x     |             | Version of `iotaledger/wasp` docker image to use                                                                                                                                                                   |
 | WASP_DASHBOARD_VERSION            |     x     |             | Version of `iotaledger/wasp-dashboard` docker image to use                                                                                                                                                         |
 | WASP_HOST                         |     x     |             | Host domain name e.g. `wasp.dlt.green`                                                                                                                                                                             |
@@ -52,6 +54,7 @@ DASHBOARD_SALT=<password salt>
 | WASP_PEERING_PORT                 |           |    4000     | Peering port                                                                                                                                                                                                       |
 | WASP_DATA_DIR                     |           |    .data    | Directory containing configuration, database etc.                                                                                                                                                                  |
 | WASP_IDENTITY_PRIVATE_KEY         |           |             | Private key used to derive the node identity                                                                                                                                                                       |
+| WASP_PRUNING_MIN_STATES_TO_KEEP   |           |    10000    | Minimum number of states to keep in the database. If the number of states exceeds this value, the oldest states are pruned.                                                                                        |
 | DASHBOARD_USERNAME                |           |    wasp     | Username to access dashboard                                                                                                                                                                                       |
 | DASHBOARD_PASSWORD                |     x     |             | Password hash (can be generated with `docker run --rm -it iotaledger/hornet:2.0-rc tool pwd-hash` or non-interactively with `docker run --rm iotaledger/hornet:2.0-rc tool pwd-hash --json --password <password>`) |
 | DASHBOARD_SALT                    |     x     |             | Password salt (can be generated with `docker run --rm -it iotaledger/hornet:2.0-rc tool pwd-hash` or non-interactively with `docker run --rm iotaledger/hornet:2.0-rc tool pwd-hash --json --password <password>`) |
@@ -65,13 +68,15 @@ DASHBOARD_SALT=<password salt>
 wasp-cli is delivered in a docker image. To use it execute the following steps:
 
 1. Evenutally create a file named `.env` and set parameters given in documentation below
-2. Run `./prepare_cli.sh` to generate wasp-cli config from values in `.env`. The config is created in `data/config/wasp-cli.json`.
+2. Run `./prepare_cli.sh` to generate wasp-cli config from values in `.env`. The config is created
+   in `data/config/wasp-cli.json`.
 3. An _alias_ names wasp-cli is automatically added to `~/.bash_aliases` for easier execution of wasp-cli in docker
 4. Try to execute `wasp-cli login` and use wasp credentials to authenticate with API
-5. Eventually run `./refresh_trusted_nodes.sh` to trust configured nodes. See `WASP_TRUSTED_NODE_* ` in the table above for further information.
+5. Eventually run `./refresh_trusted_nodes.sh` to trust configured nodes. See `WASP_TRUSTED_NODE_* ` in the table above
+   for further information.
 
 | Parameter                   | Default | Description                                                                                                                                                                        |
-| --------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-----------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | WASP_CLI_FAUCET_ADDRESS     |         | Address to faucet (fallback is docker network interal address http://inx-faucet:8091)                                                                                              |
 | WASP_CLI_COMMITTEE_\[0-9\]+ |         | WebAPI url of the node in the committee (e.g. https://host:448)                                                                                                                    |
 | WASP_CLI_WALLET_SEED        |         | Wallet seed to be used with wasp-cli. This parameter is optional: If specified the seed will be automatically inserted in generated wasp-cli config on `prepare_cli.sh` execution. |
@@ -79,14 +84,20 @@ wasp-cli is delivered in a docker image. To use it execute the following steps:
 | WASP_CLI_CHAIN              |         | Address of chain; if missing, no chain is added to config                                                                                                                          |
 
 **Important hints:**
-- The WASP_CLI_COMMITTEE_* parameters must be numbered in ascending order and without gaps starting from 0 or 1 respectively. If committee member 0 is not configured the information of the local node is used automatically.
+
+- The WASP_CLI_COMMITTEE_* parameters must be numbered in ascending order and without gaps starting from 0 or 1
+  respectively. If committee member 0 is not configured the information of the local node is used automatically.
 - Execute `prepare_cli.sh` after each wasp upgrade.
 - Uninstalling the wasp-cli alias can be done with `prepare_cli.sh --uninstall`
 
 ### FAQ
 
 #### How do I get netid and pubkey to give to other node operators so they can trust my node?
-Execute `wasp-cli peering info` to get netID and pubKey. Other node operators can add this information to `.env` (and execute `./refresh_trusted_nodes.sh`) to trust your node or execute `wasp-cli peering trust <pubKey> <netID>` manually.
+
+Execute `wasp-cli peering info` to get netID and pubKey. Other node operators can add this information to `.env` (and
+execute `./refresh_trusted_nodes.sh`) to trust your node or execute `wasp-cli peering trust <pubKey> <netID>` manually.
 
 #### How can I generate a wallet seed?
-To generate a new wallet seed execute `wasp-cli init`. The seed is added to `data/config/wasp-cli.json`. To preserve the seed for next `prepare_cli.sh` execution copy the seed from config to WASP_CLI_WALLET_SEED in `.env`.
+
+To generate a new wallet seed execute `wasp-cli init`. The seed is added to `data/config/wasp-cli.json`. To preserve the
+seed for next `prepare_cli.sh` execution copy the seed from config to WASP_CLI_WALLET_SEED in `.env`.
