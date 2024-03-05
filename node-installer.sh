@@ -174,6 +174,7 @@ CheckDistribution() {
 	case $tmp in
 	'Ubuntu') VAR_DISTRIBUTION='Ubuntu' ;;
 	'Debian') VAR_DISTRIBUTION='Debian' ;;
+	'Siemens') VAR_DISTRIBUTION='Debian' ;;
 	*) echo "$rd"; echo "Distribution $tmp is not supported!"; echo "$xx"; exit ;;
 	esac
 }
@@ -4646,7 +4647,7 @@ echo "╚═══════════════════════�
 echo ""
 echo "> $gn""Checking Hash of Installer successful...""$xx"
 echo "> $gn""$InstallerHash""$xx"
-echo "  $gr""$VAR_DISTRIBUTION | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
+echo "  $gr""$(cat /etc/issue | cut -d ' ' -f 1)"" | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
 DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
 DEBIAN_FRONTEND=noninteractive sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
