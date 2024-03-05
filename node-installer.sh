@@ -1878,7 +1878,7 @@ SubMenuMaintenance() {
 
 	      echo "Download latest full snapshot... latest-wasp_chains_wal"
 	      VAR_SNAPSHOT='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
-	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+#	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
 	      chmod 744 /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
 	      cd /var/lib/$VAR_DIR/data/waspdb || SubMenuMaintenance
 		  tar -xzvf /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
