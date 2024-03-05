@@ -39,6 +39,8 @@ set_config "${configPath}" ".webapi.auth.basic.username"    "\"${DASHBOARD_USERN
 set_config "${configPath}" ".prometheus.bindAddress"        "\"0.0.0.0:9312\""
 set_config "${configPath}" ".db.debugSkipHealthCheck"       "false"
 
+set_config_if_present_in_env "${configPath}" "WASP_PRUNING_MIN_STATES_TO_KEEP" ".stateManager.pruningMinStatesToKeep"
+
 echo "Configure users defined in .env..."
 echo "{}" > "${usersConfigPath}"
 set_config "${usersConfigPath}" ".users.users[\"${DASHBOARD_USERNAME:-wasp}\"].passwordHash" "\"${DASHBOARD_PASSWORD}\"" "secret"
