@@ -3162,6 +3162,15 @@ IotaWasp() {
 		echo "$gn""Set peering port: $VAR_IOTA_WASP_PEERING_PORT""$xx"
 
 		echo ''
+		VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+		VAR_DEFAULT='10000';
+		if [ -z "$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then
+		  echo "Set pruning min states to keep (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set pruning min states to keep (config: $ca""$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_TMP; elif [ -z "$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_DEFAULT; fi
+		echo "$gn""Set pruning min states to keep: $VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx"
+
+		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1 | tr '[:upper:]' '[:lower:]');
 		if [ -z "$VAR_USERNAME" ]; then
@@ -3211,6 +3220,7 @@ IotaWasp() {
 		echo "WASP_API_PORT=$VAR_IOTA_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_IOTA_WASP_PEERING_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
+		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
