@@ -1940,7 +1940,7 @@ SubMenuMaintenance() {
 	   echo ""
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down >/dev/null 2>&1; fi
-	   if [ -d /var/lib/$VAR_DIR ]; then rm -r /var/lib/$VAR_DIR; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then rm -rf /var/lib/$VAR_DIR; fi
 
 	   echo "$rd""$VAR_DIR removed from your system!""$xx"
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
