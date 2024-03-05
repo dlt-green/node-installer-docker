@@ -1872,6 +1872,19 @@ SubMenuMaintenance() {
 	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
 	   fi
 
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ] && [ $VAR_SHIMMER_HORNET_NETWORK = 'mainnet' ]; then
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
+
+	      echo "Download latest full snapshot... latest-wasp_chains_wal"
+	      VAR_SNAPSHOT='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
+	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+	      chmod 744 /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+	      cd /var/lib/$VAR_DIR/data/waspdb || SubMenuMaintenance
+		  tar -xzvf /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+	      chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
+	   fi
+
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	   clear
@@ -1883,6 +1896,7 @@ SubMenuMaintenance() {
 
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
+
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	   clear
