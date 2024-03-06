@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.4.1.1"
-BUILD="20240306_232223"
+BUILD="20240306_233523"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -133,19 +133,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='96dae01077ebb1d2322d264206447b95cd623107308c07cb07249e693567f058'
+IotaHornetHash='777af37f156edc98349fe1234121d26af9b9cb7a850a8c062231b3e749f10815'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='91bc29f58ea88fd25946e5f7c4ee696642b4416efb45d6c998837cd138f2c026'
+IotaWaspHash='67aed7f78f8f7df66c57d52ea70fa5eccd84e6fe207e50cc88aad6091e5ddc9c'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='4dde2d56df674d271e92f136105a91f0bdd90c140d898bc4e7780efe60f50198'
+ShimmerHornetHash='f23802768b0a329d690dcad35e4dffe6ab6e78952109423bf043872ba1b0a15a'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='6c18820a3f079a030a6f49aa58f43c2e1f03568493a93a65e4ceec7b62833036'
+ShimmerWaspHash='5013d75d3c9654f04a68cc507c0bd652ca57a986307091999a1aab9a210817e8'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='915023af6897301e589b90b1ef0fe6b68a0b862bde3beba6792fe7e30704cfcb'
+ShimmerChronicleHash='eac0b0bf4efe6dc8dad1c58e97b5cb86dc6d5cfeb949934dbae9eb231be3fb08'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -190,7 +190,7 @@ CheckShimmer() {
 }
 
 CheckAutostart() {
-	if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]
+	if ! [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]
 	then
 		clear
 		echo ""
@@ -941,8 +941,8 @@ Dashboard() {
 
 	VAR_NODE=0
 
-	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ];  then cja=$gn; else cja=$rd; fi
-	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ];  then cjb=$gn; else cjb=$rd; fi
+	if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ];  then cja=$gn; else cja=$rd; fi
+	if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ];  then cjb=$gn; else cjb=$rd; fi
 
 	if [ "$opt_mode" ]; then VAR_STATUS="installer: $VRSN"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 
@@ -1291,9 +1291,9 @@ MainMenu() {
 
 SubMenuCronJobs() {
 
-	if [ "$(crontab -l | grep "$VAR_CRON_TIME_1" | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn"[✓] "; else cja=$rd"[X] "; fi
-	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then cjb=$gn"[✓] "; else cjb=$rd"[X] "; fi
-	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then cjc=$gn"[✓] "; else cjc=$rd"[X] "; fi
+	if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_TIME_1" | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ];  then cja=$gn"[✓] "; else cja=$rd"[X] "; fi
+	if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then cjb=$gn"[✓] "; else cjb=$rd"[X] "; fi
+	if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then cjc=$gn"[✓] "; else cjc=$rd"[X] "; fi
 
 	clear
 	echo ""
@@ -1314,13 +1314,13 @@ SubMenuCronJobs() {
 	read -r -p '> ' n
 	case $n in
 	1) clear
-	   if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ]; then
+	   if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ]; then
 		  echo "$ca"
 		  echo 'Disable Autostart for all Nodes...'
 		  echo "$xx"
 		  sleep 3
 		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_1")" | grep -v "$VAR_CRON_JOB_1") | crontab -
-		  if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ]; then
+		  if ! [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ]; then
 		     echo "$rd""Autostart for all Nodes disabled""$xx"
 		  fi
 	   else
@@ -1333,25 +1333,25 @@ SubMenuCronJobs() {
 		     export EDITOR='nano' && echo "# crontab" | crontab -
 		  fi
 
-		  if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ]; then
+		  if ! [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1")" ]; then
 		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_1" && echo "$VAR_CRON_TIME_1_1""$VAR_CRON_TIME_1_2""$VAR_CRON_URL""$VAR_CRON_JOB_1""$VAR_CRON_END_1") | crontab -
 		  fi
 
-		  if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
+		  if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_1" | grep "$VAR_CRON_TIME_1_1")" ]; then
 		     echo "$gn""Autostart for all Nodes enabled""$xx"
 		  fi
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuCronJobs ;;
 	2) clear
-	   if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
+	   if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
 		  echo "$ca"
 		  echo 'Disable Automatic System Maintenance...'
 		  echo "$xx"
 		  sleep 3
 		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2m") | crontab -
 		  (echo "$(echo "$(crontab -l 2>&1)" | grep -v "$VAR_CRON_TITLE_2")" | grep -v "$VAR_CRON_JOB_2u") | crontab -
-		  if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
+		  if ! [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
 		     echo "$rd""Automatic System Maintenance disabled""$xx"
 		  fi
 	   else
@@ -1383,11 +1383,11 @@ SubMenuCronJobs() {
 		     export EDITOR='nano' && echo "# crontab" | crontab -
 		  fi
 
-		  if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
+		  if ! [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || ! [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
 		     (echo "$(crontab -l 2>&1 | grep -e '')" && echo "" && echo "$VAR_CRON_TITLE_2" && echo "$VAR_CRON_MIN_2"" ""$VAR_CRON_HOUR_2"" * * * ""$VAR_CRON_URL""$VAR_CRON_JOB_2m""$VAR_CRON_END_2") | crontab -
 		  fi
 
-		  if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
+		  if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ] || [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
 		     echo "$gn""Automatic System Maintenance enabled: ""$(printf '%02d' "$VAR_CRON_HOUR_2")"":""$(printf '%02d' "$VAR_CRON_MIN_2")""$xx"
 		  fi
 	   fi
@@ -1395,13 +1395,13 @@ SubMenuCronJobs() {
 	   SubMenuCronJobs ;;
 	3) clear
 	   tmp=0
-	   if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
+	   if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
 		  echo "$ca"
 		  echo "Disable Automatic Node Updates..."
 		  echo "$xx"
 		  sleep 3
 		  (echo "$(crontab -l | sed 's/dlt.green -m u/dlt.green -m 0/g')") | crontab -
-		  if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ]; then
+		  if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ]; then
 			 tmp=1
 		     echo "$rd""Automatic Node Updates disabled""$xx"
 		  else
@@ -1409,13 +1409,13 @@ SubMenuCronJobs() {
 		     echo "$rd""Error disabling Automatic Node Updates!""$xx"
 		  fi
 	   else
-	   if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ]; then
+	   if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m")" ]; then
 		  echo "$ca"
 		  echo "Enable Automatic Node Updates..."
 		  echo "$xx"
 		  sleep 3
 		  (echo "$(crontab -l | sed 's/dlt.green -m 0/dlt.green -m u/g')") | crontab -
-		  if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
+		  if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2u")" ]; then
 			 tmp=1
 		     echo "$gn""Automatic Node Updates enabled""$xx"
 		  else
@@ -1449,10 +1449,10 @@ SubMenuCronJobs() {
 SubMenuNotifyMe() {
 
 	nmi=$gr; nmw=$gr; nme=$gr;
-	if ! [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l')" ]; then (echo "$(crontab -l | sed 's/-m/-l i -m/g')") | crontab -; fi
-	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l i')" ]; then nmi=$gn; nmw=$or; nme=$rd; fi
-	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l w')" ]; then nmw=$or; nme=$rd; fi
-	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l e')" ]; then nme=$rd; fi
+	if ! [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep '\-l')" ]; then (echo "$(crontab -l | sed 's/-m/-l i -m/g')") | crontab -; fi
+	if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep '\-l i')" ]; then nmi=$gn; nmw=$or; nme=$rd; fi
+	if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep '\-l w')" ]; then nmw=$or; nme=$rd; fi
+	if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep '\-l e')" ]; then nme=$rd; fi
 
 	clear
 	echo ""
@@ -1579,9 +1579,9 @@ SubMenuNotifyMe() {
 	   SubMenuNotifyMe ;;
 	4) clear
 	   unset tmp
-	   if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l e')" ] && [ -z "$tmp" ]; then (echo "$(crontab -l | sed 's/-l e/-l i/g')") | crontab -; tmp=1; fi
-	   if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l w')" ] && [ -z "$tmp" ]; then (echo "$(crontab -l | sed 's/-l w/-l e/g')") | crontab -; tmp=1; fi
-	   if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep '\-l i')" ] && [ -z "$tmp" ]; then (echo "$(crontab -l | sed 's/-l i/-l w/g')") | crontab -; tmp=1; fi
+	   if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep '\-l e')" ] && [ -z "$tmp" ]; then (echo "$(crontab -l | sed 's/-l e/-l i/g')") | crontab -; tmp=1; fi
+	   if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep '\-l w')" ] && [ -z "$tmp" ]; then (echo "$(crontab -l | sed 's/-l w/-l e/g')") | crontab -; tmp=1; fi
+	   if [ "$(crontab -l | grep -v '#' | grep "$VAR_CRON_URL" | grep '\-l i')" ] && [ -z "$tmp" ]; then (echo "$(crontab -l | sed 's/-l i/-l w/g')") | crontab -; tmp=1; fi
 	   SubMenuNotifyMe ;;
 	5) clear
 	   echo "$ca"
