@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.4.1.1"
-BUILD="20240306_223548"
+BUILD="20240306_225016"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -133,19 +133,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='5aa6b523a5f1ec29dc715d9e14a40513f0061840fb770525ccb4604a8d5fed09'
+IotaHornetHash='e285a72eb31c8993878cc816276b49a84a7be6c22eac344e5da19296c40464aa'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='8be8afd3dadf6aaff770a74098583fd3515e652a0ae9b789960dc4691d9bcf0e'
+IotaWaspHash='f4ef7142d6d8b9d634ce342e0817d2d710677f1a9d5ec6605f3c44871cba78fe'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='98022bc642f849598483c29ceec45c260c42b8515ffbddcdc47fe35e374a1478'
+ShimmerHornetHash='7656239bd0310178ededb4b86716eb9be0c1740cc95af34972a9f0e0a7b07cb5'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='90ef0d4b7f55edeed7f3dcece9ce74c745e5b30d76985b8f75b0036dd5a02137'
+ShimmerWaspHash='43cf93304120b8b3df93bedd9af4848c7d33de2d4ab9029fd00b2befa6b049a3'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='6468ba2a8d7b26775cbd873d98021387d81ddc0b00d6fe88437599f71e194817'
+ShimmerChronicleHash='3da117fca92cecf8e39b0c1f78f2ca033e21d113775ba7508a79d778f6a9c50d'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -976,8 +976,8 @@ Dashboard() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u")" ]; then
 	  echo "$gr""              maintenance: ""$(printf '%02d' "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 2)")"":""$(printf '%02d' "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 1)")"" | day: ""$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 3)"" | month: ""$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 4)"" | weekday: ""$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 5)""$xx"
+	  echo ""
 	else echo ""; fi
-	echo ""
 	echo "select menu item:"
 
 	if [ "$opt_mode" = 'd' ]; then
