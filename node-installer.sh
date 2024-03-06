@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.0.9"
-BUILD="20240304_212031"
+VRSN="v.4.1.0"
+BUILD="20240306_183941"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -133,19 +133,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='2f22a3977385818de332e5aa152358b2bf24d580826b507e8f679b3018fafaed'
+IotaHornetHash='b973bba8722da3bd02138bcb411b7eea78172327b7b92e7ddfa62b8acfb79e9c'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='ae278cecdf46f3a4f8642a7a1be3a9ed1a62a386a457282d5f81f114324aa7d3'
+IotaWaspHash='48e3a513510d998847a57f90264b6bbd4561e648d970fb4bde9ec7efd5fe9ab9'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='6b60d4732c6b4b1601f64800779bb1c6e4d2751d4ce291df8f8d49f6d74ca60b'
+ShimmerHornetHash='1f70de3acb868ae955413534d26540644aa98b76c80993e030104674ebf24cf6'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='a27ec800d3371f25a61d6369cc240bb02c08933f8b40af50f061503a79b41755'
+ShimmerWaspHash='bf8db95e17ed77a7068054c2c213780b98e141c0dd574768783111d0a9a1933c'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='11b8faaf8ac1ac1973bd38f37757592a1d1b256dc9bcaab89a40e6bc029eb3ab'
+ShimmerChronicleHash='0de2d86e0bf97cb4a2bfa92bd233d0bbf4697f1d3b1b0e662749b9405b660f5f'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -174,6 +174,7 @@ CheckDistribution() {
 	case $tmp in
 	'Ubuntu') VAR_DISTRIBUTION='Ubuntu' ;;
 	'Debian') VAR_DISTRIBUTION='Debian' ;;
+	'Siemens') VAR_DISTRIBUTION='Debian' ;;
 	*) echo "$rd"; echo "Distribution $tmp is not supported!"; echo "$xx"; exit ;;
 	esac
 }
@@ -1872,6 +1873,22 @@ SubMenuMaintenance() {
 	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
 	   fi
 
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ] && [ $VAR_SHIMMER_HORNET_NETWORK = 'mainnet' ]; then
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
+
+	      echo "Download latest full snapshot... latest-wasp_chains_wal"
+	      VAR_SNAPSHOT='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
+	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+	      chmod 744 /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+	      cd /var/lib/$VAR_DIR/data/waspdb || SubMenuMaintenance
+		  tar -xzvf /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+	      chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
+
+		  echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> /var/lib/$VAR_DIR/.env
+
+	   fi
+
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	   clear
@@ -1883,6 +1900,7 @@ SubMenuMaintenance() {
 
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
+
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	   clear
@@ -1926,7 +1944,7 @@ SubMenuMaintenance() {
 	   echo ""
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down >/dev/null 2>&1; fi
-	   if [ -d /var/lib/$VAR_DIR ]; then rm -r /var/lib/$VAR_DIR; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then rm -rf /var/lib/$VAR_DIR; fi
 
 	   echo "$rd""$VAR_DIR removed from your system!""$xx"
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2934,6 +2952,7 @@ IotaHornet() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
+	chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3162,6 +3181,15 @@ IotaWasp() {
 		echo "$gn""Set peering port: $VAR_IOTA_WASP_PEERING_PORT""$xx"
 
 		echo ''
+		VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+		VAR_DEFAULT='10000';
+		if [ -z "$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then
+		  echo "Set pruning min states to keep (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set pruning min states to keep (config: $ca""$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_TMP; elif [ -z "$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_DEFAULT; fi
+		echo "$gn""Set pruning min states to keep: $VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx"
+
+		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1 | tr '[:upper:]' '[:lower:]');
 		if [ -z "$VAR_USERNAME" ]; then
@@ -3211,6 +3239,7 @@ IotaWasp() {
 		echo "WASP_API_PORT=$VAR_IOTA_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_IOTA_WASP_PEERING_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
+		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
@@ -3330,6 +3359,7 @@ IotaWasp() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
+	chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3749,6 +3779,7 @@ ShimmerHornet() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
+	chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3977,6 +4008,15 @@ ShimmerWasp() {
 		echo "$gn""Set peering port: $VAR_SHIMMER_WASP_PEERING_PORT""$xx"
 
 		echo ''
+		VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+		VAR_DEFAULT='10000';
+		if [ -z "$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then
+		  echo "Set pruning min states to keep (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set pruning min states to keep (config: $ca""$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_TMP; elif [ -z "$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_DEFAULT; fi
+		echo "$gn""Set pruning min states to keep: $VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx"
+
+		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1 | tr '[:upper:]' '[:lower:]');
 		if [ -z "$VAR_USERNAME" ]; then
@@ -4026,6 +4066,7 @@ ShimmerWasp() {
 		echo "WASP_API_PORT=$VAR_SHIMMER_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_SHIMMER_WASP_PEERING_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
+		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
@@ -4145,6 +4186,7 @@ ShimmerWasp() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
+	chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4478,6 +4520,7 @@ ShimmerChronicle() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
+	chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4612,7 +4655,7 @@ echo "╚═══════════════════════�
 echo ""
 echo "> $gn""Checking Hash of Installer successful...""$xx"
 echo "> $gn""$InstallerHash""$xx"
-echo "  $gr""$VAR_DISTRIBUTION | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
+echo "  $gr""$(cat /etc/issue | cut -d ' ' -f 1)"" | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
 DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
 DEBIAN_FRONTEND=noninteractive sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
