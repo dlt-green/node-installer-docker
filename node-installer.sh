@@ -174,6 +174,7 @@ CheckDistribution() {
 	case $tmp in
 	'Ubuntu') VAR_DISTRIBUTION='Ubuntu' ;;
 	'Debian') VAR_DISTRIBUTION='Debian' ;;
+	'Siemens') VAR_DISTRIBUTION='Debian' ;;
 	*) echo "$rd"; echo "Distribution $tmp is not supported!"; echo "$xx"; exit ;;
 	esac
 }
@@ -1872,6 +1873,19 @@ SubMenuMaintenance() {
 	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
 	   fi
 
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ] && [ $VAR_SHIMMER_HORNET_NETWORK = 'mainnet' ]; then
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
+
+	      echo "Download latest full snapshot... latest-wasp_chains_wal"
+	      VAR_SNAPSHOT='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
+	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+	      chmod 744 /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+	      cd /var/lib/$VAR_DIR/data/waspdb || SubMenuMaintenance
+		  tar -xzvf /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+	      chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
+	   fi
+
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	   clear
@@ -1883,6 +1897,7 @@ SubMenuMaintenance() {
 
 	   cd /var/lib/$VAR_DIR || SubMenuMaintenance;
 	   ./prepare_docker.sh
+
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	   clear
@@ -1926,7 +1941,7 @@ SubMenuMaintenance() {
 	   echo ""
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down >/dev/null 2>&1; fi
-	   if [ -d /var/lib/$VAR_DIR ]; then rm -r /var/lib/$VAR_DIR; fi
+	   if [ -d /var/lib/$VAR_DIR ]; then rm -rf /var/lib/$VAR_DIR; fi
 
 	   echo "$rd""$VAR_DIR removed from your system!""$xx"
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2934,6 +2949,7 @@ IotaHornet() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
+	chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3340,6 +3356,7 @@ IotaWasp() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
+	chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3759,6 +3776,7 @@ ShimmerHornet() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
+	chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4165,6 +4183,7 @@ ShimmerWasp() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
+	chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4498,6 +4517,7 @@ ShimmerChronicle() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
+	chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4632,7 +4652,7 @@ echo "╚═══════════════════════�
 echo ""
 echo "> $gn""Checking Hash of Installer successful...""$xx"
 echo "> $gn""$InstallerHash""$xx"
-echo "  $gr""$VAR_DISTRIBUTION | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
+echo "  $gr""$(cat /etc/issue | cut -d ' ' -f 1)"" | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
 DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
 DEBIAN_FRONTEND=noninteractive sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
