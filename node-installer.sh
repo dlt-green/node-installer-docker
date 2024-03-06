@@ -1885,12 +1885,11 @@ SubMenuMaintenance() {
 	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
 	      chmod 744 /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
 	      cd /var/lib/$VAR_DIR/data/waspdb || SubMenuMaintenance
-		  tar -xzvf /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
+	      tar -xzvf /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
 	      chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 
 		  echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> /var/lib/$VAR_DIR/.env
-
 	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
