@@ -8,6 +8,7 @@
 
 Your dashboard under (mind eventually configured port):
 https://node.your-domain.com/
+
 ## .env
 
 ```
@@ -27,6 +28,7 @@ WASP_HOST=node.your-domain.com
 # WASP_DATA_DIR=<absolute path to data dir>
 # WASP_IDENTITY_PRIVATE_KEY=<optional>
 # WASP_PRUNING_MIN_STATES_TO_KEEP=10000
+# WASP_DEBUG_SKIP_HEALTH_CHECK=false
 
 # DASHBOARD_USERNAME=admin
 DASHBOARD_PASSWORD=<password hash>
@@ -54,6 +56,7 @@ DASHBOARD_SALT=<password salt>
 | WASP_DATA_DIR                     |           |    .data    | Directory containing configuration, database etc.                                                                                                                                                                  |
 | WASP_IDENTITY_PRIVATE_KEY         |           |             | Private key used to derive the node identity                                                                                                                                                                       |
 | WASP_PRUNING_MIN_STATES_TO_KEEP   |           |    10000    | Minimum number of states to keep in the database. If the number of states exceeds this value, the oldest states are pruned.                                                                                        |
+| WASP_DEBUG_SKIP_HEALTH_CHECK      |           |    false    | Set to true if health check should be skipped                                                                                                                                                                      |
 | DASHBOARD_USERNAME                |           |    wasp     | Username to access dashboard                                                                                                                                                                                       |
 | DASHBOARD_PASSWORD                |     x     |             | Password hash (can be generated with `docker run --rm -it iotaledger/hornet:2.0-rc tool pwd-hash` or non-interactively with `docker run --rm iotaledger/hornet:2.0-rc tool pwd-hash --json --password <password>`) |
 | DASHBOARD_SALT                    |     x     |             | Password salt (can be generated with `docker run --rm -it iotaledger/hornet:2.0-rc tool pwd-hash` or non-interactively with `docker run --rm iotaledger/hornet:2.0-rc tool pwd-hash --json --password <password>`) |

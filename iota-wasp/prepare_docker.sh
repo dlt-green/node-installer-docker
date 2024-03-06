@@ -37,7 +37,7 @@ set_config "${configPath}" ".webapi.auth.scheme"            "\"${WASP_WEBAPI_AUT
 set_config "${configPath}" ".webapi.auth.jwt.duration"      "\"${WASP_JWT_DURATION:-24h}\""
 set_config "${configPath}" ".webapi.auth.basic.username"    "\"${DASHBOARD_USERNAME:-wasp}\""
 set_config "${configPath}" ".prometheus.bindAddress"        "\"0.0.0.0:9312\""
-set_config "${configPath}" ".db.debugSkipHealthCheck"       "false"
+set_config "${configPath}" ".db.debugSkipHealthCheck"       "${WASP_DEBUG_SKIP_HEALTH_CHECK:-false}"
 
 set_config_if_present_in_env "${configPath}" "WASP_PRUNING_MIN_STATES_TO_KEEP" ".stateManager.pruningMinStatesToKeep"
 
