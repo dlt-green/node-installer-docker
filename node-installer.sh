@@ -976,8 +976,8 @@ Dashboard() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	if [ "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u")" ]; then
 	  echo "$gr""              maintenance: ""$(printf '%02d' "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 2)")"":""$(printf '%02d' "$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 1)")"" | day: ""$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 3)"" | month: ""$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 4)"" | weekday: ""$(crontab -l | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 5)""$xx"
+	  echo ""
 	else echo ""; fi
-	echo ""
 	echo "select menu item:"
 
 	if [ "$opt_mode" = 'd' ]; then
