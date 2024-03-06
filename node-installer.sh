@@ -715,10 +715,11 @@ DebugInfo() {
             cd "/var/lib/$NODE" || exit
             if [ -f .env ]; then
                 HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
-                VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
+                VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')" 2>/dev/null
+                if [ -z "$VAR_STATUS" ]; then VAR_STATUS="error"; fi
                 if [ "$VAR_STATUS" = 'healthy' ]; then VAR_STATUS="$gn"$VAR_STATUS"$xx"; else VAR_STATUS="$rd"$VAR_STATUS"$xx"; fi
                 echo "$NODE"": $VAR_STATUS"
-                echo "$(cat .env 2>/dev/null | grep _VERSION | sed 's/\([A-Z]\)/\L\1/g')"
+                echo "$(cat .env 2>/dev/null | grep 'VERSION\|PRUN' | sed 's/\([A-Z]\)/\L\1/g')"
                 if [ "$(cat .env 2>/dev/null | grep SSL_CONFIG | cut -d '=' -f 2)" = 'certs' ]; then
                     TMP="certificate: ""global"
                     if [ -d "/etc/letsencrypt/live/$HOST" ]; then cd "/etc/letsencrypt/live/$HOST" || exit; fi
@@ -727,7 +728,7 @@ DebugInfo() {
                     echo "$TMP"
                     if [ -s "fullchain.pem" ]; then
                         echo "valid until: ""$(openssl x509 -in "fullchain".pem -noout -enddate | cut -d '=' -f 2)"
-                    else echo "valid until: ""$rd""err""$xx"; fi
+                    else echo "valid until: ""$rd""error""$xx"; fi
                 else
                     TMP="certificate: ""let's encrypt"
                     if [ -d "/var/lib/$NODE/data/letsencrypt" ]; then cd "/var/lib/$NODE/data/letsencrypt" || exit; fi
@@ -738,7 +739,7 @@ DebugInfo() {
                     echo "$TMP"
                     if [ -s "$HOST.crt" ]; then
                         echo "valid until: ""$(openssl x509 -in "$HOST".crt -noout -enddate | cut -d '=' -f 2)"
-                    else echo "valid until: ""$rd""err""$xx"; fi
+                    else echo "valid until: ""$rd""error""$xx"; fi
                 fi
             fi
             echo ""
