@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.1.2"
-BUILD="20240307_145652"
+VRSN="v.4.1.3"
+BUILD="20240307_165925"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -133,19 +133,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='13b5082701184314836e1138027c272241be30eacac88db62cc8ef4c131d2562'
+IotaHornetHash='1161b58e029a2b5f10b13e2f6b6db18a24447c4057c9a3b151fdd8b719d9c60b'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='e7af4ac792015f37ad2c89bea3268d0b134c5af6c9cb604c6d3e95aed2056c26'
+IotaWaspHash='297be17b12267dfb280c720a191cb9178422e1f4abb86e28fa5b03006c66243c'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='88e7534c56ec5943bd72395c307794cbec0107293ccef76fd2812b7dd39904b5'
+ShimmerHornetHash='36d8c3734013207ee6c55567da20b08b71091438b8ebea002ab011e307e4ef6f'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='3bc72369765af5451b4e37eda886db70e83ba28fa17af8b88f679440a96b9b15'
+ShimmerWaspHash='809a226ed20a66c193a3895baad8aba3ffc8a0423bc676317f4b4feec74d1cf9'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='b8f72ce3d621512c1f58cf9251747453d6ad922aa40424b1a8701c990831d6dd'
+ShimmerChronicleHash='b3170d0a8ceb51fb5db5b5ca2cc6baa7655e26a057be51eeba4063760f1912f6'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1878,8 +1878,7 @@ SubMenuMaintenance() {
 	   fi
 
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ] && [ $VAR_SHIMMER_HORNET_NETWORK = 'mainnet' ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
-
+#	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
 	      echo "Download latest full snapshot... latest-wasp_chains_wal"
 	      VAR_SNAPSHOT='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
 	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
