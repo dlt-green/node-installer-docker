@@ -1878,8 +1878,7 @@ SubMenuMaintenance() {
 	   fi
 
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ] && [ $VAR_SHIMMER_HORNET_NETWORK = 'mainnet' ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
-
+#	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
 	      echo "Download latest full snapshot... latest-wasp_chains_wal"
 	      VAR_SNAPSHOT='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
 	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
