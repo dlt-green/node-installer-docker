@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.1.3"
-BUILD="20240307_165925"
+VRSN="v.4.1.4"
+BUILD="20240307_224609"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -11,14 +11,10 @@ VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
 
+# IOTA-HORNET
+
 VAR_IOTA_HORNET_VERSION='2.0.1'
 VAR_IOTA_HORNET_UPDATE=1
-
-VAR_IOTA_WASP_VERSION='1.0.3-rc.2'
-VAR_IOTA_WASP_UPDATE=1
-
-VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_IOTA_WASP_CLI_VERSION='1.0.3-rc.2'
 
 VAR_IOTA_INX_INDEXER_VERSION='1.0'
 VAR_IOTA_INX_MQTT_VERSION='1.0'
@@ -27,14 +23,18 @@ VAR_IOTA_INX_SPAMMER_VERSION='1.0'
 VAR_IOTA_INX_POI_VERSION='1.0'
 VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
 
+# IOTA-WASP
+
+VAR_IOTA_WASP_VERSION='1.0.3-rc.2'
+VAR_IOTA_WASP_UPDATE=1
+
+VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
+VAR_IOTA_WASP_CLI_VERSION='1.0.3-rc.2'
+
+# SHIMMER-HORNET
+
 VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
 VAR_SHIMMER_HORNET_UPDATE=1
-
-VAR_SHIMMER_WASP_VERSION='1.0.3-rc.2'
-VAR_SHIMMER_WASP_UPDATE=1
-
-VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_SHIMMER_WASP_CLI_VERSION='1.0.3-rc.2'
 
 VAR_SHIMMER_INX_INDEXER_VERSION='1.0-rc'
 VAR_SHIMMER_INX_MQTT_VERSION='1.0-rc'
@@ -42,6 +42,16 @@ VAR_SHIMMER_INX_PARTICIPATION_VERSION='1.0-rc'
 VAR_SHIMMER_INX_SPAMMER_VERSION='1.0-rc'
 VAR_SHIMMER_INX_POI_VERSION='1.0-rc'
 VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0-rc'
+
+# SHIMMER-WASP
+
+VAR_SHIMMER_WASP_VERSION='1.0.3-rc.2'
+VAR_SHIMMER_WASP_UPDATE=1
+
+VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
+VAR_SHIMMER_WASP_CLI_VERSION='1.0.3-rc.2'
+
+# PLUGINS
 
 VAR_SHIMMER_INX_CHRONICLE_VERSION='1.0.0-rc.4'
 VAR_SHIMMER_INX_CHRONICLE_UPDATE=1
@@ -133,19 +143,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='1161b58e029a2b5f10b13e2f6b6db18a24447c4057c9a3b151fdd8b719d9c60b'
+IotaHornetHash='5ef95b25beefb031ae2582852d620e7c20f25fc8f6c1089c249fd86ced4d3e1f'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='297be17b12267dfb280c720a191cb9178422e1f4abb86e28fa5b03006c66243c'
+IotaWaspHash='89fbb3812d2881105434a94fd0cbe08a9662bd1c3c402ea69513d91c267342d6'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='36d8c3734013207ee6c55567da20b08b71091438b8ebea002ab011e307e4ef6f'
+ShimmerHornetHash='3c3e8abeb5fddb15864e69b68b3b9c4c339a15e07f6fab0e9e6dc74af3848fa5'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='809a226ed20a66c193a3895baad8aba3ffc8a0423bc676317f4b4feec74d1cf9'
+ShimmerWaspHash='0251e072d526a804674c538ecc0a1b2c6a4615dc3029e8920c0f07a2aeb8aaf6'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='b3170d0a8ceb51fb5db5b5ca2cc6baa7655e26a057be51eeba4063760f1912f6'
+ShimmerChronicleHash='47a07f483ada98a28b5247b0111f5e70b9c8129d3b1e89388849505dda196be5'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -2724,6 +2734,7 @@ IotaHornet() {
 		  echo "$ca""Calculated pruning size for HORNET (with 10% buffer): ""$CALCULATED_SPACE""$xx"
 		  read -r -p '> ' VAR_TMP
 		  if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=$VAR_TMP; fi
+		  if [ -z "$VAR_TMP" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=$CALCULATED_SPACE; fi
 		  if ! [ -z "${VAR_IOTA_HORNET_PRUNING_SIZE##*B*}" ]; then
 		    VAR_IOTA_HORNET_PRUNING_SIZE=''
 		    echo "$rd""Set pruning size: Please insert with unit!"; echo "$xx"
@@ -2931,16 +2942,18 @@ IotaHornet() {
 		echo ""
 
 		if [ -n "$VAR_PASSWORD" ]; then
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
+		  credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
+		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		else
+		  echo "credentials not changed..."
 		fi
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
-
-		echo "done..."
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -3298,7 +3311,7 @@ IotaWasp() {
 
 			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
 			if [ -n "$VAR_PASSWORD" ]; then
-			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
+			    credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 
 			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
@@ -3337,20 +3350,21 @@ IotaWasp() {
 		echo ""
 
 		if [ -n "$VAR_PASSWORD" ]; then
-		  if [ -d /var/lib/iota-hornet ]; then cd /var/lib/iota-hornet || VAR_PASSWORD=''; fi
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
+		  credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-		  if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
+		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
+		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		else
+		  echo "credentials not changed..."
 		fi
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
-		echo "done..."
-
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
 	fi
 
 	echo ""
@@ -3550,6 +3564,7 @@ ShimmerHornet() {
 		  echo "$ca""Calculated pruning size for HORNET (with 10% buffer): ""$CALCULATED_SPACE""$xx"
 		  read -r -p '> ' VAR_TMP
 		  if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$VAR_TMP; fi
+		  if [ -z "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$CALCULATED_SPACE; fi
 		  if ! [ -z "${VAR_SHIMMER_HORNET_PRUNING_SIZE##*B*}" ]; then
 		    VAR_SHIMMER_HORNET_PRUNING_SIZE=''
 		    echo "$rd""Set pruning size: Please insert with unit!"; echo "$xx"
@@ -3758,16 +3773,18 @@ ShimmerHornet() {
 		echo ""
 
 		if [ -n "$VAR_PASSWORD" ]; then
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
+		  credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
+		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		else
+		  echo "credentials not changed..."
 		fi
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
-
-		echo "done..."
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4125,7 +4142,7 @@ ShimmerWasp() {
 
 			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
 			if [ -n "$VAR_PASSWORD" ]; then
-			    credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
+			    credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 
 			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
@@ -4164,20 +4181,21 @@ ShimmerWasp() {
 		echo ""
 
 		if [ -n "$VAR_PASSWORD" ]; then
-		  if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
-		  credentials=$(docker compose run --rm hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
+		  credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-		  if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
+		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
+		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		else
+		  echo "credentials not changed..."
 		fi
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
-		echo "done..."
-
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
 	fi
 
 	echo ""
