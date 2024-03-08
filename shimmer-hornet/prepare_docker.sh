@@ -68,7 +68,12 @@ set_config_if_present_in_env "${configPath}" "HORNET_PRUNING_MAX_MILESTONES_TO_K
 if [ ! -z "${HORNET_PRUNING_MAX_MILESTONES_TO_KEEP}" ]; then
   set_config "${configPath}" ".pruning.milestones.enabled" "true"
 fi
-generate_peering_json "$peeringFilePath" "${HORNET_STATIC_NEIGHBORS:-""}"
-rm -f "${tmp}"
 
+# Generate peering.json
+if [ -d "${peeringFilePath}" ]; then
+  rm -Rf "${peeringFilePath}"
+fi
+generate_peering_json "$peeringFilePath" "${HORNET_STATIC_NEIGHBORS:-""}"
+
+rm -f "${tmp}"
 echo "Finished"
