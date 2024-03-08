@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.1.4"
-BUILD="20240307_224609"
+VRSN="v.4.1.5"
+BUILD="20240308_181716"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -33,15 +33,15 @@ VAR_IOTA_WASP_CLI_VERSION='1.0.3-rc.2'
 
 # SHIMMER-HORNET
 
-VAR_SHIMMER_HORNET_VERSION='2.0.0-rc.8'
+VAR_SHIMMER_HORNET_VERSION='2.0.1'
 VAR_SHIMMER_HORNET_UPDATE=1
 
-VAR_SHIMMER_INX_INDEXER_VERSION='1.0-rc'
-VAR_SHIMMER_INX_MQTT_VERSION='1.0-rc'
-VAR_SHIMMER_INX_PARTICIPATION_VERSION='1.0-rc'
-VAR_SHIMMER_INX_SPAMMER_VERSION='1.0-rc'
-VAR_SHIMMER_INX_POI_VERSION='1.0-rc'
-VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0-rc'
+VAR_SHIMMER_INX_INDEXER_VERSION='1.0'
+VAR_SHIMMER_INX_MQTT_VERSION='1.0'
+VAR_SHIMMER_INX_PARTICIPATION_VERSION='1.0'
+VAR_SHIMMER_INX_SPAMMER_VERSION='1.0'
+VAR_SHIMMER_INX_POI_VERSION='1.0'
+VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0'
 
 # SHIMMER-WASP
 
@@ -143,19 +143,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='5ef95b25beefb031ae2582852d620e7c20f25fc8f6c1089c249fd86ced4d3e1f'
+IotaHornetHash='007cf56e9c6433515ef6a0f1ff07d26d155f78a32b257eb7e3ae58b012478251'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='89fbb3812d2881105434a94fd0cbe08a9662bd1c3c402ea69513d91c267342d6'
+IotaWaspHash='fb061ccb34b66afc44af1ba2bafbc2a1e4bd9a917d364283cba697ec8e124677'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='3c3e8abeb5fddb15864e69b68b3b9c4c339a15e07f6fab0e9e6dc74af3848fa5'
+ShimmerHornetHash='d7e6b59f53ae0deda2066f00d49cb767d37db8a773aa44b82b3cb6b26050f6cb'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='0251e072d526a804674c538ecc0a1b2c6a4615dc3029e8920c0f07a2aeb8aaf6'
+ShimmerWaspHash='e1f4af494466a0d57864825404704bf6461c464aa28ff3e222ff58b66819010a'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='47a07f483ada98a28b5247b0111f5e70b9c8129d3b1e89388849505dda196be5'
+ShimmerChronicleHash='08d41f22c47fabab4407000a21696930a5f03a764f1781a550ef4443d1325bf4'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -535,7 +535,101 @@ CheckEventsIota() {
 	else
 	   echo "Event IDs can be found at:"
 	   echo 'https://github.com/iotaledger/participation-events'
+	   echo 'https://github.com/iota-community/governance-participation-events'	   
 	   echo "Event Data will be saved locally under '/var/lib/iota-hornet/verify-events'"
+	   echo ''
+	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
+	   read -r -p '> ' EVENTS
+	   echo ''
+
+	   ADDR=$(cat .env 2>/dev/null | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
+	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt "$VAR_RESTAPI_SALT" | awk '{ print $5 }')
+	   echo "$ca""Address: ""$xx""$ADDR"" ($ca""JWT-Token for API Access randomly generated""$xx)"
+	   echo ''
+	   sleep 5
+
+	   if [ -z "$EVENTS" ]; then
+	   EVENTS=$(curl https://"${ADDR}"/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
+
+	   for EVENT_ID in $(echo "$EVENTS"  | tr -d '"[] ' | sed 's/,/ /g'); do
+	      echo "───────────────────────────────────────────────────────────────────────────────"
+	      EVENT_NAME=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.name')
+
+	      EVENT_SYMBOL=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.payload.symbol')
+
+	      EVENT_STATUS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.status')
+
+	      EVENT_CHECKSUM=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.checksum')
+
+	      EVENT_MILESTONE=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.milestoneIndex')
+
+	      EVENT_QUESTIONS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.questions')
+
+	      echo "$ca""Name: ""$xx""$EVENT_NAME"
+		  echo "$ca""Status: ""$xx""$EVENT_STATUS""$ca"" Milestone index: ""$xx""$EVENT_MILESTONE"
+
+	      if [ "$EVENT_STATUS" = "ended" ]; then
+	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
+	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
+	        $(curl https://"${ADDR}"/api/participation/v1/admin/events/"${EVENT_ID}"/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > "${EVENT_ID}")
+	        echo ""
+	        echo "$xx""Event ID: ""$EVENT_ID"
+
+	        if [ $(jq '.totalRewards' "${EVENT_ID}") = 'null' ]; then
+			  if [ "$EVENT_SYMBOL" = 'null' ]; then
+			    echo "$gn""Checksum: ""$EVENT_CHECKSUM""$xx"
+				if [ -n "$EVENT_QUESTIONS" ]; then echo "$EVENT_QUESTIONS" > "${EVENT_ID}"; fi
+			  else
+			    echo "$rd""Checksum: ""Authentication Error!""$xx"
+			  fi
+	        else
+	          echo "$gn""Checksum: ""$(jq -r '.checksum' "${EVENT_ID}")"
+	        fi
+	        EVENT_REWARDS="$(jq '.totalRewards' "${EVENT_ID}" 2>/dev/null)"
+	      else
+	        echo ""
+	        echo "$xx""Event ID: ""$EVENT_ID"
+	        echo "$rd""Checksum: ""Event not found or not over yet!""$xx"
+	        EVENT_REWARDS='not available'
+	      fi
+	      echo ""
+	      echo "$ca""Total rewards: ""$xx""$EVENT_REWARDS""$ca"" Symbol: ""$xx""$EVENT_SYMBOL"
+	      echo "───────────────────────────────────────────────────────────────────────────────"
+	   done
+	fi
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
+	Dashboard
+}
+
+CheckEventsShimmer() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo "$ca"
+	echo "Verify Event Results..."
+	echo "$xx"
+
+	VAR_DIR='shimmer-hornet'
+
+	cd /var/lib/$VAR_DIR >/dev/null 2>&1 || Dashboard;
+
+	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
+	if [ -z "$VAR_RESTAPI_SALT" ]; then echo "$rd""Shimmer-Hornet: No Salt found!""$xx"
+	else
+	   echo "Event IDs can be found at:"
+	   echo 'https://github.com/iotaledger/participation-events'
+	   echo 'https://github.com/iota-community/governance-participation-events'	 
+	   echo "Event Data will be saved locally under '/var/lib/shimmer-hornet/verify-events'"
 	   echo ''
 	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
 	   read -r -p '> ' EVENTS
@@ -765,98 +859,6 @@ DebugInfo() {
     else
         echo "APT is not up-to-date."
     fi
-}
-
-CheckEventsShimmer() {
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo "$ca"
-	echo "Verify Event Results..."
-	echo "$xx"
-
-	VAR_DIR='shimmer-hornet'
-
-	cd /var/lib/$VAR_DIR >/dev/null 2>&1 || Dashboard;
-
-	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
-	if [ -z "$VAR_RESTAPI_SALT" ]; then echo "$rd""Shimmer-Hornet: No Salt found!""$xx"
-	else
-	   echo "Event IDs can be found at:"
-	   echo "'https://github.com/iota-community/Shimmer-governance-participation-events'"
-	   echo "Event Data will be saved locally under '/var/lib/shimmer-hornet/verify-events'"
-	   echo ''
-	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
-	   read -r -p '> ' EVENTS
-	   echo ''
-
-	   ADDR=$(cat .env 2>/dev/null | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
-	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt "$VAR_RESTAPI_SALT" | awk '{ print $5 }')
-	   echo "$ca""Address: ""$xx""$ADDR"" ($ca""JWT-Token for API Access randomly generated""$xx)"
-	   echo ''
-	   sleep 5
-
-	   if [ -z "$EVENTS" ]; then
-	   EVENTS=$(curl https://"${ADDR}"/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
-
-	   for EVENT_ID in $(echo "$EVENTS"  | tr -d '"[] ' | sed 's/,/ /g'); do
-	      echo "───────────────────────────────────────────────────────────────────────────────"
-	      EVENT_NAME=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.name')
-
-	      EVENT_SYMBOL=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.payload.symbol')
-
-	      EVENT_STATUS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.status')
-
-	      EVENT_CHECKSUM=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.checksum')
-
-	      EVENT_MILESTONE=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.milestoneIndex')
-
-	      EVENT_QUESTIONS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.questions')
-
-	      echo "$ca""Name: ""$xx""$EVENT_NAME"
-		  echo "$ca""Status: ""$xx""$EVENT_STATUS""$ca"" Milestone index: ""$xx""$EVENT_MILESTONE"
-
-	      if [ "$EVENT_STATUS" = "ended" ]; then
-	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
-	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
-	        $(curl https://"${ADDR}"/api/participation/v1/admin/events/"${EVENT_ID}"/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > "${EVENT_ID}")
-	        echo ""
-	        echo "$xx""Event ID: ""$EVENT_ID"
-
-	        if [ $(jq '.totalRewards' "${EVENT_ID}") = 'null' ]; then
-			  if [ "$EVENT_SYMBOL" = 'null' ]; then
-			    echo "$gn""Checksum: ""$EVENT_CHECKSUM""$xx"
-				if [ -n "$EVENT_QUESTIONS" ]; then echo "$EVENT_QUESTIONS" > "${EVENT_ID}"; fi
-			  else
-			    echo "$rd""Checksum: ""Authentication Error!""$xx"
-			  fi
-	        else
-	          echo "$gn""Checksum: ""$(jq -r '.checksum' "${EVENT_ID}")"
-	        fi
-	        EVENT_REWARDS="$(jq '.totalRewards' "${EVENT_ID}" 2>/dev/null)"
-	      else
-	        echo ""
-	        echo "$xx""Event ID: ""$EVENT_ID"
-	        echo "$rd""Checksum: ""Event not found or not over yet!""$xx"
-	        EVENT_REWARDS='not available'
-	      fi
-	      echo ""
-	      echo "$ca""Total rewards: ""$xx""$EVENT_REWARDS""$ca"" Symbol: ""$xx""$EVENT_SYMBOL"
-	      echo "───────────────────────────────────────────────────────────────────────────────"
-	   done
-	fi
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
-	Dashboard
 }
 
 SetCertificateGlobal() {
@@ -1644,11 +1646,12 @@ SubMenuMaintenance() {
 	echo "║                              1. Install/Update                              ║"
 	echo "║                              2. Start/Restart                               ║"
 	echo "║                              3. Stop                                        ║"
-	echo "║                              4. Reset Database                              ║"
-	echo "║                              5. Loading Snapshot                            ║"
-	echo "║                              6. Show Logs                                   ║"
-	echo "║                              7. Configuration                               ║"
-	echo "║                              8. Deinstall/Remove                            ║"
+	echo "║                              4. Reset Node Database                         ║"
+	echo "║                              5. Reset Participation Database                ║"
+	echo "║                              6. Loading Snapshot                            ║"
+	echo "║                              7. Show Logs                                   ║"
+	echo "║                              8. Configuration                               ║"
+	echo "║                              9. Deinstall/Remove                            ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1777,7 +1780,7 @@ SubMenuMaintenance() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
-	4) echo 'resetting...'; sleep 3
+	4) echo 'resetting node database...'; sleep 3
 
 	   clear
 	   echo ""
@@ -1792,7 +1795,7 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                              Resetting Database                             ║"
+	   echo "║                           Resetting Node Database                           ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   echo ""
 
@@ -1831,7 +1834,55 @@ SubMenuMaintenance() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
-	5) echo 'loading...'; sleep 3
+	5) echo 'resetting participation database...'; sleep 3
+
+	   clear
+	   echo ""
+	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	   echo "║                                  Stopping                                   ║"
+	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	   echo ""
+
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	   clear
+	   echo ""
+	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	   echo "║                      Resetting Participation Database                       ║"
+	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	   echo ""
+
+	   echo "done..."
+
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
+	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_IOTA_HORNET_NETWORK/*
+	   fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
+	   then
+	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_SHIMMER_HORNET_NETWORK/*
+	   fi
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	   clear
+	   echo ""
+	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	   echo "║                                  Starting                                   ║"
+	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+
+	   echo "$ca"
+	   echo 'Please wait, importing snapshot can take up to 10 minutes...'
+	   echo "$xx"
+
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
+
+	   RenameContainer; sleep 3
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuMaintenance
+	   ;;
+	6) echo 'loading...'; sleep 3
 
 	   clear
 	   echo ""
@@ -1932,7 +1983,7 @@ SubMenuMaintenance() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
-	6) clear
+	7) clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	   echo "║                                    Logs                                     ║"
@@ -1944,9 +1995,9 @@ SubMenuMaintenance() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
-	7) SubMenuConfiguration
+	8) SubMenuConfiguration
 	   ;;
-	8) echo 'deinstall/remove...'; sleep 3
+	9) echo 'deinstall/remove...'; sleep 3
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   clear
 	   echo ""
@@ -2116,8 +2167,8 @@ SubMenuConfiguration() {
 	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; K='X'; fi
 		  fi
 		  if  [ "$K" = 'P' ] || [ "$K" = 'X' ]; then
-		     ./prepare_docker.sh >/dev/null 2>&1
-	         if  [ "$K" = 'P' ]; then echo "$gn""Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
+		     ./prepare_docker.sh
+	         if  [ "$K" = 'P' ]; then echo "$gn"; echo "Proof of Work of your Node successfully enabled""$xx"; else echo "$rd"; echo "Proof of Work of your Node successfully disabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
 	         echo "$rd""Toggle Proof of Work aborted!""$xx"
@@ -2125,6 +2176,7 @@ SubMenuConfiguration() {
 	   else
 	      echo "$rd""Toggle Proof of Work is not supported, aborted!""$xx"
 	   fi
+
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
 	3) clear
@@ -2142,9 +2194,9 @@ SubMenuConfiguration() {
 	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=testnet/g" .env; K='T'; fi
 		  fi
 		  if  [ "$K" = 'M' ] || [ "$K" = 'T' ]; then
-		     ./prepare_docker.sh >/dev/null 2>&1
+		     ./prepare_docker.sh
 			 VAR_SHIMMER_HORNET_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
-	         if  [ "$K" = 'M' ]; then echo "$gn""Mainnet of your Node successfully enabled""$xx"; else echo "$gn""Testnet of your Node successfully enabled""$xx"; fi
+	         if  [ "$K" = 'M' ]; then echo "$gn"; echo "Mainnet of your Node successfully enabled""$xx"; else echo "$gn"; echo "Testnet of your Node successfully enabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
 	         echo "$rd""Toggle Network aborted!""$xx"
@@ -2168,7 +2220,7 @@ SubMenuConfiguration() {
 		     fgrep -q "HORNET_NODE_ALIAS" .env || echo "HORNET_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
 	         if [ -f .env ]; then sed -i "s/HORNET_NODE_ALIAS=.*/HORNET_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
 		  fi
-		  ./prepare_docker.sh >/dev/null 2>&1
+		  ./prepare_docker.sh
 		  echo "$gn""Node Alias of your Node successfully set""$xx"
 		  echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 	   else
@@ -2183,7 +2235,7 @@ SubMenuConfiguration() {
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
        if [ -f .env ]; then
 	      nano .env
-	      ./prepare_docker.sh >/dev/null 2>&1
+	      ./prepare_docker.sh
 	      echo "$rd""Please restart your Node for the changes to take effect!""$xx"
        fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2842,7 +2894,7 @@ IotaHornet() {
 
 		echo "HORNET_VERSION=$VAR_IOTA_HORNET_VERSION" >> .env
 
-		echo "HORNET_NETWORK=mainnet" >> .env
+		echo "HORNET_NETWORK=$VAR_IOTA_HORNET_NETWORK" >> .env
 
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_IOTA_HORNET_PRUNING_SIZE" >> .env
@@ -3673,7 +3725,7 @@ ShimmerHornet() {
 
 		echo "HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION" >> .env
 
-		echo "HORNET_NETWORK=mainnet" >> .env
+		echo "HORNET_NETWORK=$VAR_SHIMMER_HORNET_NETWORK" >> .env
 
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_SHIMMER_HORNET_PRUNING_SIZE" >> .env

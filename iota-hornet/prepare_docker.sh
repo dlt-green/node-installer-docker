@@ -8,8 +8,10 @@ elevate_to_root
 source $(dirname "${0}")/.env
 
 scriptDir=$(dirname "${0}")
+assetsDir="$scriptDir/assets"
 dataDir="${HORNET_DATA_DIR:-$scriptDir/data}"
 configFilenameInContainer="config.json"
+configFilenameInAssets="config_${HORNET_NETWORK:-mainnet}.json"
 configFilename="config-${HORNET_NETWORK:-mainnet}.json"
 configPath="${dataDir}/config/${configFilename}"
 peeringFilename="peering-${HORNET_NETWORK:-mainnet}.json"
@@ -39,13 +41,9 @@ prepare_data_dir "${dataDir}" \
 create_docker_network "iota"
 
 # Generate config
-if [[ -z ${HORNET_NETWORK} ]] || [ "${HORNET_NETWORK}" == "mainnet" ]; then
-  extract_file_from_image "iotaledger/hornet" "${HORNET_VERSION}" "/app/${configFilenameInContainer}" "${configPath}"
-else
-  configUrl="https://raw.githubusercontent.com/iotaledger/node-docker-setup/main/stardust/config_testnet.json"
-  echo "Downloading ${HORNET_NETWORK} config from ${configUrl}..."
-  curl -L -s -o "${configPath}" "${configUrl}"
-fi
+extract_file_from_image "iotaledger/hornet" "${HORNET_VERSION}" "/app/${configFilenameInContainer}" "${configPath}_fromImage.tmp"
+merge_json_files "${configPath}_fromImage.tmp" "${assetsDir}/config/${configFilenameInAssets}" "${configPath}"
+rm -f "${configPath}_fromImage.tmp"
 
 echo "Adapting config with values from .env..."
 set_config "${configPath}" ".node.alias"                  "\"${HORNET_NODE_ALIAS:-HORNET node}\""
@@ -68,7 +66,12 @@ set_config_if_present_in_env "${configPath}" "HORNET_PRUNING_MAX_MILESTONES_TO_K
 if [ ! -z "${HORNET_PRUNING_MAX_MILESTONES_TO_KEEP}" ]; then
   set_config "${configPath}" ".pruning.milestones.enabled" "true"
 fi
-generate_peering_json "$peeringFilePath" "${HORNET_STATIC_NEIGHBORS:-""}"
-rm -f "${tmp}"
 
+# Generate peering.json
+if [ -d "${peeringFilePath}" ]; then
+  rm -Rf "${peeringFilePath}"
+fi
+generate_peering_json "${peeringFilePath}" "${HORNET_STATIC_NEIGHBORS:-""}"
+
+rm -f "${tmp}"
 echo "Finished"
