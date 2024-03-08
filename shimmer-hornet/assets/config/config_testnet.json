@@ -1,6 +1,6 @@
 {
   "protocol": {
-    "targetNetworkName": "testnet-3",
+    "targetNetworkName": "testnet-1",
     "milestonePublicKeyCount": 7,
     "baseToken": {
       "name": "Shimmer",
