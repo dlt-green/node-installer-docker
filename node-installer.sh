@@ -2117,14 +2117,15 @@ SubMenuConfiguration() {
 		  fi
 		  if  [ "$K" = 'P' ] || [ "$K" = 'X' ]; then
 		     ./prepare_docker.sh
-	         if  [ "$K" = 'P' ]; then echo "$gn""Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
-	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
+	         if  [ "$K" = 'P' ]; then echo "$gn"; echo "Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
+	         echo "$rd"; echo "Please restart your Node for the changes to take effect!""$xx"
 		  else
-	         echo "$rd""Toggle Proof of Work aborted!""$xx"
+	         echo "$rd"; echo "Toggle Proof of Work aborted!""$xx"
 		  fi
 	   else
 	      echo "$rd""Toggle Proof of Work is not supported, aborted!""$xx"
 	   fi
+
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
 	3) clear
