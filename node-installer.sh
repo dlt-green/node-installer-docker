@@ -535,6 +535,7 @@ CheckEventsIota() {
 	else
 	   echo "Event IDs can be found at:"
 	   echo 'https://github.com/iotaledger/participation-events'
+	   echo 'https://github.com/iota-community/governance-participation-events'	   
 	   echo "Event Data will be saved locally under '/var/lib/iota-hornet/verify-events'"
 	   echo ''
 	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
@@ -785,7 +786,8 @@ CheckEventsShimmer() {
 	if [ -z "$VAR_RESTAPI_SALT" ]; then echo "$rd""Shimmer-Hornet: No Salt found!""$xx"
 	else
 	   echo "Event IDs can be found at:"
-	   echo "'https://github.com/iota-community/Shimmer-governance-participation-events'"
+	   echo 'https://github.com/iotaledger/participation-events'
+	   echo 'https://github.com/iota-community/governance-participation-events'	 
 	   echo "Event Data will be saved locally under '/var/lib/shimmer-hornet/verify-events'"
 	   echo ''
 	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
