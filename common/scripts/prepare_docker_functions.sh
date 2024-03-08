@@ -288,6 +288,14 @@ show_logs () {
   docker compose logs -f --tail 1000
 }
 
+merge_json_files() {
+  local inputFile1Path="$1"
+  local inputFile2Path="$2"
+  local outputFile="$3"
+
+  jq -s '.[0] * .[1]' "$inputFile1Path" "$inputFile2Path" > "$inputFile1Path.tmp" && mv "$inputFile1Path.tmp" "$outputFile"
+}
+
 generate_peering_json() {
   local peeringFilePath="$1"
   local staticNeighbors="$2"

@@ -5,7 +5,7 @@ OUTPUT_RED='\033[0;31m'
 OUTPUT_RESET='\033[0m'
 
 BUILD_DIR=./build
-EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore, .package_files"
+EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore, .package_files, build_extension.sh"
 
 NODES="iota-hornet iota-wasp iota-chronicle shimmer-hornet shimmer-wasp shimmer-chronicle"
 INSTALLER_SCRIPT="./node-installer.sh"
@@ -28,12 +28,21 @@ build_node () {
     echo ""
   fi
 
+  # execute build extension script if present
+  if [ -f "${sourceDir}/build_extension.sh" ]; then
+    echo "Executing build extension script for ${node}"
+    output=$(${sourceDir}/build_extension.sh)
+    while IFS= read -r line; do
+      echo "| ${line}"
+    done <<< "$output"
+  fi
+
   local rsyncExclusions=$(echo ${EXCLUSIONS} | sed 's/ //g' | sed 's/,/ --exclude /g' | sed 's/^/--exclude /')
 
   mkdir -p ${BUILD_DIR}
   rsync -a ${sourceDir} ${BUILD_DIR} ${rsyncExclusions}
   if [[ "${dir}" != "${node}" ]]; then mv ${BUILD_DIR}/${dir} ${BUILD_DIR}/${node}; fi
-  
+
   # common assets
   if [[ ! -z "$(grep "copy_common_assets" ${BUILD_DIR}/${node}/*.sh)" ]]; then
     mkdir -p ${BUILD_DIR}/${node}/assets
@@ -173,7 +182,9 @@ build_all_nodes () {
   for node in ${NODES}; do
     echo "build_node ${node} ${updateHashes}"
     output=$(build_node ${node} ${updateHashes})
-    echo "  * ${output}"
+    while IFS= read -r line; do
+      echo "  * ${line}"
+    done <<< "$output"
   done
 }
 
