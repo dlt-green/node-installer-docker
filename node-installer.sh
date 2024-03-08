@@ -2116,7 +2116,7 @@ SubMenuConfiguration() {
 	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; K='X'; fi
 		  fi
 		  if  [ "$K" = 'P' ] || [ "$K" = 'X' ]; then
-		     ./prepare_docker.sh >/dev/null 2>&1
+		     ./prepare_docker.sh
 	         if  [ "$K" = 'P' ]; then echo "$gn""Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
@@ -2142,7 +2142,7 @@ SubMenuConfiguration() {
 	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=testnet/g" .env; K='T'; fi
 		  fi
 		  if  [ "$K" = 'M' ] || [ "$K" = 'T' ]; then
-		     ./prepare_docker.sh >/dev/null 2>&1
+		     ./prepare_docker.sh
 			 VAR_SHIMMER_HORNET_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
 	         if  [ "$K" = 'M' ]; then echo "$gn""Mainnet of your Node successfully enabled""$xx"; else echo "$gn""Testnet of your Node successfully enabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
@@ -2168,7 +2168,7 @@ SubMenuConfiguration() {
 		     fgrep -q "HORNET_NODE_ALIAS" .env || echo "HORNET_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
 	         if [ -f .env ]; then sed -i "s/HORNET_NODE_ALIAS=.*/HORNET_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
 		  fi
-		  ./prepare_docker.sh >/dev/null 2>&1
+		  ./prepare_docker.sh
 		  echo "$gn""Node Alias of your Node successfully set""$xx"
 		  echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 	   else
@@ -2183,7 +2183,7 @@ SubMenuConfiguration() {
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
        if [ -f .env ]; then
 	      nano .env
-	      ./prepare_docker.sh >/dev/null 2>&1
+	      ./prepare_docker.sh
 	      echo "$rd""Please restart your Node for the changes to take effect!""$xx"
        fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
