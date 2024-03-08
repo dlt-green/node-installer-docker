@@ -32,6 +32,11 @@ build_node () {
   if [ -f "${sourceDir}/build_extension.sh" ]; then
     echo "Executing build extension script for ${node}"
     output=$(${sourceDir}/build_extension.sh)
+    if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+      >&2 echo "ERROR: Error during execution of build extension script for ${node}"
+      exit 255
+    fi
+
     while IFS= read -r line; do
       echo "| ${line}"
     done <<< "$output"
