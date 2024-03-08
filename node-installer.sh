@@ -2117,10 +2117,10 @@ SubMenuConfiguration() {
 		  fi
 		  if  [ "$K" = 'P' ] || [ "$K" = 'X' ]; then
 		     ./prepare_docker.sh
-	         if  [ "$K" = 'P' ]; then echo "$gn"; echo "Proof of Work of your Node successfully enabled""$xx"; else echo "$rd""Proof of Work of your Node successfully disabled""$xx"; fi
-	         echo "$rd"; echo "Please restart your Node for the changes to take effect!""$xx"
+	         if  [ "$K" = 'P' ]; then echo "$gn"; echo "Proof of Work of your Node successfully enabled""$xx"; else echo "$rd"; echo "Proof of Work of your Node successfully disabled""$xx"; fi
+	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
-	         echo "$rd"; echo "Toggle Proof of Work aborted!""$xx"
+	         echo "$rd""Toggle Proof of Work aborted!""$xx"
 		  fi
 	   else
 	      echo "$rd""Toggle Proof of Work is not supported, aborted!""$xx"
@@ -2145,7 +2145,7 @@ SubMenuConfiguration() {
 		  if  [ "$K" = 'M' ] || [ "$K" = 'T' ]; then
 		     ./prepare_docker.sh
 			 VAR_SHIMMER_HORNET_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
-	         if  [ "$K" = 'M' ]; then echo "$gn""Mainnet of your Node successfully enabled""$xx"; else echo "$gn""Testnet of your Node successfully enabled""$xx"; fi
+	         if  [ "$K" = 'M' ]; then echo "$gn"; echo "Mainnet of your Node successfully enabled""$xx"; else echo "$gn"; echo "Testnet of your Node successfully enabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
 	         echo "$rd""Toggle Network aborted!""$xx"
