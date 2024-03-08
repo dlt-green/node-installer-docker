@@ -609,6 +609,99 @@ CheckEventsIota() {
 	Dashboard
 }
 
+CheckEventsShimmer() {
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo "$ca"
+	echo "Verify Event Results..."
+	echo "$xx"
+
+	VAR_DIR='shimmer-hornet'
+
+	cd /var/lib/$VAR_DIR >/dev/null 2>&1 || Dashboard;
+
+	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
+	if [ -z "$VAR_RESTAPI_SALT" ]; then echo "$rd""Shimmer-Hornet: No Salt found!""$xx"
+	else
+	   echo "Event IDs can be found at:"
+	   echo 'https://github.com/iotaledger/participation-events'
+	   echo 'https://github.com/iota-community/governance-participation-events'	 
+	   echo "Event Data will be saved locally under '/var/lib/shimmer-hornet/verify-events'"
+	   echo ''
+	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
+	   read -r -p '> ' EVENTS
+	   echo ''
+
+	   ADDR=$(cat .env 2>/dev/null | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
+	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt "$VAR_RESTAPI_SALT" | awk '{ print $5 }')
+	   echo "$ca""Address: ""$xx""$ADDR"" ($ca""JWT-Token for API Access randomly generated""$xx)"
+	   echo ''
+	   sleep 5
+
+	   if [ -z "$EVENTS" ]; then
+	   EVENTS=$(curl https://"${ADDR}"/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
+
+	   for EVENT_ID in $(echo "$EVENTS"  | tr -d '"[] ' | sed 's/,/ /g'); do
+	      echo "───────────────────────────────────────────────────────────────────────────────"
+	      EVENT_NAME=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.name')
+
+	      EVENT_SYMBOL=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.payload.symbol')
+
+	      EVENT_STATUS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.status')
+
+	      EVENT_CHECKSUM=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.checksum')
+
+	      EVENT_MILESTONE=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.milestoneIndex')
+
+	      EVENT_QUESTIONS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.questions')
+
+	      echo "$ca""Name: ""$xx""$EVENT_NAME"
+		  echo "$ca""Status: ""$xx""$EVENT_STATUS""$ca"" Milestone index: ""$xx""$EVENT_MILESTONE"
+
+	      if [ "$EVENT_STATUS" = "ended" ]; then
+	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
+	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
+	        $(curl https://"${ADDR}"/api/participation/v1/admin/events/"${EVENT_ID}"/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
+	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > "${EVENT_ID}")
+	        echo ""
+	        echo "$xx""Event ID: ""$EVENT_ID"
+
+	        if [ $(jq '.totalRewards' "${EVENT_ID}") = 'null' ]; then
+			  if [ "$EVENT_SYMBOL" = 'null' ]; then
+			    echo "$gn""Checksum: ""$EVENT_CHECKSUM""$xx"
+				if [ -n "$EVENT_QUESTIONS" ]; then echo "$EVENT_QUESTIONS" > "${EVENT_ID}"; fi
+			  else
+			    echo "$rd""Checksum: ""Authentication Error!""$xx"
+			  fi
+	        else
+	          echo "$gn""Checksum: ""$(jq -r '.checksum' "${EVENT_ID}")"
+	        fi
+	        EVENT_REWARDS="$(jq '.totalRewards' "${EVENT_ID}" 2>/dev/null)"
+	      else
+	        echo ""
+	        echo "$xx""Event ID: ""$EVENT_ID"
+	        echo "$rd""Checksum: ""Event not found or not over yet!""$xx"
+	        EVENT_REWARDS='not available'
+	      fi
+	      echo ""
+	      echo "$ca""Total rewards: ""$xx""$EVENT_REWARDS""$ca"" Symbol: ""$xx""$EVENT_SYMBOL"
+	      echo "───────────────────────────────────────────────────────────────────────────────"
+	   done
+	fi
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
+	Dashboard
+}
+
 CheckNodeUpdates() {
 	clear
 	echo ""
@@ -766,99 +859,6 @@ DebugInfo() {
     else
         echo "APT is not up-to-date."
     fi
-}
-
-CheckEventsShimmer() {
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo "$ca"
-	echo "Verify Event Results..."
-	echo "$xx"
-
-	VAR_DIR='shimmer-hornet'
-
-	cd /var/lib/$VAR_DIR >/dev/null 2>&1 || Dashboard;
-
-	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
-	if [ -z "$VAR_RESTAPI_SALT" ]; then echo "$rd""Shimmer-Hornet: No Salt found!""$xx"
-	else
-	   echo "Event IDs can be found at:"
-	   echo 'https://github.com/iotaledger/participation-events'
-	   echo 'https://github.com/iota-community/governance-participation-events'	 
-	   echo "Event Data will be saved locally under '/var/lib/shimmer-hornet/verify-events'"
-	   echo ''
-	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
-	   read -r -p '> ' EVENTS
-	   echo ''
-
-	   ADDR=$(cat .env 2>/dev/null | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
-	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt "$VAR_RESTAPI_SALT" | awk '{ print $5 }')
-	   echo "$ca""Address: ""$xx""$ADDR"" ($ca""JWT-Token for API Access randomly generated""$xx)"
-	   echo ''
-	   sleep 5
-
-	   if [ -z "$EVENTS" ]; then
-	   EVENTS=$(curl https://"${ADDR}"/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
-
-	   for EVENT_ID in $(echo "$EVENTS"  | tr -d '"[] ' | sed 's/,/ /g'); do
-	      echo "───────────────────────────────────────────────────────────────────────────────"
-	      EVENT_NAME=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.name')
-
-	      EVENT_SYMBOL=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.payload.symbol')
-
-	      EVENT_STATUS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.status')
-
-	      EVENT_CHECKSUM=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.checksum')
-
-	      EVENT_MILESTONE=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.milestoneIndex')
-
-	      EVENT_QUESTIONS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.questions')
-
-	      echo "$ca""Name: ""$xx""$EVENT_NAME"
-		  echo "$ca""Status: ""$xx""$EVENT_STATUS""$ca"" Milestone index: ""$xx""$EVENT_MILESTONE"
-
-	      if [ "$EVENT_STATUS" = "ended" ]; then
-	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
-	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
-	        $(curl https://"${ADDR}"/api/participation/v1/admin/events/"${EVENT_ID}"/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > "${EVENT_ID}")
-	        echo ""
-	        echo "$xx""Event ID: ""$EVENT_ID"
-
-	        if [ $(jq '.totalRewards' "${EVENT_ID}") = 'null' ]; then
-			  if [ "$EVENT_SYMBOL" = 'null' ]; then
-			    echo "$gn""Checksum: ""$EVENT_CHECKSUM""$xx"
-				if [ -n "$EVENT_QUESTIONS" ]; then echo "$EVENT_QUESTIONS" > "${EVENT_ID}"; fi
-			  else
-			    echo "$rd""Checksum: ""Authentication Error!""$xx"
-			  fi
-	        else
-	          echo "$gn""Checksum: ""$(jq -r '.checksum' "${EVENT_ID}")"
-	        fi
-	        EVENT_REWARDS="$(jq '.totalRewards' "${EVENT_ID}" 2>/dev/null)"
-	      else
-	        echo ""
-	        echo "$xx""Event ID: ""$EVENT_ID"
-	        echo "$rd""Checksum: ""Event not found or not over yet!""$xx"
-	        EVENT_REWARDS='not available'
-	      fi
-	      echo ""
-	      echo "$ca""Total rewards: ""$xx""$EVENT_REWARDS""$ca"" Symbol: ""$xx""$EVENT_SYMBOL"
-	      echo "───────────────────────────────────────────────────────────────────────────────"
-	   done
-	fi
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
-	Dashboard
 }
 
 SetCertificateGlobal() {
