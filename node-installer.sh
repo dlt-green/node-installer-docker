@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.4.1.5"
-BUILD="20240308_175607"
+BUILD="20240308_181716"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -143,19 +143,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='8261a2950dcd2844ff4ca00f98e00a92697e5de549dede8fd74f9c0355359d0e'
+IotaHornetHash='007cf56e9c6433515ef6a0f1ff07d26d155f78a32b257eb7e3ae58b012478251'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='9660e2e2ed877d91c2075ae41d9c8be0be699037795f31fb090db4ccba112b79'
+IotaWaspHash='fb061ccb34b66afc44af1ba2bafbc2a1e4bd9a917d364283cba697ec8e124677'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='58126081239eb749fe29785b4b87640fc915922e0691a75605a8d79acc26444c'
+ShimmerHornetHash='d7e6b59f53ae0deda2066f00d49cb767d37db8a773aa44b82b3cb6b26050f6cb'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='6efb3e371f04056b12dc92e4f04fa01d243dbe59f4f7311fb4d7bf70ab878c39'
+ShimmerWaspHash='e1f4af494466a0d57864825404704bf6461c464aa28ff3e222ff58b66819010a'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='d7dca382999a40e34f5fbd8bff1833ca62f611c9cf60eeaf67fbb7a53ce80cc8'
+ShimmerChronicleHash='08d41f22c47fabab4407000a21696930a5f03a764f1781a550ef4443d1325bf4'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1646,11 +1646,12 @@ SubMenuMaintenance() {
 	echo "║                              1. Install/Update                              ║"
 	echo "║                              2. Start/Restart                               ║"
 	echo "║                              3. Stop                                        ║"
-	echo "║                              4. Reset Database                              ║"
-	echo "║                              5. Loading Snapshot                            ║"
-	echo "║                              6. Show Logs                                   ║"
-	echo "║                              7. Configuration                               ║"
-	echo "║                              8. Deinstall/Remove                            ║"
+	echo "║                              4. Reset Node Database                         ║"
+	echo "║                              5. Reset Participation Database                ║"
+	echo "║                              6. Loading Snapshot                            ║"
+	echo "║                              7. Show Logs                                   ║"
+	echo "║                              8. Configuration                               ║"
+	echo "║                              9. Deinstall/Remove                            ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -1779,7 +1780,7 @@ SubMenuMaintenance() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
-	4) echo 'resetting...'; sleep 3
+	4) echo 'resetting node database...'; sleep 3
 
 	   clear
 	   echo ""
@@ -1794,7 +1795,7 @@ SubMenuMaintenance() {
 	   clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	   echo "║                              Resetting Database                             ║"
+	   echo "║                           Resetting Node Database                           ║"
 	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	   echo ""
 
@@ -1833,7 +1834,55 @@ SubMenuMaintenance() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
-	5) echo 'loading...'; sleep 3
+	5) echo 'resetting participation database...'; sleep 3
+
+	   clear
+	   echo ""
+	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	   echo "║                                  Stopping                                   ║"
+	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	   echo ""
+
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	   clear
+	   echo ""
+	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	   echo "║                      Resetting Participation Database                       ║"
+	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	   echo ""
+
+	   echo "done..."
+
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
+	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_IOTA_HORNET_NETWORK/*
+	   fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
+	   then
+	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_SHIMMER_HORNET_NETWORK/*
+	   fi
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	   clear
+	   echo ""
+	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	   echo "║                                  Starting                                   ║"
+	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+
+	   echo "$ca"
+	   echo 'Please wait, importing snapshot can take up to 10 minutes...'
+	   echo "$xx"
+
+	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose up -d; fi
+
+	   RenameContainer; sleep 3
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuMaintenance
+	   ;;
+	6) echo 'loading...'; sleep 3
 
 	   clear
 	   echo ""
@@ -1934,7 +1983,7 @@ SubMenuMaintenance() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
-	6) clear
+	7) clear
 	   echo ""
 	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	   echo "║                                    Logs                                     ║"
@@ -1946,9 +1995,9 @@ SubMenuMaintenance() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuMaintenance
 	   ;;
-	7) SubMenuConfiguration
+	8) SubMenuConfiguration
 	   ;;
-	8) echo 'deinstall/remove...'; sleep 3
+	9) echo 'deinstall/remove...'; sleep 3
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   clear
 	   echo ""
