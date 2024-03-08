@@ -2843,7 +2843,7 @@ IotaHornet() {
 
 		echo "HORNET_VERSION=$VAR_IOTA_HORNET_VERSION" >> .env
 
-		echo "HORNET_NETWORK=mainnet" >> .env
+		echo "HORNET_NETWORK=$VAR_IOTA_HORNET_NETWORK" >> .env
 
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_IOTA_HORNET_PRUNING_SIZE" >> .env
@@ -3674,7 +3674,7 @@ ShimmerHornet() {
 
 		echo "HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION" >> .env
 
-		echo "HORNET_NETWORK=mainnet" >> .env
+		echo "HORNET_NETWORK=$VAR_SHIMMER_HORNET_NETWORK" >> .env
 
 		echo "HORNET_HOST=$VAR_HOST" >> .env
 		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_SHIMMER_HORNET_PRUNING_SIZE" >> .env
