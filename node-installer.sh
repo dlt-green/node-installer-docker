@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.1.5"
-BUILD="20240308_181716"
+VRSN="v.4.1.6"
+BUILD="20240310_170205"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -143,19 +143,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='007cf56e9c6433515ef6a0f1ff07d26d155f78a32b257eb7e3ae58b012478251'
+IotaHornetHash='2cae6f7b8dcb3b0e6bf1752f1b8f1afe803a843d86b750d28c97726bfa39755b'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='fb061ccb34b66afc44af1ba2bafbc2a1e4bd9a917d364283cba697ec8e124677'
+IotaWaspHash='591c91ba11ea1c9c8ae0c2ea53c27c8383e7c661ada523b03b6fb5179ad5b4e7'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='d7e6b59f53ae0deda2066f00d49cb767d37db8a773aa44b82b3cb6b26050f6cb'
+ShimmerHornetHash='44569242ef9459957fe668ba9da0e1c83d0771ed7d30eeacd610db152285b328'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='e1f4af494466a0d57864825404704bf6461c464aa28ff3e222ff58b66819010a'
+ShimmerWaspHash='82c294ac941a030f6de285f39528cda0fcef9f376ebb2032cc12266460518f44'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='08d41f22c47fabab4407000a21696930a5f03a764f1781a550ef4443d1325bf4'
+ShimmerChronicleHash='89050b534d4656e583d5e02f0749e8ef78d2f28b6c29522f911c66b2334cf104'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1090,7 +1090,7 @@ Dashboard() {
 	             docker compose pull 2>&1 | grep "Pulled" | sort
 	             ./prepare_docker.sh
 	             if [ "$NODE" = 'iota-hornet' ]; then
-	               VAR_STATUS="$NODE$NETWORK: reset database"
+	               VAR_STATUS="$NODE$NETWORK: reset node database"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_IOTA_HORNET_NETWORK"/*
 	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/*
@@ -1098,7 +1098,7 @@ Dashboard() {
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
 	             if [ "$NODE" = 'shimmer-hornet' ]; then
-	               VAR_STATUS="$NODE$NETWORK: reset database"
+	               VAR_STATUS="$NODE$NETWORK: reset node database"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
@@ -1108,6 +1108,58 @@ Dashboard() {
 	             docker compose up -d
 	             sleep 60
 	             VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
+	           fi
+
+	           if [ "$NODE" = 'iota-hornet' ]; then
+	             VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "iota-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
+	             if ! [ "$VAR_STATUS_HORNET_INX_PARTICIPATION" = 'running' ]; then
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation unhealthy"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+ 	               docker compose stop
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: reset participation database"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+	               rm -rf /var/lib/"$NODE"/data/participation/"$VAR_IOTA_HORNET_NETWORK"/participation/*
+ 	               docker compose up -d
+	               sleep 60
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "iota-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
+	               case $VAR_STATUS_HORNET_INX_PARTICIPATION in
+					   'running')
+					   VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
+					   if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+					   *)
+					   VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation unhealthy"
+					   if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+	               esac
+	             else
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+	             fi
+	           fi	
+
+	           if [ "$NODE" = 'shimmer-hornet' ]; then
+	             VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "shimmer-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
+	             if ! [ "$VAR_STATUS_HORNET_INX_PARTICIPATION" = 'running' ]; then
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation unhealthy"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+ 	               docker compose stop
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: reset participation database"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+	               rm -rf /var/lib/"$NODE"/data/participation/"$VAR_SHIMMER_HORNET_NETWORK"/participation/*
+ 	               docker compose up -d
+	               sleep 60
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "shimmer-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
+	               case $VAR_STATUS_HORNET_INX_PARTICIPATION in
+					   'running')
+					   VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
+					   if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi ;;
+					   *)
+					   VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation unhealthy"
+					   if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi ;;
+	               esac
+	             else
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+	             fi
 	           fi
 
 	           case $VAR_STATUS in
@@ -1856,11 +1908,11 @@ SubMenuMaintenance() {
 	   echo "done..."
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_IOTA_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_IOTA_HORNET_NETWORK/participation/*
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
-	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_SHIMMER_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_SHIMMER_HORNET_NETWORK/participation/*
 	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2839,9 +2891,9 @@ IotaHornet() {
 		  echo "$rd""Set autopeering: $VAR_IOTA_HORNET_AUTOPEERING""$xx"
 		fi
 
+		VAR_IOTA_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
 		if [ "$VAR_IOTA_HORNET_AUTOPEERING" = 'false' ]; then
 		echo ''
-		VAR_IOTA_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
 		VAR_DEFAULT='{nodeName}:/dns/{nodeURL}/tcp/15600/p2p/{nodeId},...';
 		if [ -z "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" ]; then
 		  echo "Set static neighbor(s) (template: $ca""$VAR_DEFAULT""$xx):"; else echo "Set static neighbor(s) (config: ""$ca""\n""$(echo "$VAR_IOTA_HORNET_STATIC_NEIGHBORS" | tr ',' '\n')""\n""$xx)"; echo "Press [Enter] to use existing config (template: $ca""$VAR_DEFAULT""$xx):"; fi
@@ -3669,10 +3721,9 @@ ShimmerHornet() {
 		  echo "$rd""Set autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING""$xx"
 		fi
 
-		if [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'false' ]; then
-
-		echo ''
 		VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
+		if [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'false' ]; then
+		echo ''
 		VAR_DEFAULT='{nodeName}:/dns/{nodeURL}/tcp/15600/p2p/{nodeId},...';
 		if [ -z "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
 		  echo "Set static neighbor(s) (template: $ca""$VAR_DEFAULT""$xx):"; else echo "Set static neighbor(s) (config: ""$ca""\n""$(echo "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" | tr ',' '\n')""\n""$xx)"; echo "Press [Enter] to use existing config (template: $ca""$VAR_DEFAULT""$xx):"; fi
