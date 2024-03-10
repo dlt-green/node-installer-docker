@@ -1090,7 +1090,7 @@ Dashboard() {
 	             docker compose pull 2>&1 | grep "Pulled" | sort
 	             ./prepare_docker.sh
 	             if [ "$NODE" = 'iota-hornet' ]; then
-	               VAR_STATUS="$NODE$NETWORK: reset database"
+	               VAR_STATUS="$NODE$NETWORK: reset node database"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_IOTA_HORNET_NETWORK"/*
 	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/*
@@ -1098,7 +1098,7 @@ Dashboard() {
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
 	             if [ "$NODE" = 'shimmer-hornet' ]; then
-	               VAR_STATUS="$NODE$NETWORK: reset database"
+	               VAR_STATUS="$NODE$NETWORK: reset node database"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
@@ -1108,6 +1108,58 @@ Dashboard() {
 	             docker compose up -d
 	             sleep 60
 	             VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
+	           fi
+
+	           if [ "$NODE" = 'iota-hornet' ]; then
+	             VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "iota-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
+	             if ! [ "$VAR_STATUS_HORNET_INX_PARTICIPATION" = 'running' ]; then
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation unhealthy"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+ 	               docker compose stop
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: reset participation database"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+	               rm -rf /var/lib/"$NODE"/data/participation/"$VAR_IOTA_HORNET_NETWORK"/participation/*
+ 	               docker compose up -d
+	               sleep 60
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "iota-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
+	               case $VAR_STATUS_HORNET_INX_PARTICIPATION in
+					   'running')
+					   VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
+					   if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+					   *)
+					   VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation unhealthy"
+					   if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+	               esac
+	             else
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+	             fi
+	           fi	
+
+	           if [ "$NODE" = 'shimmer-hornet' ]; then
+	             VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "shimmer-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
+	             if ! [ "$VAR_STATUS_HORNET_INX_PARTICIPATION" = 'running' ]; then
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation unhealthy"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+ 	               docker compose stop
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: reset participation database"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+	               rm -rf /var/lib/"$NODE"/data/participation/"$VAR_SHIMMER_HORNET_NETWORK"/participation/*
+ 	               docker compose up -d
+	               sleep 60
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "shimmer-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
+	               case $VAR_STATUS_HORNET_INX_PARTICIPATION in
+					   'running')
+					   VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
+					   if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi ;;
+					   *)
+					   VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation unhealthy"
+					   if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi ;;
+	               esac
+	             else
+	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+	             fi
 	           fi
 
 	           case $VAR_STATUS in
@@ -1856,11 +1908,11 @@ SubMenuMaintenance() {
 	   echo "done..."
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_IOTA_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_IOTA_HORNET_NETWORK/participation/*
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
-	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_SHIMMER_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_SHIMMER_HORNET_NETWORK/participation/*
 	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
