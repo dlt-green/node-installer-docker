@@ -2838,7 +2838,7 @@ IotaHornet() {
 		  echo "$ca""Calculated pruning size for HORNET (with 10% buffer): ""$CALCULATED_SPACE""$xx"
 		  read -r -p '> ' VAR_TMP
 		  if [ -n "$VAR_TMP" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=$VAR_TMP; fi
-		  if [ -z "$VAR_TMP" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=$CALCULATED_SPACE; fi
+		  if [ -z "$VAR_TMP" ]; then if [ -z "$VAR_IOTA_HORNET_PRUNING_SIZE" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=$CALCULATED_SPACE; fi; fi
 		  if ! [ -z "${VAR_IOTA_HORNET_PRUNING_SIZE##*B*}" ]; then
 		    VAR_IOTA_HORNET_PRUNING_SIZE=''
 		    echo "$rd""Set pruning size: Please insert with unit!"; echo "$xx"
@@ -3668,7 +3668,7 @@ ShimmerHornet() {
 		  echo "$ca""Calculated pruning size for HORNET (with 10% buffer): ""$CALCULATED_SPACE""$xx"
 		  read -r -p '> ' VAR_TMP
 		  if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$VAR_TMP; fi
-		  if [ -z "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$CALCULATED_SPACE; fi
+		  if [ -z "$VAR_TMP" ]; then if [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$CALCULATED_SPACE; fi; fi
 		  if ! [ -z "${VAR_SHIMMER_HORNET_PRUNING_SIZE##*B*}" ]; then
 		    VAR_SHIMMER_HORNET_PRUNING_SIZE=''
 		    echo "$rd""Set pruning size: Please insert with unit!"; echo "$xx"
