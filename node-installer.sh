@@ -575,7 +575,7 @@ CheckEventsIota() {
 	      echo "$ca""Name: ""$xx""$EVENT_NAME"
 		  echo "$ca""Status: ""$xx""$EVENT_STATUS""$ca"" Milestone index: ""$xx""$EVENT_MILESTONE"
 
-	      if ! [ "$EVENT_STATUS" = "ended" ]; then
+	      if [ "$EVENT_STATUS" = "ended" ]; then
 	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
 	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
 	        $(curl https://"${ADDR}"/api/participation/v1/admin/events/"${EVENT_ID}"/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
@@ -668,7 +668,7 @@ CheckEventsShimmer() {
 	      echo "$ca""Name: ""$xx""$EVENT_NAME"
 		  echo "$ca""Status: ""$xx""$EVENT_STATUS""$ca"" Milestone index: ""$xx""$EVENT_MILESTONE"
 
-	      if ! [ "$EVENT_STATUS" = "ended" ]; then
+	      if [ "$EVENT_STATUS" = "ended" ]; then
 	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
 	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
 	        $(curl https://"${ADDR}"/api/participation/v1/admin/events/"${EVENT_ID}"/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
