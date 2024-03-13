@@ -25,11 +25,11 @@ VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
 
 # IOTA-WASP
 
-VAR_IOTA_WASP_VERSION='1.0.3-rc.2'
+VAR_IOTA_WASP_VERSION='1.0.3'
 VAR_IOTA_WASP_UPDATE=1
 
 VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_IOTA_WASP_CLI_VERSION='1.0.3-rc.2'
+VAR_IOTA_WASP_CLI_VERSION='1.0.3'
 
 # SHIMMER-HORNET
 
@@ -45,11 +45,11 @@ VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0'
 
 # SHIMMER-WASP
 
-VAR_SHIMMER_WASP_VERSION='1.0.3-rc.2'
+VAR_SHIMMER_WASP_VERSION='1.0.3'
 VAR_SHIMMER_WASP_UPDATE=1
 
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_SHIMMER_WASP_CLI_VERSION='1.0.3-rc.2'
+VAR_SHIMMER_WASP_CLI_VERSION='1.0.3'
 
 # PLUGINS
 
@@ -575,7 +575,7 @@ CheckEventsIota() {
 	      echo "$ca""Name: ""$xx""$EVENT_NAME"
 		  echo "$ca""Status: ""$xx""$EVENT_STATUS""$ca"" Milestone index: ""$xx""$EVENT_MILESTONE"
 
-	      if [ "$EVENT_STATUS" = "ended" ]; then
+	      if ! [ "$EVENT_STATUS" = "ended" ]; then
 	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
 	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
 	        $(curl https://"${ADDR}"/api/participation/v1/admin/events/"${EVENT_ID}"/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
@@ -668,7 +668,7 @@ CheckEventsShimmer() {
 	      echo "$ca""Name: ""$xx""$EVENT_NAME"
 		  echo "$ca""Status: ""$xx""$EVENT_STATUS""$ca"" Milestone index: ""$xx""$EVENT_MILESTONE"
 
-	      if [ "$EVENT_STATUS" = "ended" ]; then
+	      if ! [ "$EVENT_STATUS" = "ended" ]; then
 	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
 	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
 	        $(curl https://"${ADDR}"/api/participation/v1/admin/events/"${EVENT_ID}"/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
