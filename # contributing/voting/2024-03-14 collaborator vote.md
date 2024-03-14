@@ -26,7 +26,7 @@ https://github.com/dlt-green/node-installer-docker/pull/405
 
 ℹ️ Also our collabrator Antonio Nardella still has the option to review our contributing rules (https://github.com/dlt-green/node-installer-docker/pull/405), then this vote will be canceled.
 
-✅ For this vote to pass, there must be a majority of 75% reviews (without the person being voted on)
+✅ For this vote to pass, there must be a majority of 75% reviews
 
 ⌛ This voting ends when the required reviews are reached, and this pull request is rmerged into main  
 reviewers needed to pass: 8/10
