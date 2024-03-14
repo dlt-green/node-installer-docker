@@ -24,7 +24,7 @@ https://github.com/dlt-green/node-installer-docker/pull/405
 
 ℹ️ During the voting period you have the opportunity to change your mind at any time
 
-ℹ️ Also our collabrator Antonio Nardella still has the option to review or contributing rules (https://github.com/dlt-green/node-installer-docker/pull/405), then this vote will be canceled.
+ℹ️ Also our collabrator Antonio Nardella still has the option to review our contributing rules (https://github.com/dlt-green/node-installer-docker/pull/405), then this vote will be canceled.
 
 ✅ For this vote to pass, there must be a majority of 75% reviews (without the person being voted on)
 
