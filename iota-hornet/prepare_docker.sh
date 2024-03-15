@@ -63,8 +63,13 @@ set_config "${configPath}" ".inx.bindAddress"             "\"0.0.0.0:9029\""
 set_config "${configPath}" ".restAPI.jwtAuth.salt"        "\"${RESTAPI_SALT:-$(generate_random_string 80)}\"" "secret"
 
 set_config_if_present_in_env "${configPath}" "HORNET_PRUNING_MAX_MILESTONES_TO_KEEP" ".pruning.milestones.maxMilestonesToKeep"
-if [ ! -z "${HORNET_PRUNING_MAX_MILESTONES_TO_KEEP}" ]; then
+if [ -n "${HORNET_PRUNING_MAX_MILESTONES_TO_KEEP}" ]; then
   set_config "${configPath}" ".pruning.milestones.enabled" "true"
+fi
+
+if [ -n "${HORNET_SNAPSHOT_FULL_URL}" ] && [ -n "${HORNET_SNAPSHOT_DELTA_URL}" ]; then
+  set_config "${configPath}" ".snapshots.downloadURLs[0].full" "\"${HORNET_SNAPSHOT_FULL_URL}\""
+  set_config "${configPath}" ".snapshots.downloadURLs[0].delta" "\"${HORNET_SNAPSHOT_DELTA_URL}\""
 fi
 
 # Generate peering.json

@@ -328,5 +328,5 @@ generate_peering_json() {
     peersJson=$(jq --arg alias "$alias" --arg multiAddress "$multiAddress" '. += [{"alias": $alias, "multiAddress": $multiAddress}]' <<< "$peersJson")
   done
   unset IFS
-  echo "$peersJson" | jq '{peers: .}' > "$peeringFilePath" && echo "${peeringFilePath} successfully generated" || echo "Failed to generate peering.json"
+  echo "$peersJson" | jq '{peers: .}' > "$peeringFilePath" && echo "  ${peeringFilePath} successfully generated" || echo "  Failed to generate peering.json"
 }
