@@ -67,9 +67,12 @@ if [ -n "${HORNET_PRUNING_MAX_MILESTONES_TO_KEEP}" ]; then
   set_config "${configPath}" ".pruning.milestones.enabled" "true"
 fi
 
-if [ -n "${HORNET_SNAPSHOT_FULL_URL}" ] && [ -n "${HORNET_SNAPSHOT_DELTA_URL}" ]; then
-  set_config "${configPath}" ".snapshots.downloadURLs[0].full" "\"${HORNET_SNAPSHOT_FULL_URL}\""
-  set_config "${configPath}" ".snapshots.downloadURLs[0].delta" "\"${HORNET_SNAPSHOT_DELTA_URL}\""
+if [[ "${HORNET_NETWORK:-mainnet}" == "mainnet" ]] && [ -n "${HORNET_SNAPSHOT_MAINNET_FULL_URL}" ] && [ -n "${HORNET_SNAPSHOT_MAINNET_DELTA_URL}" ]; then
+  set_config "${configPath}" ".snapshots.downloadURLs[0].full" "\"${HORNET_SNAPSHOT_MAINNET_FULL_URL}\""
+  set_config "${configPath}" ".snapshots.downloadURLs[0].delta" "\"${HORNET_SNAPSHOT_MAINNET_DELTA_URL}\""
+elif [[ "${HORNET_NETWORK:-mainnet}" == "testnet" ]] && [ -n "${HORNET_SNAPSHOT_TESTNET_FULL_URL}" ] && [ -n "${HORNET_SNAPSHOT_TESTNET_DELTA_URL}" ]; then
+  set_config "${configPath}" ".snapshots.downloadURLs[0].full" "\"${HORNET_SNAPSHOT_TESTNET_FULL_URL}\""
+  set_config "${configPath}" ".snapshots.downloadURLs[0].delta" "\"${HORNET_SNAPSHOT_TESTNET_DELTA_URL}\""
 fi
 
 # Generate peering.json
