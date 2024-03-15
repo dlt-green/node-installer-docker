@@ -15,7 +15,12 @@ configRootPath="${dataDir}/config/wasp-cli"
 configFilename="wasp-cli.json"
 
 prepare_data_dir "${dataDir}" "config/wasp-cli"
-touch "${configRootPath}/${configFilename}"
+if [ -f "${dataDir}/config/wasp-cli.json" ]; then
+  # migration to new location; can be removed in future
+  mv "${dataDir}/config/wasp-cli.json" "${configRootPath}";
+else
+  touch "${configRootPath}/${configFilename}"
+fi
 configPath=$(realpath "${configRootPath}/${configFilename}")
 
 # use bashAliases parameter value or fallback to user home
