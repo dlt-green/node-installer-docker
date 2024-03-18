@@ -2476,6 +2476,9 @@ SubMenuWaspCLI() {
 				echo "$ca"'Activate Shimmer EVM chain...'"$xx"
 				./wasp-cli-wrapper.sh chain activate --chain shimmer-evm
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				echo "$ca""Add access-nodes... $PEER1 | $PEER2""$xx"
+				if ! [ -z $PEER1 ] && ! [ -z $PEER2 ]; then ./wasp-cli-wrapper.sh chain access-nodes add --peers=$PEER1,$PEER2; else ./wasp-cli-wrapper.sh chain access-nodes add --peers=$PEER1; fi
+				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			else echo "$rd""For adding Shimmer EVM you must set the trusted peers in the wasp config first!""$xx"; fi
 		  else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
