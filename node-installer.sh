@@ -4169,6 +4169,15 @@ ShimmerWasp() {
 		echo "$gn""Set peering port: $VAR_SHIMMER_WASP_PEERING_PORT""$xx"
 
 		echo ''
+		WASP_CHAIN_ADDRESS=$(cat .env 2>/dev/null | grep WASP_CHAIN_ADDRESS= | cut -d '=' -f 2)
+		VAR_DEFAULT='smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s';
+		if [ -z "$VAR_SHIMMER_WASP_CHAIN_ADDRESS" ]; then
+		  echo "Set Shimmer EVM chain address (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set Shimmer EVM chain address (config: $ca""$VAR_SHIMMER_WASP_CHAIN_ADDRESS""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_CHAIN_ADDRESS=$VAR_TMP; elif [ -z "$VAR_SHIMMER_WASP_CHAIN_ADDRESS" ]; then VAR_SHIMMER_WASP_CHAIN_ADDRESS=$VAR_DEFAULT; fi
+		echo "$gn""Set Shimmer EVM chain address: $VAR_SHIMMER_WASP_CHAIN_ADDRESS""$xx"
+
+		echo ''
 		VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
 		VAR_DEFAULT='10000';
 		if [ -z "$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then
@@ -4228,6 +4237,9 @@ ShimmerWasp() {
 		echo "WASP_PEERING_PORT=$VAR_SHIMMER_WASP_PEERING_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
+		echo "WASP_LOG_LEVEL=info" >> .env
+		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
+		echo "WASP_CHAIN_ADDRESS=$VAR_SHIMMER_WASP_CHAIN_ADDRESS" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
