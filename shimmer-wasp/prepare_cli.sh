@@ -79,7 +79,8 @@ while true; do
     if [ ${i} -eq 0 ]; then
       echo -e "  ${OUTPUT_PURPLE}Missing WASP_CLI_COMMITTEE_0 parameter.${OUTPUT_RESET}"
       echo -e "  ${OUTPUT_PURPLE}Defaulting to local node.${OUTPUT_RESET}"
-      waspUrl="https://${WASP_HOST}:${WASP_API_PORT}"
+#     waspUrl="https://${WASP_HOST}:${WASP_API_PORT}"
+      waspUrl="http://wasp:9090"
     else
       break
     fi
