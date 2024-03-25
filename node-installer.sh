@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.2.1"
-BUILD="20240314_185648"
+VRSN="v.4.3.0"
+BUILD="20240322_074724"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -143,19 +143,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='41425dbcaa045fdcf7bc8416b99ce7244750c08b4a41e98a668a334e3ca16d8f'
+IotaHornetHash='1c94a832a9c4f47c3b1a06af58e5dd14ab05071fb840457b9246afbf534fa0dd'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='f90519af4e03eedd101640b67f04c80e5529da561addbe6012fba5c76349daac'
+IotaWaspHash='04c0dbb1c54207d881fae707c4154eac319ed8e5c3aceea7182db680d16652ee'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='b061c4f1fddcebdab68429c7cfe300c4ffd85d59e26afb593b19ec2e2511eb84'
+ShimmerHornetHash='e29131b5fd6a22eb3f46c02b2a9c8c1913e514263eb78bfa0002915ba26933f2'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='0a9e6ac4453a5e1d929cd31d2ac5e59b098e0b3d6ca9e713fe472b61be6f3142'
+ShimmerWaspHash='38a6316177f0c67835f6e16fb0b47fa9eca5dc0cbf9c56da82c886940f28f280'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='3d18867837271785e3e9f540947243796440cd5fee430106313519881d5bf9aa'
+ShimmerChronicleHash='475f45d3abc8fd5c087ba8336d872a07f66603e5bbf38cf4ecfa21899a7ab7d4'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -927,7 +927,7 @@ Dashboard() {
 	fi
 	if ! [ "$VAR_NodeHealthy" = "false" ]; then iw=$gn; elif [ -d /var/lib/iota-wasp ]; then iw=$rd; else iw=$gr; fi
 
-	VAR_NODE=3; if [ -f "/var/lib/iota-wasp/data/config/wasp-cli.json" ]; then ic=$gn; elif [ -d /var/lib/iota-wasp ]; then ic=$or; else ic=$gr; fi
+	VAR_NODE=3; if [ -f "/var/lib/iota-wasp/data/config/wasp-cli/wasp-cli.json" ]; then ic=$gn; elif [ -d /var/lib/iota-wasp ]; then ic=$or; else ic=$gr; fi
 
 	VAR_NODE=5; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-hornet/.env" ]; then
@@ -949,7 +949,7 @@ Dashboard() {
 
 	if ! [ "$VAR_NodeHealthy" = "false" ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sw=$rd; else sw=$gr; fi
 
-	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli.json" ]; then sc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sc=$or; else sc=$gr; fi
+	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli/wasp-cli.json" ]; then sc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sc=$or; else sc=$gr; fi
 
 	VAR_NODE=0
 
@@ -1857,14 +1857,18 @@ SubMenuMaintenance() {
 	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_IOTA_HORNET_NETWORK/*
 	   fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/data/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/consensus/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/index/*
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
 	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/data/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/consensus/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/index/*
 	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -1991,17 +1995,27 @@ SubMenuMaintenance() {
 	   fi
 
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ] && [ $VAR_SHIMMER_HORNET_NETWORK = 'mainnet' ]; then
-#	      rm -rf /var/lib/$VAR_DIR/data/waspdb/*
-	      echo "Download latest full snapshot... latest-wasp_chains_wal"
-	      VAR_SNAPSHOT='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
-	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
-	      chmod 744 /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
-	      cd /var/lib/$VAR_DIR/data/waspdb || SubMenuMaintenance
-	      tar -xzvf /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
-	      rm -rf /var/lib/$VAR_DIR/data/waspdb/snapshot.tgz
-	      chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/data/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/consensus/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/index/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/data/waspdb/snap/smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s/*
 
-		  echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> /var/lib/$VAR_DIR/.env
+	      VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+
+	      if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
+			VAR_SNAPSHOT='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
+			cd /var/lib/$VAR_DIR/data/waspdb || SubMenuMaintenance
+			echo "Download latest full database... latest-wasp_chains_wal"
+			wget -q --show-progress --progress=bar https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz -O - | tar xzv
+			cd /var/lib/$VAR_DIR || SubMenuMaintenance
+	      else
+			cd /var/lib/$VAR_DIR/data/waspdb/snap/smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s || SubMenuMaintenance
+			VAR_SNAPSHOT=$(curl -Ls https://files.shimmer.shimmer.network/wasp_snapshots/smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s/INDEX)
+			echo "Download latest snapshot... $VAR_SNAPSHOT"
+			wget -q --show-progress --progress=bar https://files.shimmer.shimmer.network/wasp_snapshots/smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s/$VAR_SNAPSHOT
+			cd /var/lib/$VAR_DIR || SubMenuMaintenance
+	      fi
+	      chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2307,11 +2321,13 @@ SubMenuWaspCLI() {
 	echo "║                              2. Run Wasp-CLI | alias: wasp-cli {commands}   ║"
 	echo "║                              3. Login (Authenticate against a Wasp node)    ║"
 	echo "║                              4. Initialize a new wallet                     ║"
-	echo "║                              5. Show the wallet address                     ║"
-	echo "║                              6. Show the wallet balance                     ║"
-	echo "║                              7. Show the committee peering info             ║"
-	echo "║                              8. Help                                        ║"
-	echo "║                              9. Deinstall/Remove                            ║"
+	echo "║                              5. Show wallet address                         ║"
+	echo "║                              6. Show wallet balance                         ║"
+	echo "║                              7. Show peering info                           ║"
+	echo "║                              8. Show deployed chains                        ║"
+	echo "║                              9. Add Shimmer-EVM chain                       ║"
+	echo "║                             10. Help                                        ║"	
+	echo "║                             11. Deinstall/Remove                            ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -2357,7 +2373,7 @@ SubMenuWaspCLI() {
              echo "$ca"
 		     read -r -p 'Wasp-CLI > ' VAR_RUN_WASP_CLI_CMD
 			 echo "$xx"
-		     VAR_RUN_WASP_CLI_CMD=$(echo "$VAR_RUN_WASP_CLI_CMD" | sed 's/^wasp-cli//g')
+		     VAR_RUN_WASP_CLI_CMD=$(echo $VAR_RUN_WASP_CLI_CMD | sed 's/^wasp-cli//g')
 			 if [ "$VAR_RUN_WASP_CLI_CMD" = 'clear' ]; then
 			    clear
 			    echo "$ca"
@@ -2367,7 +2383,7 @@ SubMenuWaspCLI() {
 			    echo "Set command: (example: $ca""'wasp-cli {commands}' or '{commands}'""$xx):"
 			 fi
 			 if ! [ "$VAR_RUN_WASP_CLI_CMD" = 'clear' ] && ! [ "$VAR_RUN_WASP_CLI_CMD" = 'q' ] && ! [ "$VAR_RUN_WASP_CLI_CMD" = 'Q' ]; then
-			    if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh "$VAR_RUN_WASP_CLI_CMD"; else echo ""; echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+			    if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh $VAR_RUN_WASP_CLI_CMD; else echo ""; echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 			 fi
 	      done
 	   else
@@ -2382,7 +2398,7 @@ SubMenuWaspCLI() {
 	   echo "$xx"
 	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh login; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+		  if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh login; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
@@ -2391,11 +2407,10 @@ SubMenuWaspCLI() {
 	   ;;
 	4) clear
 	   echo "$ca"
-	   echo 'Initialize a new wallet...'
-	   echo "$xx"
+	   echo 'Initialize a new wallet...'"$xx"
 	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh init; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+		  if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh init --overwrite; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
@@ -2404,11 +2419,10 @@ SubMenuWaspCLI() {
 	   ;;
 	5) clear
 	   echo "$ca"
-	   echo 'Show the wallet address...'
-	   echo "$xx"
+	   echo 'Show wallet address...'"$xx"
 	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh address; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+		  if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh address; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
@@ -2417,11 +2431,10 @@ SubMenuWaspCLI() {
 	   ;;
 	6) clear
 	   echo "$ca"
-	   echo 'Show the wallet balance...'
-	   echo "$xx"
+	   echo 'Show wallet balance...'"$xx"
 	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh balance; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+		  if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh balance; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
@@ -2430,19 +2443,11 @@ SubMenuWaspCLI() {
 	   ;;
 	7) clear
 	   echo "$ca"
-	   echo 'Show the committee peering info...'
-	   echo "$xx"
+	   echo 'Show peering info...'"$xx"
 	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  if [ -f "./data/config/wasp-cli.json" ]; then
-		     VAR_WASP_CLI_PUBKEY=$(./wasp-cli-wrapper.sh peering info | grep PubKey | tr -s ' ' | cut -d ' ' -f 2)
-		     VAR_WASP_CLI_PEERING_URL=$(./wasp-cli-wrapper.sh peering info | grep PeeringURL | tr -s ' ' | cut -d ' ' -f 2)
-
-			echo "PubKey:     " $VAR_WASP_CLI_PUBKEY
-			echo "PeeringURL: " $VAR_WASP_CLI_PEERING_URL
-
-		  else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
-	  else
+		  if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh peering info; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2450,11 +2455,10 @@ SubMenuWaspCLI() {
 	   ;;
 	8) clear
 	   echo "$ca"
-	   echo 'Help...'
-	   echo "$xx"
+	   echo 'Show deployed chains...'"$xx"
 	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  if [ -f "./data/config/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh -h; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+		  if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh chain list; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
 	   fi
@@ -2462,6 +2466,54 @@ SubMenuWaspCLI() {
 	   SubMenuWaspCLI
 	   ;;
 	9) clear
+	   echo "$ca"
+	   echo 'Add Shimmer EVM...'"$xx"
+	   echo "$xx"
+	   if [ -d /var/lib/$VAR_DIR ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+		  if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
+			PEER1=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_1_NAME | cut -d '=' -f 2)
+			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_2_NAME | cut -d '=' -f 2)
+			if [ -n $PEER1 ] && [ -n $PEER2 ]; then 
+				echo "$ca"; echo 'Prepare cli...'"$xx"
+				./prepare_cli.sh
+				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				clear
+				echo "$ca"; echo 'Restart wasp...'; echo "$xx"
+				docker stop shimmer-wasp
+				docker compose up -d
+				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				clear
+				echo "$ca"; echo 'Login (Authenticate against a Wasp node)...'; echo "$xx"
+				./wasp-cli-wrapper.sh login
+				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				clear
+				echo "$ca"; echo 'Add Shimmer-EVM chain...'; echo "$xx"
+				./wasp-cli-wrapper.sh chain add shimmer-evm smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s
+				echo "$ca"'Activate Shimmer-EVM chain...'; echo "$xx"
+				./wasp-cli-wrapper.sh chain activate --chain shimmer-evm
+			else echo "$rd""For adding Shimmer EVM you must set the trusted peers in the wasp config first!""$xx"; fi
+		  else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+	   else
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
+	   fi
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuWaspCLI
+	   ;;
+	10) clear
+	   echo "$ca"
+	   echo 'Help...'"$xx"
+	   echo "$xx"
+	   if [ -d /var/lib/$VAR_DIR ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+		  if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then ./wasp-cli-wrapper.sh -h; else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+	   else
+	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
+	   fi
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuWaspCLI
+	   ;;
+	11) clear
 	   echo "$ca"
 	   echo 'Deinstall/Remove Wasp-CLI...'
 	   echo "$xx"
@@ -3301,7 +3353,7 @@ IotaWasp() {
 
 		echo ''
 		VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
-		VAR_DEFAULT='10000';
+		VAR_DEFAULT='100000';
 		if [ -z "$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then
 		  echo "Set pruning min states to keep (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set pruning min states to keep (config: $ca""$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
@@ -4130,8 +4182,17 @@ ShimmerWasp() {
 		echo "$gn""Set peering port: $VAR_SHIMMER_WASP_PEERING_PORT""$xx"
 
 		echo ''
+		WASP_CHAIN_ADDRESS=$(cat .env 2>/dev/null | grep WASP_CHAIN_ADDRESS= | cut -d '=' -f 2)
+		VAR_DEFAULT='smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s';
+		if [ -z "$VAR_SHIMMER_WASP_CHAIN_ADDRESS" ]; then
+		  echo "Set Shimmer EVM chain address (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set Shimmer EVM chain address (config: $ca""$VAR_SHIMMER_WASP_CHAIN_ADDRESS""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_CHAIN_ADDRESS=$VAR_TMP; elif [ -z "$VAR_SHIMMER_WASP_CHAIN_ADDRESS" ]; then VAR_SHIMMER_WASP_CHAIN_ADDRESS=$VAR_DEFAULT; fi
+		echo "$gn""Set Shimmer EVM chain address: $VAR_SHIMMER_WASP_CHAIN_ADDRESS""$xx"
+
+		echo ''
 		VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
-		VAR_DEFAULT='10000';
+		VAR_DEFAULT='100000';
 		if [ -z "$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then
 		  echo "Set pruning min states to keep (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set pruning min states to keep (config: $ca""$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
@@ -4178,7 +4239,10 @@ ShimmerWasp() {
 		if [ "$VAR_SHIMMER_WASP_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
-		if [ -f .env ]; then rm .env; fi
+
+		if [ -f .env ]; then
+		  WASP_TRUSTED_NODE=$(cat .env | grep TRUSTED_NODE)
+		rm .env; fi
 
 		echo "WASP_VERSION=$VAR_SHIMMER_WASP_VERSION" >> .env
 		echo "WASP_DASHBOARD_VERSION=$VAR_SHIMMER_WASP_DASHBOARD_VERSION" >> .env
@@ -4189,7 +4253,11 @@ ShimmerWasp() {
 		echo "WASP_PEERING_PORT=$VAR_SHIMMER_WASP_PEERING_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
-
+		echo "WASP_LOG_LEVEL=debug" >> .env
+		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
+		echo "WASP_CHAIN_ADDRESS=$VAR_SHIMMER_WASP_CHAIN_ADDRESS" >> .env
+		echo "$WASP_TRUSTED_NODE" >> .env
+		
 		if [ "$VAR_CERT" = 0 ]
 		then
 			echo "WASP_HTTP_PORT=80" >> .env

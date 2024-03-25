@@ -328,5 +328,39 @@ generate_peering_json() {
     peersJson=$(jq --arg alias "$alias" --arg multiAddress "$multiAddress" '. += [{"alias": $alias, "multiAddress": $multiAddress}]' <<< "$peersJson")
   done
   unset IFS
-  echo "$peersJson" | jq '{peers: .}' > "$peeringFilePath" && echo "${peeringFilePath} successfully generated" || echo "Failed to generate peering.json"
+  echo "$peersJson" | jq '{peers: .}' > "$peeringFilePath" && echo "  ${peeringFilePath} successfully generated" || echo "  Failed to generate peering.json"
+}
+
+configure_trusted_peers() {
+  local trustedPeersPath="$1"
+  local chainRegistryPath="$2"
+
+  if [ ! -f "${trustedPeersPath}" ]; then echo "{\"trustedPeers\": []}" > "${trustedPeersPath}"; fi
+  if [ ! -f "${chainRegistryPath}" ]; then echo "{\"chainRecords\": [{\"chainID\": \"\", \"active\": false}]}" > "${chainRegistryPath}"; fi
+
+  if ! grep -q -E "^WASP_TRUSTED_NODE_[0-9]+_URL" .env; then
+    echo "  Skipped: No trusted peers defined in .env"
+  else
+    jq '.trustedPeers |= map(select(.name == "me"))' "${trustedPeersPath}" > "${trustedPeersPath}.tmp" && mv -f "${trustedPeersPath}.tmp" "${trustedPeersPath}"
+    set_config "${chainRegistryPath}" ".chainRecords[0].chainID" "\"${WASP_CHAIN_ADDRESS:-smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s}\""
+    set_config "${chainRegistryPath}" ".chainRecords[0].accessNodes" "[]" "suppress"
+
+    grep -E "^WASP_TRUSTED_NODE_[0-9]+_URL" .env | sort | while IFS= read -r trustedNodeUrl; do
+      trustedNodeNumber=$(echo "${trustedNodeUrl}" | cut -d '_' -f 4)
+      name=$(grep -E "WASP_TRUSTED_NODE_${trustedNodeNumber}_NAME" .env | cut -d '=' -f 2)
+      if [ -z "${name}" ]; then name="peer${trustedNodeNumber}"; fi
+      url=$(grep -E "WASP_TRUSTED_NODE_${trustedNodeNumber}_URL" .env | cut -d '=' -f 2)
+      pubKey=$(grep -E "WASP_TRUSTED_NODE_${trustedNodeNumber}_PUBKEY" .env | cut -d '=' -f 2)
+
+      echo "  Adding trusted peer ${name} (${url})"
+      jq -r --arg name "${name}" --arg url "${url}" --arg pubKey "${pubKey}" \
+        '.trustedPeers += [{name: $name, publicKey: $pubKey, peeringURL: $url}]' \
+        "${trustedPeersPath}" > "${trustedPeersPath}.tmp" && mv -f "${trustedPeersPath}.tmp" "${trustedPeersPath}"
+
+      jq -r --arg pubKey "${pubKey}" \
+        '.chainRecords[0].accessNodes += [$pubKey]' \
+        "${chainRegistryPath}" > "${chainRegistryPath}.tmp" && mv -f "${chainRegistryPath}.tmp" "${chainRegistryPath}"
+    done
+  fi
+  chown 65532:65532 "${trustedPeersPath}" "${chainRegistryPath}"
 }

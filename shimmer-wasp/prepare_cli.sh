@@ -7,21 +7,32 @@
 set -e
 source ../common/scripts/prepare_docker_functions.sh
 
+elevate_to_root
+
 scriptDir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 dataDir="${WASP_DATA_DIR:-$scriptDir/data}"
-configTemplate=assets/wasp-cli.json.template
+configRootPath="${dataDir}/config/wasp-cli"
 configFilename="wasp-cli.json"
-configPath=$(realpath "${dataDir}/config/${configFilename}")
+
+prepare_data_dir "${dataDir}" "config/wasp-cli"
+touch "${configRootPath}/${configFilename}"
+if [ -f "${dataDir}/config/wasp-cli.json" ]; then
+  # migration to new location; can be removed in future
+  mv "${dataDir}/config/wasp-cli.json" "${configRootPath}";
+else
+  touch "${configRootPath}/${configFilename}"
+fi
+configPath=$(realpath "${configRootPath}/${configFilename}")
 
 # use bashAliases parameter value or fallback to user home
-bashAliases=$(get_parameter_value "--bashAliases" $@)
+bashAliases=$(get_parameter_value "--bashAliases" "$@")
 if [ "${bashAliases}" == "" ]; then
   bashAliases=$(realpath  ~/.bash_aliases)
 fi
 
 # alias creation/deletion has to be done before elevating to root
 if ! is_elevated_to_root; then
-  if is_parameter_present "--uninstall" $@; then
+  if is_parameter_present "--uninstall" "$@"; then
     echo "Deleting alias in ${bashAliases}..."
     sed -i '/# DLT.GREEN WASP-CLI/d' "${bashAliases}" && \
     sed -i '/alias wasp-cli=/d' "${bashAliases}" && \
@@ -52,14 +63,11 @@ rm -Rf "${configPath}" && echo "{}" > "${configPath}"
 set_config "${configPath}" ".l1.apiaddress"    "\"http://hornet:14265\""
 set_config "${configPath}" ".l1.faucetaddress" "\"${WASP_CLI_FAUCET_ADDRESS:-http://inx-faucet:8091}\""
 
-if [[ ! -z "${WASP_CLI_CHAIN}" ]]; then
+set_config "${configPath}" ".wallet.provider" "\"keychain\""
+
+if [[ -n "${WASP_CLI_CHAIN}" ]]; then
   set_config "${configPath}" ".chain" "\"${WASP_CLI_CHAIN_NAME:-mychain}\""
   set_config "${configPath}" ".chains[\"${WASP_CLI_CHAIN_NAME:-mychain}\"]" "\"${WASP_CLI_CHAIN}\""
-fi
-
-if [ "${WASP_CLI_WALLET_SEED}" != "" ]; then
-  echo -e "  ${OUTPUT_PURPLE}Using wallet seed from .env${OUTPUT_RESET}"
-  set_config "${configPath}" ".wallet.seed" "\"${WASP_CLI_WALLET_SEED}\"" "suppress"
 fi
 
 echo -e "\nConfiguring committee..."
@@ -71,7 +79,8 @@ while true; do
     if [ ${i} -eq 0 ]; then
       echo -e "  ${OUTPUT_PURPLE}Missing WASP_CLI_COMMITTEE_0 parameter.${OUTPUT_RESET}"
       echo -e "  ${OUTPUT_PURPLE}Defaulting to local node.${OUTPUT_RESET}"
-      waspUrl="https://${WASP_HOST}:${WASP_API_PORT}"
+#     waspUrl="https://${WASP_HOST}:${WASP_API_PORT}"
+      waspUrl="http://wasp:9090"
     else
       break
     fi
@@ -84,12 +93,6 @@ done
 chown 65532:65532 "${configPath}"
 
 print_line 120
-if [ "${WASP_CLI_WALLET_SEED}" == "" ]; then
-  echo -e "${OUTPUT_PURPLE_UNDERLINED}WALLET SEED${OUTPUT_RESET}"
-  echo -e "If you are using a wallet seed (generated with wasp-cli init) you can add a parameter WASP_CLI_WALLET_SEED in .env"
-  echo -e "with the value taken from data/config/wasp-cli.json. This will automatically add that seed on re-execution of this script."
-  print_line 120
-fi
 echo -e "${OUTPUT_PURPLE_UNDERLINED}ALIAS${OUTPUT_RESET}"
 echo -e "An alias 'wasp-cli' has been created in ${bashAliases}."
 echo -e "It will be available on next login or you can also execute the following command to activate it immediately:\n"
