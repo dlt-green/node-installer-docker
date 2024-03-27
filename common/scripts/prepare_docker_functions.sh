@@ -335,14 +335,16 @@ configure_trusted_peers() {
   local trustedPeersPath="$1"
   local chainRegistryPath="$2"
 
+  local chainID="${WASP_CHAIN_ADDRESS:-smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s}"
+
   if [ ! -f "${trustedPeersPath}" ]; then echo "{\"trustedPeers\": []}" > "${trustedPeersPath}"; fi
-  if [ ! -f "${chainRegistryPath}" ]; then echo "{\"chainRecords\": [{\"chainID\": \"\", \"active\": false}]}" > "${chainRegistryPath}"; fi
+  if [ ! -f "${chainRegistryPath}" ]; then echo "{\"chainRecords\": [{\"chainID\": \"${chainID}\", \"active\": false}]}" > "${chainRegistryPath}"; fi
 
   if ! grep -q -E "^WASP_TRUSTED_NODE_[0-9]+_URL" .env; then
     echo "  Skipped: No trusted peers defined in .env"
   else
     jq '.trustedPeers |= map(select(.name == "me"))' "${trustedPeersPath}" > "${trustedPeersPath}.tmp" && mv -f "${trustedPeersPath}.tmp" "${trustedPeersPath}"
-    set_config "${chainRegistryPath}" ".chainRecords[0].chainID" "\"${WASP_CHAIN_ADDRESS:-smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s}\""
+    set_config "${chainRegistryPath}" ".chainRecords[0].chainID" "\"${chainID}\""
     set_config "${chainRegistryPath}" ".chainRecords[0].accessNodes" "[]" "suppress"
 
     grep -E "^WASP_TRUSTED_NODE_[0-9]+_URL" .env | sort | while IFS= read -r trustedNodeUrl; do
