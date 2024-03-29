@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VRSN="v.4.3.1"
+VRSN="v.4.3.2"
 BUILD="20240327_200148"
 
 VAR_DOMAIN=''
