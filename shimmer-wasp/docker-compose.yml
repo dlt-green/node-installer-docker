@@ -22,7 +22,7 @@ services:
       - "traefik.http.services.webapi.loadbalancer.server.port=9090"
       - "traefik.http.services.webapi.loadbalancer.healthCheck.path=/health"
       - "traefik.http.services.webapi.loadbalancer.healthCheck.interval=10s"
-      - "traefik.http.services.webapi.loadbalancer.healthCheck.timeout=3s"
+      - "traefik.http.services.webapi.loadbalancer.healthCheck.timeout=7s"
 
       - "traefik.http.routers.webapi.service=webapi"
       - "traefik.http.routers.webapi.rule=Host(`${WASP_HOST:?WASP_HOST is missing}`)"
