@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.3.3"
-BUILD="20240330_210238"
+VRSN="v.4.3.4"
+BUILD="20240331_110550"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -143,19 +143,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='886f62f3b882f94d1f552452d5c67cfe4863c3f6d7475b3989284d99a99fccb7'
+IotaHornetHash='25e62b299066fda66512b5a311b8f328954dffe8b3b3253306efd90c6e698ec4'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='57653f59d6e56f56ab6c27b148affe6eda1b73ab2aee1c802c4dc9563091d310'
+IotaWaspHash='96ed2d330fe8087d98ee39a8875236f197e180414e53834edfb348c4e8f17c55'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='0b8c201a96442c6668827e61935d38370d4f10c8d591bd7534c4019675844085'
+ShimmerHornetHash='8adcc30f1361af5c6a8dd9ec54fa5ee42124af69f9756dd1c698d81326376fa6'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='c89a5a756e3466ec1db7d6fa73f68270756a043e2220e687b0d02ef806274e58'
+ShimmerWaspHash='6fe3fc617bc2be50a8e28b6a86a1e6b38c9bb025499f165a85f56c68409c2da4'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='3cd170bc7166b37d16b6ee54a580c64e28397ec4042c8c92633b5456c3e4ed25'
+ShimmerChronicleHash='0b93334a84d375dce53dd4feaaf4bb7e2866946660d1d81493419e45362acfa6'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1080,7 +1080,7 @@ Dashboard() {
 	           if [ "$NODE" = 'iota-hornet' ]; then NETWORK=" $VAR_IOTA_HORNET_NETWORK"; fi
 	           if [ "$NODE" = 'shimmer-hornet' ]; then NETWORK=" $VAR_SHIMMER_HORNET_NETWORK"; fi
 	           docker compose up -d
-	           sleep 30
+	           sleep 60
 	           VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
 
 	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
@@ -2572,6 +2572,30 @@ SystemMaintenance() {
 	done
 
 	RenameContainer
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                               Check diskspace                               ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	VAR_STATUS='system: diskspace '"$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'
+
+	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -lt 90 ]; then
+	  echo "$gn""diskspace: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
+	  if [ "$opt_mode" ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	fi
+	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 90 ] && [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -lt 95 ]; then
+	  echo "$or""diskspace waring: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
+	  if [ "$opt_mode" ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	fi
+	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 97 ]; then
+	  echo "$ge""diskspace critical: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
+	  if [ "$opt_mode" ]; then NotifyMessage "!err" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
