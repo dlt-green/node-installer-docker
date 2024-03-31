@@ -1080,7 +1080,7 @@ Dashboard() {
 	           if [ "$NODE" = 'iota-hornet' ]; then NETWORK=" $VAR_IOTA_HORNET_NETWORK"; fi
 	           if [ "$NODE" = 'shimmer-hornet' ]; then NETWORK=" $VAR_SHIMMER_HORNET_NETWORK"; fi
 	           docker compose up -d
-	           sleep 30
+	           sleep 60
 	           VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
 
 	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
