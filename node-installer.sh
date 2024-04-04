@@ -2325,7 +2325,12 @@ SubMenuWaspCLI() {
 	echo "║                              6. Show wallet balance                         ║"
 	echo "║                              7. Show peering info                           ║"
 	echo "║                              8. Show deployed chains                        ║"
+	if [ "$VAR_NODE" = 3 ] ; then
+	echo "║                              9. Add IOTA-EVM chain                          ║"
+	fi
+	if [ "$VAR_NODE" = 7 ] ; then
 	echo "║                              9. Add Shimmer-EVM chain                       ║"
+	fi
 	echo "║                             10. Help                                        ║"	
 	echo "║                             11. Deinstall/Remove                            ║"
 	echo "║                              X. Management Dashboard                        ║"
@@ -2466,12 +2471,45 @@ SubMenuWaspCLI() {
 	   SubMenuWaspCLI
 	   ;;
 	9) clear
-	   echo "$ca"
-	   echo 'Add Shimmer-EVM chain...'"$xx"
-	   echo "$xx"
-	   if [ -d /var/lib/$VAR_DIR ]; then
+#	   if [ "$VAR_NODE" = 3 ] ; then
+#		echo "$ca"
+#		echo 'Add IOTA-EVM chain...'"$xx"
+#		echo "$xx"
+#		if [ -d /var/lib/$VAR_DIR ]; then
+#	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+#	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
+#			PEER1=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_1_NAME | cut -d '=' -f 2)
+#			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_2_NAME | cut -d '=' -f 2)
+#			if [ -n $PEER1 ] && [ -n $PEER2 ]; then
+#				./wasp-cli-wrapper.sh chain add iota-evm iota...
+#				echo "$ca"; echo 'Prepare cli...'"$xx"
+#				./prepare_cli.sh
+#				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+#				clear
+#				echo "$ca"; echo 'Restart wasp...'; echo "$xx"
+#				docker stop iota-wasp
+#				docker compose up -d
+#				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+#				clear
+#				echo "$ca"; echo 'Login (Authenticate against a Wasp node)...'; echo "$xx"
+#				./wasp-cli-wrapper.sh login
+#				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+#				clear
+#				echo "$ca"'Activate IOTA-EVM chain...'; echo "$xx"
+#				./wasp-cli-wrapper.sh chain activate --chain iota-evm
+#			else echo "$rd""For adding IOTA-EVM you must set at least two trusted peers in the wasp config first!""$xx"; fi
+#	      else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+#		else
+#	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
+#		fi
+#	   fi
+	   if [ "$VAR_NODE" = 7 ] ; then
+		echo "$ca"
+		echo 'Add Shimmer-EVM chain...'"$xx"
+		echo "$xx"
+		if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-		  if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
+	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
 			PEER1=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_1_NAME | cut -d '=' -f 2)
 			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_2_NAME | cut -d '=' -f 2)
 			if [ -n $PEER1 ] && [ -n $PEER2 ]; then
@@ -2492,9 +2530,10 @@ SubMenuWaspCLI() {
 				echo "$ca"'Activate Shimmer-EVM chain...'; echo "$xx"
 				./wasp-cli-wrapper.sh chain activate --chain shimmer-evm
 			else echo "$rd""For adding Shimmer-EVM you must set at least two trusted peers in the wasp config first!""$xx"; fi
-		  else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
-	   else
+	      else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+		else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
+		fi
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuWaspCLI
