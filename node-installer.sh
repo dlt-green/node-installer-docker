@@ -2467,14 +2467,15 @@ SubMenuWaspCLI() {
 	   ;;
 	9) clear
 	   echo "$ca"
-	   echo 'Add Shimmer EVM...'"$xx"
+	   echo 'Add Shimmer-EVM chain...'"$xx"
 	   echo "$xx"
 	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 		  if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
 			PEER1=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_1_NAME | cut -d '=' -f 2)
 			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_2_NAME | cut -d '=' -f 2)
-			if [ -n $PEER1 ] && [ -n $PEER2 ]; then 
+			if [ -n $PEER1 ] && [ -n $PEER2 ]; then
+				./wasp-cli-wrapper.sh chain add shimmer-evm smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s
 				echo "$ca"; echo 'Prepare cli...'"$xx"
 				./prepare_cli.sh
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2488,11 +2489,9 @@ SubMenuWaspCLI() {
 				./wasp-cli-wrapper.sh login
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 				clear
-				echo "$ca"; echo 'Add Shimmer-EVM chain...'; echo "$xx"
-				./wasp-cli-wrapper.sh chain add shimmer-evm smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s
 				echo "$ca"'Activate Shimmer-EVM chain...'; echo "$xx"
 				./wasp-cli-wrapper.sh chain activate --chain shimmer-evm
-			else echo "$rd""For adding Shimmer EVM you must set the trusted peers in the wasp config first!""$xx"; fi
+			else echo "$rd""For adding Shimmer-EVM you must set at least two trusted peers in the wasp config first!""$xx"; fi
 		  else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 	   else
 	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
