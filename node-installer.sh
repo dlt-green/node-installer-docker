@@ -2523,7 +2523,7 @@ SubMenuWaspCLI() {
 				./wasp-cli-wrapper.sh login
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 				clear
-				echo "$ca"; echo 'Prepare cli...'"$xx"
+				echo "$ca"; echo 'Prepare cli...'; echo "$xx"
 				./prepare_cli.sh
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 				clear
