@@ -2319,7 +2319,7 @@ SubMenuWaspCLI() {
 	echo "║                                                                             ║"
 	echo "║                              1. Install/Prepare Wasp-CLI                    ║"
 	echo "║                              2. Run Wasp-CLI | alias: wasp-cli {commands}   ║"
-	echo "║                              3. Login (Authenticate against Wasp node)      ║"
+	echo "║                              3. Login (Authenticate to Wasp node)           ║"
 	echo "║                              4. Initialize a new wallet                     ║"
 	echo "║                              5. Show wallet address                         ║"
 	echo "║                              6. Show wallet balance                         ║"
@@ -2399,7 +2399,7 @@ SubMenuWaspCLI() {
 	   ;;
 	3) clear
 	   echo "$ca"
-	   echo 'Login (Authenticate against Wasp node)...'
+	   echo 'Login (Authenticate to Wasp node)...'
 	   echo "$xx"
 	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
@@ -2480,34 +2480,42 @@ SubMenuWaspCLI() {
 #	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
 #			PEER1=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_1_NAME | cut -d '=' -f 2)
 #			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_2_NAME | cut -d '=' -f 2)
-#			if [ -n $PEER1 ] && [ -n $PEER2 ]; then
-#				./wasp-cli-wrapper.sh chain add iota-evm iota...
-#				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+#			if [ ! -z $PEER1 ] && [ ! -z $PEER2 ]; then
 #				clear
-#				echo "$ca"; echo 'Prepare cli...'"$xx"
+#				echo "$ca"; echo 'Prepare cli...'; echo "$xx"
 #				./prepare_cli.sh
-#				echo "$ca"; echo 'Prepare wasp...'; echo "$xx"
-#				./prepare_docker.sh
-#				clear
 #				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 #				clear
-#				echo "$ca"; echo 'Restart wasp...'; echo "$xx"
-#				docker stop iota-wasp
-#				docker compose up -d
-#				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-#				clear
-#				echo "$ca"; echo 'Login (Authenticate against Wasp node)...'; echo "$xx"
+#				echo "$ca"; echo 'Login (Authenticate to Wasp node)...'; echo "$xx"
 #				./wasp-cli-wrapper.sh login
 #				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 #				clear
-#				echo "$ca"; echo 'Activate IOTA-EVM chain...'; echo "$xx"
-#				./wasp-cli-wrapper.sh chain activate --chain iota-evm
-#			else echo "$rd""For adding IOTA-EVM you must set at least two trusted peers in the wasp config first!""$xx"; fi
-#	      else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+#				echo "$ca"; echo 'Add IOTA-EVM chain...'"$xx"
+#				./wasp-cli-wrapper.sh chain add IOTA-evm iota...
+#				if [ -n $(cat /data/waspdb/chains/chain_registry.json 2>/dev/null | grep iota... | cut -d '=' -f 2) ]; then
+#					echo "$gn"; echo 'IOTA-EVM chain successfully added...'"$xx"
+#					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+#					clear
+#					echo "$ca"; echo 'Activate IOTA-EVM chain...'"$xx"
+#					./wasp-cli-wrapper.sh chain activate --chain IOTA-evm
+#					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+#					clear
+#					echo "$ca"; echo 'Prepare wasp...'; echo "$xx"
+#					./prepare_docker.sh
+#					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+#					clear
+#					echo "$ca"; echo 'Restart wasp...'; echo "$xx"
+#					docker stop IOTA-wasp
+#					docker compose up -d
+#				else echo "$rd"; echo "Error adding IOTA-EVM chain!""$xx"; fi
+#			else echo "$rd""Set at least two trusted peers in the wasp config first!""$xx"; fi
+#	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
 #		else
-#	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
+#	      echo "$rd""Install $VAR_DIR first!""$xx"
 #		fi
 #	   fi
+#	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+#	   SubMenuWaspCLI
 	   if [ "$VAR_NODE" = 7 ] ; then
 		echo "$ca"
 		echo 'Add Shimmer-EVM chain...'"$xx"
@@ -2517,34 +2525,38 @@ SubMenuWaspCLI() {
 	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
 			PEER1=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_1_NAME | cut -d '=' -f 2)
 			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_2_NAME | cut -d '=' -f 2)
-			if [ -n $PEER1 ] && [ -n $PEER2 ]; then
-				clear
-				echo "$ca"; echo 'Login (Authenticate against Wasp node)...'; echo "$xx"
-				./wasp-cli-wrapper.sh login
-				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+			if [ ! -z $PEER1 ] && [ ! -z $PEER2 ]; then
 				clear
 				echo "$ca"; echo 'Prepare cli...'; echo "$xx"
 				./prepare_cli.sh
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 				clear
+				echo "$ca"; echo 'Login (Authenticate to Wasp node)...'; echo "$xx"
+				./wasp-cli-wrapper.sh login
+				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				clear
 				echo "$ca"; echo 'Add Shimmer-EVM chain...'"$xx"
 				./wasp-cli-wrapper.sh chain add shimmer-evm smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s
-				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-				clear
-				echo "$ca"; echo 'Prepare wasp...'; echo "$xx"
-				./prepare_docker.sh
-				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-				clear
-				echo "$ca"; echo 'Restart wasp...'; echo "$xx"
-				docker stop shimmer-wasp
-				docker compose up -d
-				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-				echo "$ca"; echo 'Activate Shimmer-EVM chain...'; echo "$xx"
-				./wasp-cli-wrapper.sh chain activate --chain shimmer-evm
-			else echo "$rd""For adding Shimmer-EVM you must set at least two trusted peers in the wasp config first!""$xx"; fi
-	      else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
+				if [ -n $(cat /data/waspdb/chains/chain_registry.json 2>/dev/null | grep smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl | cut -d '=' -f 2) ]; then
+					echo "$gn"; echo 'Shimmer-EVM chain successfully added...'"$xx"
+					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+					clear
+					echo "$ca"; echo 'Activate Shimmer-EVM chain...'"$xx"
+					./wasp-cli-wrapper.sh chain activate --chain shimmer-evm
+					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+					clear
+					echo "$ca"; echo 'Prepare wasp...'; echo "$xx"
+					./prepare_docker.sh
+					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+					clear
+					echo "$ca"; echo 'Restart wasp...'; echo "$xx"
+					docker stop shimmer-wasp
+					docker compose up -d
+				else echo "$rd"; echo "Error adding Shimmer-EVM chain!""$xx"; fi
+			else echo "$rd""Set at least two trusted peers in the wasp config first!""$xx"; fi
+	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
 		else
-	      echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"
+	      echo "$rd""Install $VAR_DIR first!""$xx"
 		fi
 	   fi
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
