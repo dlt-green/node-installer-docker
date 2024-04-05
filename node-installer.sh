@@ -2533,6 +2533,7 @@ SubMenuWaspCLI() {
 				echo "$ca"; echo 'Activate Shimmer-EVM chain...'; echo "$xx"
 				./wasp-cli-wrapper.sh chain activate --chain shimmer-evm
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				clear
 				echo "$ca"; echo 'Prepare wasp...'; echo "$xx"
 				./prepare_docker.sh
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
