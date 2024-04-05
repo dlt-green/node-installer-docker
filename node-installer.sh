@@ -2530,9 +2530,6 @@ SubMenuWaspCLI() {
 				echo "$ca"; echo 'Add Shimmer-EVM chain...'"$xx"
 				./wasp-cli-wrapper.sh chain add shimmer-evm smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-				echo "$ca"; echo 'Activate Shimmer-EVM chain...'; echo "$xx"
-				./wasp-cli-wrapper.sh chain activate --chain shimmer-evm
-				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 				clear
 				echo "$ca"; echo 'Prepare wasp...'; echo "$xx"
 				./prepare_docker.sh
@@ -2542,7 +2539,8 @@ SubMenuWaspCLI() {
 				docker stop shimmer-wasp
 				docker compose up -d
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-
+				echo "$ca"; echo 'Activate Shimmer-EVM chain...'; echo "$xx"
+				./wasp-cli-wrapper.sh chain activate --chain shimmer-evm
 			else echo "$rd""For adding Shimmer-EVM you must set at least two trusted peers in the wasp config first!""$xx"; fi
 	      else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
 		else
