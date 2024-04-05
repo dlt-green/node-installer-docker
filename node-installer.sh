@@ -2482,6 +2482,8 @@ SubMenuWaspCLI() {
 #			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_2_NAME | cut -d '=' -f 2)
 #			if [ -n $PEER1 ] && [ -n $PEER2 ]; then
 #				./wasp-cli-wrapper.sh chain add iota-evm iota...
+#				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+#				clear
 #				echo "$ca"; echo 'Prepare cli...'"$xx"
 #				./prepare_cli.sh
 #				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2514,6 +2516,8 @@ SubMenuWaspCLI() {
 			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_2_NAME | cut -d '=' -f 2)
 			if [ -n $PEER1 ] && [ -n $PEER2 ]; then
 				./wasp-cli-wrapper.sh chain add shimmer-evm smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s
+				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				clear
 				echo "$ca"; echo 'Prepare cli...'"$xx"
 				./prepare_cli.sh
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
