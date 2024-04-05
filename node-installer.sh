@@ -2319,7 +2319,7 @@ SubMenuWaspCLI() {
 	echo "║                                                                             ║"
 	echo "║                              1. Install/Prepare Wasp-CLI                    ║"
 	echo "║                              2. Run Wasp-CLI | alias: wasp-cli {commands}   ║"
-	echo "║                              3. Login (Authenticate against a Wasp node)    ║"
+	echo "║                              3. Login (Authenticate against Wasp node)      ║"
 	echo "║                              4. Initialize a new wallet                     ║"
 	echo "║                              5. Show wallet address                         ║"
 	echo "║                              6. Show wallet balance                         ║"
@@ -2399,7 +2399,7 @@ SubMenuWaspCLI() {
 	   ;;
 	3) clear
 	   echo "$ca"
-	   echo 'Login (Authenticate against a Wasp node)...'
+	   echo 'Login (Authenticate against Wasp node)...'
 	   echo "$xx"
 	   if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
@@ -2493,11 +2493,11 @@ SubMenuWaspCLI() {
 #				docker compose up -d
 #				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 #				clear
-#				echo "$ca"; echo 'Login (Authenticate against a Wasp node)...'; echo "$xx"
+#				echo "$ca"; echo 'Login (Authenticate against Wasp node)...'; echo "$xx"
 #				./wasp-cli-wrapper.sh login
 #				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 #				clear
-#				echo "$ca"'Activate IOTA-EVM chain...'; echo "$xx"
+#				echo "$ca"; echo 'Activate IOTA-EVM chain...'; echo "$xx"
 #				./wasp-cli-wrapper.sh chain activate --chain iota-evm
 #			else echo "$rd""For adding IOTA-EVM you must set at least two trusted peers in the wasp config first!""$xx"; fi
 #	      else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
@@ -2527,11 +2527,11 @@ SubMenuWaspCLI() {
 				docker compose up -d
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 				clear
-				echo "$ca"; echo 'Login (Authenticate against a Wasp node)...'; echo "$xx"
+				echo "$ca"; echo 'Login (Authenticate against Wasp node)...'; echo "$xx"
 				./wasp-cli-wrapper.sh login
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 				clear
-				echo "$ca"'Activate Shimmer-EVM chain...'; echo "$xx"
+				echo "$ca"; echo 'Activate Shimmer-EVM chain...'; echo "$xx"
 				./wasp-cli-wrapper.sh chain activate --chain shimmer-evm
 			else echo "$rd""For adding Shimmer-EVM you must set at least two trusted peers in the wasp config first!""$xx"; fi
 	      else echo "$rd""For using Wasp-CLI you must install/prepare Wasp-CLI first!""$xx"; fi
