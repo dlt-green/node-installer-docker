@@ -389,7 +389,7 @@ configure_chain_access_nodes() {
         '.chainRecords |= map(if .chainID == $chainID then .accessNodes += [$access_node] else . end)' \
         "${chainRegistryPath}" > "${chainRegistryPath}.tmp" && mv -f "${chainRegistryPath}.tmp" "${chainRegistryPath}"
     done
-
-    chown 65532:65532 "${chainRegistryPath}"
   fi
+
+  chown 65532:65532 "${chainRegistryPath}"
 }
