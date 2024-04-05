@@ -2519,6 +2519,10 @@ SubMenuWaspCLI() {
 			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_2_NAME | cut -d '=' -f 2)
 			if [ -n $PEER1 ] && [ -n $PEER2 ]; then
 				clear
+				echo "$ca"; echo 'Login (Authenticate against Wasp node)...'; echo "$xx"
+				./wasp-cli-wrapper.sh login
+				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				clear
 				echo "$ca"; echo 'Prepare cli...'"$xx"
 				./prepare_cli.sh
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
