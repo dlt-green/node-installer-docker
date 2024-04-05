@@ -2482,6 +2482,8 @@ SubMenuWaspCLI() {
 #			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_2_NAME | cut -d '=' -f 2)
 #			if [ -n $PEER1 ] && [ -n $PEER2 ]; then
 #				./wasp-cli-wrapper.sh chain add iota-evm iota...
+#				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+#				clear
 #				echo "$ca"; echo 'Prepare cli...'"$xx"
 #				./prepare_cli.sh
 #				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2514,6 +2516,8 @@ SubMenuWaspCLI() {
 			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_2_NAME | cut -d '=' -f 2)
 			if [ -n $PEER1 ] && [ -n $PEER2 ]; then
 				./wasp-cli-wrapper.sh chain add shimmer-evm smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s
+				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				clear
 				echo "$ca"; echo 'Prepare cli...'"$xx"
 				./prepare_cli.sh
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -3462,7 +3466,11 @@ IotaWasp() {
 		if [ "$VAR_IOTA_WASP_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
-		if [ -f .env ]; then rm .env; fi
+
+		if [ -f .env ]; then
+		  WASP_TRUSTED_NODE=$(cat .env | grep WASP_TRUSTED_NODE)
+		  WASP_CHAIN_ADDRESS=$(cat .env | grep WASP_CHAIN_ADDRESS)
+		rm .env; fi
 
 		echo "WASP_VERSION=$VAR_IOTA_WASP_VERSION" >> .env
 		echo "WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION" >> .env
@@ -3473,7 +3481,9 @@ IotaWasp() {
 		echo "WASP_PEERING_PORT=$VAR_IOTA_WASP_PEERING_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
-
+		echo "WASP_LOG_LEVEL=debug" >> .env
+		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
+		
 		if [ "$VAR_CERT" = 0 ]
 		then
 			echo "WASP_HTTP_PORT=80" >> .env
@@ -3580,6 +3590,9 @@ IotaWasp() {
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
+		echo "$WASP_TRUSTED_NODE" >> .env
+		echo "$WASP_CHAIN_ADDRESS" >> .env
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
