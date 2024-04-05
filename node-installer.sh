@@ -2486,6 +2486,9 @@ SubMenuWaspCLI() {
 #				clear
 #				echo "$ca"; echo 'Prepare cli...'"$xx"
 #				./prepare_cli.sh
+#				echo "$ca"; echo 'Prepare wasp...'; echo "$xx"
+#				./prepare_docker.sh
+#				clear
 #				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 #				clear
 #				echo "$ca"; echo 'Restart wasp...'; echo "$xx"
@@ -2521,6 +2524,9 @@ SubMenuWaspCLI() {
 				echo "$ca"; echo 'Prepare cli...'"$xx"
 				./prepare_cli.sh
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				clear
+				echo "$ca"; echo 'Prepare wasp...'; echo "$xx"
+				./prepare_docker.sh
 				clear
 				echo "$ca"; echo 'Restart wasp...'; echo "$xx"
 				docker stop shimmer-wasp
