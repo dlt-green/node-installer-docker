@@ -365,10 +365,10 @@ configure_chain_access_nodes() {
   local evmChainName="$2"
   local evmChainID="$3"
 
-  if [ ! -f "${chainRegistryPath}" ]; then
-    echo "  Skipped (chain registry): No chain registry found"
-  elif ! jq -e '.chainRecords' "${chainRegistryPath}" >/dev/null || \
-       ! jq -e --arg chainID "${evmChainID}" '.chainRecords[] | select(.chainID == $chainID)' "${chainRegistryPath}" >/dev/null; then
+  if [ ! -f "${chainRegistryPath}" ]; then echo "{\"chainRecords\": []}" > "${chainRegistryPath}"; fi
+
+  if ! jq -e '.chainRecords' "${chainRegistryPath}" >/dev/null || \
+     ! jq -e --arg chainID "${evmChainID}" '.chainRecords[] | select(.chainID == $chainID)' "${chainRegistryPath}" >/dev/null; then
     echo "  Skipped (chain registry): ${evmChainName} not present in chain registry"
   elif ! grep -q -E "^WASP_TRUSTED_NODE_[0-9]+_URL" .env; then
     echo "  Cleared all access nodes: No peers defined in .env"
