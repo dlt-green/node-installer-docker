@@ -19,8 +19,6 @@ touch "${configRootPath}/${configFilename}"
 if [ -f "${dataDir}/config/wasp-cli.json" ]; then
   # migration to new location; can be removed in future
   mv "${dataDir}/config/wasp-cli.json" "${configRootPath}";
-else
-  touch "${configRootPath}/${configFilename}"
 fi
 configPath=$(realpath "${configRootPath}/${configFilename}")
 
