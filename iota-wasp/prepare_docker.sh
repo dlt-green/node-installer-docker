@@ -54,10 +54,10 @@ set_config "${usersConfigPath}" ".users.users[\"${DASHBOARD_USERNAME:-wasp}\"].p
 set_config "${usersConfigPath}" ".users.users[\"${DASHBOARD_USERNAME:-wasp}\"].permissions"  "[\"write\"]"
 
 echo "Configure trusted peers..."
-configure_trusted_peers "${trustedPeersPath}"
+configure_wasp_trusted_peers "${trustedPeersPath}"
 
 #echo "Configure chain access nodes for IotaEVM..."
-#configure_chain_access_nodes "${chainRegistryPath}" "IotaEVM" "iota1..."
+#configure_wasp_chain_access_nodes "${chainRegistryPath}" "IotaEVM" "iota1..."
 
 echo ""
 echo "Finished"
