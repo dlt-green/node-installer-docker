@@ -54,10 +54,10 @@ set_config "${usersConfigPath}" ".users.users[\"${DASHBOARD_USERNAME:-wasp}\"].p
 set_config "${usersConfigPath}" ".users.users[\"${DASHBOARD_USERNAME:-wasp}\"].permissions"  "[\"write\"]"
 
 echo "Configure trusted peers..."
-configure_trusted_peers "${trustedPeersPath}"
+configure_wasp_trusted_peers "${trustedPeersPath}"
 
 echo "Configure chain access nodes for ShimmerEVM..."
-configure_chain_access_nodes "${chainRegistryPath}" "ShimmerEVM" "smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s"
+configure_wasp_chain_access_nodes "${chainRegistryPath}" "ShimmerEVM" "smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s"
 
 echo ""
 echo "Finished"
