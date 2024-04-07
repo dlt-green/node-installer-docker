@@ -2478,8 +2478,8 @@ SubMenuWaspCLI() {
 #		if [ -d /var/lib/$VAR_DIR ]; then
 #	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 #	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
-#			PEER1=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_1_NAME | cut -d '=' -f 2)
-#			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_2_NAME | cut -d '=' -f 2)
+#			PEER1=$(cat .env 2>/dev/null | grep WASP_TRUSTED_ACCESSNODE_1_NAME | cut -d '=' -f 2)
+#			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_ACCESSNODE_2_NAME | cut -d '=' -f 2)
 #			if [ ! -z $PEER1 ] && [ ! -z $PEER2 ]; then
 #				clear
 #				echo "$ca"; echo 'Prepare cli...'; echo "$xx"
@@ -2492,7 +2492,7 @@ SubMenuWaspCLI() {
 #				clear
 #				echo "$ca"; echo 'Add IOTA-EVM chain...'"$xx"
 #				./wasp-cli-wrapper.sh chain add IOTA-evm iota...
-#				if [ -n $(cat /data/waspdb/chains/chain_registry.json 2>/dev/null | grep iota... | cut -d '=' -f 2) ]; then
+#				if [ -n $(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep iota... | cut -d '=' -f 2) ]; then
 #					echo "$gn"; echo 'IOTA-EVM chain successfully added...'"$xx"
 #					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 #					clear
@@ -2508,7 +2508,7 @@ SubMenuWaspCLI() {
 #					docker stop IOTA-wasp
 #					docker compose up -d
 #				else echo "$rd"; echo "Error adding IOTA-EVM chain!""$xx"; fi
-#			else echo "$rd""Set at least two trusted peers in the wasp config first!""$xx"; fi
+#			else echo "$rd""Set at least two trusted accessnodes in the wasp config first!""$xx"; fi
 #	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
 #		else
 #	      echo "$rd""Install $VAR_DIR first!""$xx"
@@ -2523,8 +2523,8 @@ SubMenuWaspCLI() {
 		if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
-			PEER1=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_1_NAME | cut -d '=' -f 2)
-			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_NODE_2_NAME | cut -d '=' -f 2)
+			PEER1=$(cat .env 2>/dev/null | grep WASP_TRUSTED_ACCESSNODE_1_NAME | cut -d '=' -f 2)
+			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_ACCESSNODE_2_NAME | cut -d '=' -f 2)
 			if [ ! -z $PEER1 ] && [ ! -z $PEER2 ]; then
 				clear
 				echo "$ca"; echo 'Prepare cli...'; echo "$xx"
@@ -2537,7 +2537,7 @@ SubMenuWaspCLI() {
 				clear
 				echo "$ca"; echo 'Add Shimmer-EVM chain...'"$xx"
 				./wasp-cli-wrapper.sh chain add shimmer-evm smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s
-				if [ -n $(cat /data/waspdb/chains/chain_registry.json 2>/dev/null | grep smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl | cut -d '=' -f 2) ]; then
+				if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl | cut -d '=' -f 2)" ]; then
 					echo "$gn"; echo 'Shimmer-EVM chain successfully added...'"$xx"
 					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 					clear
@@ -2553,7 +2553,7 @@ SubMenuWaspCLI() {
 					docker stop shimmer-wasp
 					docker compose up -d
 				else echo "$rd"; echo "Error adding Shimmer-EVM chain!""$xx"; fi
-			else echo "$rd""Set at least two trusted peers in the wasp config first!""$xx"; fi
+			else echo "$rd""Set at least two trusted accessnodes in the wasp config first!""$xx"; fi
 	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
 		else
 	      echo "$rd""Install $VAR_DIR first!""$xx"
@@ -3489,7 +3489,7 @@ IotaWasp() {
 
 		if [ -f .env ]; then
 		  WASP_TRUSTED_NODE=$(cat .env | grep WASP_TRUSTED_NODE)
-		  WASP_CHAIN_ADDRESS=$(cat .env | grep WASP_CHAIN_ADDRESS)
+		  WASP_TRUSTED_ACCESSNODE=$(cat .env | grep WASP_TRUSTED_ACCESSNODE)
 		rm .env; fi
 
 		echo "WASP_VERSION=$VAR_IOTA_WASP_VERSION" >> .env
@@ -3611,8 +3611,19 @@ IotaWasp() {
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
-		echo "$WASP_TRUSTED_NODE" >> .env
-		echo "$WASP_CHAIN_ADDRESS" >> .env
+		echo "" >> .env
+		echo "### TRUSTED PEERING ACCESSNODES ###" >> .env
+
+		if [ -n "$WASP_TRUSTED_ACCESSNODE" ]; then
+		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env	
+		fi
+
+		echo "" >> .env
+		echo "### TRUSTED PEERING NODES ###" >> .env
+
+		if [ -n "$WASP_TRUSTED_NODE" ]; then
+		  echo "$WASP_TRUSTED_NODE" >> .env
+		fi
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4328,7 +4339,7 @@ ShimmerWasp() {
 
 		if [ -f .env ]; then
 		  WASP_TRUSTED_NODE=$(cat .env | grep WASP_TRUSTED_NODE)
-		  WASP_CHAIN_ADDRESS=$(cat .env | grep WASP_CHAIN_ADDRESS)
+		  WASP_TRUSTED_ACCESSNODE=$(cat .env | grep WASP_TRUSTED_ACCESSNODE)
 		rm .env; fi
 
 		echo "WASP_VERSION=$VAR_SHIMMER_WASP_VERSION" >> .env
@@ -4450,11 +4461,34 @@ ShimmerWasp() {
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
-		echo "$WASP_TRUSTED_NODE" >> .env
-		echo "$WASP_CHAIN_ADDRESS" >> .env
+		echo "" >> .env
+		echo "### TRUSTED PEERING ACCESSNODES ###" >> .env
+
+		if [ -n "$WASP_TRUSTED_ACCESSNODE" ]; then
+		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env	
+		else
+		  if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl | cut -d '=' -f 2)" ]; then
+			echo "$WASP_TRUSTED_NODE" | sed -e 's/WASP_TRUSTED_NODE_/WASP_TRUSTED_ACCESSNODE_/g' >> .env
+			unset WASP_TRUSTED_NODE
+		  fi
+		fi
+
+		echo "" >> .env
+		echo "### TRUSTED PEERING NODES ###" >> .env
+
+		if [ -n "$WASP_TRUSTED_NODE" ]; then
+		  echo "$WASP_TRUSTED_NODE" >> .env
+		fi
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
+	else
+		WASP_TRUSTED_ACCESSNODE=$(cat .env | grep WASP_TRUSTED_ACCESSNODE)
+		if [ -z "$WASP_TRUSTED_ACCESSNODE" ]; then
+		  if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl | cut -d '=' -f 2)" ]; then
+			sed -i 's/WASP_TRUSTED_NODE_/WASP_TRUSTED_ACCESSNODE_/g' .env
+		  fi
+		fi
 	fi
 
 	echo ""
