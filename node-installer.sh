@@ -1125,10 +1125,10 @@ Dashboard() {
 	               case $VAR_STATUS_HORNET_INX_PARTICIPATION in
 					   'running')
 					   VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
-					   if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+					   if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi ;;
 					   *)
 					   VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation unhealthy"
-					   if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi ;;
+					   if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi ;;
 	               esac
 	             else
 	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
