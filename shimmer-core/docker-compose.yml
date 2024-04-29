@@ -227,11 +227,11 @@ services:
         condition: service_started
     environment:
       - "BLOCKISSUER_PRV_KEY=432c624ca3260f910df35008d5c740593b222f1e196e6cdb8cd1ad080f0d4e33997be92a22b1933f36e26fba5f721756f95811d6b4ae21564197c2bfa4f28270"
-    command: >
-      --inx.address=iota-core:9029
-      --restAPI.bindAddress=inx-blockissuer:9086
-      --blockIssuer.accountAddress=rms1prkursay9fs2qjmfctamd6yxg9x8r3ry47786x0mvwek4qr9xd9d5c6gkun
-      --blockIssuer.proofOfWork.targetTrailingZeros=5
+    command:
+      - "--inx.address=iota-core:9029"
+      - "--restAPI.bindAddress=inx-blockissuer:9086"
+      - "--blockIssuer.accountAddress=rms1prkursay9fs2qjmfctamd6yxg9x8r3ry47786x0mvwek4qr9xd9d5c6gkun"
+      - "--blockIssuer.proofOfWork.targetTrailingZeros=5"
     logging:
       driver: "json-file"
       options:
@@ -247,12 +247,59 @@ services:
         condition: service_started
     environment:
       - "VALIDATOR_PRV_KEY=443a988ea61797651217de1f4662d4d6da11fd78e67f94511453bf6576045a05293dc170d9a59474e6d81cfba7f7d924c09b25d7166bcfba606e53114d0a758b"
-    command: >
-      --logger.level=debug
-      --inx.address=iota-core:9029
-      --validator.ignoreBootstrapped=true
-      --validator.accountAddress=rms1pzg8cqhfxqhq7pt37y8cs4v5u4kcc48lquy2k73ehsdhf5ukhya3y5rx2w6
-      --validator.issueCandidacyPayload=${ISSUE_CANDIDACY_PAYLOAD_V1:-true}
+    command:
+      - "--logger.level=debug"
+      - "--inx.address=iota-core:9029"
+      - "--validator.ignoreBootstrapped=true"
+      - "--validator.accountAddress=rms1pzg8cqhfxqhq7pt37y8cs4v5u4kcc48lquy2k73ehsdhf5ukhya3y5rx2w6"
+      - "--validator.issueCandidacyPayload=${ISSUE_CANDIDACY_PAYLOAD_V1:-true}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+
+  inx-dashboard:
+    image: iotaledger/inx-dashboard:${INX_DASHBOARD_VERSION:?INX_DASHBOARD_VERSION is missing}
+    container_name: shimmer-iota-core.inx-dashboard
+    stop_grace_period: 5m
+    restart: unless-stopped
+    depends_on:
+      iota-core:
+        condition: service_healthy
+      inx-indexer:
+        condition: service_started
+    labels:
+      - "proxy.constraint=iota-core-${IOTA_CORE_NETWORK:-mainnet}"
+      - "traefik.enable=true"
+
+      - "traefik.http.services.iota-core-dashboard.loadbalancer.server.port=8081"
+      - "traefik.http.services.iota-core-dashboard.loadbalancer.healthCheck.path=/"
+      - "traefik.http.services.iota-core-dashboard.loadbalancer.healthCheck.interval=10s"
+      - "traefik.http.services.iota-core-dashboard.loadbalancer.healthCheck.timeout=3s"
+      - "traefik.http.routers.iota-core-dashboard.service=iota-core-dashboard"
+      - "traefik.http.routers.iota-core-dashboard.rule=Host(`${IOTA_CORE_HOST:?IOTA_CORE_HOST is missing}`) && (Path(`/dashboard`) || PathPrefix(`/dashboard/`))"
+      - "traefik.http.routers.iota-core-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.iota-core-dashboard.tls=true"
+      - "traefik.http.routers.iota-core-dashboard.tls.certresolver=myresolver"
+
+      - "traefik.http.routers.iota-core-dashboard.middlewares=security-headers"
+      - "traefik.http.middlewares.security-headers.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+      - "traefik.http.middlewares.security-headers.headers.customResponseHeaders.Access-Control-Allow-Origin=https://${IOTA_CORE_HOST:?IOTA_CORE_HOST is missing}:${IOTA_CORE_HTTPS_PORT:-443}"
+      - "traefik.http.middlewares.security-headers.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.security-headers.headers.addvaryheader=true"
+      - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "${IOTA_CORE_DATA_DIR:-./data}/dashboard/${IOTA_CORE_NETWORK:-mainnet}:/app/data"
+    command:
+      - "--logger.level=debug"
+      - "--inx.address=iota-core:9029"
+      - "--dashboard.bindAddress=inx-dashboard:8081"
+      - "--dashboard.auth.identityFilePath=/app/data/identity.key"
+      - "--dashboard.auth.username=${DASHBOARD_USERNAME}"
+      - "--dashboard.auth.passwordHash=${DASHBOARD_PASSWORD}"
+      - "--dashboard.auth.passwordSalt=${DASHBOARD_SALT}"
     logging:
       driver: "json-file"
       options:
