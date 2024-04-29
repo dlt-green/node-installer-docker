@@ -3676,6 +3676,7 @@ ShimmerCore() {
 	RenameContainer
 
 	if [ -n "$VAR_PASSWORD" ]; then
+	  echo ""
 #	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 	else echo 'done...'; VAR_PASSWORD='********'; fi
 
