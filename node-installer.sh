@@ -40,6 +40,7 @@ VAR_SHIMMER_INX_INDEXER_VERSION='2.0.0-alpha.29'
 VAR_SHIMMER_INX_MQTT_VERSION='2.0.0-alpha.20'
 VAR_SHIMMER_INX_BLOCKISSUER_VERSION='1.0.0-alpha.23'
 VAR_SHIMMER_INX_VALIDATOR_VERSION='1.0.0-alpha.22'
+VAR_SHIMMER_INX_DASHBOARD_VERSION='2.0.0-alpha.3'
 
 VAR_SHIMMER_INX_CHRONICLE_VERSION='1.0.0-rc.4'
 VAR_SHIMMER_INX_CHRONICLE_UPDATE=1
@@ -856,7 +857,7 @@ Dashboard() {
 	  VAR_SHIMMER_CORE_NETWORK=$(cat "/var/lib/shimmer-core/.env" | grep IOTA_CORE_NETWORK | cut -d '=' -f 2)
 	  if [ -z "$VAR_PORT" ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	else
-	  VAR_SHIMMER_CORE_NETWORK='mainnet'
+	  VAR_SHIMMER_CORE_NETWORK='testnet'
 	fi
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-core ]; then sh=$rd; else sh=$gr; fi
 
@@ -899,7 +900,7 @@ Dashboard() {
 	echo "║                                                                             ║"
 	echo "║           ┌────────────────┬ Shimmer 2.0 ""$(echo "$VAR_SHIMMER_CORE_NETWORK" | sed 's/.*/\u&/')"" ┬────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
-	echo "║ │5│     ""$sh""HORNET""$xx""     │6│      ""$sw""WASP""$xx""      │7│   ""$sc""WASP-CLI""$xx""   │ │8│    ""$ix""PLUGINS""$xx""   │ ║"
+	echo "║ │5│   ""$sh""IOTA-CORE""$xx""    │6│      ""$sw""WASP""$xx""      │7│   ""$sc""WASP-CLI""$xx""   │ │8│    ""$ix""PLUGINS""$xx""   │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
 	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
@@ -935,7 +936,7 @@ Dashboard() {
 	fi
 
 	if [ "$opt_mode" = 5 ]; then
-	  echo "$ca""unattended: Update Shimmer-Hornet...""$xx"
+	  echo "$ca""unattended: Update Shimmer-Core...""$xx"
 	  VAR_STATUS="shimmer-core $VAR_SHIMMER_CORE_NETWORK: update v.$VAR_SHIMMER_CORE_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
@@ -3258,7 +3259,7 @@ ShimmerCore() {
 	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
 	echo "$ca""Starting Installation or Update...""$xx";
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	if [ "$VAR_NETWORK" = 1 ]; then VAR_NETWORK=2; if [ "$opt_mode" ]; then clear; exit; fi; SubMenuMaintenance; fi
 
 	clear
@@ -3303,7 +3304,7 @@ ShimmerCore() {
 	echo "Delete Package... install.tar.gz"
 	rm -r install.tar.gz
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	CheckConfiguration
 
@@ -3340,7 +3341,125 @@ ShimmerCore() {
 		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CORE_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CORE_HTTPS_PORT" ]; then VAR_SHIMMER_CORE_HTTPS_PORT=$VAR_DEFAULT; fi
 		echo "$gn""Set dashboard port: $VAR_SHIMMER_CORE_HTTPS_PORT""$xx"
 
-		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+#		echo ''
+#		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+#		if [ -z "$bytes" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=0; else VAR_IOTA_HORNET_PRUNING_SIZE=$bytes; fi
+#		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
+#		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi
+#		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
+#		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi
+#		FormatToBytes "$(df -h /var/lib/"$VAR_DIR" | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
+#		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi
+#		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_IOTA_HORNET_PRUNING_SIZE)*9/10" | bc)
+#		RESERVED_SPACE=$(echo "($VAR_IOTA_HORNET_PRUNING_SIZE)" | bc)
+#		FormatFromBytes "$RESERVED_SPACE"; RESERVED_SPACE=$fbytes
+#		if [ $(($(echo "$VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE < $CALCULATED_SPACE" | bc))) -eq 1 ]; then CALCULATED_SPACE=$(echo "($VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE)" | bc); fi
+#		FormatFromBytes "$CALCULATED_SPACE"; CALCULATED_SPACE=$fbytes
+
+#		unset VAR_SHIMMER_CORE_PRUNING_SIZE
+#		while [ -z "$VAR_SHIMMER_CORE_PRUNING_SIZE" ]; do
+#		  VAR_SHIMMER_CORE_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+#		  if [ -z "$VAR_SHIMMER_CORE_PRUNING_SIZE" ]; then
+#		    echo "Set pruning size / max. storage size (calculated: $ca""$CALCULATED_SPACE""$xx)"; else echo "Set pruning size / max. storage size (config: $ca""$VAR_SHIMMER_CORE_PRUNING_SIZE""$xx)"; echo "Press [Enter] to use existing config:"; fi
+#		  echo "$rd""Available diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
+#		  echo "$rd""Reserved diskspace through pruning by other nodes: ""$RESERVED_SPACE""$xx"
+#		  echo "$ca""Calculated pruning size for HORNET (with 10% buffer): ""$CALCULATED_SPACE""$xx"
+#		  read -r -p '> ' VAR_TMP
+#		  if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CORE_PRUNING_SIZE=$VAR_TMP; fi
+#		  if [ -z "$VAR_TMP" ]; then if [ -z "$VAR_SHIMMER_CORE_PRUNING_SIZE" ]; then VAR_SHIMMER_CORE_PRUNING_SIZE=$CALCULATED_SPACE; fi; fi
+#		  if ! [ -z "${VAR_SHIMMER_CORE_PRUNING_SIZE##*B*}" ]; then
+#		    VAR_SHIMMER_CORE_PRUNING_SIZE=''
+#		    echo "$rd""Set pruning size: Please insert with unit!"; echo "$xx"
+#		  fi
+#		done
+#		echo "$gn""Set pruning size: $VAR_SHIMMER_CORE_PRUNING_SIZE""$xx"
+
+#		echo ''
+#		VAR_SHIMMER_CORE_POW=$(cat .env 2>/dev/null | grep HORNET_POW_ENABLED= | cut -d '=' -f 2)
+#		VAR_DEFAULT='true';
+#		if [ -z "$VAR_SHIMMER_CORE_POW" ]; then
+#		  echo "Set PoW / proof of work (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set PoW / proof of work (config: $ca""$VAR_SHIMMER_CORE_POW""$xx)"; echo "Press [Enter] to use existing config:"; fi
+#		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
+#		if [ -n "$VAR_TMP" ]; then
+#		  VAR_SHIMMER_CORE_POW=$VAR_TMP
+#		  if  [ "$VAR_SHIMMER_CORE_POW" = 'p' ] || [ "$VAR_SHIMMER_CORE_POW" = 'P' ]; then
+#		    VAR_SHIMMER_CORE_POW='true'
+#		  else
+#		    VAR_SHIMMER_CORE_POW='false'
+#		  fi
+#		elif [ -z "$VAR_SHIMMER_CORE_POW" ]; then VAR_SHIMMER_CORE_POW=$VAR_DEFAULT; fi
+
+#		if  [ "$VAR_SHIMMER_CORE_POW" ]; then
+#		  echo "$gn""Set PoW / proof of work: $VAR_SHIMMER_CORE_POW""$xx"
+#		else
+#		  echo "$rd""Set PoW / proof of work: $VAR_SHIMMER_CORE_POW""$xx"
+#		fi
+
+#		echo ''
+#		VAR_SHIMMER_CORE_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
+#		VAR_DEFAULT='true'
+#		if [ -z "$VAR_SHIMMER_CORE_AUTOPEERING" ]; then
+#		  echo "Set autopeering (default: $ca$VAR_DEFAULT$xx):"; echo "Press [Enter] to use default value:"
+#		else
+#		  echo "Set autopeering (config: $ca$VAR_SHIMMER_CORE_AUTOPEERING$xx)"; echo "Press [Enter] to use existing config:"
+#		fi
+#		read -r -p '> Press [E] to enable Autopeering... Press [X] key to disable... ' VAR_TMP;
+#		if [ -n "$VAR_TMP" ]; then
+#		  VAR_SHIMMER_CORE_AUTOPEERING=$VAR_TMP
+#		  if  [ "$VAR_SHIMMER_CORE_AUTOPEERING" = 'e' ] || [ "$VAR_SHIMMER_CORE_AUTOPEERING" = 'E' ]; then
+#		    VAR_SHIMMER_CORE_AUTOPEERING='true'
+#		  else
+#		    VAR_SHIMMER_CORE_AUTOPEERING='false'
+#		fi
+#		elif [ -z "$VAR_SHIMMER_CORE_AUTOPEERING" ]; then VAR_SHIMMER_CORE_AUTOPEERING=$VAR_DEFAULT; fi
+
+#		if  [ "$VAR_SHIMMER_CORE_AUTOPEERING" = 'true'  ]; then
+#		  echo "$gn""Set autopeering: $VAR_SHIMMER_CORE_AUTOPEERING""$xx"
+#		else
+#		  echo "$rd""Set autopeering: $VAR_SHIMMER_CORE_AUTOPEERING""$xx"
+#		fi
+
+#		VAR_SHIMMER_CORE_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
+#		if [ "$VAR_SHIMMER_CORE_AUTOPEERING" = 'false' ]; then
+#		echo ''
+#		VAR_DEFAULT='{nodeName}:/dns/{nodeURL}/tcp/15600/p2p/{nodeId},...';
+#		if [ -z "$VAR_SHIMMER_CORE_STATIC_NEIGHBORS" ]; then
+#		  echo "Set static neighbor(s) (template: $ca""$VAR_DEFAULT""$xx):"; else echo "Set static neighbor(s) (config: ""$ca""\n""$(echo "$VAR_SHIMMER_CORE_STATIC_NEIGHBORS" | tr ',' '\n')""\n""$xx)"; echo "Press [Enter] to use existing config (template: $ca""$VAR_DEFAULT""$xx):"; fi
+#		read -r -p '> ' VAR_TMP
+#		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_CORE_STATIC_NEIGHBORS=$VAR_TMP; elif [ -z "$VAR_SHIMMER_CORE_STATIC_NEIGHBORS" ]; then VAR_SHIMMER_CORE_STATIC_NEIGHBORS=''; fi
+#		echo "$gn""Set static neighbor(s): ""\n""$(echo "$VAR_SHIMMER_CORE_STATIC_NEIGHBORS" | tr ',' '\n')""$xx"
+#		fi
+
+		echo ''
+		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
+		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1);
+		if [ -z "$VAR_USERNAME" ]; then
+		echo "Set dashboard username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; elif [ -z "$VAR_USERNAME" ]; then VAR_USERNAME=$VAR_DEFAULT; fi
+		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
+
+		echo ''
+		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
+		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
+		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1);
+		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
+		echo "Set dashboard password / will be saved as hash ($ca""use generated""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_PASSWORD=$VAR_TMP
+		  echo "$gn""Set dashboard password: new""$xx"
+		else
+		  if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
+		    VAR_PASSWORD=$VAR_DEFAULT
+		    echo "$gn""Set dashboard password: ""$VAR_DEFAULT""$xx"
+		  else
+		    VAR_PASSWORD=''
+		    echo "$gn""Set dashboard password: use existing""$xx"
+		  fi
+		fi
+
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 		echo ""
 		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -3354,12 +3473,28 @@ ShimmerCore() {
 		if [ -f .env ]; then rm .env; fi
 
 		echo "IOTA_CORE_VERSION=$VAR_SHIMMER_CORE_VERSION" >> .env
-		echo "IOTA_CORE_NETWORK=testnet" >> .env
+
+		echo "IOTA_CORE_NETWORK=$VAR_SHIMMER_CORE_NETWORK" >> .env
+
 		echo "IOTA_CORE_HOST=$VAR_HOST" >> .env
+#		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_SHIMMER_CORE_PRUNING_SIZE" >> .env
+#		echo "HORNET_POW_ENABLED=$VAR_SHIMMER_CORE_POW" >> .env
 		echo "IOTA_CORE_HTTPS_PORT=$VAR_SHIMMER_CORE_HTTPS_PORT" >> .env
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
+#		echo "HORNET_AUTOPEERING_ENABLED=$VAR_SHIMMER_CORE_AUTOPEERING" >> .env
+
+#		if [ "$VAR_SHIMMER_CORE_AUTOPEERING" = 'true' ]; then
+#			echo "HORNET_AUTOPEERING_PORT=14626" >> .env
+#		fi
+
+#		if [ -n "$VAR_SHIMMER_CORE_STATIC_NEIGHBORS" ]; then
+#			echo "HORNET_STATIC_NEIGHBORS=$VAR_SHIMMER_CORE_STATIC_NEIGHBORS" >> .env
+#		fi
+
 		echo "IOTA_CORE_RUN_AS_ENTRY_NODE=false" >> .env
 		echo "IOTA_CORE_ENTRY_NODE=\"/dns/iota-core-testnet.dlt.green/tcp/15600/p2p/...\"" >> .env
+
+		echo "IOTA_CORE_JWT_SALT=$VAR_SALT" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
@@ -3396,17 +3531,28 @@ ShimmerCore() {
 		echo "INX_MQTT_VERSION=$VAR_SHIMMER_INX_MQTT_VERSION" >> .env
 		echo "INX_BLOCKISSUER_VERSION=$VAR_SHIMMER_INX_BLOCKISSUER_VERSION" >> .env
 		echo "INX_VALIDATOR_VERSION=$VAR_SHIMMER_INX_VALIDATOR_VERSION" >> .env
+		echo "INX_DASHBOARD_VERSION=$VAR_SHIMMER_INX_DASHBOARD_VERSION" >> .env
+
+		echo "done..."
 
 	else
 		if [ -f .env ]; then sed -i "s/IOTA_CORE_VERSION=.*/IOTA_CORE_VERSION=$VAR_SHIMMER_CORE_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_SHIMMER_INX_INDEXER_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_MQTT_VERSION=.*/INX_MQTT_VERSION=$VAR_SHIMMER_INX_MQTT_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_BLOCKISSUER_VERSION=.*/INX_BLOCKISSUER_VERSION=$VAR_SHIMMER_INX_BLOCKISSUER_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/INX_VALIDATOR_VERSION=.*/INX_VALIDATOR_VERSION=$VAR_SHIMMER_INX_VALIDATOR_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_SHIMMER_INX_DASHBOARD_VERSION/g" .env; fi
 
+#		VAR_SHIMMER_CORE_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED | cut -d '=' -f 2)
+#		if [ -z "$VAR_SHIMMER_CORE_AUTOPEERING" ]; then
+#		    echo "HORNET_AUTOPEERING_ENABLED=true" >> .env
+#		fi
+  
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
+		fgrep -q "IOTA_CORE_JWT_SALT" .env || echo "IOTA_CORE_JWT_SALT=$VAR_SALT" >> .env
 	fi
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	clear
 	echo ""
@@ -3418,7 +3564,33 @@ ShimmerCore() {
 	docker network create shimmer >/dev/null 2>&1
 	docker compose pull 2>&1 | grep "Pulled" | sort
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+	if [ "$VAR_CONF_RESET" = 1 ]; then
+
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║                               Set Credentials                               ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+
+		if [ -n "$VAR_PASSWORD" ]; then
+		  credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
+		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
+		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		else
+		  echo "credentials not changed..."
+		fi
+
+		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
+		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
+		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+	fi
 
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -3428,8 +3600,9 @@ ShimmerCore() {
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 	./prepare_docker.sh
+	chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
@@ -3445,14 +3618,42 @@ ShimmerCore() {
 		echo ufw allow "$VAR_SHIMMER_CORE_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_CORE_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
 
-		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+#		if [ "$VAR_SHIMMER_CORE_AUTOPEERING" = "true" ]; then
+		  echo ufw allow '14626/udp' && ufw allow '14626/udp'
+#		fi
+
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+
+#		clear
+#		echo ""
+#		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+#		echo "║                              Download Snapshot                              ║"
+#		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+#
+#		echo "$ca"
+#		echo 'Please wait, downloading snapshots may take some time...'
+#		echo "$xx"
+#
+#		echo "Download latest full snapshot... $VAR_SHIMMER_CORE_NETWORK"
+#		VAR_SNAPSHOT=$(cat /var/lib/"$VAR_DIR"/data/config/config-"$VAR_SHIMMER_CORE_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].full')
+#		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/full_snapshot.bin
+#		chmod 744 /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/full_snapshot.bin
+#
+#		echo ""
+#
+#		echo "Download latest delta snapshot... $VAR_SHIMMER_CORE_NETWORK"
+#		VAR_SNAPSHOT=$(cat /var/lib/"$VAR_DIR"/data/config/config-"$VAR_SHIMMER_CORE_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].delta')
+#		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/delta_snapshot.bin
+#		chmod 744 /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/delta_snapshot.bin
+#
+#		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	fi
 
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                             Start Shimmer-Core                              ║"
+	echo "║                              Start IOTA-CORE                                ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
@@ -3463,7 +3664,7 @@ ShimmerCore() {
 
 	docker compose up -d
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	clear
 	echo ""
@@ -3474,7 +3675,11 @@ ShimmerCore() {
 
 	RenameContainer
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	if [ -n "$VAR_PASSWORD" ]; then
+#	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	else echo 'done...'; VAR_PASSWORD='********'; fi
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	if [ -s "/var/lib/$VAR_DIR/data/letsencrypt/acme.json" ]; then SetCertificateGlobal; fi
 
@@ -3483,23 +3688,31 @@ ShimmerCore() {
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
-		echo "--------------------------- INSTALLATION IS FINISH ----------------------------"
+		echo "--------------------------- INSTALLATION IS FINISHED --------------------------"
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
 		echo "https port:  $VAR_SHIMMER_CORE_HTTPS_PORT"
 		echo "-------------------------------------------------------------------------------"
-		echo "dashboard: https://$VAR_HOST/dashboard"
+#		echo "autopeering: $VAR_SHIMMER_CORE_AUTOPEERING"
 		echo "-------------------------------------------------------------------------------"
-		echo "api: https://$VAR_HOST:$VAR_SHIMMER_CORE_HTTPS_PORT/api/core/v2/info"
+		echo "node dashboard: https://$VAR_HOST/dashboard"
+		echo "node username:  $VAR_USERNAME"
+		echo "node password:  $VAR_PASSWORD"
+		echo "-------------------------------------------------------------------------------"
+		echo "api: https://$VAR_HOST:$VAR_SHIMMER_CORE_HTTPS_PORT/api/core/v3/info"
+		echo "-------------------------------------------------------------------------------"
+#		echo "grafana dashboard: https://$VAR_HOST/grafana"
+#		echo "grafana username:  admin"
+#		echo "grafana password:  <same as hornet password>"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
-	    echo "------------------------------ UPDATE IS FINISH -------------------------------"
+	    echo "------------------------------ UPDATE IS FINISHED -----------------------------"
 	    echo ""
 	fi
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait [""$opt_time""s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 	if ! [ "$opt_mode" ]; then Dashboard; fi
 }
@@ -4200,6 +4413,7 @@ RenameContainer() {
 	docker container rename shimmer-iota-core.inx-indexer shimmer-core.inx-indexer >/dev/null 2>&1
 	docker container rename shimmer-iota-core.inx-validator shimmer-core.inx-validator >/dev/null 2>&1
 	docker container rename shimmer-iota-core.inx-mqtt shimmer-core.inx-mqtt >/dev/null 2>&1
+	docker container rename shimmer-iota-core.inx-dashboard shimmer-core.inx-dashboard >/dev/null 2>&1	
 	docker container rename shimmer-wasp_traefik_1 shimmer-wasp.traefik >/dev/null 2>&1
 	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
 
