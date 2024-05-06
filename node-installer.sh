@@ -1866,6 +1866,7 @@ SubMenuMaintenance() {
 	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/wal/*
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/data/*
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/consensus/*
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/index/*
