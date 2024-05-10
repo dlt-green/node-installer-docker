@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.4.4.3"
-BUILD="20240510_194218"
+BUILD="20240510_194950"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='a7699007f1172affa571c269e1aea32845e007af9f3b846a8da54f10a7dc129f'
+IotaHornetHash='7c2c883715ecb37055828c27a6f22088c97e958ab1a856fadd5af30e3bef30c9'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='a4a37402164e98b8fba02d3b78cd4f5b000cd6d9c70da90959e57af6c0d3d570'
+IotaWaspHash='59c7bc0806b701c621b0ee1a88676dd6cb372e339186ff96a21cc9d8b271cd2e'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='baa6d947dd8cc2dff0ea6d4e6929b9787cc9ab33abf4a89f22d27a04a17d5f83'
+ShimmerHornetHash='ade74757e453402c979622e618169ba86ff8baf5782af45e70ca13f82ca3df60'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='ff72654a7affdbcb9f11f822a8468d5606d18bf820e09702c65e1071fe1f8af3'
+ShimmerWaspHash='0419072673e12928acb38a912d56ebaed3058c12f1fc65c7a455b7333a8c7a5d'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='1dcbaede0bcf988eef685df65e728b9af102cd74bcac5cebab1cc2f8ab0663ef'
+ShimmerChronicleHash='2bbaa746019e5f75436899d6cac6d3d67996c66ffbce1679afdf48743e78051c'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -2524,7 +2524,7 @@ SubMenuWaspCLI() {
 				clear
 				echo "$ca"; echo 'Add IOTA-EVM chain...'"$xx"
 				./wasp-cli-wrapper.sh chain add iota-evm $VAR_IOTA_EVM_ADDR
-				if [ -n $(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep iota... | cut -d '=' -f 2) ]; then
+				if [ -n $(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep $VAR_IOTA_EVM_ADDR | cut -d '=' -f 2) ]; then
 					echo "$gn"; echo 'IOTA-EVM chain successfully added...'"$xx"
 					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 					clear
@@ -2567,7 +2567,7 @@ SubMenuWaspCLI() {
 				clear
 				echo "$ca"; echo 'Add Shimmer-EVM chain...'"$xx"
 				./wasp-cli-wrapper.sh chain add shimmer-evm $VAR_SHIMMER_EVM_ADDR
-				if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl | cut -d '=' -f 2)" ]; then
+				if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep $VAR_SHIMMER_EVM_ADDR | cut -d '=' -f 2)" ]; then
 					echo "$gn"; echo 'Shimmer-EVM chain successfully added...'"$xx"
 					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 					clear
