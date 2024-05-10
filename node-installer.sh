@@ -2524,7 +2524,7 @@ SubMenuWaspCLI() {
 				clear
 				echo "$ca"; echo 'Add IOTA-EVM chain...'"$xx"
 				./wasp-cli-wrapper.sh chain add iota-evm $VAR_IOTA_EVM_ADDR
-				if [ -n $(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep iota... | cut -d '=' -f 2) ]; then
+				if [ -n $(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep $VAR_IOTA_EVM_ADDR | cut -d '=' -f 2) ]; then
 					echo "$gn"; echo 'IOTA-EVM chain successfully added...'"$xx"
 					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 					clear
@@ -2567,7 +2567,7 @@ SubMenuWaspCLI() {
 				clear
 				echo "$ca"; echo 'Add Shimmer-EVM chain...'"$xx"
 				./wasp-cli-wrapper.sh chain add shimmer-evm $VAR_SHIMMER_EVM_ADDR
-				if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl | cut -d '=' -f 2)" ]; then
+				if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep $VAR_SHIMMER_EVM_ADDR | cut -d '=' -f 2)" ]; then
 					echo "$gn"; echo 'Shimmer-EVM chain successfully added...'"$xx"
 					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 					clear
