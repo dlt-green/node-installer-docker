@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.4.2"
-BUILD="20240506_055744"
+VRSN="v.4.4.3"
+BUILD="20240510_194950"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -31,6 +31,8 @@ VAR_IOTA_WASP_UPDATE=1
 VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
 VAR_IOTA_WASP_CLI_VERSION='1.0.3'
 
+VAR_IOTA_EVM_ADDR='iota1pzt3mstq6khgc3tl0mwuzk3eqddkryqnpdxmk4nr25re2466uxwm28qqxu5'
+
 # SHIMMER-HORNET
 
 VAR_SHIMMER_HORNET_VERSION='2.0.1'
@@ -50,6 +52,8 @@ VAR_SHIMMER_WASP_UPDATE=1
 
 VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
 VAR_SHIMMER_WASP_CLI_VERSION='1.0.3'
+
+VAR_SHIMMER_EVM_ADDR='smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s'
 
 # PLUGINS
 
@@ -143,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='c713ba893901807cbbb14f6efdd2f4dff5476adeb2879c92ee5fa6cdc5f82ad0'
+IotaHornetHash='7c2c883715ecb37055828c27a6f22088c97e958ab1a856fadd5af30e3bef30c9'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='26e7c10b0759d1861b748e75973148b5ec1e9aa8fce1cf6ae53c18514f564a1c'
+IotaWaspHash='59c7bc0806b701c621b0ee1a88676dd6cb372e339186ff96a21cc9d8b271cd2e'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='e4496df8832d5dad0bd6bf00913dd8115b4552adc29701d223b9b924123fa7d5'
+ShimmerHornetHash='ade74757e453402c979622e618169ba86ff8baf5782af45e70ca13f82ca3df60'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='85260d4e3580e8d0fe5a3e90352fed58c83ad3daac68b453be27cdfc91443d2a'
+ShimmerWaspHash='0419072673e12928acb38a912d56ebaed3058c12f1fc65c7a455b7333a8c7a5d'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='275e0b45c76c51e0563dee89602525602e0ee2d5fbb9a7f3f89682c1c6d41b77'
+ShimmerChronicleHash='2bbaa746019e5f75436899d6cac6d3d67996c66ffbce1679afdf48743e78051c'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1857,6 +1861,7 @@ SubMenuMaintenance() {
 	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_IOTA_HORNET_NETWORK/*
 	   fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
+    	      rm -rf /var/lib/$VAR_DIR/data/waspdb/wal/*
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/data/*
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/consensus/*
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/index/*
@@ -1978,6 +1983,31 @@ SubMenuMaintenance() {
 	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_IOTA_HORNET_NETWORK"/delta_snapshot.bin
 	   fi
 
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ] && [ $VAR_IOTA_HORNET_NETWORK = 'mainnet' ]; then
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/data/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/consensus/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/index/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/snap/$VAR_IOTA_EVM_ADDR/*
+
+	      VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+
+	      if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
+			VAR_EVM_FULL_DB='https://files.stardust-mainnet.iotaledger.net/dbs/wasp/latest-wasp_chains_wal.tgz'
+			cd /var/lib/$VAR_DIR/data/waspdb || SubMenuMaintenance
+			echo "Download latest full database... latest-wasp_chains_wal"
+			wget -q --show-progress --progress=bar $VAR_EVM_FULL_DB -O - | tar xzv
+			cd /var/lib/$VAR_DIR || SubMenuMaintenance
+	      else
+			cd /var/lib/$VAR_DIR/data/waspdb/snap/$VAR_IOTA_EVM_ADDR || SubMenuMaintenance
+			VAR_EVM_SNAPSHOT_ID=$(curl -Ls https://files.stardust-mainnet.iotaledger.net/wasp_snapshots/$VAR_IOTA_EVM_ADDR/INDEX)
+			VAR_EVM_SNAPSHOT_URL="https://files.stardust-mainnet.iotaledger.net/wasp_snapshots/$VAR_IOTA_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"
+			echo "Download latest snapshot... $VAR_EVM_SNAPSHOT_ID"
+			wget -q --show-progress --progress=bar $VAR_EVM_SNAPSHOT_URL
+			cd /var/lib/$VAR_DIR || SubMenuMaintenance
+	      fi
+	      chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
+	   fi
+
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
 	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_SHIMMER_HORNET_NETWORK/*
@@ -1999,21 +2029,22 @@ SubMenuMaintenance() {
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/data/*
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/consensus/*
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/index/*
-	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/data/waspdb/snap/smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/snap/$VAR_SHIMMER_EVM_ADDR/*
 
 	      VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
 
 	      if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
-			VAR_SNAPSHOT='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
+			VAR_EVM_FULL_DB='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
 			cd /var/lib/$VAR_DIR/data/waspdb || SubMenuMaintenance
 			echo "Download latest full database... latest-wasp_chains_wal"
-			wget -q --show-progress --progress=bar https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz -O - | tar xzv
+			wget -q --show-progress --progress=bar $VAR_EVM_FULL_DB -O - | tar xzv
 			cd /var/lib/$VAR_DIR || SubMenuMaintenance
 	      else
-			cd /var/lib/$VAR_DIR/data/waspdb/snap/smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s || SubMenuMaintenance
-			VAR_SNAPSHOT=$(curl -Ls https://files.shimmer.shimmer.network/wasp_snapshots/smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s/INDEX)
-			echo "Download latest snapshot... $VAR_SNAPSHOT"
-			wget -q --show-progress --progress=bar https://files.shimmer.shimmer.network/wasp_snapshots/smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s/$VAR_SNAPSHOT
+			cd /var/lib/$VAR_DIR/data/waspdb/snap/$VAR_SHIMMER_EVM_ADDR || SubMenuMaintenance
+			VAR_EVM_SNAPSHOT_ID=$(curl -Ls https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/INDEX)
+			VAR_EVM_SNAPSHOT_URL="https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"   
+			echo "Download latest snapshot... $VAR_EVM_SNAPSHOT_ID"
+			wget -q --show-progress --progress=bar $VAR_EVM_SNAPSHOT_URL
 			cd /var/lib/$VAR_DIR || SubMenuMaintenance
 	      fi
 	      chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
@@ -2472,51 +2503,49 @@ SubMenuWaspCLI() {
 	   SubMenuWaspCLI
 	   ;;
 	9) clear
-#	   if [ "$VAR_NODE" = 3 ] ; then
-#		echo "$ca"
-#		echo 'Add IOTA-EVM chain...'"$xx"
-#		echo "$xx"
-#		if [ -d /var/lib/$VAR_DIR ]; then
-#	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
-#	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
-#			PEER1=$(cat .env 2>/dev/null | grep WASP_TRUSTED_ACCESSNODE_1_NAME | cut -d '=' -f 2)
-#			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_ACCESSNODE_2_NAME | cut -d '=' -f 2)
-#			if [ ! -z $PEER1 ] && [ ! -z $PEER2 ]; then
-#				clear
-#				echo "$ca"; echo 'Prepare cli...'; echo "$xx"
-#				./prepare_cli.sh
-#				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-#				clear
-#				echo "$ca"; echo 'Login (Authenticate to Wasp node)...'; echo "$xx"
-#				./wasp-cli-wrapper.sh login
-#				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-#				clear
-#				echo "$ca"; echo 'Add IOTA-EVM chain...'"$xx"
-#				./wasp-cli-wrapper.sh chain add IOTA-evm iota...
-#				if [ -n $(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep iota... | cut -d '=' -f 2) ]; then
-#					echo "$gn"; echo 'IOTA-EVM chain successfully added...'"$xx"
-#					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-#					clear
-#					echo "$ca"; echo 'Activate IOTA-EVM chain...'"$xx"
-#					./wasp-cli-wrapper.sh chain activate --chain IOTA-evm
-#					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-#					clear
-#					echo "$ca"; echo 'Prepare wasp...'; echo "$xx"
-#					./prepare_docker.sh
-#					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-#					clear
-#					echo "$ca"; echo 'Restart wasp...'; echo "$xx"
-#					docker stop IOTA-wasp
-#					docker compose up -d
-#				else echo "$rd"; echo "Error adding IOTA-EVM chain!""$xx"; fi
-#			else echo "$rd""Set at least two trusted accessnodes in the wasp config first!""$xx"; fi
-#	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
-#		else
-#	      echo "$rd""Install $VAR_DIR first!""$xx"
-#		fi
-#	   fi
-#	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-#	   SubMenuWaspCLI
+	   if [ "$VAR_NODE" = 3 ] ; then
+		echo "$ca"
+		echo 'Add IOTA-EVM chain...'"$xx"
+		echo "$xx"
+		if [ -d /var/lib/$VAR_DIR ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
+			PEER1=$(cat .env 2>/dev/null | grep WASP_TRUSTED_ACCESSNODE_1_NAME | cut -d '=' -f 2)
+			PEER2=$(cat .env 2>/dev/null | grep WASP_TRUSTED_ACCESSNODE_2_NAME | cut -d '=' -f 2)
+			if [ ! -z $PEER1 ] && [ ! -z $PEER2 ]; then
+				clear
+				echo "$ca"; echo 'Prepare cli...'; echo "$xx"
+				./prepare_cli.sh
+				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				clear
+				echo "$ca"; echo 'Login (Authenticate to Wasp node)...'; echo "$xx"
+				./wasp-cli-wrapper.sh login
+				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				clear
+				echo "$ca"; echo 'Add IOTA-EVM chain...'"$xx"
+				./wasp-cli-wrapper.sh chain add iota-evm $VAR_IOTA_EVM_ADDR
+				if [ -n $(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep $VAR_IOTA_EVM_ADDR | cut -d '=' -f 2) ]; then
+					echo "$gn"; echo 'IOTA-EVM chain successfully added...'"$xx"
+					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+					clear
+					echo "$ca"; echo 'Activate IOTA-EVM chain...'"$xx"
+					./wasp-cli-wrapper.sh chain activate --chain iota-evm
+					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+					clear
+					echo "$ca"; echo 'Prepare wasp...'; echo "$xx"
+					./prepare_docker.sh
+					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+					clear
+					echo "$ca"; echo 'Restart wasp...'; echo "$xx"
+					docker stop iota-wasp
+					docker compose up -d
+				else echo "$rd"; echo "Error adding IOTA-EVM chain!""$xx"; fi
+			else echo "$rd""Set at least two trusted accessnodes in the wasp config first!""$xx"; fi
+	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
+		else
+	      echo "$rd""Install $VAR_DIR first!""$xx"
+		fi
+	   fi
 	   if [ "$VAR_NODE" = 7 ] ; then
 		echo "$ca"
 		echo 'Add Shimmer-EVM chain...'"$xx"
@@ -2537,8 +2566,8 @@ SubMenuWaspCLI() {
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 				clear
 				echo "$ca"; echo 'Add Shimmer-EVM chain...'"$xx"
-				./wasp-cli-wrapper.sh chain add shimmer-evm smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s
-				if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl | cut -d '=' -f 2)" ]; then
+				./wasp-cli-wrapper.sh chain add shimmer-evm $VAR_SHIMMER_EVM_ADDR
+				if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep $VAR_SHIMMER_EVM_ADDR | cut -d '=' -f 2)" ]; then
 					echo "$gn"; echo 'Shimmer-EVM chain successfully added...'"$xx"
 					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 					clear
