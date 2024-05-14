@@ -24,11 +24,12 @@ fi
 
 prepare_data_dir "${dataDir}" \
                  "config" \
-                 "storage/${IOTA_CORE_NETWORK:-mainnet}" \
-                 "p2pstore/${IOTA_CORE_NETWORK:-mainnet}" \
-                 "snapshots/${IOTA_CORE_NETWORK:-mainnet}" \
-                 "prometheus" \
                  "grafana" \
+                 "prometheus" \
+                 "database/${IOTA_CORE_NETWORK:-mainnet}" \
+                 "snapshots/${IOTA_CORE_NETWORK:-mainnet}" \
+                 "dashboard/${IOTA_CORE_NETWORK:-mainnet}" \
+                 "p2p/${IOTA_CORE_NETWORK:-mainnet}" \
                  "letsencrypt"
 
 # create empty peering json if it does not exist yet
@@ -45,26 +46,28 @@ create_docker_network "shimmer"
 extract_file_from_image "iotaledger/iota-core" "${IOTA_CORE_VERSION}" "/app/${configFilenameInContainer}" "${configPath}"
 
 echo "Adapting config with values from .env..."
-set_config "${configPath}" ".p2p.db.path"                          "\"/app/p2pstore\""
+set_config "${configPath}" ".p2p.identityPrivateKeyFilePath"         "\"/app/data/p2p/identity.key\""
+set_config "${configPath}" ".profiling.bindAddress"                  "\"0.0.0.0:6060\""
+set_config "${configPath}" ".debugAPI.db.path"                       "\"/app/data/debug\""
+set_config "${configPath}" ".db.path"                                "\"/app/data/database\""
+set_config "${configPath}" ".protocol.snapshot.path"                 "\"/app/data/snapshots/snapshot.bin\""
+set_config "${configPath}" ".protocol.protocolParametersPath"        "\"/app/data/protocol_parameters.json\""
+set_config "${configPath}" ".prometheus.enabled"                     "true"
+set_config "${configPath}" ".prometheus.bindAddress"                 "\"0.0.0.0:9311\""
+set_config "${configPath}" ".inx.enabled"                            "true"
+set_config "${configPath}" ".inx.bindAddress"                        "\"0.0.0.0:9029\""
+set_config "${configPath}" ".p2p.autopeering.externalMultiAddresses" "\"/dns/${IOTA_CORE_HOST}/tcp/15600\""
 
-set_config "${configPath}" ".restAPI.jwtAuth.salt"                 "\"${RESTAPI_SALT:-$(generate_random_string 80)}\"" "secret"
-set_config "${configPath}" ".db.path"                              "\"/app/storage\""
-set_config "${configPath}" ".db.pruning.size.targetSize"           "\"${IOTA_CORE_PRUNING_TARGET_SIZE:-64GB}\""
-set_config "${configPath}" ".protocol.snapshot.path"               "\"/app/snapshots/snapshot.bin\""
-set_config "${configPath}" ".protocol.protocolParametersPath"      "\"/app/protocol_parameters.json\""
-set_config "${configPath}" ".inx.enabled"                          "true"
-set_config "${configPath}" ".inx.bindAddress"                      "\"0.0.0.0:9029\""
+set_array_config "${configPath}" ".p2p.bindMultiAddresses"           "\"/ip4/0.0.0.0/tcp/${IOTA_CORE_GOSSIP_PORT:-15600}\",\"/ip6/::/tcp/${IOTA_CORE_GOSSIP_PORT:-15600}\"" ","
+set_array_config "${configPath}" ".p2p.autopeering.bootstrapPeers"   "\"${IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER:-}\"" ","
 
-#set_array_config "${configPath}" ".p2p.peers"                      "\"${IOTA_CORE_ENTRY_NODE}\"" ","
-#set_config "${configPath}" ".p2p.peers"                      "\"${IOTA_CORE_ENTRY_NODE}\""
-#set_config "${configPath}" ".p2p.autopeering.enabled"              "true"
-#set_config "${configPath}" ".p2p.autopeering.bindAddress"          "\"0.0.0.0:${IOTA_CORE_AUTOPEERING_PORT:-14626}\""
-#set_config "${configPath}" ".p2p.autopeering.entryNodesPreferIPv6" "false"
-#set_config "${configPath}" ".p2p.autopeering.runAsEntryNode"       "${IOTA_CORE_RUN_AS_ENTRY_NODE:-false}"
-#if [ ! -z "${IOTA_CORE_ENTRY_NODE}" ]; then
-#  set_config "${configPath}" ".p2p.autopeering.entryNodes"         "\"${IOTA_CORE_ENTRY_NODE}\""
-#fi
-set_array_config "${configPath}" ".p2p.bindMultiAddresses"         "\"/ip4/0.0.0.0/tcp/${IOTA_CORE_GOSSIP_PORT:-15600}\",\"/ip6/::/tcp/${IOTA_CORE_GOSSIP_PORT:-15600}\"" ","
+# secret things
+set_config "${configPath}" ".protocol.baseToken.name"                "\"TST\""
+set_config "${configPath}" ".protocol.baseToken.tickerSymbol"        "\"TST\""
+set_config "${configPath}" ".protocol.baseToken.unit"                "\"TST\""
+set_config "${configPath}" ".protocol.baseToken.subunit"             "\"testies\""
+set_config "${configPath}" ".protocol.baseToken.decimals"            "6"
+set_config "${configPath}" ".protocol.baseToken.useMetricPrefix"     "false"
 
 rm -f "${tmp}"
 

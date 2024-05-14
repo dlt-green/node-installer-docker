@@ -1,16 +1,56 @@
 scrape_configs:
-  - job_name: metrics
+  - job_name: cadvisor
     scrape_interval: 5s
+    scrape_timeout: 5s
     static_configs:
       - targets:
-          - iota-core:9311
-    dns_sd_configs:
-      - names:
-          - 'peer_replica'
-        type: 'A'
-        port: 9311
-    relabel_configs:
-      - source_labels: [ __address__ ]
-        target_label: instance
-        regex: '[0-9]+.[0-9]+.[0-9]+.([0-9]+):[0-9]+'
-        replacement: peer_replica:$1
+          - 'cadvisor:8080'
+
+  - job_name: iota-core
+    scrape_interval: 5s
+    scrape_timeout: 5s
+    static_configs:
+      - targets:
+          - 'iota-core:9311'
+
+  - job_name: inx-indexer
+    scrape_interval: 5s
+    scrape_timeout: 5s
+    static_configs:
+      - targets:
+          - 'inx-indexer:9312'
+
+  - job_name: inx-mqtt
+    scrape_interval: 5s
+    scrape_timeout: 5s
+    static_configs:
+      - targets:
+          - 'inx-mqtt:9312'
+
+  - job_name: inx-dashboard
+    scrape_interval: 5s
+    scrape_timeout: 5s
+    static_configs:
+      - targets:
+          - 'inx-dashboard:9312'
+
+  - job_name: inx-blockissuer
+    scrape_interval: 5s
+    scrape_timeout: 5s
+    static_configs:
+      - targets:
+          - 'inx-blockissuer:9312'
+
+  - job_name: inx-validator
+    scrape_interval: 5s
+    scrape_timeout: 5s
+    static_configs:
+      - targets:
+          - 'inx-validator:9312'
+  
+  - job_name: traefik
+    scrape_interval: 5s
+    scrape_timeout: 5s
+    static_configs:
+      - targets:
+          - 'traefik:8080'
