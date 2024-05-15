@@ -72,7 +72,7 @@ VAR_CRON_JOB_2m=' -m 0'
 VAR_CRON_JOB_2u=' -m u'
 VAR_CRON_END_2=' -t 0 -r 1"'
 
-NODES="iota-hornet iota-wasp nova-iotacore shimmer-wasp shimmer-plugins/inx-chronicle"
+NODES="iota-hornet iota-wasp nova-iotacore nova-wasp shimmer-plugins/inx-chronicle"
 
 lg='\033[1m'
 or='\e[1;33m'
@@ -199,7 +199,7 @@ CheckIota() {
 
 CheckNova() {
 	if [ -s "/var/lib/nova-iotacore/.env" ]; then VAR_NETWORK=2; fi
-	if [ -s "/var/lib/shimmer-wasp/.env" ];   then VAR_NETWORK=2; fi
+	if [ -s "/var/lib/nova-wasp/.env" ];   then VAR_NETWORK=2; fi
 }
 
 CheckAutostart() {
@@ -728,7 +728,7 @@ CheckNodeUpdates() {
           if [ "$NODE" = 'iota-hornet' ]; then NODE_VRSN_INST=$(cat .env | grep HORNET_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_IOTA_HORNET_VERSION; VAR_NODE=1; fi
           if [ "$NODE" = 'iota-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_IOTA_WASP_VERSION; VAR_NODE=2; fi
           if [ "$NODE" = 'nova-iotacore' ]; then NODE_VRSN_INST=$(cat .env | grep IOTA_CORE_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_NOVA_IOTA_CORE_VERSION; VAR_NODE=5; fi
-          if [ "$NODE" = 'shimmer-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_NOVA_WASP_VERSION; VAR_NODE=6; fi
+          if [ "$NODE" = 'nova-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_NOVA_WASP_VERSION; VAR_NODE=6; fi
           if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then NODE_VRSN_INST=$(cat .env | grep INX_CHRONICLE_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_NOVA_INX_CHRONICLE_VERSION; VAR_NODE=21; fi
 
           for INSTALLER_VRSN in $INST_VRSN_LIST; do
@@ -742,7 +742,7 @@ CheckNodeUpdates() {
             if [ "$NODE" = 'nova-iotacore' ]; then
               NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_NOVA_IOTA_CORE_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
-            if [ "$NODE" = 'shimmer-wasp' ]; then
+            if [ "$NODE" = 'nova-wasp' ]; then
               NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_NOVA_WASP_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then
@@ -777,7 +777,7 @@ NodeUpdate() {
             if [ "$2" = 'nova-iotacore' ]; then
               NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_NOVA_IOTA_CORE_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
-            if [ "$2" = 'shimmer-wasp' ]; then
+            if [ "$2" = 'nova-wasp' ]; then
               NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_NOVA_WASP_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$2" = 'shimmer-plugins/inx-chronicle' ]; then
@@ -944,15 +944,15 @@ Dashboard() {
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/nova-iotacore ]; then sh=$rd; else sh=$gr; fi
 
 	VAR_NODE=6; VAR_NodeHealthy=false; VAR_PORT="9999"
-	if [ -f "/var/lib/shimmer-wasp/.env" ]; then
-	  VAR_DOMAIN=$(cat /var/lib/shimmer-wasp/.env | grep _HOST | cut -d '=' -f 2)
-	  VAR_PORT=$(cat "/var/lib/shimmer-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
+	if [ -f "/var/lib/nova-wasp/.env" ]; then
+	  VAR_DOMAIN=$(cat /var/lib/nova-wasp/.env | grep _HOST | cut -d '=' -f 2)
+	  VAR_PORT=$(cat "/var/lib/nova-wasp/.env" | grep API_PORT | cut -d '=' -f 2)
 	  if [ -z "$VAR_PORT" ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	fi
 
-	if ! [ "$VAR_NodeHealthy" = "false" ]; then sw=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sw=$rd; else sw=$gr; fi
+	if ! [ "$VAR_NodeHealthy" = "false" ]; then sw=$gn; elif [ -d /var/lib/nova-wasp ]; then sw=$rd; else sw=$gr; fi
 
-	VAR_NODE=7; if [ -f "/var/lib/shimmer-wasp/data/config/wasp-cli/wasp-cli.json" ]; then sc=$gn; elif [ -d /var/lib/shimmer-wasp ]; then sc=$or; else sc=$gr; fi
+	VAR_NODE=7; if [ -f "/var/lib/nova-wasp/data/config/wasp-cli/wasp-cli.json" ]; then sc=$gn; elif [ -d /var/lib/nova-wasp ]; then sc=$or; else sc=$gr; fi
 
 	VAR_NODE=0
 
@@ -1039,7 +1039,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 6 ]; then
 	  echo "$ca""unattended: Update Shimmer-Wasp...""$xx"
-	  VAR_STATUS="shimmer-wasp: update v.$VAR_NOVA_WASP_VERSION"
+	  VAR_STATUS="nova-wasp: update v.$VAR_NOVA_WASP_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='6'
