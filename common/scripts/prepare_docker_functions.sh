@@ -288,3 +288,116 @@ stop_node () {
 show_logs () {
   docker compose logs -f --tail 1000
 }
+
+merge_json_files() {
+  local inputFile1Path="$1"
+  local inputFile2Path="$2"
+  local outputFile="$3"
+
+  jq -s '.[0] * .[1]' "$inputFile1Path" "$inputFile2Path" > "$inputFile1Path.tmp" && mv "$inputFile1Path.tmp" "$outputFile"
+}
+
+generate_peering_json() {
+  local peeringFilePath="$1"
+  local staticNeighbors="$2"
+
+  if [ -d "$peeringFilePath" ]; then
+    rm -Rf "$peeringFilePath"
+  fi
+
+  if [ -z "$staticNeighbors" ]; then
+    echo -e "No static neighbors defined"
+    jq -n '{peers: []}' > "$peeringFilePath"
+    return
+  fi
+  echo "Generating peering.json..."
+  local peersJson="[]"
+  IFS=','
+  for neighbor in $staticNeighbors; do
+    local cleanedNeighbor=$(echo "$neighbor" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    local alias=""
+    local multiAddress=""
+
+    if [[ "$cleanedNeighbor" =~ .*:.* ]]; then
+        alias=$(echo "$cleanedNeighbor" | cut -d ':' -f 1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+        multiAddress=$(echo "$cleanedNeighbor" | cut -d ':' -f 2- | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    else
+        alias="Node-$(date +%s%N | sha256sum | head -c 8)"
+        multiAddress="$cleanedNeighbor"
+    fi
+
+    peersJson=$(jq --arg alias "$alias" --arg multiAddress "$multiAddress" '. += [{"alias": $alias, "multiAddress": $multiAddress}]' <<< "$peersJson")
+  done
+  unset IFS
+  echo "$peersJson" | jq '{peers: .}' > "$peeringFilePath" && echo "  ${peeringFilePath} successfully generated" || echo "  Failed to generate peering.json"
+}
+
+configure_wasp_trusted_peers() {
+  local trustedPeersPath="$1"
+
+  if [ ! -f "${trustedPeersPath}" ]; then echo "{\"trustedPeers\": []}" > "${trustedPeersPath}"; fi
+
+  if ! grep -q -E "^WASP_TRUSTED_NODE_[0-9]+_URL" .env && \
+     ! grep -q -E "^WASP_TRUSTED_ACCESSNODE_[0-9]+_URL" .env; then
+    echo "  Cleared all trusted peers: No peers defined in .env"
+    jq '.trustedPeers |= map(select(.name == "me"))' \
+      "${trustedPeersPath}" > "${trustedPeersPath}.tmp" && mv -f "${trustedPeersPath}.tmp" "${trustedPeersPath}"
+  else
+    jq '.trustedPeers |= map(select(.name == "me"))' \
+      "${trustedPeersPath}" > "${trustedPeersPath}.tmp" && mv -f "${trustedPeersPath}.tmp" "${trustedPeersPath}"
+
+    local configPrefixes=("WASP_TRUSTED_ACCESSNODE" "WASP_TRUSTED_NODE")
+    for configPrefix in "${configPrefixes[@]}"; do
+      grep -E "^${configPrefix}_[0-9]+_URL" .env | sort | while IFS= read -r trustedNodeUrl; do
+        trustedNodeNumber=$(echo "${trustedNodeUrl}" | cut -d '_' -f 4)
+        name=$(grep -E "${configPrefix}_${trustedNodeNumber}_NAME" .env | cut -d '=' -f 2)
+        url=$(grep -E "${configPrefix}_${trustedNodeNumber}_URL" .env | cut -d '=' -f 2)
+        pubKey=$(grep -E "${configPrefix}_${trustedNodeNumber}_PUBKEY" .env | cut -d '=' -f 2)
+
+        unnamedNodePrefix="peer"
+        if [ "${configPrefix}" == "WASP_TRUSTED_ACCESSNODE" ]; then unnamedNodePrefix="accessnode"; fi
+        if [ -z "${name}" ]; then name="${unnamedNodePrefix}${trustedNodeNumber}"; fi
+
+        echo "  Adding trusted peer ${name} (${url})"
+        jq -r --arg name "${name}" --arg url "${url}" --arg pubKey "${pubKey}" \
+          '.trustedPeers += [{name: $name, publicKey: $pubKey, peeringURL: $url}]' \
+          "${trustedPeersPath}" > "${trustedPeersPath}.tmp" && mv -f "${trustedPeersPath}.tmp" "${trustedPeersPath}"
+      done
+    done
+  fi
+  chown 65532:65532 "${trustedPeersPath}"
+}
+
+configure_wasp_chain_access_nodes() {
+  local chainRegistryPath="$1"
+  local evmChainName="$2"
+  local evmChainID="$3"
+
+  if [ ! -f "${chainRegistryPath}" ]; then echo "{\"chainRecords\": []}" > "${chainRegistryPath}"; fi
+
+  if ! jq -e '.chainRecords' "${chainRegistryPath}" >/dev/null || \
+     ! jq -e --arg chainID "${evmChainID}" '.chainRecords[] | select(.chainID == $chainID)' "${chainRegistryPath}" >/dev/null; then
+    echo "  Skipped (chain registry): ${evmChainName} not present in chain registry"
+  elif ! grep -q -E "^WASP_TRUSTED_ACCESSNODE_[0-9]+_URL" .env; then
+    echo "  Cleared all access nodes: No peers defined in .env"
+    jq --arg chainID "${evmChainID}" '.chainRecords |= map(if .chainID == $chainID then .accessNodes = [] else . end)' \
+      "${chainRegistryPath}" > "${chainRegistryPath}.tmp" && mv -f "${chainRegistryPath}.tmp" "${chainRegistryPath}"
+  else
+    jq --arg chainID "${evmChainID}" '.chainRecords |= map(if .chainID == $chainID then .accessNodes = [] else . end)' \
+      "${chainRegistryPath}" > "${chainRegistryPath}.tmp" && mv -f "${chainRegistryPath}.tmp" "${chainRegistryPath}"
+
+    grep -E "^WASP_TRUSTED_ACCESSNODE_[0-9]+_URL" .env | sort | while IFS= read -r trustedNodeUrl; do
+      trustedNodeNumber=$(echo "${trustedNodeUrl}" | cut -d '_' -f 4)
+      name=$(grep -E "WASP_TRUSTED_ACCESSNODE_${trustedNodeNumber}_NAME" .env | cut -d '=' -f 2)
+      if [ -z "${name}" ]; then name="peer${trustedNodeNumber}"; fi
+      pubKey=$(grep -E "WASP_TRUSTED_ACCESSNODE_${trustedNodeNumber}_PUBKEY" .env | cut -d '=' -f 2)
+
+      echo "  Adding access node ${name}: ${pubKey}"
+      jq --arg chainID "${evmChainID}" --arg access_node "${pubKey}" \
+        '.chainRecords |= map(if .chainID == $chainID then .accessNodes += [$access_node] else . end)' \
+        "${chainRegistryPath}" > "${chainRegistryPath}.tmp" && mv -f "${chainRegistryPath}.tmp" "${chainRegistryPath}"
+    done
+  fi
+
+  chown 65532:65532 "${chainRegistryPath}"
+}

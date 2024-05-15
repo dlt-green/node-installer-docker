@@ -25,7 +25,7 @@ jobs:
           tagName=${branchName##*/}
           echo "value=$tagName" >> $GITHUB_OUTPUT
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.CI_TOKEN }}
 
@@ -62,10 +62,18 @@ jobs:
           mergeCommit=$(gh pr view $lastPullRequest --json mergeCommit -q .mergeCommit.oid)
 
           if [[ "$pullRequestState" == "MERGED" ]]; then
-            echo "::notice::Pull request has been merged. Finalizing release."
+            echo "::notice::Pull request has been merged. Finalizing release."           
             git tag ${{ steps.get_release_tag_name.outputs.value }} $mergeCommit -m "${{ steps.get_release_title.outputs.value }}" --force
             git push --force origin ${{ steps.get_release_tag_name.outputs.value }}
+          
+            # uncomment update flag variables and overwrite node-installer.sh in release
+            sed -i "s/^# \(VAR_.*_UPDATE=\)/\1/" node-installer.sh
+            shasum -a 256 ./node-installer.sh | cut -d ' ' -f 1 > ./checksum.txt
+            gh release upload ${{ steps.get_release_tag_name.outputs.value }} node-installer.sh --clobber        
+            gh release upload ${{ steps.get_release_tag_name.outputs.value }} checksum.txt --clobber        
+            
             gh release edit ${{ steps.get_release_tag_name.outputs.value }} --prerelease=false --draft=false --latest
+          
           elif [[ "$pullRequestState" == "CLOSED" ]]; then
             echo "::notice::Pull request has been closed (unmerged). Deleting release."
             gh release delete ${{ steps.get_release_tag_name.outputs.value }}
@@ -79,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.ref_type == 'branch' && contains(github.event.ref, 'feature/') }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.CI_TOKEN }}
 

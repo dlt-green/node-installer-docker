@@ -14,7 +14,7 @@ jobs:
     name: Build release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.ref }}
           token: ${{ secrets.CI_TOKEN }}
@@ -55,11 +55,14 @@ jobs:
           # set timestamp
           timestamp=$(TZ=CET date +%Y%m%d_%H%M%S)
           sed -i "s/^BUILD=.*/BUILD=\"$timestamp\"/g" ./node-installer.sh
+          
+          # comment update flags (will be reverted right after upload to release)
+          sed -i "/^VAR_.*_UPDATE=/ s/^/# /" node-installer.sh
 
           # generate installer checksum.txt          
           shasum -a 256 ./node-installer.sh | cut -d ' ' -f 1 > ./build/checksum.txt
 
-      - uses: xresloader/upload-to-github-release@v1
+      - uses: xresloader/upload-to-github-release@v1.4.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -68,6 +71,12 @@ jobs:
           draft: false
           prerelease: true
           overwrite: true
+
+      - name: Revert update flags in installer
+        id: revert_update_flags_in_installer
+        run: |          
+          # uncomment update flags (this should not be commited)
+          sed -i "s/^# \(VAR_.*_UPDATE=\)/\1/" node-installer.sh
 
       - name: Get release type
         id: get_release_type
@@ -162,7 +171,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set commit status
-        uses: myrotvorets/set-commit-status-action@1.1.5
+        uses: myrotvorets/set-commit-status-action@v2.0.0
         if: always()
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

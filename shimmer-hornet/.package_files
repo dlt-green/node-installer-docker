@@ -1,3 +1,5 @@
+./assets/config/config_mainnet.json
+./assets/config/config_testnet.json
 ./assets/grafana/dashboards/dashboard.yaml
 ./assets/grafana/dashboards/home.json
 ./assets/grafana/datasources/datasource.yaml

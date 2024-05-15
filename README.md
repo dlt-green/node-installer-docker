@@ -1,110 +1,114 @@
-![GitHub latest release)](https://img.shields.io/github/v/release/dlt-green/node-installer-docker) ![GitHub release date](https://img.shields.io/github/release-date/dlt-green/node-installer-docker) ![GitHub](https://img.shields.io/github/contributors/dlt-green/node-installer-docker) ![GitHub](https://img.shields.io/github/license/dlt-green/node-installer-docker)
+![GitHub latest release](https://img.shields.io/github/v/release/dlt-green/Node-Installer-docker)
+![GitHub release date](https://img.shields.io/github/release-date/dlt-green/Node-Installer-docker)
+![GitHub contributors](https://img.shields.io/github/contributors/dlt-green/Node-Installer-docker)
+![GitHub license](https://img.shields.io/github/license/dlt-green/Node-Installer-docker)
 
-# DLT.GREEN VISION
-We are a team of people from the IOTA community who have set themselves the vision of creating a DNS server for the IOTA/Shimmer ecosystem to improve the user experience. “DNS” stands for “Dynamic Node Selection”. Our goal is that a wallet no longer works with a static node, but rather that this can change depending on the situation. The time of static nodes into the IOTA/Shimmer ecosystem is over. Imagine never having to worry about whether the nodes is working or not. Imagine devices in the IOT that fully automatically select the node for their individual purpose; this can be, for example, based on proof of work, support for various events, trustworthiness or available access speed. It is important to us that the actual data traffic is routed between the wallet and the node itself and not via the node pool.
+# DLT.GREEN Vision
 
-# DLT.GREEN AUTOMATIC NODE-INSTALLER DOCKER
-DLT.GREEN Node-Installer-Docker is a script for installing IOTA/Shimmer Nodes (Hornet, Wasp). The installation takes place with Docker in the background and should enable everyone, even beginners, to set up IOTA/Shimmer nodes on a server or a virtual private server (VPS) in a short time.
+We are a team of individuals from the IOTA community with a vision to create a DNS server for the IOTA/Shimmer ecosystem, aiming to enhance user experience. Here, "DNS" stands for "Dynamic Node Selection." Our objective is to move away from static node usage in wallets towards dynamic selection based on the situation. The era of static nodes within the IOTA/Shimmer ecosystem is coming to an end. Envision never having to worry about the operational status of nodes. Picture IoT devices autonomously selecting nodes tailored to their specific needs; this could be based on factors such as proof of work, event support, trustworthiness, or available access speed. We prioritize direct data traffic between the wallet and the node itself, bypassing the node pool.
 
-# HARDWARE RECOMMENDATIONS
-### Minimum recommendation for a node
- - 8 GB RAM 
- - 4 CPU Kerne
- - 160 GB Speicher (SSD)
- - Ubuntu 22.04 LTS
+## DLT.GREEN Automatic Node-Installer for Docker
 
-### Minimum recommendation for nodes that also want to track events (staking, voting, etc.) or want to load additional plugins
- - 16 GB RAM 
- - 4+ CPU Kerne 
- - 250+ GB Speicher (SSD)
- - Ubuntu 22.04 LTS
+The DLT.GREEN Node-Installer-Docker provides an easy-to-use script that streamlines the setup of IOTA/Shimmer Nodes (Hornet, Wasp). With Docker running behind the scenes, our installation process is designed to be user-friendly, catering to both novices and seasoned users interested in deploying IOTA/Shimmer nodes on a server or virtual private server (VPS).
 
-# Installation
-### Important
-The nodes should always be configured using the node installer provided by DLT.GREEN. It is not advisable to make changes to the parameters yourself, as your own parameters are not taken into account during an update and are therefore reset.
-If any feature needs to be added or you want to add a plugin to the installer, you are welcome. Please report this via our Discord to dlt.green team.
+### Hardware Recommendations
 
-### A server or VPS and your own domain must be available before installation begins.
-An SSL certificate is automatically generated via Let's Encrypt, but you can also assign your own certificate.
+#### For Standard Nodes
+- **RAM:** 8 GB minimum
+- **CPU Cores:** 4
+- **Storage:** 160 GB SSD minimum
+- **Operating System:** Ubuntu 22.04.04 LTS (Jammy Jellyfish) or Debian 12 (Bookworm)
 
-#
+#### For Event-Tracking Nodes or Additional Plugins
+- **RAM:** 16 GB minimum
+- **CPU Cores:** 6+
+- **Storage:** 250 GB SSD minimum
+- **Operating System:** Ubuntu 22.04.04 LTS (Jammy Jellyfish) or Debian 12 (Bookworm)
 
-### NODE-INSTALLER Installation
+## Installation Guide
+
+### Prerequisites
+Before commencing with the installation:
+- Ensure you have access to a server or VPS.
+- Secure your own domain name.
+Note: SSL certificates will be generated via Let's Encrypt automatically, but you can also use your own certificate.
+
+### Installing Node-Installer
+
+Execute the following command in your console:
 ```console
 sudo wget https://github.com/dlt-green/node-installer-docker/releases/latest/download/node-installer.sh && sudo sh node-installer.sh
 ```
 
-### NODE-INSTALLER with GUI
+### Node-Installer with GUI
 
-When you run the installer for the first time, an alias is automatically created at user level, which means that the logged in user can use this alias as an alternative after starting the installer for the first time:
-
+After running the installer for the first time, it creates an alias accessible at the user level:
 ```console
 dlt.green
 ```
-### NODE-INSTALLER unattended
 
-```
-dlt.green [-m mode/optional] [-t time/optional] [-r reboot/optional] [-c checks/optional]
-```
+### Node-Installer Unattended Mode
 
-```
-mode: s: Start all Nodes
-mode: 0: Maintenance -> System Updates/Docker Cleanup/Certificate Update
-         this mode also automatically installs Docker if Docker was not preinstalled
-mode: 1: Update -> IOTA-Hornet
-mode: 2: Update -> IOTA-Wasp
-mode: 5: Update -> Shimmer-Hornet
-mode: 6: Update -> Shimmer-Wasp
+To run the Node-Installer in unattended mode, use the following syntax with optional flags:
+```console
+dlt.green [-m mode/optional] [-t time/optional] [-r reboot/optional] [-c checks/optional] [-l logs/optional]
 ```
 
-```
-mode: u: mode 0 with unattended recursive Node Updates (if possible)
-         the last 10 releases in the Github pipeline are supported (older versions are not updated)
-```
+Each flag represents a different configuration option:
 
-```
-time: 0-20 seconds
-default: 10
-```
+- `mode`: Sets the operation mode of the installer.
+   - `s`: Start all Nodes.
+   - `0`: Maintenance – Performs system updates, Docker cleanup, and certificate update. Installs Docker if not present.
+   - `1`: Update – Updates IOTA-Hornet nodes.
+   - `2`: Update – Updates IOTA-Wasp nodes.
+   - `5`: Update – Updates Shimmer-Hornet nodes.
+   - `6`: Update – Updates Shimmer-Wasp nodes.
+   - `u`: Executes Mode 0 and performs unattended recursive Node Updates when possible. Supports the last 10 releases in the GitHub pipeline (older versions are not updated).
+   - `d`: Debugging with output to CLI
+- `time`: Sets the delay in seconds before executing an action (0-20 seconds, default: 10).
+- `reboot`:
+   - `0`: No reboot after operations.
+   - `1`: Executes a system reboot (only if necessary) with automatic node shutdown prior to it (default: 0).
+- `checks`:
+   - `0`: Disables checks (not recommended).
+   - `1`: Enforces UFW Firewall and Autostart setup (default: 1).
+- `logs`:
+   - `i`: Displays all logs.
+   - `w`: Shows only warnings and errors in logs.
+   - `e`: Shows only errors in logs (default: i).
 
-```
-reboot: 0: no reboot
-reboot: 1: system reboot (nodes will be automatically shut down before)
-default: 0
-```
+Utilize these options according to your needs to automate node management tasks efficiently.
 
-```
-checks: 0: checks disabled (not recommended)
-checks: 1: UFW Firewall and Autostart will be automatically enabled (enforced)
-default: 1
-```
+### Operation Tutorial
 
-### Operation
-The script is operated by entering the numbers that are displayed in the menu.
-If you click on the image you will see <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">video tutorials</a> for installing IOTA/Shimmer Nodes:
+For a visual aid on installing IOTA/Shimmer Nodes using our script, visit our [video tutorials](https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg).
 
-<div align="left">
-      <a href="https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg">
-      <img src="https://github.com/dlt-green/node-installer-docker/assets/89119285/bb3afc0b-7534-4963-b920-cb01fc4e38ef"
-      alt="Installation">
-      </a>
-</div>
+[![Installation Video Tutorial](https://github.com/dlt-green/Node-Installer-docker/assets/89119285/e6bb308b-29a7-48e6-8eac-809e3069139a)](https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg)
 
-# Error messages and suggestions
-If you found any bugs or have suggestions for improving our script, create an issue on Github or contact our team in our Discord channel
+## Feedback and Support
 
-<b>Suggestions for improvement: <a href="https://github.com/dlt-green/node-installer-docker/issues">Github Issues</a></b><br>
-<b>Contact: <a href="https://discord.gg/XaBnsE5NGb">Discord</a></b>
+Encounter an issue or have suggestions? Please create a Github issue or reach out to our team on Discord.
 
-# Disclaimer
-Please note that using this script is at your own risk and DLT.GREEN is not liable for any damages.
+**Improvement Suggestions:** [Github Issues](https://github.com/dlt-green/Node-Installer-docker/issues)
 
-# Disclosure
-We would like to point out that this is not a supported installer by the Iota Foundation and you will not receive any support from the IF if you use this installer.
-You get support in our discord from our team or the community
+**Contact Us:** [Discord](https://discord.gg/XaBnsE5NGb)
 
-# Donations
-THIS PROJECT IS DEVELOPED BY DLT.GREEN WITH ITS COMMUNITY.  
-YOU CAN SUPPORT THIS PROJECT WITH DONATIONS TO THE DLT.GREEN TREASURY:  
-https://explorer.iota.org/mainnet/addr/iota1qznzkq2n6kakps36s7w0z0gmuf0p70x647ghqshlfjlumqrld49l7zemavy
-https://soonaverse.com/member/0x422bed2759f72e7d6ae1e100707ca45e26e9a12c
+## Disclaimer
+
+Use of this script is at your own risk. DLT.GREEN assumes no responsibility for any damages incurred.
+
+## Disclosure
+
+This is an independent installer not endorsed by the Iota Foundation; thus, IF support will not be available. However, our team and community offer support through our Discord.
+
+## Donations
+
+DLT.GREEN and its community proudly develop this project. Support us with donations:
+
+**IOTA**: [`iota1qq7seed74mzvy9g6nj2nj88pm37gf2x5qv35jcun78n86hyzaqcaggy8ewa`](https://explorer.iota.org/mainnet/addr/iota1qq7seed74mzvy9g6nj2nj88pm37gf2x5qv35jcun78n86hyzaqcaggy8ewa)
+
+**Shimmer**: [`smr1qzp87wkakd22ld6rvcjuwuvn5usevmvut565y6l32xhfucpemu0extkpws0`](https://explorer.shimmer.network/shimmer/addr/smr1qzp87wkakd22ld6rvcjuwuvn5usevmvut565y6l32xhfucpemu0extkpws0)
+
+**Shimmer EVM**: [`0x6c5ab03b8e4b4f9ec591d211411082a7ab925c05`](https://explorer.evm.shimmer.network/address/0x6c5aB03b8E4b4F9ec591D211411082A7ab925C05)
+
+**Soonaverse**: [`https://soonaverse.com/member/0x422bed2759f72e7d6ae1e100707ca45e26e9a12c`](https://soonaverse.com/member/0x422bed2759f72e7d6ae1e100707ca45e26e9a12c)
