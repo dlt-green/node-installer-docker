@@ -46,13 +46,13 @@ VAR_NOVA_INX_VALIDATOR_VERSION='1.0.0-beta.1'
 
 # SHIMMER-WASP
 
-VAR_SHIMMER_WASP_VERSION='1.1.0-rc.1'
-VAR_SHIMMER_WASP_UPDATE=1
+VAR_NOVA_WASP_VERSION='1.1.0-rc.1'
+VAR_NOVA_WASP_UPDATE=1
 
-VAR_SHIMMER_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_SHIMMER_WASP_CLI_VERSION='1.1.0-rc.1'
+VAR_NOVA_WASP_DASHBOARD_VERSION='0.1.9'
+VAR_NOVA_WASP_CLI_VERSION='1.1.0-rc.1'
 
-VAR_SHIMMER_EVM_ADDR='smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s'
+VAR_NOVA_EVM_ADDR='smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl3s'
 
 # PLUGINS
 
@@ -197,7 +197,7 @@ CheckIota() {
 	if [ -s "/var/lib/iota-wasp/.env" ];      then VAR_NETWORK=1; fi
 }
 
-CheckShimmer() {
+CheckNova() {
 	if [ -s "/var/lib/nova-iotacore/.env" ]; then VAR_NETWORK=2; fi
 	if [ -s "/var/lib/shimmer-wasp/.env" ];   then VAR_NETWORK=2; fi
 }
@@ -728,7 +728,7 @@ CheckNodeUpdates() {
           if [ "$NODE" = 'iota-hornet' ]; then NODE_VRSN_INST=$(cat .env | grep HORNET_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_IOTA_HORNET_VERSION; VAR_NODE=1; fi
           if [ "$NODE" = 'iota-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_IOTA_WASP_VERSION; VAR_NODE=2; fi
           if [ "$NODE" = 'nova-iotacore' ]; then NODE_VRSN_INST=$(cat .env | grep IOTA_CORE_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_NOVA_IOTA_CORE_VERSION; VAR_NODE=5; fi
-          if [ "$NODE" = 'shimmer-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_WASP_VERSION; VAR_NODE=6; fi
+          if [ "$NODE" = 'shimmer-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_NOVA_WASP_VERSION; VAR_NODE=6; fi
           if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then NODE_VRSN_INST=$(cat .env | grep INX_CHRONICLE_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_NOVA_INX_CHRONICLE_VERSION; VAR_NODE=21; fi
 
           for INSTALLER_VRSN in $INST_VRSN_LIST; do
@@ -743,7 +743,7 @@ CheckNodeUpdates() {
               NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_NOVA_IOTA_CORE_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$NODE" = 'shimmer-wasp' ]; then
-              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_WASP_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_NOVA_WASP_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then
               NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_NOVA_INX_CHRONICLE_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
@@ -778,7 +778,7 @@ NodeUpdate() {
               NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_NOVA_IOTA_CORE_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$2" = 'shimmer-wasp' ]; then
-              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_SHIMMER_WASP_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_NOVA_WASP_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$2" = 'shimmer-plugins/inx-chronicle' ]; then
               NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_NOVA_INX_CHRONICLE_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
@@ -1039,7 +1039,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 6 ]; then
 	  echo "$ca""unattended: Update Shimmer-Wasp...""$xx"
-	  VAR_STATUS="shimmer-wasp: update v.$VAR_SHIMMER_WASP_VERSION"
+	  VAR_STATUS="shimmer-wasp: update v.$VAR_NOVA_WASP_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='6'
@@ -2975,15 +2975,15 @@ IotaHornet() {
 
 		echo ''
 		FormatToBytes $(cat /var/lib/shimmer-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
-		if [ -z "$bytes" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=0; else VAR_SHIMMER_HORNET_PRUNING_SIZE=$bytes; fi
+		if [ -z "$bytes" ]; then VAR_NOVA_HORNET_PRUNING_SIZE=0; else VAR_NOVA_HORNET_PRUNING_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
 		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
 		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi
 		FormatToBytes "$(df -h /var/lib/"$VAR_DIR" | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
 		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi
-		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_SHIMMER_HORNET_PRUNING_SIZE)*9/10" | bc)
-		RESERVED_SPACE=$(echo "($VAR_SHIMMER_HORNET_PRUNING_SIZE)" | bc)
+		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_NOVA_HORNET_PRUNING_SIZE)*9/10" | bc)
+		RESERVED_SPACE=$(echo "($VAR_NOVA_HORNET_PRUNING_SIZE)" | bc)
 		FormatFromBytes "$RESERVED_SPACE"; RESERVED_SPACE=$fbytes
 		if [ $(($(echo "$VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE < $CALCULATED_SPACE" | bc))) -eq 1 ]; then CALCULATED_SPACE=$(echo "($VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE)" | bc); fi
 		FormatFromBytes "$CALCULATED_SPACE"; CALCULATED_SPACE=$fbytes
@@ -3356,7 +3356,7 @@ IotaWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "$ca""Wasp is an INX-Plugin and can only be installed on the same Server as IOTA!""$xx";
-	CheckShimmer
+	CheckNova
 	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
 
 	echo "$ca""Starting Installation or Update...""$xx";
