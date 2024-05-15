@@ -12,6 +12,8 @@ dataDir="${IOTA_CORE_DATA_DIR:-$scriptDir/data}"
 configFilenameInContainer="config.json"
 configFilename="config-${IOTA_CORE_NETWORK:-mainnet}.json"
 configPath="${dataDir}/config/${configFilename}"
+peeringFilename="peering-${IOTA_CORE_NETWORK:-mainnet}.json"
+peeringFilePath="${dataDir}/config/${peeringFilename}"
 
 validate_ssl_config "IOTA_CORE_SSL_CERT" "IOTA_CORE_SSL_KEY"
 copy_common_assets
@@ -70,6 +72,11 @@ set_config "${configPath}" ".protocol.baseToken.subunit"             "\"testies\
 set_config "${configPath}" ".protocol.baseToken.decimals"            "6"
 set_config "${configPath}" ".protocol.baseToken.useMetricPrefix"     "false"
 
-rm -f "${tmp}"
+# Generate peering.json
+if [ -d "${peeringFilePath}" ]; then
+  rm -Rf "${peeringFilePath}"
+fi
+generate_peering_json "${peeringFilePath}" "${IOTA_CORE_STATIC_PEERS:-""}"
 
+rm -f "${tmp}"
 echo "Finished"
