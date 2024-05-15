@@ -310,11 +310,11 @@ services:
       iota-core:
         condition: service_started
     environment:
-      - "VALIDATOR_PRV_KEY=${VALIDATOR_PRV_KEY:-}"
+      - "VALIDATOR_PRV_KEY=${IOTA_CORE_VALIDATOR_PRV_KEY:-}"
     command:
       - "--logger.level=debug"
       - "--inx.address=iota-core:9029"
-      - "--validator.accountAddress=${VALIDATOR_ACCOUNT_ADDR:-}"
+      - "--validator.accountAddress=${IOTA_CORE_VALIDATOR_ACCOUNT_ADDR:-}"
     profiles:
       - validator
     logging:
