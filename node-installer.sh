@@ -33,7 +33,7 @@ VAR_IOTA_WASP_CLI_VERSION='1.0.3'
 
 VAR_IOTA_EVM_ADDR='iota1pzt3mstq6khgc3tl0mwuzk3eqddkryqnpdxmk4nr25re2466uxwm28qqxu5'
 
-# NOVA-IOTA_CORE
+# NOVA-IOTA-CORE
 
 VAR_NOVA_IOTA_CORE_VERSION='1.0.0-beta.4'
 VAR_NOVA_IOTA_CORE_UPDATE=0
@@ -155,11 +155,11 @@ IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/dow
 NovaIotaCoreHash='30b170f64a09ee1a81529912ce6224e646dda2d3fc0e818a7875e2fbbf276c52'
 NovaIotaCorePackage="https://github.com/dlt-green/node-installer-docker/releases/download/iota-core-latest/nova-iotacore.tar.gz"
 
-ShimmerWaspHash='5a33a9bf38cb0bbc999ae8e24ae4b6d445f47163a330448398bb8bb919ed553b'
-ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
+NovaWaspHash='5a33a9bf38cb0bbc999ae8e24ae4b6d445f47163a330448398bb8bb919ed553b'
+NovaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/iota-core-latest/nova-wasp.tar.gz"
 
-ShimmerChronicleHash='dddce2efb8cc5ebc5b319371e262c589d02601dc071d43bf81307f33501b117b'
-ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
+NovaChronicleHash='dddce2efb8cc5ebc5b319371e262c589d02601dc071d43bf81307f33501b117b'
+NovaChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/iota-core-latest/nova-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
 
@@ -980,7 +980,7 @@ Dashboard() {
 	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│   ""$ic""WASP-CLI""$xx""   │ │4│      -       │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
-	echo "║           ┌──────────────────┬ IOTA 2.0 ""$(echo "$VAR_NOVA_IOTA_CORE_NETWORK" | sed 's/.*/\u&/')"" ┬──────────────────┐         ║"
+	echo "║           ┌─────────────────┬ IOTA 2.0 ""$(echo "$VAR_NOVA_IOTA_CORE_NETWORK" | sed 's/.*/\u&/')"" ┬──────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
 	echo "║ │5│   ""$sh""IOTA-CORE""$xx""    │6│      ""$sw""WASP""$xx""      │7│   ""$sc""WASP-CLI""$xx""   │ │8│    ""$ix""PLUGINS""$xx""   │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
@@ -4944,7 +4944,7 @@ echo "║$lg     | |_| | | |___   | |    _   | |_| | |  _ <  | |___  | |___  | |
 echo "║$lg     |____/  |_____|  |_|   (_)   \____| |_| \_\ |_____| |_____| |_| \_|     $xx║"
 echo "║                                                                             ║"
 echo "║                                                                             ║"
-echo "║                          for IOTA/Nova Nodes                             ║"
+echo "║                         for IOTA 2.0 Testnet Nodes                          ║"
 echo "║                                                                             ║"
 echo "║                                 loading...                                  ║"
 echo "║                                                                             ║"
