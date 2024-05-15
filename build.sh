@@ -7,7 +7,7 @@ OUTPUT_RESET='\033[0m'
 BUILD_DIR=./build
 EXCLUSIONS="assets/traefik, build, data, .env, build.sh, .gitignore, .package_files, build_extension.sh"
 
-NODES="iota-hornet iota-wasp iota-chronicle shimmer-core shimmer-hornet shimmer-wasp shimmer-chronicle"
+NODES="iota-hornet iota-wasp iota-chronicle nova-iotacore shimmer-hornet shimmer-wasp shimmer-chronicle"
 INSTALLER_SCRIPT="./node-installer.sh"
 
 build_node () {
@@ -272,7 +272,7 @@ MainMenu() {
 }
 
 NodePackagesMenu() {
-  print_menu "all" "iota-hornet" "iota-wasp" "iota-chronicle" "shimmer-core" "shimmer-hornet" "shimmer-wasp" "shimmer-chronicle" "Back"
+  print_menu "all" "iota-hornet" "iota-wasp" "iota-chronicle" "nova-iotacore" "shimmer-hornet" "shimmer-wasp" "shimmer-chronicle" "Back"
 	read  -p '> ' n
 	case ${n} in
   1) print_line
@@ -296,7 +296,7 @@ NodePackagesMenu() {
 	   NodePackagesMenu
      ;;
   5) print_line
-     build_node "shimmer-core" "interactive"
+     build_node "nova-iotacore" "interactive"
      enter_to_continue
 	   NodePackagesMenu
      ;;
