@@ -50,6 +50,7 @@ set_config "${configPath}" ".p2p.identityPrivateKeyFilePath"         "\"/app/dat
 set_config "${configPath}" ".profiling.bindAddress"                  "\"0.0.0.0:6060\""
 set_config "${configPath}" ".debugAPI.db.path"                       "\"/app/data/debug\""
 set_config "${configPath}" ".db.path"                                "\"/app/data/database\""
+set_config "${configPath}" ".db.pruning.size.targetSize"             "\"${IOTA_CORE_PRUNING_TARGET_SIZE:-64GB}\""
 set_config "${configPath}" ".protocol.snapshot.path"                 "\"/app/data/snapshots/snapshot.bin\""
 set_config "${configPath}" ".protocol.protocolParametersPath"        "\"/app/data/protocol_parameters.json\""
 set_config "${configPath}" ".prometheus.enabled"                     "true"

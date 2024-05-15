@@ -16,7 +16,6 @@ services:
     working_dir: /app
     ports:
       - "${IOTA_CORE_GOSSIP_PORT:-15600}:${IOTA_CORE_GOSSIP_PORT:-15600}/tcp"
-      - "${IOTA_CORE_AUTOPEERING_PORT:-14626}:${IOTA_CORE_AUTOPEERING_PORT:-14626}/udp"
     labels:
       - "traefik.enable=true"
       - "proxy.constraint=iota-core-${IOTA_CORE_NETWORK:-mainnet}"
