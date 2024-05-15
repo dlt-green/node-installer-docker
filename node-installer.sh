@@ -1782,9 +1782,10 @@ SubMenuMaintenance() {
 	      echo "Download latest full snapshot... $VAR_SHIMMER_CORE_NETWORK"
 	      VAR_SNAPSHOT="https://files.nova-testnet.iotaledger.net/snapshots/latest-snapshot.bin"
 	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/snapshot.bin
+	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/snapshot.bin
 #	      VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_SHIMMER_CORE_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].full')
 #	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/full_snapshot.bin
-	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/full_snapshot.bin
+#	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_CORE_NETWORK"/full_snapshot.bin
 
 	      echo ""
 
