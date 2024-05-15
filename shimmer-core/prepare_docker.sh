@@ -42,7 +42,7 @@ if [ ! -f "${dataDir}/config/peering-${IOTA_CORE_NETWORK:-mainnet}.json" ]; then
   echo "{\"peers\": []}" > "${dataDir}/config/peering-${IOTA_CORE_NETWORK:-mainnet}.json"
 fi
 
-create_docker_network "shimmer"
+create_docker_network "nova"
 
 # Generate config
 extract_file_from_image "iotaledger/iota-core" "${IOTA_CORE_VERSION}" "/app/${configFilenameInContainer}" "${configPath}"

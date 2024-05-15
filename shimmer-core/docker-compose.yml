@@ -3,7 +3,7 @@ services:
 
   iota-core:
     image: iotaledger/iota-core:${IOTA_CORE_VERSION:?IOTA_CORE_VERSION is missing}
-    container_name: shimmer-iota-core
+    container_name: nova-iotacore
     restart: unless-stopped
     ulimits:
       nofile:
@@ -58,7 +58,7 @@ services:
 
   traefik:
     image: traefik:v2.9.8
-    container_name: shimmer-iota-core.traefik
+    container_name: nova-iotacore.traefik
     restart: unless-stopped
     env_file:
       - .env
@@ -100,7 +100,7 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
-    container_name: shimmer-iota-core.prometheus
+    container_name: nova-iotacore.prometheus
     stop_grace_period: 1m
     restart: unless-stopped
     depends_on:
@@ -121,7 +121,7 @@ services:
         max-size: "10m"
 
   cadvisor:
-    container_name: shimmer-iota-core.cadvisor
+    container_name: nova-iotacore.cadvisor
     image: gcr.io/cadvisor/cadvisor:latest
     privileged: true
     command:
@@ -148,7 +148,7 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    container_name: shimmer-iota-core.grafana
+    container_name: nova-iotacore.grafana
     restart: unless-stopped
     user: "65532"
     labels:
@@ -179,7 +179,7 @@ services:
 
   inx-indexer:
     image: iotaledger/inx-indexer:${INX_INDEXER_VERSION:?INX_INDEXER_VERSION is missing}
-    container_name: shimmer-iota-core.inx-indexer
+    container_name: nova-iotacore.inx-indexer
     stop_grace_period: 5m
     restart: unless-stopped
     depends_on:
@@ -204,7 +204,7 @@ services:
 
   inx-mqtt:
     image: iotaledger/inx-mqtt:${INX_MQTT_VERSION:?INX_MQTT_VERSION is missing}
-    container_name: shimmer-iota-core.inx-mqtt
+    container_name: nova-iotacore.inx-mqtt
     stop_grace_period: 1m
     restart: unless-stopped
     depends_on:
@@ -224,7 +224,7 @@ services:
 
   inx-dashboard:
     image: iotaledger/inx-dashboard:${INX_DASHBOARD_VERSION:?INX_DASHBOARD_VERSION is missing}
-    container_name: shimmer-iota-core.inx-dashboard
+    container_name: nova-iotacore.inx-dashboard
     stop_grace_period: 1m
     restart: unless-stopped
     depends_on:
@@ -279,7 +279,7 @@ services:
 
   inx-blockissuer:
     image: iotaledger/inx-blockissuer:${INX_BLOCKISSUER_VERSION:?INX_BLOCKISSUER_VERSION is missing}
-    container_name: shimmer-iota-core.inx-blockissuer
+    container_name: nova-iotacore.inx-blockissuer
     stop_grace_period: 1m
     restart: unless-stopped
     depends_on:
@@ -303,7 +303,7 @@ services:
 
   inx-validator:
     image: iotaledger/inx-validator:${INX_VALIDATOR_VERSION:?INX_VALIDATOR_VERSION is missing}
-    container_name: shimmer-iota-core.inx-validator
+    container_name: nova-iotacore.inx-validator
     stop_grace_period: 1m
     restart: unless-stopped
     depends_on:
@@ -324,5 +324,5 @@ services:
 
 networks:
   default:
-    name: shimmer
+    name: nova
     external: true
