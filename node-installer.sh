@@ -153,7 +153,7 @@ IotaWaspHash='8fa1dcc9ecd6c03c003dd352c3cd9328cf29a6ffe0e0574c66197269c0f279b5'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
 NovaIotaCoreHash='30b170f64a09ee1a81529912ce6224e646dda2d3fc0e818a7875e2fbbf276c52'
-NovaIotaCorePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/nova-iotacore.tar.gz"
+NovaIotaCorePackage="https://github.com/dlt-green/node-installer-docker/releases/download/iota-core-latest/nova-iotacore.tar.gz"
 
 ShimmerWaspHash='5a33a9bf38cb0bbc999ae8e24ae4b6d445f47163a330448398bb8bb919ed553b'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
