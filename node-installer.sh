@@ -33,17 +33,16 @@ VAR_IOTA_WASP_CLI_VERSION='1.0.3'
 
 VAR_IOTA_EVM_ADDR='iota1pzt3mstq6khgc3tl0mwuzk3eqddkryqnpdxmk4nr25re2466uxwm28qqxu5'
 
-# SHIMMER-HORNET
+# NOVA-IOTA_CORE
 
-VAR_SHIMMER_HORNET_VERSION='2.0.1'
-VAR_SHIMMER_HORNET_UPDATE=1
+VAR_NOVA_IOTA_CORE_VERSION='1.0.0-beta.4'
+VAR_NOVA_IOTA_CORE_UPDATE=0
 
-VAR_SHIMMER_INX_INDEXER_VERSION='1.0'
-VAR_SHIMMER_INX_MQTT_VERSION='1.0'
-VAR_SHIMMER_INX_PARTICIPATION_VERSION='1.0'
-VAR_SHIMMER_INX_SPAMMER_VERSION='1.0'
-VAR_SHIMMER_INX_POI_VERSION='1.0'
-VAR_SHIMMER_INX_DASHBOARD_VERSION='1.0'
+VAR_NOVA_INX_INDEXER_VERSION='2.0.0-beta.1'
+VAR_NOVA_INX_MQTT_VERSION='2.0.0-beta.1'
+VAR_NOVA_INX_DASHBOARD_VERSION='2.0.0-beta.3'
+VAR_NOVA_INX_BLOCKISSUER_VERSION='1.0.0-beta.1'
+VAR_NOVA_INX_VALIDATOR_VERSION='1.0.0-beta.1'
 
 # SHIMMER-WASP
 
@@ -57,8 +56,8 @@ VAR_SHIMMER_EVM_ADDR='smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx2
 
 # PLUGINS
 
-VAR_SHIMMER_INX_CHRONICLE_VERSION='1.0.0-rc.4'
-VAR_SHIMMER_INX_CHRONICLE_UPDATE=1
+VAR_NOVA_INX_CHRONICLE_VERSION='1.0.0-rc.4'
+VAR_NOVA_INX_CHRONICLE_UPDATE=1
 
 VAR_CRON_URL='cd /home && bash -ic "dlt.green'
 
@@ -73,7 +72,7 @@ VAR_CRON_JOB_2m=' -m 0'
 VAR_CRON_JOB_2u=' -m u'
 VAR_CRON_END_2=' -t 0 -r 1"'
 
-NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
+NODES="iota-hornet iota-wasp nova-iotacore shimmer-wasp shimmer-plugins/inx-chronicle"
 
 lg='\033[1m'
 or='\e[1;33m'
@@ -153,8 +152,8 @@ IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/d
 IotaWaspHash='8fa1dcc9ecd6c03c003dd352c3cd9328cf29a6ffe0e0574c66197269c0f279b5'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='30b170f64a09ee1a81529912ce6224e646dda2d3fc0e818a7875e2fbbf276c52'
-ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
+NovaIotaCoreHash='30b170f64a09ee1a81529912ce6224e646dda2d3fc0e818a7875e2fbbf276c52'
+NovaIotaCorePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/nova-iotacore.tar.gz"
 
 ShimmerWaspHash='5a33a9bf38cb0bbc999ae8e24ae4b6d445f47163a330448398bb8bb919ed553b'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
@@ -199,7 +198,7 @@ CheckIota() {
 }
 
 CheckShimmer() {
-	if [ -s "/var/lib/shimmer-hornet/.env" ]; then VAR_NETWORK=2; fi
+	if [ -s "/var/lib/nova-iotacore/.env" ]; then VAR_NETWORK=2; fi
 	if [ -s "/var/lib/shimmer-wasp/.env" ];   then VAR_NETWORK=2; fi
 }
 
@@ -512,7 +511,7 @@ CheckNodeHealthy() {
 	1) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
 	2) VAR_API="info"; OBJ=".Version" ;;
 	3) VAR_API="info"; OBJ=".tangleTime.synced" ;;
-	5) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
+	5) VAR_API="api/core/v3/info"; OBJ=".status.isHealthy" ;;
 	6) VAR_API="v1/node/version"; OBJ=".version" ;;
 	*) ;;
 	esac
@@ -534,8 +533,8 @@ CheckEventsIota() {
 
 	cd /var/lib/$VAR_DIR >/dev/null 2>&1 || Dashboard;
 
-	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
-	if [ -z "$VAR_RESTAPI_SALT" ]; then echo "$rd""IOTA-Hornet: No Salt found!""$xx"
+	VAR_JWT_SALT=$(cat .env 2>/dev/null | grep JWT_SALT | cut -d '=' -f 2);
+	if [ -z "$VAR_JWT_SALT" ]; then echo "$rd""IOTA-Hornet: No Salt found!""$xx"
 	else
 	   echo "Event IDs can be found at:"
 	   echo 'https://github.com/iotaledger/participation-events'
@@ -547,7 +546,7 @@ CheckEventsIota() {
 	   echo ''
 
 	   ADDR=$(cat .env 2>/dev/null | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
-	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt "$VAR_RESTAPI_SALT" | awk '{ print $5 }')
+	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt "$VAR_JWT_SALT" | awk '{ print $5 }')
 	   echo "$ca""Address: ""$xx""$ADDR"" ($ca""JWT-Token for API Access randomly generated""$xx)"
 	   echo ''
 	   sleep 5
@@ -613,7 +612,7 @@ CheckEventsIota() {
 	Dashboard
 }
 
-CheckEventsShimmer() {
+CheckEventsNova() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -623,84 +622,84 @@ CheckEventsShimmer() {
 	echo "Verify Event Results..."
 	echo "$xx"
 
-	VAR_DIR='shimmer-hornet'
+	VAR_DIR='nova-iotacore'
 
 	cd /var/lib/$VAR_DIR >/dev/null 2>&1 || Dashboard;
 
-	VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
-	if [ -z "$VAR_RESTAPI_SALT" ]; then echo "$rd""Shimmer-Hornet: No Salt found!""$xx"
+	VAR_JWT_SALT=$(cat .env 2>/dev/null | grep JWT_SALT | cut -d '=' -f 2);
+	if [ -z "$VAR_JWT_SALT" ]; then echo "$rd""Nova-IotaCore: No Salt found!""$xx"
 	else
 	   echo "Event IDs can be found at:"
 	   echo 'https://github.com/iotaledger/participation-events'
 	   echo 'https://github.com/iota-community/governance-participation-events'	 
-	   echo "Event Data will be saved locally under '/var/lib/shimmer-hornet/verify-events'"
+	   echo "Event Data will be saved locally under '/var/lib/nova-iotacore/verify-events'"
 	   echo ''
 	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
 	   read -r -p '> ' EVENTS
 	   echo ''
 
-	   ADDR=$(cat .env 2>/dev/null | grep HORNET_HOST | cut -d '=' -f 2)':'$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT | cut -d '=' -f 2)
-	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt "$VAR_RESTAPI_SALT" | awk '{ print $5 }')
+	   ADDR=$(cat .env 2>/dev/null | grep IOTA_CORE_HOST | cut -d '=' -f 2)':'$(cat .env 2>/dev/null | grep IOTA_CORE_HTTPS_PORT | cut -d '=' -f 2)
+	   TOKEN=$(docker compose run --rm hornet tool jwt-api --salt "$VAR_JWT_SALT" | awk '{ print $5 }')
 	   echo "$ca""Address: ""$xx""$ADDR"" ($ca""JWT-Token for API Access randomly generated""$xx)"
 	   echo ''
 	   sleep 5
 
-	   if [ -z "$EVENTS" ]; then
-	   EVENTS=$(curl https://"${ADDR}"/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
-
-	   for EVENT_ID in $(echo "$EVENTS"  | tr -d '"[] ' | sed 's/,/ /g'); do
-	      echo "───────────────────────────────────────────────────────────────────────────────"
-	      EVENT_NAME=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.name')
-
-	      EVENT_SYMBOL=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.payload.symbol')
-
-	      EVENT_STATUS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.status')
-
-	      EVENT_CHECKSUM=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.checksum')
-
-	      EVENT_MILESTONE=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.milestoneIndex')
-
-	      EVENT_QUESTIONS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.questions')
-
-	      echo "$ca""Name: ""$xx""$EVENT_NAME"
-		  echo "$ca""Status: ""$xx""$EVENT_STATUS""$ca"" Milestone index: ""$xx""$EVENT_MILESTONE"
-
-	      if [ "$EVENT_STATUS" = "ended" ]; then
-	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
-	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
-	        $(curl https://"${ADDR}"/api/participation/v1/admin/events/"${EVENT_ID}"/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
-	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > "${EVENT_ID}")
-	        echo ""
-	        echo "$xx""Event ID: ""$EVENT_ID"
-
-	        if [ $(jq '.totalRewards' "${EVENT_ID}") = 'null' ]; then
-			  if [ "$EVENT_SYMBOL" = 'null' ]; then
-			    echo "$gn""Checksum: ""$EVENT_CHECKSUM""$xx"
-				if [ -n "$EVENT_QUESTIONS" ]; then echo "$EVENT_QUESTIONS" > "${EVENT_ID}"; fi
-			  else
-			    echo "$rd""Checksum: ""Authentication Error!""$xx"
-			  fi
-	        else
-	          echo "$gn""Checksum: ""$(jq -r '.checksum' "${EVENT_ID}")"
-	        fi
-	        EVENT_REWARDS="$(jq '.totalRewards' "${EVENT_ID}" 2>/dev/null)"
-	      else
-	        echo ""
-	        echo "$xx""Event ID: ""$EVENT_ID"
-	        echo "$rd""Checksum: ""Event not found or not over yet!""$xx"
-	        EVENT_REWARDS='not available'
-	      fi
-	      echo ""
-	      echo "$ca""Total rewards: ""$xx""$EVENT_REWARDS""$ca"" Symbol: ""$xx""$EVENT_SYMBOL"
-	      echo "───────────────────────────────────────────────────────────────────────────────"
-	   done
+#	   if [ -z "$EVENTS" ]; then
+#	   EVENTS=$(curl https://"${ADDR}"/api/participation/v1/events --http1.1 -s -X GET -H 'Content-Type: application/json' \
+#	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.eventIds'); fi
+#
+#	   for EVENT_ID in $(echo "$EVENTS"  | tr -d '"[] ' | sed 's/,/ /g'); do
+#	      echo "───────────────────────────────────────────────────────────────────────────────"
+#	      EVENT_NAME=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
+#	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.name')
+#
+#	      EVENT_SYMBOL=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}" --http1.1 -s -X GET -H 'Content-Type: application/json' \
+#	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.payload.symbol')
+#
+#	      EVENT_STATUS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+#	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.status')
+#
+#	      EVENT_CHECKSUM=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+#	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.checksum')
+#
+#	      EVENT_MILESTONE=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+#	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.milestoneIndex')
+#
+#	      EVENT_QUESTIONS=$(curl https://"${ADDR}"/api/participation/v1/events/"${EVENT_ID}"/status --http1.1 -s -X GET -H 'Content-Type: application/json' \
+#	      -H "Authorization: Bearer ${TOKEN}" | jq -r '.questions')
+#
+#	      echo "$ca""Name: ""$xx""$EVENT_NAME"
+#		  echo "$ca""Status: ""$xx""$EVENT_STATUS""$ca"" Milestone index: ""$xx""$EVENT_MILESTONE"
+#
+#	      if [ "$EVENT_STATUS" = "ended" ]; then
+#	        if [ ! -d /var/lib/$VAR_DIR/verify-events ]; then mkdir /var/lib/$VAR_DIR/verify-events || Dashboard; fi
+#	        cd /var/lib/$VAR_DIR/verify-events || Dashboard
+#	        $(curl https://"${ADDR}"/api/participation/v1/admin/events/"${EVENT_ID}"/rewards --http1.1 -s -X GET -H 'Content-Type: application/json' \
+#	        -H "Authorization: Bearer ${TOKEN}" | jq '.data' > "${EVENT_ID}")
+#	        echo ""
+#	        echo "$xx""Event ID: ""$EVENT_ID"
+#
+#	        if [ $(jq '.totalRewards' "${EVENT_ID}") = 'null' ]; then
+#			  if [ "$EVENT_SYMBOL" = 'null' ]; then
+#			    echo "$gn""Checksum: ""$EVENT_CHECKSUM""$xx"
+#				if [ -n "$EVENT_QUESTIONS" ]; then echo "$EVENT_QUESTIONS" > "${EVENT_ID}"; fi
+#			  else
+#			    echo "$rd""Checksum: ""Authentication Error!""$xx"
+#			  fi
+#	        else
+#	          echo "$gn""Checksum: ""$(jq -r '.checksum' "${EVENT_ID}")"
+#	        fi
+#	        EVENT_REWARDS="$(jq '.totalRewards' "${EVENT_ID}" 2>/dev/null)"
+#	      else
+#	        echo ""
+#	        echo "$xx""Event ID: ""$EVENT_ID"
+#	        echo "$rd""Checksum: ""Event not found or not over yet!""$xx"
+#	        EVENT_REWARDS='not available'
+#	      fi
+#	      echo ""
+#	      echo "$ca""Total rewards: ""$xx""$EVENT_REWARDS""$ca"" Symbol: ""$xx""$EVENT_SYMBOL"
+#	      echo "───────────────────────────────────────────────────────────────────────────────"
+#	   done
 	fi
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	Dashboard
@@ -728,9 +727,9 @@ CheckNodeUpdates() {
         if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
           if [ "$NODE" = 'iota-hornet' ]; then NODE_VRSN_INST=$(cat .env | grep HORNET_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_IOTA_HORNET_VERSION; VAR_NODE=1; fi
           if [ "$NODE" = 'iota-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_IOTA_WASP_VERSION; VAR_NODE=2; fi
-          if [ "$NODE" = 'shimmer-hornet' ]; then NODE_VRSN_INST=$(cat .env | grep HORNET_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_HORNET_VERSION; VAR_NODE=5; fi
+          if [ "$NODE" = 'nova-iotacore' ]; then NODE_VRSN_INST=$(cat .env | grep IOTA_CORE_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_NOVA_IOTA_CORE_VERSION; VAR_NODE=5; fi
           if [ "$NODE" = 'shimmer-wasp' ]; then NODE_VRSN_INST=$(cat .env | grep WASP_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_WASP_VERSION; VAR_NODE=6; fi
-          if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then NODE_VRSN_INST=$(cat .env | grep INX_CHRONICLE_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_SHIMMER_INX_CHRONICLE_VERSION; VAR_NODE=21; fi
+          if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then NODE_VRSN_INST=$(cat .env | grep INX_CHRONICLE_VERSION | cut -d = -f 2); NODE_VRSN_LATEST=$VAR_NOVA_INX_CHRONICLE_VERSION; VAR_NODE=21; fi
 
           for INSTALLER_VRSN in $INST_VRSN_LIST; do
 
@@ -740,14 +739,14 @@ CheckNodeUpdates() {
             if [ "$NODE" = 'iota-wasp' ]; then
               NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_IOTA_WASP_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
-            if [ "$NODE" = 'shimmer-hornet' ]; then
-              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_HORNET_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+            if [ "$NODE" = 'nova-iotacore' ]; then
+              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_NOVA_IOTA_CORE_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$NODE" = 'shimmer-wasp' ]; then
               NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_WASP_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$NODE" = 'shimmer-plugins/inx-chronicle' ]; then
-              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_SHIMMER_INX_CHRONICLE_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+              NODE_VRSN_TMP=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN"/node-installer.sh | grep "^VAR_NOVA_INX_CHRONICLE_VERSION" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$NODE_VRSN_TMP" = "$NODE_VRSN_INST" ]; then NODE_VRSN_LATEST="$NODE_VRSN_TMP"; fi
             if [ "$NODE_VRSN_INST" = "$NODE_VRSN_LATEST" ]; then NodeUpdate "$INSTALLER_VRSN" "$NODE" "$VAR_NODE"; break;  fi
@@ -775,14 +774,14 @@ NodeUpdate() {
             if [ "$2" = 'iota-wasp' ]; then
               NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_IOTA_WASP_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
-            if [ "$2" = 'shimmer-hornet' ]; then
-              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_SHIMMER_HORNET_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+            if [ "$2" = 'nova-iotacore' ]; then
+              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_NOVA_IOTA_CORE_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$2" = 'shimmer-wasp' ]; then
               NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_SHIMMER_WASP_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$2" = 'shimmer-plugins/inx-chronicle' ]; then
-              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_SHIMMER_INX_CHRONICLE_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
+              NODE_VRSN_UPDATE=$(curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/"$INSTALLER_VRSN_TMP"/node-installer.sh | grep "^VAR_NOVA_INX_CHRONICLE_UPDATE" | cut -d = -f 2 | sed "s|'||g") >/dev/null 2>&1
             fi
             if [ "$NODE_VRSN_UPDATE" = '1' ]; then
               echo "$ca""DLT.GREEN release $INSTALLER_VRSN_TMP: Update $2... (unattended)" "$xx"
@@ -934,15 +933,15 @@ Dashboard() {
 	VAR_NODE=3; if [ -f "/var/lib/iota-wasp/data/config/wasp-cli/wasp-cli.json" ]; then ic=$gn; elif [ -d /var/lib/iota-wasp ]; then ic=$or; else ic=$gr; fi
 
 	VAR_NODE=5; VAR_NodeHealthy=false; VAR_PORT="9999"
-	if [ -f "/var/lib/shimmer-hornet/.env" ]; then
-	  VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2)
-	  VAR_PORT=$(cat "/var/lib/shimmer-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
-	  VAR_SHIMMER_HORNET_NETWORK=$(cat "/var/lib/shimmer-hornet/.env" | grep HORNET_NETWORK | cut -d '=' -f 2)
+	if [ -f "/var/lib/nova-iotacore/.env" ]; then
+	  VAR_DOMAIN=$(cat /var/lib/nova-iotacore/.env | grep _HOST | cut -d '=' -f 2)
+	  VAR_PORT=$(cat "/var/lib/nova-iotacore/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
+	  VAR_NOVA_IOTA_CORE_NETWORK=$(cat "/var/lib/nova-iotacore/.env" | grep IOTA_CORE_NETWORK | cut -d '=' -f 2)
 	  if [ -z "$VAR_PORT" ]; then VAR_PORT="9999"; fi; CheckNodeHealthy
 	else
-	  VAR_SHIMMER_HORNET_NETWORK='mainnet'
+	  VAR_NOVA_IOTA_CORE_NETWORK='testnet'
 	fi
-	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi
+	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/nova-iotacore ]; then sh=$rd; else sh=$gr; fi
 
 	VAR_NODE=6; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-wasp/.env" ]; then
@@ -966,9 +965,9 @@ Dashboard() {
 	VAR_DOMAIN=$text
 
 	ix=$gr
-	if [ "$(docker container inspect -f '{{.State.Status}}' shimmer-plugins'.inx-chronicle' 2>/dev/null)" = 'running' ]; then
+	if [ "$(docker container inspect -f '{{.State.Status}}' nova-plugins'.inx-chronicle' 2>/dev/null)" = 'running' ]; then
 	  if [ ix != "$rd" ]; then ix=$gn; fi
-	elif [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then ix=$rd; else ix=$gr; fi
+	elif [ -d /var/lib/nova-plugins/inx-chronicle ]; then ix=$rd; else ix=$gr; fi
 
 	clear
 	echo ""
@@ -981,9 +980,9 @@ Dashboard() {
 	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│   ""$ic""WASP-CLI""$xx""   │ │4│      -       │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
-	echo "║           ┌──────────────────┬ Shimmer ""$(echo "$VAR_SHIMMER_HORNET_NETWORK" | sed 's/.*/\u&/')"" ┬──────────────────┐         ║"
+	echo "║           ┌──────────────────┬ IOTA 2.0 ""$(echo "$VAR_NOVA_IOTA_CORE_NETWORK" | sed 's/.*/\u&/')"" ┬──────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
-	echo "║ │5│     ""$sh""HORNET""$xx""     │6│      ""$sw""WASP""$xx""      │7│   ""$sc""WASP-CLI""$xx""   │ │8│    ""$ix""PLUGINS""$xx""   │ ║"
+	echo "║ │5│   ""$sh""IOTA-CORE""$xx""    │6│      ""$sw""WASP""$xx""      │7│   ""$sc""WASP-CLI""$xx""   │ │8│    ""$ix""PLUGINS""$xx""   │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
 	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
@@ -1031,8 +1030,8 @@ Dashboard() {
 	fi
 
 	if [ "$opt_mode" = 5 ]; then
-	  echo "$ca""unattended: Update Shimmer-Hornet...""$xx"
-	  VAR_STATUS="shimmer-hornet $VAR_SHIMMER_HORNET_NETWORK: update v.$VAR_SHIMMER_HORNET_VERSION"
+	  echo "$ca""unattended: Update Nova-IotaCore...""$xx"
+	  VAR_STATUS="Nova-IotaCore $VAR_NOVA_IOTA_CORE_NETWORK: update v.$VAR_NOVA_IOTA_CORE_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='5'
@@ -1047,8 +1046,8 @@ Dashboard() {
 	fi
 
 	if [ "$opt_mode" = 21 ]; then
-	  echo "$ca""unattended: Update Shimmer-Plugins/INX-Chronicle...""$xx"
-	  VAR_STATUS="shimmer-plugins/inx-chronicle: update v.$VAR_SHIMMER_INX_CHRONICLE_VERSION"
+	  echo "$ca""unattended: Update Nova-Plugins/INX-Chronicle...""$xx"
+	  VAR_STATUS="nova-plugins/inx-chronicle: update v.$VAR_NOVA_INX_CHRONICLE_VERSION"
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='21'
@@ -1079,10 +1078,10 @@ Dashboard() {
 	         cd "/var/lib/$NODE" || exit
 	         if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
 	           CheckIota; if [ "$VAR_NETWORK" = 1 ]; then docker network create iota >/dev/null 2>&1; fi
-	           CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; fi
+	           CheckNova; if [ "$VAR_NETWORK" = 2 ]; then docker network create nova >/dev/null 2>&1; fi
 			   NETWORK='';
 	           if [ "$NODE" = 'iota-hornet' ]; then NETWORK=" $VAR_IOTA_HORNET_NETWORK"; fi
-	           if [ "$NODE" = 'shimmer-hornet' ]; then NETWORK=" $VAR_SHIMMER_HORNET_NETWORK"; fi
+	           if [ "$NODE" = 'nova-iotacore' ]; then NETWORK=" $VAR_NOVA_IOTA_CORE_NETWORK"; fi
 	           docker compose up -d
 	           sleep 60
 	           VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
@@ -1101,11 +1100,11 @@ Dashboard() {
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
-	             if [ "$NODE" = 'shimmer-hornet' ]; then
+	             if [ "$NODE" = 'nova-iotacore' ]; then
 	               VAR_STATUS="$NODE$NETWORK: reset node database"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
-	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_NOVA_IOTA_CORE_NETWORK"/*
+	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/*
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
@@ -1140,29 +1139,29 @@ Dashboard() {
 	             fi
 	           fi	
 
-	           if [ "$NODE" = 'shimmer-hornet' ]; then
-	             VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "shimmer-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
-	             if ! [ "$VAR_STATUS_HORNET_INX_PARTICIPATION" = 'running' ]; then
-	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation unhealthy"
-	               if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+	           if [ "$NODE" = 'nova-iotacore' ]; then
+	             VAR_STATUS_NOVA_INX_PARTICIPATION="$(docker inspect "$(echo "nova-iotacore.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
+	             if ! [ "$VAR_STATUS_NOVA_INX_PARTICIPATION" = 'running' ]; then
+	               VAR_STATUS_NOVA_INX_PARTICIPATION="$NODE$NETWORK: participation unhealthy"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS_NOVA_INX_PARTICIPATION"; fi
  	               docker compose stop
-	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: reset participation database"
-	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
-	               rm -rf /var/lib/"$NODE"/data/participation/"$VAR_SHIMMER_HORNET_NETWORK"/participation/*
+	               VAR_STATUS_NOVA_INX_PARTICIPATION="$NODE$NETWORK: reset participation database"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS_NOVA_INX_PARTICIPATION"; fi
+	               rm -rf /var/lib/"$NODE"/data/participation/"$VAR_NOVA_IOTA_CORE_NETWORK"/participation/*
  	               docker compose up -d
 	               sleep 60
-	               VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "shimmer-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
-	               case $VAR_STATUS_HORNET_INX_PARTICIPATION in
+	               VAR_STATUS_NOVA_INX_PARTICIPATION="$(docker inspect "$(echo "nova-iotacore.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
+	               case $VAR_STATUS_NOVA_INX_PARTICIPATION in
 					   'running')
-					   VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
-					   if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi ;;
+					   VAR_STATUS_NOVA_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
+					   if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS_NOVA_INX_PARTICIPATION"; fi ;;
 					   *)
-					   VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation unhealthy"
-					   if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi ;;
+					   VAR_STATUS_NOVA_INX_PARTICIPATION="$NODE$NETWORK: participation unhealthy"
+					   if [ "$opt_mode" = 's' ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS_NOVA_INX_PARTICIPATION"; fi ;;
 	               esac
 	             else
-	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
-	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
+	               VAR_STATUS_NOVA_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS_NOVA_INX_PARTICIPATION"; fi
 	             fi
 	           fi
 
@@ -1208,25 +1207,25 @@ Dashboard() {
 	4) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   DashboardHelper ;;
-	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='shimmer-hornet'
-	   if [ "$opt_mode" ]; then ShimmerHornet; clear; exit; else SubMenuMaintenance; fi ;;
-	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='shimmer-wasp'
-	   if [ "$opt_mode" ]; then ShimmerWasp; clear; exit; else SubMenuMaintenance; fi ;;
-	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='shimmer-wasp'
+	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='nova-iotacore'
+	   if [ "$opt_mode" ]; then NovaIotaCore; clear; exit; else SubMenuMaintenance; fi ;;
+	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='nova-wasp'
+	   if [ "$opt_mode" ]; then NovaWasp; clear; exit; else SubMenuMaintenance; fi ;;
+	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='nova-wasp'
 	   clear
 	   echo "$ca"
 	   echo 'Please wait, checking for Updates...'
 	   echo "$xx"
 	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
 	   SubMenuWaspCLI ;;
-	8) VAR_NETWORK=2; VAR_NODE=0; VAR_DIR='shimmer-plugins'
+	8) VAR_NETWORK=2; VAR_NODE=0; VAR_DIR='nova-plugins'
 	   if [ "$opt_mode" ]; then clear; exit; else SubMenuPlugins; fi ;;
-	21) VAR_NETWORK=2; VAR_NODE=21; VAR_DIR='shimmer-plugins/inx-chronicle'
-	   if [ "$opt_mode" ]; then ShimmerChronicle; clear; exit; else SubMenuMaintenance; fi ;;
+	21) VAR_NETWORK=2; VAR_NODE=21; VAR_DIR='nova-plugins/inx-chronicle'
+	   if [ "$opt_mode" ]; then NovaChronicle; clear; exit; else SubMenuMaintenance; fi ;;
 	e|E) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   if [ -d "/var/lib/iota-hornet" ]; then CheckEventsIota; fi
-	   if [ -d "/var/lib/shimmer-hornet" ]; then CheckEventsShimmer; fi
+	   if [ -d "/var/lib/nova-iotacore" ]; then CheckEventsNova; fi
 	   ;;
 	r|R) clear
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
@@ -1738,35 +1737,35 @@ SubMenuMaintenance() {
 	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_HORNET_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep IOTA_CORE_VERSION | cut -d '=' -f 2) = $VAR_NOVA_IOTA_CORE_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep IOTA_CORE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2)" | available: $VAR_SHIMMER_HORNET_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep IOTA_CORE_VERSION | cut -d '=' -f 2)" | available: $VAR_NOVA_IOTA_CORE_VERSION""$xx"
 			fi
 		else
-			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_HORNET_VERSION""$xx"
+			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_NOVA_IOTA_CORE_VERSION""$xx"
 		fi
 	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_WASP_VERSION ]; then
+			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_NOVA_WASP_VERSION ]; then
 				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_NOVA_WASP_VERSION""$xx"
 			fi
 		else
-			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
+			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_NOVA_WASP_VERSION""$xx"
 		fi
 	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_INX_CHRONICLE_VERSION ]; then
+			if [ $(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2) = $VAR_NOVA_INX_CHRONICLE_VERSION ]; then
 				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_INX_CHRONICLE_VERSION""$xx"
+				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_NOVA_INX_CHRONICLE_VERSION""$xx"
 			fi
 		else
-			echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | available: v.$VAR_SHIMMER_INX_CHRONICLE_VERSION""$xx"
+			echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | available: v.$VAR_NOVA_INX_CHRONICLE_VERSION""$xx"
 		fi
 	fi
 	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
@@ -1777,9 +1776,9 @@ SubMenuMaintenance() {
 	case $n in
 	1) if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then IotaHornet; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then IotaWasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then ShimmerHornet; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then ShimmerWasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then ShimmerChronicle; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then NovaIotaCore; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then NovaWasp; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then NovaChronicle; fi
 	   ;;
 	2) echo '(re)starting...'; sleep 3
 
@@ -1792,9 +1791,9 @@ SubMenuMaintenance() {
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-wasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop shimmer-wasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then docker stop shimmer-plugins.inx-chronicle; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop nova-iotacore; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop nova-wasp; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then docker stop nova-plugins.inx-chronicle; fi
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 
@@ -1826,9 +1825,9 @@ SubMenuMaintenance() {
 
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then docker stop iota-hornet; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then docker stop iota-wasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop shimmer-hornet; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop shimmer-wasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then docker stop shimmer-plugins.inx-chronicle; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then docker stop nova-iotacore; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then docker stop nova-wasp; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then docker stop nova-plugins.inx-chronicle; fi
 
 	   if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuMaintenance; docker compose down; fi
 	   sleep 3;
@@ -1868,7 +1867,7 @@ SubMenuMaintenance() {
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_NOVA_IOTA_CORE_NETWORK/*
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/wal/*
@@ -1922,7 +1921,7 @@ SubMenuMaintenance() {
 	   fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]
 	   then
-	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_SHIMMER_HORNET_NETWORK/participation/*
+	      rm -rf /var/lib/$VAR_DIR/data/participation/$VAR_NOVA_IOTA_CORE_NETWORK/participation/*
 	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
@@ -2009,40 +2008,33 @@ SubMenuMaintenance() {
 	   fi
 
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_SHIMMER_HORNET_NETWORK/*
-	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_SHIMMER_HORNET_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_NOVA_IOTA_CORE_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_NOVA_IOTA_CORE_NETWORK/*
 
-	      echo "Download latest full snapshot... $VAR_SHIMMER_HORNET_NETWORK"
-	      VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_SHIMMER_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].full')
-	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/full_snapshot.bin
-	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/full_snapshot.bin
-
-	      echo ""
-
-	      echo "Download latest delta snapshot... $VAR_SHIMMER_HORNET_NETWORK"
-	      VAR_SNAPSHOT=$(cat /var/lib/$VAR_DIR/data/config/config-"$VAR_SHIMMER_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].delta')
-	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
-	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
+	      echo "Download latest full snapshot... $VAR_NOVA_IOTA_CORE_NETWORK"
+	      VAR_SNAPSHOT="https://files.nova-testnet.iotaledger.net/snapshots/latest-snapshot.bin"
+	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
+	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
 	   fi
 
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ] && [ $VAR_SHIMMER_HORNET_NETWORK = 'mainnet' ]; then
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ] && [ $VAR_NOVA_IOTA_CORE_NETWORK = 'mainnet' ]; then
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/data/*
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/consensus/*
 	      rm -rf /var/lib/$VAR_DIR/data/waspdb/chains/index/*
-	      rm -rf /var/lib/$VAR_DIR/data/waspdb/snap/$VAR_SHIMMER_EVM_ADDR/*
+	      rm -rf /var/lib/$VAR_DIR/data/waspdb/snap/$VAR_NOVA_EVM_ADDR/*
 
 	      VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
 
 	      if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
-			VAR_EVM_FULL_DB='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
+			VAR_EVM_FULL_DB='https://files.Nova.Nova.network/dbs/wasp/latest-wasp_chains_wal.tgz'
 			cd /var/lib/$VAR_DIR/data/waspdb || SubMenuMaintenance
 			echo "Download latest full database... latest-wasp_chains_wal"
 			wget -q --show-progress --progress=bar $VAR_EVM_FULL_DB -O - | tar xzv
 			cd /var/lib/$VAR_DIR || SubMenuMaintenance
 	      else
-			cd /var/lib/$VAR_DIR/data/waspdb/snap/$VAR_SHIMMER_EVM_ADDR || SubMenuMaintenance
-			VAR_EVM_SNAPSHOT_ID=$(curl -Ls https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/INDEX)
-			VAR_EVM_SNAPSHOT_URL="https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"   
+			cd /var/lib/$VAR_DIR/data/waspdb/snap/$VAR_NOVA_EVM_ADDR || SubMenuMaintenance
+			VAR_EVM_SNAPSHOT_ID=$(curl -Ls https://files.Nova.Nova.network/wasp_snapshots/$VAR_NOVA_EVM_ADDR/INDEX)
+			VAR_EVM_SNAPSHOT_URL="https://files.Nova.Nova.network/wasp_snapshots/$VAR_NOVA_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"   
 			echo "Download latest snapshot... $VAR_EVM_SNAPSHOT_ID"
 			wget -q --show-progress --progress=bar $VAR_EVM_SNAPSHOT_URL
 			cd /var/lib/$VAR_DIR || SubMenuMaintenance
@@ -2193,35 +2185,35 @@ SubMenuConfiguration() {
 	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_HORNET_VERSION ]; then
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
+			if [ $(cat .env 2>/dev/null | grep IOTA_CORE_VERSION | cut -d '=' -f 2) = $VAR_NOVA_IOTA_CORE_VERSION ]; then
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep IOTA_CORE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep HORNET_VERSION | cut -d '=' -f 2)" | available: $VAR_SHIMMER_HORNET_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep IOTA_CORE_VERSION | cut -d '=' -f 2)" | available: $VAR_NOVA_IOTA_CORE_VERSION""$xx"
 			fi
 		else
-			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_HORNET_VERSION""$xx"
+			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_NOVA_IOTA_CORE_VERSION""$xx"
 		fi
 	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_WASP_VERSION ]; then
+			if [ $(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2) = $VAR_NOVA_WASP_VERSION ]; then
 				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
+				echo "$ca""Network/Node: $VAR_DIR | installed: v."$(cat .env 2>/dev/null | grep WASP_VERSION | cut -d '=' -f 2)" | available: v.$VAR_NOVA_WASP_VERSION""$xx"
 			fi
 		else
-			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_SHIMMER_WASP_VERSION""$xx"
+			echo "$ca""Network/Node: $VAR_DIR | available: v.$VAR_NOVA_WASP_VERSION""$xx"
 		fi
 	fi
 	if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then
 		if [ -f /var/lib/$VAR_DIR/.env ]; then
-			if [ $(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2) = $VAR_SHIMMER_INX_CHRONICLE_VERSION ]; then
+			if [ $(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2) = $VAR_NOVA_INX_CHRONICLE_VERSION ]; then
 				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | up-to-date""$xx"
 			else
-				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_SHIMMER_INX_CHRONICLE_VERSION""$xx"
+				echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | installed: v."$(cat .env 2>/dev/null | grep INX_CHRONICLE_VERSION | cut -d '=' -f 2)" | available: v.$VAR_NOVA_INX_CHRONICLE_VERSION""$xx"
 			fi
 		else
-			echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | available: v.$VAR_SHIMMER_INX_CHRONICLE_VERSION""$xx"
+			echo "$ca""Network/Plugin: "$(echo $VAR_DIR | sed 's/\-plugins//')" | available: v.$VAR_NOVA_INX_CHRONICLE_VERSION""$xx"
 		fi
 	fi
 	echo "$rd""Available Diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
@@ -2237,10 +2229,10 @@ SubMenuConfiguration() {
 
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
 	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
-		  VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
-	      if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""Generate JWT-Token is not supported, please update your Node! ""$xx"
+		  VAR_JWT_SALT=$(cat .env 2>/dev/null | grep JWT_SALT | cut -d '=' -f 2);
+	      if [ -z $VAR_JWT_SALT ]; then echo "$rd""Generate JWT-Token is not supported, please update your Node! ""$xx"
 		  else
-		     VAR_JWT=$(docker compose run --rm hornet tool jwt-api --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
+		     VAR_JWT=$(docker compose run --rm hornet tool jwt-api --salt $VAR_JWT_SALT | awk '{ print $5 }')
 		     echo "Your JWT-Token for secured API Access is generated:"
 		     echo "$gn"
 		     echo "$VAR_JWT""$xx"
@@ -2259,10 +2251,10 @@ SubMenuConfiguration() {
 	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
 		  read -r -p 'Press [P] to enable Proof of Work... Press [X] key to disable... ' K; echo "$xx"
 		  if  [ "$K" = 'p' ] || [ "$K" = 'P' ]; then
-	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=true/g" .env; K='P'; fi
+	         if [ -f .env ]; then sed -i "s/IOTA_CORE_POW_ENABLED=.*/IOTA_CORE_POW_ENABLED=true/g" .env; K='P'; fi
 		  fi
 		  if  [ "$K" = 'x' ] || [ "$K" = 'X' ]; then
-	         if [ -f .env ]; then sed -i "s/HORNET_POW_ENABLED=.*/HORNET_POW_ENABLED=false/g" .env; K='X'; fi
+	         if [ -f .env ]; then sed -i "s/IOTA_CORE_POW_ENABLED=.*/IOTA_CORE_POW_ENABLED=false/g" .env; K='X'; fi
 		  fi
 		  if  [ "$K" = 'P' ] || [ "$K" = 'X' ]; then
 		     ./prepare_docker.sh
@@ -2286,14 +2278,14 @@ SubMenuConfiguration() {
 	   if ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
 		  read -r -p 'Press [M] to enable Mainnet... Press [T] to enable Testnet... ' K; echo "$xx"
 		  if  [ "$K" = 'm' ] || [ "$K" = 'M' ]; then
-	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=mainnet/g" .env; K='M'; fi
+	         if [ -f .env ]; then sed -i "s/IOTA_CORE_NETWORK=.*/IOTA_CORE_NETWORK=mainnet/g" .env; K='M'; fi
 		  fi
 		  if  [ "$K" = 't' ] || [ "$K" = 'T' ]; then
-	         if [ -f .env ]; then sed -i "s/HORNET_NETWORK=.*/HORNET_NETWORK=testnet/g" .env; K='T'; fi
+	         if [ -f .env ]; then sed -i "s/IOTA_CORE_NETWORK=.*/IOTA_CORE_NETWORK=testnet/g" .env; K='T'; fi
 		  fi
 		  if  [ "$K" = 'M' ] || [ "$K" = 'T' ]; then
 		     ./prepare_docker.sh
-			 VAR_SHIMMER_HORNET_NETWORK=$(cat ".env" | grep HORNET_NETWORK | cut -d '=' -f 2)
+			 VAR_NOVA_IOTA_CORE_NETWORK=$(cat ".env" | grep IOTA_CORE_NETWORK | cut -d '=' -f 2)
 	         if  [ "$K" = 'M' ]; then echo "$gn"; echo "Mainnet of your Node successfully enabled""$xx"; else echo "$gn"; echo "Testnet of your Node successfully enabled""$xx"; fi
 	         echo "$rd""Please restart your Node for the changes to take effect!""$xx"
 		  else
@@ -2315,8 +2307,8 @@ SubMenuConfiguration() {
 	      read -r -p '> ' VAR_NODE_ALIAS
 	      echo ''
 	      if [ "$VAR_NODE" = 1 ] || [ "$VAR_NODE" = 5 ]; then
-		     fgrep -q "HORNET_NODE_ALIAS" .env || echo "HORNET_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
-	         if [ -f .env ]; then sed -i "s/HORNET_NODE_ALIAS=.*/HORNET_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
+		     fgrep -q "IOTA_CORE_NODE_ALIAS" .env || echo "IOTA_CORE_NODE_ALIAS=$VAR_NODE_ALIAS" >> .env
+	         if [ -f .env ]; then sed -i "s/IOTA_CORE_NODE_ALIAS=.*/IOTA_CORE_NODE_ALIAS=\"$VAR_NODE_ALIAS\"/g" .env; fi
 		  fi
 		  ./prepare_docker.sh
 		  echo "$gn""Node Alias of your Node successfully set""$xx"
@@ -2361,7 +2353,7 @@ SubMenuWaspCLI() {
 	echo "║                              9. Add IOTA-EVM chain                          ║"
 	fi
 	if [ "$VAR_NODE" = 7 ] ; then
-	echo "║                              9. Add Shimmer-EVM chain                       ║"
+	echo "║                              9. Add Nova-EVM chain                       ║"
 	fi
 	echo "║                             10. Help                                        ║"	
 	echo "║                             11. Deinstall/Remove                            ║"
@@ -2386,7 +2378,7 @@ SubMenuWaspCLI() {
 		     if  [ "$VAR_NETWORK" = 2 ]; then
 		        echo "$fl"; read -r -p 'Press [F] to enable Faucet... Press [Enter] key to skip... ' F; echo "$xx"
 		        if  [ "$F" = 'f' ] && ! [ "$F" = 'F' ]; then
-	               fgrep -q "WASP_CLI_FAUCET_ADDRESS" .env || echo "WASP_CLI_FAUCET_ADDRESS=https://faucet.testnet.shimmer.network" >> .env
+	               fgrep -q "WASP_CLI_FAUCET_ADDRESS" .env || echo "WASP_CLI_FAUCET_ADDRESS=https://..." >> .env
 		        fi
 		     fi
 		  if [ -f "./prepare_cli.sh" ]; then ./prepare_cli.sh; else echo "$rd""For using Wasp-CLI you must install $VAR_DIR first!""$xx"; fi
@@ -2548,7 +2540,7 @@ SubMenuWaspCLI() {
 	   fi
 	   if [ "$VAR_NODE" = 7 ] ; then
 		echo "$ca"
-		echo 'Add Shimmer-EVM chain...'"$xx"
+		echo 'Add Nova-EVM chain...'"$xx"
 		echo "$xx"
 		if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
@@ -2565,14 +2557,14 @@ SubMenuWaspCLI() {
 				./wasp-cli-wrapper.sh login
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 				clear
-				echo "$ca"; echo 'Add Shimmer-EVM chain...'"$xx"
-				./wasp-cli-wrapper.sh chain add shimmer-evm $VAR_SHIMMER_EVM_ADDR
-				if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep $VAR_SHIMMER_EVM_ADDR | cut -d '=' -f 2)" ]; then
-					echo "$gn"; echo 'Shimmer-EVM chain successfully added...'"$xx"
+				echo "$ca"; echo 'Add Nova-EVM chain...'"$xx"
+				./wasp-cli-wrapper.sh chain add Nova-evm $VAR_NOVA_EVM_ADDR
+				if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep $VAR_NOVA_EVM_ADDR | cut -d '=' -f 2)" ]; then
+					echo "$gn"; echo 'Nova-EVM chain successfully added...'"$xx"
 					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 					clear
-					echo "$ca"; echo 'Activate Shimmer-EVM chain...'"$xx"
-					./wasp-cli-wrapper.sh chain activate --chain shimmer-evm
+					echo "$ca"; echo 'Activate Nova-EVM chain...'"$xx"
+					./wasp-cli-wrapper.sh chain activate --chain Nova-evm
 					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 					clear
 					echo "$ca"; echo 'Prepare wasp...'; echo "$xx"
@@ -2580,9 +2572,9 @@ SubMenuWaspCLI() {
 					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 					clear
 					echo "$ca"; echo 'Restart wasp...'; echo "$xx"
-					docker stop shimmer-wasp
+					docker stop Nova-wasp
 					docker compose up -d
-				else echo "$rd"; echo "Error adding Shimmer-EVM chain!""$xx"; fi
+				else echo "$rd"; echo "Error adding Nova-EVM chain!""$xx"; fi
 			else echo "$rd""Set at least two trusted accessnodes in the wasp config first!""$xx"; fi
 	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
 		else
@@ -2656,7 +2648,7 @@ SystemMaintenance() {
 	      cd "/var/lib/$NODE" || exit
 	      if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
 	        CheckIota; if [ "$VAR_NETWORK" = 1 ]; then docker network create iota >/dev/null 2>&1; fi
-	        CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; fi
+	        CheckNova; if [ "$VAR_NETWORK" = 2 ]; then docker network create nova >/dev/null 2>&1; fi
 	        docker compose up --no-start
 	      fi
 	    fi
@@ -2895,8 +2887,8 @@ IotaHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	CheckShimmer
-	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Shimmer on the same Server, deinstall Shimmer Nodes first!""$xx"; fi
+	CheckNova
+	if [ "$VAR_NETWORK" = 2 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "IOTA and Nova on the same Server, deinstall Nova Nodes first!""$xx"; fi
 
 	echo "$ca""Starting Installation or Update...""$xx";
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -2948,7 +2940,7 @@ IotaHornet() {
 
 	CheckConfiguration
 
-	VAR_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
+	VAR_JWT_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
@@ -3131,7 +3123,7 @@ IotaHornet() {
 			echo "HORNET_STATIC_NEIGHBORS=$VAR_IOTA_HORNET_STATIC_NEIGHBORS" >> .env
 		fi
 
-		echo "RESTAPI_SALT=$VAR_SALT" >> .env
+		echo "JWT_SALT=$VAR_JWT_SALT" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
@@ -3188,7 +3180,7 @@ IotaHornet() {
 		fi
    
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
-		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
+		fgrep -q "JWT_SALT" .env || echo "JWT_SALT=$VAR_JWT_SALT" >> .env
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -3570,7 +3562,7 @@ IotaWasp() {
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_IOTA_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		VAR_DASHBOARD_VERSION=$(cat .env 2>/dev/null | grep WASP_DASHBOARD_VERSION | cut -d '=' -f 2)
-		VAR_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT | cut -d '=' -f 2)
+		VAR_JWT_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT | cut -d '=' -f 2)
 		VAR_CLI=$(cat .env 2>/dev/null | grep WASP_CLI_VERSION | cut -d '=' -f 2)
 
 		if [ -z "$VAR_DASHBOARD_VERSION" ]; then
@@ -3584,7 +3576,7 @@ IotaWasp() {
 		if [ -f .env ]; then sed -i "s/WASP_CLI_VERSION=.*/WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_DASHBOARD_VERSION=.*/WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION/g" .env; fi
 
-		if [ -z "$VAR_SALT" ]; then
+		if [ -z "$VAR_JWT_SALT" ]; then
 		    VAR_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
 
 			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
@@ -3737,16 +3729,16 @@ IotaWasp() {
 	if ! [ "$opt_mode" ]; then Dashboard; fi
 }
 
-ShimmerHornet() {
+NovaIotaCore() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║         DLT.GREEN AUTOMATIC SHIMMER-HORNET INSTALLATION WITH DOCKER         ║"
+	echo "║            DLT.GREEN AUTOMATIC IOTA 2.0 INSTALLATION WITH DOCKER            ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
 	CheckIota
-	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
+	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Nova and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
 	echo "$ca""Starting Installation or Update...""$xx";
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -3774,9 +3766,9 @@ ShimmerHornet() {
 
 	echo ""
 	echo "Download Package... install.tar.gz"
-	wget -cO - "$ShimmerHornetPackage" -q > install.tar.gz
+	wget -cO - "$NovaIotaCorePackage" -q > install.tar.gz
 
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerHornetHash" ]; then
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$NovaIotaCoreHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
@@ -3798,7 +3790,7 @@ ShimmerHornet() {
 
 	CheckConfiguration
 
-	VAR_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
+	VAR_JWT_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
@@ -3809,7 +3801,7 @@ ShimmerHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		VAR_HOST=$(cat .env 2>/dev/null | grep HORNET_HOST= | cut -d '=' -f 2)
+		VAR_HOST=$(cat .env 2>/dev/null | grep IOTA_CORE_HOST= | cut -d '=' -f 2)
 		if [ -z "$VAR_HOST" ]; then
 		  VAR_HOST=$(echo "$VAR_DOMAIN" | xargs)
 		  if [ -n "$VAR_HOST" ]; then
@@ -3823,16 +3815,16 @@ ShimmerHornet() {
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		VAR_SHIMMER_HORNET_HTTPS_PORT=$(cat .env 2>/dev/null | grep HORNET_HTTPS_PORT= | cut -d '=' -f 2)
+		VAR_NOVA_IOTA_CORE_HTTPS_PORT=$(cat .env 2>/dev/null | grep IOTA_CORE_HTTPS_PORT= | cut -d '=' -f 2)
 		VAR_DEFAULT='443';
-		if [ -z "$VAR_SHIMMER_HORNET_HTTPS_PORT" ]; then
-		  echo "Set dashboard port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set dashboard port (config: $ca""$VAR_SHIMMER_HORNET_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_IOTA_CORE_HTTPS_PORT" ]; then
+		  echo "Set dashboard port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set dashboard port (config: $ca""$VAR_NOVA_IOTA_CORE_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_HORNET_HTTPS_PORT" ]; then VAR_SHIMMER_HORNET_HTTPS_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set dashboard port: $VAR_SHIMMER_HORNET_HTTPS_PORT""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_IOTA_CORE_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_NOVA_IOTA_CORE_HTTPS_PORT" ]; then VAR_NOVA_IOTA_CORE_HTTPS_PORT=$VAR_DEFAULT; fi
+		echo "$gn""Set dashboard port: $VAR_NOVA_IOTA_CORE_HTTPS_PORT""$xx"
 
 		echo ''
-		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep IOTA_CORE_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
 		if [ -z "$bytes" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=0; else VAR_IOTA_HORNET_PRUNING_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
 		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi
@@ -3846,79 +3838,79 @@ ShimmerHornet() {
 		if [ $(($(echo "$VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE < $CALCULATED_SPACE" | bc))) -eq 1 ]; then CALCULATED_SPACE=$(echo "($VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE)" | bc); fi
 		FormatFromBytes "$CALCULATED_SPACE"; CALCULATED_SPACE=$fbytes
 
-		unset VAR_SHIMMER_HORNET_PRUNING_SIZE
-		while [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; do
-		  VAR_SHIMMER_HORNET_PRUNING_SIZE=$(cat .env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
-		  if [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; then
-		    echo "Set pruning size / max. storage size (calculated: $ca""$CALCULATED_SPACE""$xx)"; else echo "Set pruning size / max. storage size (config: $ca""$VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		unset VAR_NOVA_IOTA_CORE_PRUNING_SIZE
+		while [ -z "$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" ]; do
+		  VAR_NOVA_IOTA_CORE_PRUNING_SIZE=$(cat .env 2>/dev/null | grep IOTA_CORE_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		  if [ -z "$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" ]; then
+		    echo "Set pruning size / max. storage size (calculated: $ca""$CALCULATED_SPACE""$xx)"; else echo "Set pruning size / max. storage size (config: $ca""$VAR_NOVA_IOTA_CORE_PRUNING_SIZE""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		  echo "$rd""Available diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 		  echo "$rd""Reserved diskspace through pruning by other nodes: ""$RESERVED_SPACE""$xx"
 		  echo "$ca""Calculated pruning size for HORNET (with 10% buffer): ""$CALCULATED_SPACE""$xx"
 		  read -r -p '> ' VAR_TMP
-		  if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$VAR_TMP; fi
-		  if [ -z "$VAR_TMP" ]; then if [ -z "$VAR_SHIMMER_HORNET_PRUNING_SIZE" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=$CALCULATED_SPACE; fi; fi
-		  if ! [ -z "${VAR_SHIMMER_HORNET_PRUNING_SIZE##*B*}" ]; then
-		    VAR_SHIMMER_HORNET_PRUNING_SIZE=''
+		  if [ -n "$VAR_TMP" ]; then VAR_NOVA_IOTA_CORE_PRUNING_SIZE=$VAR_TMP; fi
+		  if [ -z "$VAR_TMP" ]; then if [ -z "$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" ]; then VAR_NOVA_IOTA_CORE_PRUNING_SIZE=$CALCULATED_SPACE; fi; fi
+		  if ! [ -z "${VAR_NOVA_IOTA_CORE_PRUNING_SIZE##*B*}" ]; then
+		    VAR_NOVA_IOTA_CORE_PRUNING_SIZE=''
 		    echo "$rd""Set pruning size: Please insert with unit!"; echo "$xx"
 		  fi
 		done
-		echo "$gn""Set pruning size: $VAR_SHIMMER_HORNET_PRUNING_SIZE""$xx"
+		echo "$gn""Set pruning size: $VAR_NOVA_IOTA_CORE_PRUNING_SIZE""$xx"
 
-		echo ''
-		VAR_SHIMMER_HORNET_POW=$(cat .env 2>/dev/null | grep HORNET_POW_ENABLED= | cut -d '=' -f 2)
-		VAR_DEFAULT='true';
-		if [ -z "$VAR_SHIMMER_HORNET_POW" ]; then
-		  echo "Set PoW / proof of work (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set PoW / proof of work (config: $ca""$VAR_SHIMMER_HORNET_POW""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
-		if [ -n "$VAR_TMP" ]; then
-		  VAR_SHIMMER_HORNET_POW=$VAR_TMP
-		  if  [ "$VAR_SHIMMER_HORNET_POW" = 'p' ] || [ "$VAR_SHIMMER_HORNET_POW" = 'P' ]; then
-		    VAR_SHIMMER_HORNET_POW='true'
-		  else
-		    VAR_SHIMMER_HORNET_POW='false'
-		  fi
-		elif [ -z "$VAR_SHIMMER_HORNET_POW" ]; then VAR_SHIMMER_HORNET_POW=$VAR_DEFAULT; fi
+#		echo ''
+#		VAR_NOVA_IOTA_CORE_POW=$(cat .env 2>/dev/null | grep IOTA_CORE_POW_ENABLED= | cut -d '=' -f 2)
+#		VAR_DEFAULT='true';
+#		if [ -z "$VAR_NOVA_IOTA_CORE_POW" ]; then
+#		  echo "Set PoW / proof of work (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set PoW / proof of work (config: $ca""$VAR_NOVA_IOTA_CORE_POW""$xx)"; echo "Press [Enter] to use existing config:"; fi
+#		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
+#		if [ -n "$VAR_TMP" ]; then
+#		  VAR_NOVA_IOTA_CORE_POW=$VAR_TMP
+#		  if  [ "$VAR_NOVA_IOTA_CORE_POW" = 'p' ] || [ "$VAR_NOVA_IOTA_CORE_POW" = 'P' ]; then
+#		    VAR_NOVA_IOTA_CORE_POW='true'
+#		  else
+#		    VAR_NOVA_IOTA_CORE_POW='false'
+#		  fi
+#		elif [ -z "$VAR_NOVA_IOTA_CORE_POW" ]; then VAR_NOVA_IOTA_CORE_POW=$VAR_DEFAULT; fi
 
-		if  [ "$VAR_SHIMMER_HORNET_POW" ]; then
-		  echo "$gn""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"
-		else
-		  echo "$rd""Set PoW / proof of work: $VAR_SHIMMER_HORNET_POW""$xx"
-		fi
+#		if  [ "$VAR_NOVA_IOTA_CORE_POW" ]; then
+#		  echo "$gn""Set PoW / proof of work: $VAR_NOVA_IOTA_CORE_POW""$xx"
+#		else
+#		  echo "$rd""Set PoW / proof of work: $VAR_NOVA_IOTA_CORE_POW""$xx"
+#		fi
 
-		echo ''
-		VAR_SHIMMER_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
-		VAR_DEFAULT='true'
-		if [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
-		  echo "Set autopeering (default: $ca$VAR_DEFAULT$xx):"; echo "Press [Enter] to use default value:"
-		else
-		  echo "Set autopeering (config: $ca$VAR_SHIMMER_HORNET_AUTOPEERING$xx)"; echo "Press [Enter] to use existing config:"
-		fi
-		read -r -p '> Press [E] to enable Autopeering... Press [X] key to disable... ' VAR_TMP;
-		if [ -n "$VAR_TMP" ]; then
-		  VAR_SHIMMER_HORNET_AUTOPEERING=$VAR_TMP
-		  if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'e' ] || [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'E' ]; then
-		    VAR_SHIMMER_HORNET_AUTOPEERING='true'
-		  else
-		    VAR_SHIMMER_HORNET_AUTOPEERING='false'
-		fi
-		elif [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then VAR_SHIMMER_HORNET_AUTOPEERING=$VAR_DEFAULT; fi
+#		echo ''
+#		VAR_NOVA_IOTA_CORE_AUTOPEERING=$(cat .env 2>/dev/null | grep IOTA_CORE_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
+#		VAR_DEFAULT='true'
+#		if [ -z "$VAR_NOVA_IOTA_CORE_AUTOPEERING" ]; then
+#		  echo "Set autopeering (default: $ca$VAR_DEFAULT$xx):"; echo "Press [Enter] to use default value:"
+#		else
+#		  echo "Set autopeering (config: $ca$VAR_NOVA_IOTA_CORE_AUTOPEERING$xx)"; echo "Press [Enter] to use existing config:"
+#		fi
+#		read -r -p '> Press [E] to enable Autopeering... Press [X] key to disable... ' VAR_TMP;
+#		if [ -n "$VAR_TMP" ]; then
+#		  VAR_NOVA_IOTA_CORE_AUTOPEERING=$VAR_TMP
+#		  if  [ "$VAR_NOVA_IOTA_CORE_AUTOPEERING" = 'e' ] || [ "$VAR_NOVA_IOTA_CORE_AUTOPEERING" = 'E' ]; then
+#		    VAR_NOVA_IOTA_CORE_AUTOPEERING='true'
+#		  else
+#		    VAR_NOVA_IOTA_CORE_AUTOPEERING='false'
+#		fi
+#		elif [ -z "$VAR_NOVA_IOTA_CORE_AUTOPEERING" ]; then VAR_NOVA_IOTA_CORE_AUTOPEERING=$VAR_DEFAULT; fi
+#
+#		if  [ "$VAR_NOVA_IOTA_CORE_AUTOPEERING" = 'true'  ]; then
+#		  echo "$gn""Set autopeering: $VAR_NOVA_IOTA_CORE_AUTOPEERING""$xx"
+#		else
+#		  echo "$rd""Set autopeering: $VAR_NOVA_IOTA_CORE_AUTOPEERING""$xx"
+#		fi
 
-		if  [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'true'  ]; then
-		  echo "$gn""Set autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING""$xx"
-		else
-		  echo "$rd""Set autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING""$xx"
-		fi
-
-		VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep HORNET_STATIC_NEIGHBORS= | cut -d '=' -f 2)
-		if [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'false' ]; then
-		echo ''
-		VAR_DEFAULT='{nodeName}:/dns/{nodeURL}/tcp/15600/p2p/{nodeId},...';
-		if [ -z "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
-		  echo "Set static neighbor(s) (template: $ca""$VAR_DEFAULT""$xx):"; else echo "Set static neighbor(s) (config: ""$ca""\n""$(echo "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" | tr ',' '\n')""\n""$xx)"; echo "Press [Enter] to use existing config (template: $ca""$VAR_DEFAULT""$xx):"; fi
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=$VAR_TMP; elif [ -z "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then VAR_SHIMMER_HORNET_STATIC_NEIGHBORS=''; fi
-		echo "$gn""Set static neighbor(s): ""\n""$(echo "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" | tr ',' '\n')""$xx"
-		fi
+		VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_NEIGHBORS= | cut -d '=' -f 2)
+#		if [ "$VAR_NOVA_IOTA_CORE_AUTOPEERING" = 'false' ]; then
+#		echo ''
+#		VAR_DEFAULT='{nodeName}:/dns/{nodeURL}/tcp/15600/p2p/{nodeId},...';
+#		if [ -z "$VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS" ]; then
+#		  echo "Set static neighbor(s) (template: $ca""$VAR_DEFAULT""$xx):"; else echo "Set static neighbor(s) (config: ""$ca""\n""$(echo "$VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS" | tr ',' '\n')""\n""$xx)"; echo "Press [Enter] to use existing config (template: $ca""$VAR_DEFAULT""$xx):"; fi
+#		read -r -p '> ' VAR_TMP
+#		if [ -n "$VAR_TMP" ]; then VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS=$VAR_TMP; elif [ -z "$VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS" ]; then VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS=''; fi
+#		echo "$gn""Set static neighbor(s): ""\n""$(echo "$VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS" | tr ',' '\n')""$xx"
+#		fi
 
 		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
@@ -3957,35 +3949,30 @@ ShimmerHornet() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ "$VAR_SHIMMER_HORNET_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
+		if [ "$VAR_NOVA_IOTA_CORE_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
-		echo "HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION" >> .env
+		echo "IOTA_CORE_VERSION=$VAR_NOVA_IOTA_CORE_VERSION" >> .env
 
-		echo "HORNET_NETWORK=$VAR_SHIMMER_HORNET_NETWORK" >> .env
+		echo "IOTA_CORE_NETWORK=$VAR_NOVA_IOTA_CORE_NETWORK" >> .env
 
-		echo "HORNET_HOST=$VAR_HOST" >> .env
-		echo "HORNET_PRUNING_TARGET_SIZE=$VAR_SHIMMER_HORNET_PRUNING_SIZE" >> .env
-		echo "HORNET_POW_ENABLED=$VAR_SHIMMER_HORNET_POW" >> .env
-		echo "HORNET_HTTPS_PORT=$VAR_SHIMMER_HORNET_HTTPS_PORT" >> .env
-		echo "HORNET_GOSSIP_PORT=15600" >> .env
-		echo "HORNET_AUTOPEERING_ENABLED=$VAR_SHIMMER_HORNET_AUTOPEERING" >> .env
+		echo "IOTA_CORE_HOST=$VAR_HOST" >> .env
+		echo "IOTA_CORE_PRUNING_TARGET_SIZE=$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" >> .env
+#		echo "IOTA_CORE_POW_ENABLED=$VAR_NOVA_IOTA_CORE_POW" >> .env
+		echo "IOTA_CORE_HTTPS_PORT=$VAR_NOVA_IOTA_CORE_HTTPS_PORT" >> .env
+		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
 
-		if [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = 'true' ]; then
-			echo "HORNET_AUTOPEERING_PORT=14626" >> .env
+		if [ -n "$VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS" ]; then
+			echo "IOTA_CORE_STATIC_NEIGHBORS=$VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS" >> .env
 		fi
 
-		if [ -n "$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" ]; then
-			echo "HORNET_STATIC_NEIGHBORS=$VAR_SHIMMER_HORNET_STATIC_NEIGHBORS" >> .env
-		fi
-
-		echo "RESTAPI_SALT=$VAR_SALT" >> .env
+		echo "IOTA_CORE_JWT_SALT=$VAR_JWT_SALT" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
-			echo "HORNET_HTTP_PORT=80" >> .env
+			echo "IOTA_CORE_HTTP_PORT=80" >> .env
 			clear
 			echo ""
 			echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -4008,37 +3995,30 @@ ShimmerHornet() {
 			echo "$gn""Set mail for certificate renewal: $VAR_ACME_EMAIL""$xx"
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "HORNET_HTTP_PORT=8081" >> .env
+			echo "IOTA_CORE_HTTP_PORT=8081" >> .env
 			echo "SSL_CONFIG=certs" >> .env
-			echo "HORNET_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
-			echo "HORNET_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
+			echo "IOTA_CORE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
+			echo "IOTA_CORE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 
-		echo "INX_INDEXER_VERSION=$VAR_SHIMMER_INX_INDEXER_VERSION" >> .env
-		echo "INX_MQTT_VERSION=$VAR_SHIMMER_INX_MQTT_VERSION" >> .env
-		echo "INX_PARTICIPATION_VERSION=$VAR_SHIMMER_INX_PARTICIPATION_VERSION" >> .env
-		echo "INX_SPAMMER_VERSION=$VAR_SHIMMER_INX_SPAMMER_VERSION" >> .env
-		echo "INX_POI_VERSION=$VAR_SHIMMER_INX_POI_VERSION" >> .env
-		echo "INX_DASHBOARD_VERSION=$VAR_SHIMMER_INX_DASHBOARD_VERSION" >> .env
+		echo "INX_INDEXER_VERSION=$VAR_NOVA_INX_INDEXER_VERSION" >> .env
+		echo "INX_MQTT_VERSION=$VAR_NOVA_INX_MQTT_VERSION" >> .env
+		echo "INX_BLOCKISSUER_VERSION=$VAR_NOVA_INX_BLOCKISSUER_VERSION" >> .env
+		echo "INX_VALIDATOR_VERSION=$VAR_NOVA_INX_VALIDATOR_VERSION" >> .env
+		echo "INX_DASHBOARD_VERSION=$VAR_NOVA_INX_DASHBOARD_VERSION" >> .env
 
 		echo "done..."
 
 	else
-		if [ -f .env ]; then sed -i "s/HORNET_VERSION=.*/HORNET_VERSION=$VAR_SHIMMER_HORNET_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_SHIMMER_INX_INDEXER_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_MQTT_VERSION=.*/INX_MQTT_VERSION=$VAR_SHIMMER_INX_MQTT_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_PARTICIPATION_VERSION=.*/INX_PARTICIPATION_VERSION=$VAR_SHIMMER_INX_PARTICIPATION_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_SPAMMER_VERSION=.*/INX_SPAMMER_VERSION=$VAR_SHIMMER_INX_SPAMMER_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_POI_VERSION=.*/INX_POI_VERSION=$VAR_SHIMMER_INX_POI_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_SHIMMER_INX_DASHBOARD_VERSION/g" .env; fi
-
-		VAR_SHIMMER_HORNET_AUTOPEERING=$(cat .env 2>/dev/null | grep HORNET_AUTOPEERING_ENABLED | cut -d '=' -f 2)
-		if [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
-		    echo "HORNET_AUTOPEERING_ENABLED=true" >> .env
-		fi
+		if [ -f .env ]; then sed -i "s/IOTA_CORE_VERSION=.*/IOTA_CORE_VERSION=$VAR_NOVA_IOTA_CORE_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_INDEXER_VERSION=.*/INX_INDEXER_VERSION=$VAR_NOVA_INX_INDEXER_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_MQTT_VERSION=.*/INX_MQTT_VERSION=$VAR_NOVA_INX_MQTT_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_BLOCKISSUER_VERSION=.*/INX_BLOCKISSUER_VERSION=$VAR_NOVA_INX_BLOCKISSUER_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_VALIDATOR_VERSION=.*/INX_VALIDATOR_VERSION=$VAR_NOVA_INX_VALIDATOR_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_NOVA_INX_DASHBOARD_VERSION/g" .env; fi
   
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
-		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
+		fgrep -q "JWT_SALT" .env || echo "JWT_SALT=$VAR_JWT_SALT" >> .env
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -4050,7 +4030,7 @@ ShimmerHornet() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker network create shimmer >/dev/null 2>&1
+	docker network create nova >/dev/null 2>&1
 	docker compose pull 2>&1 | grep "Pulled" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -4104,12 +4084,8 @@ ShimmerHornet() {
 
 		if [ "$VAR_CERT" = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
 
-		echo ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_HORNET_HTTPS_PORT/tcp"
+		echo ufw allow "$VAR_NOVA_IOTA_CORE_HTTPS_PORT/tcp" && ufw allow "$VAR_NOVA_IOTA_CORE_HTTPS_PORT/tcp"
 		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
-
-		if [ "$VAR_SHIMMER_HORNET_AUTOPEERING" = "true" ]; then
-		  echo ufw allow '14626/udp' && ufw allow '14626/udp'
-		fi
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4123,17 +4099,10 @@ ShimmerHornet() {
 		echo 'Please wait, downloading snapshots may take some time...'
 		echo "$xx"
 
-		echo "Download latest full snapshot... $VAR_SHIMMER_HORNET_NETWORK"
-		VAR_SNAPSHOT=$(cat /var/lib/"$VAR_DIR"/data/config/config-"$VAR_SHIMMER_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].full')
-		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/full_snapshot.bin
-		chmod 744 /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/full_snapshot.bin
-
-		echo ""
-
-		echo "Download latest delta snapshot... $VAR_SHIMMER_HORNET_NETWORK"
-		VAR_SNAPSHOT=$(cat /var/lib/"$VAR_DIR"/data/config/config-"$VAR_SHIMMER_HORNET_NETWORK".json 2>/dev/null | jq -r '.snapshots.downloadURLs[].delta')
-		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
-		chmod 744 /var/lib/"$VAR_DIR"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/delta_snapshot.bin
+		echo "Download latest full snapshot... $VAR_NOVA_IOTA_CORE_NETWORK"
+		VAR_SNAPSHOT="https://files.nova-testnet.iotaledger.net/snapshots/latest-snapshot.bin"
+		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
+		chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4142,7 +4111,7 @@ ShimmerHornet() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                                Start Hornet                                 ║"
+	echo "║                               Start IOTA 2.0                                ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 
 	if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
@@ -4181,15 +4150,13 @@ ShimmerHornet() {
 		echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
-		echo "https port:  $VAR_SHIMMER_HORNET_HTTPS_PORT"
+		echo "https port:  $VAR_NOVA_IOTA_CORE_HTTPS_PORT"
 		echo "-------------------------------------------------------------------------------"
-		echo "autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING"
+		echo "node dashboard: https://$VAR_HOST/dashboard"
+		echo "node username:  $VAR_USERNAME"
+		echo "node password:  $VAR_PASSWORD"
 		echo "-------------------------------------------------------------------------------"
-		echo "hornet dashboard: https://$VAR_HOST/dashboard"
-		echo "hornet username:  $VAR_USERNAME"
-		echo "hornet password:  $VAR_PASSWORD"
-		echo "-------------------------------------------------------------------------------"
-		echo "api: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/api/core/v2/info"
+		echo "api: https://$VAR_HOST:$VAR_NOVA_IOTA_CORE_HTTPS_PORT/api/core/v3/info"
 		echo "-------------------------------------------------------------------------------"
 		echo "grafana dashboard: https://$VAR_HOST/grafana"
 		echo "grafana username:  admin"
@@ -4206,16 +4173,16 @@ ShimmerHornet() {
 	if ! [ "$opt_mode" ]; then Dashboard; fi
 }
 
-ShimmerWasp() {
+NovaWasp() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║          DLT.GREEN AUTOMATIC SHIMMER-WASP INSTALLATION WITH DOCKER          ║"
+	echo "║          DLT.GREEN AUTOMATIC Nova-WASP INSTALLATION WITH DOCKER          ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	echo "$ca""Wasp is an INX-Plugin and can only be installed on the same Server as Shimmer!""$xx";
+	echo "$ca""Wasp is an INX-Plugin and can only be installed on the same Server as Nova!""$xx";
 	CheckIota
-	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
+	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Nova and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
 	echo "$ca""Starting Installation or Update...""$xx";
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -4242,9 +4209,9 @@ ShimmerWasp() {
 
 	echo ""
 	echo "Download Package... install.tar.gz"
-	wget -cO - "$ShimmerWaspPackage" -q > install.tar.gz
+	wget -cO - "$NovaWaspPackage" -q > install.tar.gz
 
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerWaspHash" ]; then
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$NovaWaspHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
@@ -4266,7 +4233,7 @@ ShimmerWasp() {
 
 	CheckConfiguration
 
-	VAR_WASP_LEDGER_NETWORK='shimmer'
+	VAR_WASP_LEDGER_NETWORK='nova'
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
@@ -4291,40 +4258,40 @@ ShimmerWasp() {
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		VAR_SHIMMER_WASP_HTTPS_PORT=$(cat .env 2>/dev/null | grep WASP_HTTPS_PORT= | cut -d '=' -f 2)
+		VAR_NOVA_WASP_HTTPS_PORT=$(cat .env 2>/dev/null | grep WASP_HTTPS_PORT= | cut -d '=' -f 2)
 		VAR_DEFAULT='447';
-		if [ -z "$VAR_SHIMMER_WASP_HTTPS_PORT" ]; then
-		  echo "Set dashboard port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set dashboard port (config: $ca""$VAR_SHIMMER_WASP_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_WASP_HTTPS_PORT" ]; then
+		  echo "Set dashboard port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set dashboard port (config: $ca""$VAR_NOVA_WASP_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_WASP_HTTPS_PORT" ]; then VAR_SHIMMER_WASP_HTTPS_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set dashboard port: $VAR_SHIMMER_WASP_HTTPS_PORT""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_WASP_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_NOVA_WASP_HTTPS_PORT" ]; then VAR_NOVA_WASP_HTTPS_PORT=$VAR_DEFAULT; fi
+		echo "$gn""Set dashboard port: $VAR_NOVA_WASP_HTTPS_PORT""$xx"
 
 		echo ''
-		VAR_SHIMMER_WASP_API_PORT=$(cat .env 2>/dev/null | grep WASP_API_PORT= | cut -d '=' -f 2)
+		VAR_NOVA_WASP_API_PORT=$(cat .env 2>/dev/null | grep WASP_API_PORT= | cut -d '=' -f 2)
 		VAR_DEFAULT='448';
-		if [ -z "$VAR_SHIMMER_WASP_API_PORT" ]; then
-		  echo "Set API port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set API port (config: $ca""$VAR_SHIMMER_WASP_API_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_WASP_API_PORT" ]; then
+		  echo "Set API port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set API port (config: $ca""$VAR_NOVA_WASP_API_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_API_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_WASP_API_PORT" ]; then VAR_SHIMMER_WASP_API_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set API port: $VAR_SHIMMER_WASP_API_PORT""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_WASP_API_PORT=$VAR_TMP; elif [ -z "$VAR_NOVA_WASP_API_PORT" ]; then VAR_NOVA_WASP_API_PORT=$VAR_DEFAULT; fi
+		echo "$gn""Set API port: $VAR_NOVA_WASP_API_PORT""$xx"
 
 		echo ''
-		VAR_SHIMMER_WASP_PEERING_PORT=$(cat .env 2>/dev/null | grep WASP_PEERING_PORT= | cut -d '=' -f 2)
+		VAR_NOVA_WASP_PEERING_PORT=$(cat .env 2>/dev/null | grep WASP_PEERING_PORT= | cut -d '=' -f 2)
 		VAR_DEFAULT='4000';
-		if [ -z "$VAR_SHIMMER_WASP_PEERING_PORT" ]; then
-		  echo "Set peering port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set peering port (config: $ca""$VAR_SHIMMER_WASP_PEERING_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_WASP_PEERING_PORT" ]; then
+		  echo "Set peering port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set peering port (config: $ca""$VAR_NOVA_WASP_PEERING_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_PEERING_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_WASP_PEERING_PORT" ]; then VAR_SHIMMER_WASP_PEERING_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set peering port: $VAR_SHIMMER_WASP_PEERING_PORT""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_WASP_PEERING_PORT=$VAR_TMP; elif [ -z "$VAR_NOVA_WASP_PEERING_PORT" ]; then VAR_NOVA_WASP_PEERING_PORT=$VAR_DEFAULT; fi
+		echo "$gn""Set peering port: $VAR_NOVA_WASP_PEERING_PORT""$xx"
 
 		echo ''
-		VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+		VAR_NOVA_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
 		VAR_DEFAULT='100000';
-		if [ -z "$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then
-		  echo "Set pruning min states to keep (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set pruning min states to keep (config: $ca""$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then
+		  echo "Set pruning min states to keep (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set pruning min states to keep (config: $ca""$VAR_NOVA_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_TMP; elif [ -z "$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_DEFAULT; fi
-		echo "$gn""Set pruning min states to keep: $VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_TMP; elif [ -z "$VAR_NOVA_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then VAR_NOVA_WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_DEFAULT; fi
+		echo "$gn""Set pruning min states to keep: $VAR_NOVA_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx"
 
 		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
@@ -4363,7 +4330,7 @@ ShimmerWasp() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ "$VAR_SHIMMER_WASP_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
+		if [ "$VAR_NOVA_WASP_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 
@@ -4372,15 +4339,15 @@ ShimmerWasp() {
 		  WASP_TRUSTED_ACCESSNODE=$(cat .env | grep WASP_TRUSTED_ACCESSNODE)
 		rm .env; fi
 
-		echo "WASP_VERSION=$VAR_SHIMMER_WASP_VERSION" >> .env
-		echo "WASP_DASHBOARD_VERSION=$VAR_SHIMMER_WASP_DASHBOARD_VERSION" >> .env
-		echo "WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION" >> .env
+		echo "WASP_VERSION=$VAR_NOVA_WASP_VERSION" >> .env
+		echo "WASP_DASHBOARD_VERSION=$VAR_NOVA_WASP_DASHBOARD_VERSION" >> .env
+		echo "WASP_CLI_VERSION=$VAR_NOVA_WASP_CLI_VERSION" >> .env
 		echo "WASP_HOST=$VAR_HOST" >> .env
-		echo "WASP_HTTPS_PORT=$VAR_SHIMMER_WASP_HTTPS_PORT" >> .env
-		echo "WASP_API_PORT=$VAR_SHIMMER_WASP_API_PORT" >> .env
-		echo "WASP_PEERING_PORT=$VAR_SHIMMER_WASP_PEERING_PORT" >> .env
+		echo "WASP_HTTPS_PORT=$VAR_NOVA_WASP_HTTPS_PORT" >> .env
+		echo "WASP_API_PORT=$VAR_NOVA_WASP_API_PORT" >> .env
+		echo "WASP_PEERING_PORT=$VAR_NOVA_WASP_PEERING_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
-		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
+		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_NOVA_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
 		echo "WASP_LOG_LEVEL=debug" >> .env
 		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
 		
@@ -4417,27 +4384,27 @@ ShimmerWasp() {
 		echo "done..."
 
 	else
-		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_NOVA_WASP_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		VAR_DASHBOARD_VERSION=$(cat .env 2>/dev/null | grep WASP_DASHBOARD_VERSION | cut -d '=' -f 2)
-		VAR_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT | cut -d '=' -f 2)
+		VAR_JWT_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT | cut -d '=' -f 2)
 		VAR_CLI=$(cat .env 2>/dev/null | grep WASP_CLI_VERSION | cut -d '=' -f 2)
 
 		if [ -z "$VAR_DASHBOARD_VERSION" ]; then
-		    echo "WASP_DASHBOARD_VERSION=$VAR_SHIMMER_WASP_DASHBOARD_VERSION" >> .env
+		    echo "WASP_DASHBOARD_VERSION=$VAR_NOVA_WASP_DASHBOARD_VERSION" >> .env
 		fi
 
 		if [ -z "$VAR_CLI" ]; then
-		    echo "WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION" >> .env
+		    echo "WASP_CLI_VERSION=$VAR_NOVA_WASP_CLI_VERSION" >> .env
 		fi
 
-		if [ -f .env ]; then sed -i "s/WASP_CLI_VERSION=.*/WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION/g" .env; fi
-		if [ -f .env ]; then sed -i "s/WASP_DASHBOARD_VERSION=.*/WASP_DASHBOARD_VERSION=$VAR_SHIMMER_WASP_DASHBOARD_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/WASP_CLI_VERSION=.*/WASP_CLI_VERSION=$VAR_NOVA_WASP_CLI_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/WASP_DASHBOARD_VERSION=.*/WASP_DASHBOARD_VERSION=$VAR_NOVA_WASP_DASHBOARD_VERSION/g" .env; fi
 
-		if [ -z "$VAR_SALT" ]; then
+		if [ -z "$VAR_JWT_SALT" ]; then
 		    VAR_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
 
-			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
+			if [ -d /var/lib/nova-iotacore ]; then cd /var/lib/nova-iotacore || VAR_PASSWORD=''; fi
 			if [ -n "$VAR_PASSWORD" ]; then
 			    credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 
@@ -4464,7 +4431,7 @@ ShimmerWasp() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker network create shimmer >/dev/null 2>&1
+	docker network create nova >/dev/null 2>&1
 	docker compose pull 2>&1 | grep "Pulled" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -4543,9 +4510,9 @@ ShimmerWasp() {
 
 		if [ "$VAR_CERT" = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
 
-		echo ufw allow "$VAR_SHIMMER_WASP_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_HTTPS_PORT/tcp"
-		echo ufw allow "$VAR_SHIMMER_WASP_API_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_API_PORT/tcp"
-		echo ufw allow "$VAR_SHIMMER_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_SHIMMER_WASP_PEERING_PORT/tcp"
+		echo ufw allow "$VAR_NOVA_WASP_HTTPS_PORT/tcp" && ufw allow "$VAR_NOVA_WASP_HTTPS_PORT/tcp"
+		echo ufw allow "$VAR_NOVA_WASP_API_PORT/tcp" && ufw allow "$VAR_NOVA_WASP_API_PORT/tcp"
+		echo ufw allow "$VAR_NOVA_WASP_PEERING_PORT/tcp" && ufw allow "$VAR_NOVA_WASP_PEERING_PORT/tcp"
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	fi
 
@@ -4577,16 +4544,16 @@ ShimmerWasp() {
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
-		echo "https port:  $VAR_SHIMMER_WASP_HTTPS_PORT"
+		echo "https port:  $VAR_NOVA_WASP_HTTPS_PORT"
 		echo "-------------------------------------------------------------------------------"
 		echo "dashboard username: $VAR_USERNAME"
 		echo "dashboard password: $VAR_PASSWORD"
 		echo "-------------------------------------------------------------------------------"
-		echo "api port: $VAR_SHIMMER_WASP_API_PORT"
+		echo "api port: $VAR_NOVA_WASP_API_PORT"
 		echo "-------------------------------------------------------------------------------"
-		echo "peering port: $VAR_SHIMMER_WASP_PEERING_PORT"
+		echo "peering port: $VAR_NOVA_WASP_PEERING_PORT"
 		echo "-------------------------------------------------------------------------------"
-		echo "ledger-connection/txstream: local to shimmer-hornet"
+		echo "ledger-connection/txstream: local to Nova-IotaCore"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo ""
 	else
@@ -4599,16 +4566,16 @@ ShimmerWasp() {
 	if ! [ "$opt_mode" ]; then Dashboard; fi
 }
 
-ShimmerChronicle() {
+NovaChronicle() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║     DLT.GREEN AUTOMATIC SHIMMER-INX-CHRONICLE INSTALLATION WITH DOCKER      ║"
+	echo "║     DLT.GREEN AUTOMATIC Nova-INX-CHRONICLE INSTALLATION WITH DOCKER      ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
-	echo "$ca""Chronicle is a INX-Plugin and can only installed on the same Server as Shimmer!""$xx";
+	echo "$ca""Chronicle is a INX-Plugin and can only installed on the same Server as Nova!""$xx";
 	CheckIota
-	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Shimmer and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
+	if [ "$VAR_NETWORK" = 1 ]; then echo "$rd""It's not supported (Security!) to install Nodes from Network"; echo "Nova and IOTA on the same Server, deinstall IOTA Nodes first!""$xx"; fi
 
 	echo "$ca""Starting Installation or Update...""$xx";
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -4634,9 +4601,9 @@ ShimmerChronicle() {
 
 	echo ""
 	echo "Download Package... install.tar.gz"
-	wget -cO - "$ShimmerChroniclePackage" -q > install.tar.gz
+	wget -cO - "$NovaChroniclePackage" -q > install.tar.gz
 
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$ShimmerChronicleHash" ]; then
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$NovaChronicleHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
@@ -4658,7 +4625,7 @@ ShimmerChronicle() {
 
 	CheckConfiguration
 
-	VAR_SHIMMER_INX_CHRONICLE_LEDGER_NETWORK='shimmer'
+	VAR_NOVA_INX_CHRONICLE_LEDGER_NETWORK='nova'
 
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
@@ -4683,85 +4650,85 @@ ShimmerChronicle() {
 		CheckDomain "$VAR_HOST"
 
 		echo ''
-		VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT=$(cat .env 2>/dev/null | grep INX_CHRONICLE_HTTPS_PORT= | cut -d '=' -f 2)
+		VAR_NOVA_INX_CHRONICLE_HTTPS_PORT=$(cat .env 2>/dev/null | grep INX_CHRONICLE_HTTPS_PORT= | cut -d '=' -f 2)
 		VAR_DEFAULT='449';
-		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT" ]; then
-		  echo "Set https port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set https port (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_INX_CHRONICLE_HTTPS_PORT" ]; then
+		  echo "Set https port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set https port (config: $ca""$VAR_NOVA_INX_CHRONICLE_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT" ]; then VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT=$VAR_DEFAULT; fi
-		echo "$gn""Set https port: $VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_INX_CHRONICLE_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_NOVA_INX_CHRONICLE_HTTPS_PORT" ]; then VAR_NOVA_INX_CHRONICLE_HTTPS_PORT=$VAR_DEFAULT; fi
+		echo "$gn""Set https port: $VAR_NOVA_INX_CHRONICLE_HTTPS_PORT""$xx"
 
 		echo ''
-		VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME=$(cat .env 2>/dev/null | grep INX_CHRONICLE_MONGODB_USERNAME= | cut -d '=' -f 2)
+		VAR_NOVA_INX_CHRONICLE_MONGODB_USERNAME=$(cat .env 2>/dev/null | grep INX_CHRONICLE_MONGODB_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME" ]; then
-		echo "Set MongoDB username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set MongoDB username (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_INX_CHRONICLE_MONGODB_USERNAME" ]; then
+		echo "Set MongoDB username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set MongoDB username (config: $ca""$VAR_NOVA_INX_CHRONICLE_MONGODB_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME" ]; then VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME=$VAR_DEFAULT; fi
-		echo "$gn""Set MongoDB username: $VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_INX_CHRONICLE_MONGODB_USERNAME=$VAR_TMP; elif [ -z "$VAR_NOVA_INX_CHRONICLE_MONGODB_USERNAME" ]; then VAR_NOVA_INX_CHRONICLE_MONGODB_USERNAME=$VAR_DEFAULT; fi
+		echo "$gn""Set MongoDB username: $VAR_NOVA_INX_CHRONICLE_MONGODB_USERNAME""$xx"
 
 		echo ''
-		VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_MONGODB_PASSWORD= | cut -d '=' -f 2)
+		VAR_NOVA_INX_CHRONICLE_MONGODB_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_MONGODB_PASSWORD= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD" ]; then
-		echo "Set MongoDB password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set MongoDB password (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_INX_CHRONICLE_MONGODB_PASSWORD" ]; then
+		echo "Set MongoDB password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set MongoDB password (config: $ca""$VAR_NOVA_INX_CHRONICLE_MONGODB_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD" ]; then VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD=$VAR_DEFAULT; fi
-		echo "$gn""Set MongoDB password: $VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_INX_CHRONICLE_MONGODB_PASSWORD=$VAR_TMP; elif [ -z "$VAR_NOVA_INX_CHRONICLE_MONGODB_PASSWORD" ]; then VAR_NOVA_INX_CHRONICLE_MONGODB_PASSWORD=$VAR_DEFAULT; fi
+		echo "$gn""Set MongoDB password: $VAR_NOVA_INX_CHRONICLE_MONGODB_PASSWORD""$xx"
 
 		echo ''
-		VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_USERNAME= | cut -d '=' -f 2)
+		VAR_NOVA_INX_CHRONICLE_INFLUXDB_USERNAME=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME" ]; then
-		echo "Set InfluxDB username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set InfluxDB username (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_INX_CHRONICLE_INFLUXDB_USERNAME" ]; then
+		echo "Set InfluxDB username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set InfluxDB username (config: $ca""$VAR_NOVA_INX_CHRONICLE_INFLUXDB_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_DEFAULT; fi
-		echo "$gn""Set InfluxDB username: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_TMP; elif [ -z "$VAR_NOVA_INX_CHRONICLE_INFLUXDB_USERNAME" ]; then VAR_NOVA_INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_DEFAULT; fi
+		echo "$gn""Set InfluxDB username: $VAR_NOVA_INX_CHRONICLE_INFLUXDB_USERNAME""$xx"
 
 		echo ''
-		VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_PASSWORD= | cut -d '=' -f 2)
+		VAR_NOVA_INX_CHRONICLE_INFLUXDB_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_PASSWORD= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD" ]; then
-		echo "Set InfluxDB password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set InfluxDB password (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_INX_CHRONICLE_INFLUXDB_PASSWORD" ]; then
+		echo "Set InfluxDB password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set InfluxDB password (config: $ca""$VAR_NOVA_INX_CHRONICLE_INFLUXDB_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_DEFAULT; fi
-		echo "$gn""Set InfluxDB password: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_TMP; elif [ -z "$VAR_NOVA_INX_CHRONICLE_INFLUXDB_PASSWORD" ]; then VAR_NOVA_INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_DEFAULT; fi
+		echo "$gn""Set InfluxDB password: $VAR_NOVA_INX_CHRONICLE_INFLUXDB_PASSWORD""$xx"
 
 		echo ''
-		VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_TOKEN= | cut -d '=' -f 2)
+		VAR_NOVA_INX_CHRONICLE_INFLUXDB_TOKEN=$(cat .env 2>/dev/null | grep INX_CHRONICLE_INFLUXDB_TOKEN= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN" ]; then
-		echo "Set InfluxDB token (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set InfluxDB token (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_INX_CHRONICLE_INFLUXDB_TOKEN" ]; then
+		echo "Set InfluxDB token (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set InfluxDB token (config: $ca""$VAR_NOVA_INX_CHRONICLE_INFLUXDB_TOKEN""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN" ]; then VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_DEFAULT; fi
-		echo "$gn""Set InfluxDB password: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_TMP; elif [ -z "$VAR_NOVA_INX_CHRONICLE_INFLUXDB_TOKEN" ]; then VAR_NOVA_INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_DEFAULT; fi
+		echo "$gn""Set InfluxDB password: $VAR_NOVA_INX_CHRONICLE_INFLUXDB_TOKEN""$xx"
 
 		echo ''
-		VAR_SHIMMER_INX_CHRONICLE_JWT_SALT=$(cat .env 2>/dev/null | grep INX_CHRONICLE_JWT_SALT= | cut -d '=' -f 2)
+		VAR_NOVA_INX_CHRONICLE_JWT_SALT=$(cat .env 2>/dev/null | grep INX_CHRONICLE_JWT_SALT= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_JWT_SALT" ]; then
-		echo "Set JWT salt (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set JWT salt (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_JWT_SALT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_INX_CHRONICLE_JWT_SALT" ]; then
+		echo "Set JWT salt (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set JWT salt (config: $ca""$VAR_NOVA_INX_CHRONICLE_JWT_SALT""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_JWT_SALT=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_JWT_SALT" ]; then VAR_SHIMMER_INX_CHRONICLE_JWT_SALT=$VAR_DEFAULT; fi
-		echo "$gn""Set JWT salt: $VAR_SHIMMER_INX_CHRONICLE_JWT_SALT""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_INX_CHRONICLE_JWT_SALT=$VAR_TMP; elif [ -z "$VAR_NOVA_INX_CHRONICLE_JWT_SALT" ]; then VAR_NOVA_INX_CHRONICLE_JWT_SALT=$VAR_DEFAULT; fi
+		echo "$gn""Set JWT salt: $VAR_NOVA_INX_CHRONICLE_JWT_SALT""$xx"
 
 		echo ''
-		VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_JWT_PASSWORD= | cut -d '=' -f 2)
+		VAR_NOVA_INX_CHRONICLE_JWT_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_JWT_PASSWORD= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD" ]; then
-		echo "Set JWT password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set JWT password (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_INX_CHRONICLE_JWT_PASSWORD" ]; then
+		echo "Set JWT password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set JWT password (config: $ca""$VAR_NOVA_INX_CHRONICLE_JWT_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD" ]; then VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD=$VAR_DEFAULT; fi
-		echo "$gn""Set JWT password: $VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_INX_CHRONICLE_JWT_PASSWORD=$VAR_TMP; elif [ -z "$VAR_NOVA_INX_CHRONICLE_JWT_PASSWORD" ]; then VAR_NOVA_INX_CHRONICLE_JWT_PASSWORD=$VAR_DEFAULT; fi
+		echo "$gn""Set JWT password: $VAR_NOVA_INX_CHRONICLE_JWT_PASSWORD""$xx"
 
 		echo ''
-		VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD= | cut -d '=' -f 2)
+		VAR_NOVA_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$(cat .env 2>/dev/null | grep INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1 | tr '[:upper:]' '[:lower:]');
-		if [ -z "$VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then
-		echo "Set grafana password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set grafana password (config: $ca""$VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_NOVA_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then
+		echo "Set grafana password (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set grafana password (config: $ca""$VAR_NOVA_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_TMP; elif [ -z "$VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_DEFAULT; fi
-		echo "$gn""Set grafana password: $VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_TMP; elif [ -z "$VAR_NOVA_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD" ]; then VAR_NOVA_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_DEFAULT; fi
+		echo "$gn""Set grafana password: $VAR_NOVA_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD""$xx"
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4771,17 +4738,17 @@ ShimmerChronicle() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
+		if [ "$VAR_NOVA_INX_CHRONICLE_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
 		echo "COMPOSE_PROFILES=metrics,debug" >> .env
-		echo "INX_CHRONICLE_VERSION=$VAR_SHIMMER_INX_CHRONICLE_VERSION" >> .env
+		echo "INX_CHRONICLE_VERSION=$VAR_NOVA_INX_CHRONICLE_VERSION" >> .env
 		echo "INX_CHRONICLE_HOST=$VAR_HOST" >> .env
-		echo "INX_CHRONICLE_HTTPS_PORT=$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT" >> .env
-		echo "INX_CHRONICLE_LEDGER_NETWORK=$VAR_SHIMMER_INX_CHRONICLE_LEDGER_NETWORK" >> .env
-		echo "INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD" >> .env
+		echo "INX_CHRONICLE_HTTPS_PORT=$VAR_NOVA_INX_CHRONICLE_HTTPS_PORT" >> .env
+		echo "INX_CHRONICLE_LEDGER_NETWORK=$VAR_NOVA_INX_CHRONICLE_LEDGER_NETWORK" >> .env
+		echo "INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD=$VAR_NOVA_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
@@ -4816,7 +4783,7 @@ ShimmerChronicle() {
 		echo "done..."
 
 	else
-		if [ -f .env ]; then sed -i "s/INX_CHRONICLE_VERSION=.*/INX_CHRONICLE_VERSION=$VAR_SHIMMER_INX_CHRONICLE_VERSION/g" .env; fi
+		if [ -f .env ]; then sed -i "s/INX_CHRONICLE_VERSION=.*/INX_CHRONICLE_VERSION=$VAR_NOVA_INX_CHRONICLE_VERSION/g" .env; fi
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 	fi
 
@@ -4829,7 +4796,7 @@ ShimmerChronicle() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	docker network create shimmer >/dev/null 2>&1
+	docker network create nova >/dev/null 2>&1
 	docker compose pull 2>&1 | grep "Pulled" | sort
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -4842,13 +4809,13 @@ ShimmerChronicle() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		echo "INX_CHRONICLE_MONGODB_USERNAME=$VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME" >> .env
-		echo "INX_CHRONICLE_MONGODB_PASSWORD=$VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD" >> .env
-		echo "INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME" >> .env
-		echo "INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD" >> .env
-		echo "INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN" >> .env
-		echo "INX_CHRONICLE_JWT_SALT=$VAR_SHIMMER_INX_CHRONICLE_JWT_SALT" >> .env
-		echo "INX_CHRONICLE_JWT_PASSWORD=$VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD" >> .env
+		echo "INX_CHRONICLE_MONGODB_USERNAME=$VAR_NOVA_INX_CHRONICLE_MONGODB_USERNAME" >> .env
+		echo "INX_CHRONICLE_MONGODB_PASSWORD=$VAR_NOVA_INX_CHRONICLE_MONGODB_PASSWORD" >> .env
+		echo "INX_CHRONICLE_INFLUXDB_USERNAME=$VAR_NOVA_INX_CHRONICLE_INFLUXDB_USERNAME" >> .env
+		echo "INX_CHRONICLE_INFLUXDB_PASSWORD=$VAR_NOVA_INX_CHRONICLE_INFLUXDB_PASSWORD" >> .env
+		echo "INX_CHRONICLE_INFLUXDB_TOKEN=$VAR_NOVA_INX_CHRONICLE_INFLUXDB_TOKEN" >> .env
+		echo "INX_CHRONICLE_JWT_SALT=$VAR_NOVA_INX_CHRONICLE_JWT_SALT" >> .env
+		echo "INX_CHRONICLE_JWT_PASSWORD=$VAR_NOVA_INX_CHRONICLE_JWT_PASSWORD" >> .env
 
 		echo "done..."
 
@@ -4877,7 +4844,7 @@ ShimmerChronicle() {
 
 		if [ "$VAR_CERT" = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
 
-		echo ufw allow "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT/tcp" && ufw allow "$VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT/tcp"
+		echo ufw allow "$VAR_NOVA_INX_CHRONICLE_HTTPS_PORT/tcp" && ufw allow "$VAR_NOVA_INX_CHRONICLE_HTTPS_PORT/tcp"
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 	fi
 
@@ -4907,21 +4874,21 @@ ShimmerChronicle() {
 	    echo ""
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
-		echo "https port:  $VAR_SHIMMER_INX_CHRONICLE_HTTPS_PORT"
+		echo "https port:  $VAR_NOVA_INX_CHRONICLE_HTTPS_PORT"
 		echo "-------------------------------------------------------------------------------"
-		echo "mongoDB username: $VAR_SHIMMER_INX_CHRONICLE_MONGODB_USERNAME"
-		echo "mongoDB password: $VAR_SHIMMER_INX_CHRONICLE_MONGODB_PASSWORD"
+		echo "mongoDB username: $VAR_NOVA_INX_CHRONICLE_MONGODB_USERNAME"
+		echo "mongoDB password: $VAR_NOVA_INX_CHRONICLE_MONGODB_PASSWORD"
 		echo "-------------------------------------------------------------------------------"
-		echo "influxDB username: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_USERNAME"
-		echo "influxDB password: $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_PASSWORD"
-		echo "influxDB token:    $VAR_SHIMMER_INX_CHRONICLE_INFLUXDB_TOKEN"
+		echo "influxDB username: $VAR_NOVA_INX_CHRONICLE_INFLUXDB_USERNAME"
+		echo "influxDB password: $VAR_NOVA_INX_CHRONICLE_INFLUXDB_PASSWORD"
+		echo "influxDB token:    $VAR_NOVA_INX_CHRONICLE_INFLUXDB_TOKEN"
 		echo "-------------------------------------------------------------------------------"
-		echo "JWT salt:     $VAR_SHIMMER_INX_CHRONICLE_JWT_SALT"
-		echo "JWT password: $VAR_SHIMMER_INX_CHRONICLE_JWT_PASSWORD"
+		echo "JWT salt:     $VAR_NOVA_INX_CHRONICLE_JWT_SALT"
+		echo "JWT password: $VAR_NOVA_INX_CHRONICLE_JWT_PASSWORD"
 		echo "-------------------------------------------------------------------------------"
-		echo "grafana password: $VAR_SHIMMER_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD"
+		echo "grafana password: $VAR_NOVA_INX_CHRONICLE_GRAFANA_ADMIN_PASSWORD"
 		echo "-------------------------------------------------------------------------------"
-		echo "ledger-connection/txstream: local to shimmer-hornet"
+		echo "ledger-connection/txstream: local to Nova-IotaCore"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 	else
 	    echo "------------------------------ UPDATE IS FINISHED -----------------------------"
@@ -4947,26 +4914,16 @@ RenameContainer() {
 	docker container rename iota-hornet_grafana_1 grafana >/dev/null 2>&1
 	docker container rename iota-hornet_prometheus_1 prometheus >/dev/null 2>&1
 
-	docker container rename shimmer-hornet_hornet_1 shimmer-hornet >/dev/null 2>&1
-	docker container rename shimmer-hornet_traefik_1 shimmer-hornet.traefik >/dev/null 2>&1
-	docker container rename shimmer-hornet_inx-participation_1 shimmer-hornet.inx-participation >/dev/null 2>&1
-	docker container rename shimmer-hornet_inx-dashboard_1 shimmer-hornet.inx-dashboard >/dev/null 2>&1
-	docker container rename shimmer-hornet_inx-indexer_1 shimmer-hornet.inx-indexer >/dev/null 2>&1
-	docker container rename shimmer-hornet_inx-poi_1 shimmer-hornet.inx-poi >/dev/null 2>&1
-	docker container rename shimmer-hornet_inx-spammer_1 shimmer-hornet.inx-spammer >/dev/null 2>&1
-	docker container rename shimmer-hornet_inx-mqtt_1 shimmer-hornet.inx-mqtt >/dev/null 2>&1
-	docker container rename shimmer-wasp_traefik_1 shimmer-wasp.traefik >/dev/null 2>&1
-	docker container rename shimmer-wasp_wasp_1 shimmer-wasp >/dev/null 2>&1
-	docker container rename shimmer-hornet_grafana_1 grafana >/dev/null 2>&1
-	docker container rename shimmer-hornet_prometheus_1 prometheus >/dev/null 2>&1
+	docker container rename nova-wasp_traefik_1 nova-wasp.traefik >/dev/null 2>&1
+	docker container rename nova-wasp_wasp_1 nova-wasp >/dev/null 2>&1
 
-	docker container rename shimmer-inx-chronicle shimmer-plugins.inx-chronicle >/dev/null 2>&1
-	docker container rename shimmer-inx-chronicle.traefik shimmer-plugins.inx-chronicle.traefik >/dev/null 2>&1
-	docker container rename shimmer-inx-chronicle.influxdb shimmer-plugins.inx-chronicle.influxdb >/dev/null 2>&1
-	docker container rename shimmer-inx-chronicle.mongo shimmer-plugins.inx-chronicle.mongo >/dev/null 2>&1
-	docker container rename shimmer-inx-chronicle.mongo-express shimmer-plugins.inx-chronicle.mongo-express >/dev/null 2>&1
-	docker container rename shimmer-inx-chronicle.grafana shimmer-plugins.inx-chronicle.grafana >/dev/null 2>&1
-	docker container rename shimmer-inx-chronicle.telegraf shimmer-plugins.inx-chronicle.telegraf >/dev/null 2>&1
+	docker container rename nova-inx-chronicle nova-plugins.inx-chronicle >/dev/null 2>&1
+	docker container rename nova-inx-chronicle.traefik nova-plugins.inx-chronicle.traefik >/dev/null 2>&1
+	docker container rename nova-inx-chronicle.influxdb nova-plugins.inx-chronicle.influxdb >/dev/null 2>&1
+	docker container rename nova-inx-chronicle.mongo nova-plugins.inx-chronicle.mongo >/dev/null 2>&1
+	docker container rename nova-inx-chronicle.mongo-express nova-plugins.inx-chronicle.mongo-express >/dev/null 2>&1
+	docker container rename nova-inx-chronicle.grafana nova-plugins.inx-chronicle.grafana >/dev/null 2>&1
+	docker container rename nova-inx-chronicle.telegraf nova-plugins.inx-chronicle.telegraf >/dev/null 2>&1
 
 }
 
@@ -4987,7 +4944,7 @@ echo "║$lg     | |_| | | |___   | |    _   | |_| | |  _ <  | |___  | |___  | |
 echo "║$lg     |____/  |_____|  |_|   (_)   \____| |_| \_\ |_____| |_____| |_| \_|     $xx║"
 echo "║                                                                             ║"
 echo "║                                                                             ║"
-echo "║                          for IOTA/Shimmer Nodes                             ║"
+echo "║                          for IOTA/Nova Nodes                             ║"
 echo "║                                                                             ║"
 echo "║                                 loading...                                  ║"
 echo "║                                                                             ║"
