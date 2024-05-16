@@ -3898,15 +3898,15 @@ NovaIotacore() {
 
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 
-		VAR_NOVA_IOTA_CORE_JWT_SALT=$(cat .env 2>/dev/null | grep IOTA_CORE_JWT_SALT= | cut -d '=' -f 2)
-		VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER=$(cat .env 2>/dev/null | grep IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER= | cut -d '=' -f 2)
-		VAR_NOVA_IOTA_CORE_STATIC_PEERS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_PEERS= | cut -d '=' -f 2)
+		VAR_NOVA_IOTA_CORE_JWT_SALT=$(cat .env 2>/dev/null | grep IOTA_CORE_JWT_SALT= | cut -d '=' -f 2 | sed 's/"//g')
+		VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER=$(cat .env 2>/dev/null | grep IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER= | cut -d '=' -f 2 | sed 's/"//g')
+		VAR_NOVA_IOTA_CORE_STATIC_PEERS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_PEERS= | cut -d '=' -f 2 | sed 's/"//g')
 
-		VAR_INX_VALIDATOR_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_VALIDATOR_ACCOUNT_ADDR)
-		VAR_INX_VALIDATOR_PRV_KEY=$(cat .env 2>/dev/null | grep INX_VALIDATOR_PRV_KEY)
+		VAR_INX_VALIDATOR_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_VALIDATOR_ACCOUNT_ADDR | sed 's/"//g')
+		VAR_INX_VALIDATOR_PRV_KEY=$(cat .env 2>/dev/null | grep INX_VALIDATOR_PRV_KEY | sed 's/"//g')
 
-		VAR_INX_BLOCKISSUER_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_ACCOUNT_ADDR)
-		VAR_INX_BLOCKISSUER_PRV_KEY=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_PRV_KEY)
+		VAR_INX_BLOCKISSUER_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_ACCOUNT_ADDR | sed 's/"//g')
+		VAR_INX_BLOCKISSUER_PRV_KEY=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_PRV_KEY | sed 's/"//g')
 
 		if [ -f .env ]; then rm .env; fi
 
