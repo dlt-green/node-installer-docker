@@ -3821,8 +3821,8 @@ NovaIotacore() {
 		if [ -n "$VAR_TMP" ]; then VAR_NOVA_IOTA_CORE_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_NOVA_IOTA_CORE_HTTPS_PORT" ]; then VAR_NOVA_IOTA_CORE_HTTPS_PORT=$VAR_DEFAULT; fi
 		echo "$gn""Set dashboard port: $VAR_NOVA_IOTA_CORE_HTTPS_PORT""$xx"
 
-		VAR_NOVA_IOTA_CORE_NODE_ALIAS=$(cat .env 2>/dev/null | grep IOTA_CORE_NODE_ALIAS= | cut -d '=' -f 2)
-		if [ -z "$VAR_NOVA_IOTA_CORE_NODE_ALIAS" ]; then VAR_NOVA_IOTA_CORE_NODE_ALIAS='DLT.GREEN IOTA-CORE NODE'; fi
+		VAR_NOVA_IOTA_CORE_NODE_ALIAS=$(cat .env 2>/dev/null | grep IOTA_CORE_NODE_ALIAS= | cut -d '=' -f 2 | sed 's/ /-/g')
+		if [ -z "$VAR_NOVA_IOTA_CORE_NODE_ALIAS" ]; then VAR_NOVA_IOTA_CORE_NODE_ALIAS='DLT.GREEN:green_heart:IOTA-CORE-NODE'; fi
 
 		echo ''
 		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep IOTA_CORE_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
@@ -3858,7 +3858,7 @@ NovaIotacore() {
 		echo "$gn""Set pruning size: $VAR_NOVA_IOTA_CORE_PRUNING_SIZE""$xx"
 
 		echo ''
-		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
+		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2 | sed 's/ /-/g')
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1);
 		if [ -z "$VAR_USERNAME" ]; then
 		echo "Set dashboard username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
@@ -3898,34 +3898,34 @@ NovaIotacore() {
 
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 
-		VAR_NOVA_IOTA_CORE_JWT_SALT=$(cat .env 2>/dev/null | grep IOTA_CORE_JWT_SALT= | cut -d '=' -f 2 | sed 's/"//g')
-		VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER=$(cat .env 2>/dev/null | grep IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER= | cut -d '=' -f 2 | sed 's/"//g')
-		VAR_NOVA_IOTA_CORE_STATIC_PEERS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_PEERS= | cut -d '=' -f 2 | sed 's/"//g')
+		VAR_NOVA_IOTA_CORE_JWT_SALT=$(cat .env 2>/dev/null | grep IOTA_CORE_JWT_SALT= | cut -d '=' -f 2)
+		VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER=$(cat .env 2>/dev/null | grep IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER= | cut -d '=' -f 2)
+		VAR_NOVA_IOTA_CORE_STATIC_PEERS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_PEERS= | cut -d '=' -f 2)
 
-		VAR_INX_VALIDATOR_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_VALIDATOR_ACCOUNT_ADDR | sed 's/"//g')
-		VAR_INX_VALIDATOR_PRV_KEY=$(cat .env 2>/dev/null | grep INX_VALIDATOR_PRV_KEY | sed 's/"//g')
+		VAR_INX_VALIDATOR_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_VALIDATOR_ACCOUNT_ADDR)
+		VAR_INX_VALIDATOR_PRV_KEY=$(cat .env 2>/dev/null | grep INX_VALIDATOR_PRV_KEY)
 
-		VAR_INX_BLOCKISSUER_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_ACCOUNT_ADDR | sed 's/"//g')
-		VAR_INX_BLOCKISSUER_PRV_KEY=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_PRV_KEY | sed 's/"//g')
+		VAR_INX_BLOCKISSUER_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_ACCOUNT_ADDR)
+		VAR_INX_BLOCKISSUER_PRV_KEY=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_PRV_KEY)
 
 		if [ -f .env ]; then rm .env; fi
 
 		echo "" >> .env; echo "### IOTA-CORE ###" >> .env
 
-		echo "IOTA_CORE_VERSION="'"'$VAR_NOVA_IOTA_CORE_VERSION'"' >> .env
-		echo "IOTA_CORE_NETWORK="'"'$VAR_NOVA_IOTA_CORE_NETWORK'"' >> .env
-		echo "IOTA_CORE_HOST="'"'$VAR_HOST'"' >> .env
-		echo "IOTA_CORE_NODE_ALIAS="'"'$VAR_NOVA_IOTA_CORE_NODE_ALIAS'"' >> .env
-		echo "IOTA_CORE_PRUNING_TARGET_SIZE="'"'$VAR_NOVA_IOTA_CORE_PRUNING_SIZE'"' >> .env
-		echo "IOTA_CORE_HTTPS_PORT="'"'$VAR_NOVA_IOTA_CORE_HTTPS_PORT'"' >> .env
-		echo "IOTA_CORE_GOSSIP_PORT="'"'15600'"' >> .env
+		echo "IOTA_CORE_VERSION=$VAR_NOVA_IOTA_CORE_VERSION" >> .env
+		echo "IOTA_CORE_NETWORK=$VAR_NOVA_IOTA_CORE_NETWORK" >> .env
+		echo "IOTA_CORE_HOST=$VAR_HOST" >> .env
+		echo "IOTA_CORE_NODE_ALIAS=$VAR_NOVA_IOTA_CORE_NODE_ALIAS" >> .env
+		echo "IOTA_CORE_PRUNING_TARGET_SIZE=$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" >> .env
+		echo "IOTA_CORE_HTTPS_PORT=$VAR_NOVA_IOTA_CORE_HTTPS_PORT" >> .env
+		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
 
 		if [ -z "$VAR_NOVA_IOTA_CORE_JWT_SALT" ]; then VAR_NOVA_IOTA_CORE_JWT_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1); fi
-		echo "IOTA_CORE_JWT_SALT="'"'$VAR_NOVA_IOTA_CORE_JWT_SALT'"' >> .env
+		echo "IOTA_CORE_JWT_SALT=$VAR_NOVA_IOTA_CORE_JWT_SALT" >> .env
 
-		if [ -z "$VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER" ]; then VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER="/dns/access-0.h.nova-testnet.iotaledger.net/tcp/15600/p2p/12D3KooWRKnwe6FrswrVSq2jFuDTBEAb7iAKUTLkmCK6MDPBySMo"; fi
+		if [ -z "$VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER" ]; then VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER=""
 		echo "" >> .env; echo "### IOTA-CORE AUTOPEERING-BOOTSTRAP-PEER ###" >> .env
-		echo "IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER="'"'$VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER'"' >> .env
+		echo "IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER=$VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER" >> .env
 
 		echo "" >> .env; echo "### IOTA-CORE STATIC-PEERS ###" >> .env
 
