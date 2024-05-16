@@ -2013,7 +2013,7 @@ SubMenuMaintenance() {
 
 	      echo "Download latest full snapshot... $VAR_NOVA_IOTA_CORE_NETWORK"
 	      VAR_SNAPSHOT="https://files.nova-testnet.iotaledger.net/snapshots/latest-snapshot.bin"
-	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.binn
+	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
 	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
 	   fi
 
