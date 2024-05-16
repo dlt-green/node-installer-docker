@@ -3821,8 +3821,8 @@ NovaIotacore() {
 		if [ -n "$VAR_TMP" ]; then VAR_NOVA_IOTA_CORE_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_NOVA_IOTA_CORE_HTTPS_PORT" ]; then VAR_NOVA_IOTA_CORE_HTTPS_PORT=$VAR_DEFAULT; fi
 		echo "$gn""Set dashboard port: $VAR_NOVA_IOTA_CORE_HTTPS_PORT""$xx"
 
-		VAR_NOVA_IOTA_CORE_ALIAS=$(cat .env 2>/dev/null | grep IOTA_CORE_ALIAS= | cut -d '=' -f 2)
-		if [ -z "$VAR_NOVA_IOTA_CORE_ALIAS" ]; then VAR_NOVA_IOTA_CORE_ALIAS='DLT.GREEN IOTA-CORE NODE'; fi
+		VAR_NOVA_IOTA_CORE_NODE_ALIAS=$(cat .env 2>/dev/null | grep IOTA_CORE_NODE_ALIAS= | cut -d '=' -f 2)
+		if [ -z "$VAR_NOVA_IOTA_CORE_NODE_ALIAS" ]; then VAR_NOVA_IOTA_CORE_NODE_ALIAS='DLT.GREEN IOTA-CORE NODE'; fi
 
 		echo ''
 		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep IOTA_CORE_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
@@ -3915,12 +3915,12 @@ NovaIotacore() {
 		echo "IOTA_CORE_NETWORK=$VAR_NOVA_IOTA_CORE_NETWORK" >> .env
 
 		echo "IOTA_CORE_HOST=$VAR_HOST" >> .env
-		echo "IOTA_CORE_ALIAS=/""$VAR_NOVA_IOTA_CORE_ALIAS"/"" >> .env
+		echo "IOTA_CORE_NODE_ALIAS=""$VAR_NOVA_IOTA_CORE_NODE_ALIAS""" >> .env
 		echo "IOTA_CORE_PRUNING_TARGET_SIZE=$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" >> .env
 		echo "IOTA_CORE_HTTPS_PORT=$VAR_NOVA_IOTA_CORE_HTTPS_PORT" >> .env
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
 
-		if [ -n "$VAR_NOVA_IOTA_CORE_JWT_SALT" ]; then VAR_JWT_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1); fi
+		if [ -z "$VAR_NOVA_IOTA_CORE_JWT_SALT" ]; then VAR_JWT_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1); fi
 		echo "IOTA_CORE_JWT_SALT=$VAR_JWT_SALT" >> .env
 
 		echo "" >> .env; echo "### IOTA-CORE STATIC-PEERS ###" >> .env
