@@ -3821,6 +3821,15 @@ NovaIotacore() {
 		if [ -n "$VAR_TMP" ]; then VAR_NOVA_IOTA_CORE_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_NOVA_IOTA_CORE_HTTPS_PORT" ]; then VAR_NOVA_IOTA_CORE_HTTPS_PORT=$VAR_DEFAULT; fi
 		echo "$gn""Set dashboard port: $VAR_NOVA_IOTA_CORE_HTTPS_PORT""$xx"
 
+		echo ''
+		VAR_NOVA_IOTA_CORE_GOSSIP_PORT=$(cat .env 2>/dev/null | grep IOTA_CORE_GOSSIP_PORT= | cut -d '=' -f 2)
+		VAR_DEFAULT='15600';
+		if [ -z "$VAR_NOVA_IOTA_CORE_GOSSIP_PORT" ]; then
+		  echo "Set gossip port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set gossip port (config: $ca""$VAR_NOVA_IOTA_CORE_GOSSIP_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then VAR_NOVA_IOTA_CORE_GOSSIP_PORT=$VAR_TMP; elif [ -z "$VAR_NOVA_IOTA_CORE_GOSSIP_PORT" ]; then VAR_NOVA_IOTA_CORE_GOSSIP_PORT=$VAR_DEFAULT; fi
+		echo "$gn""Set gossip port: $VAR_NOVA_IOTA_CORE_GOSSIP_PORT""$xx"
+
 		VAR_NOVA_IOTA_CORE_NODE_ALIAS=$(cat .env 2>/dev/null | grep IOTA_CORE_NODE_ALIAS= | cut -d '=' -f 2 | sed 's/ /-/g')
 		if [ -z "$VAR_NOVA_IOTA_CORE_NODE_ALIAS" ]; then VAR_NOVA_IOTA_CORE_NODE_ALIAS='DLT.GREEN-IOTA-CORE-NODE'; fi
 
@@ -3918,7 +3927,7 @@ NovaIotacore() {
 		echo "IOTA_CORE_NODE_ALIAS=$VAR_NOVA_IOTA_CORE_NODE_ALIAS" >> .env
 		echo "IOTA_CORE_PRUNING_TARGET_SIZE=$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" >> .env
 		echo "IOTA_CORE_HTTPS_PORT=$VAR_NOVA_IOTA_CORE_HTTPS_PORT" >> .env
-		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
+		echo "IOTA_CORE_GOSSIP_PORT=$VAR_NOVA_IOTA_CORE_GOSSIP_PORT" >> .env
 
 		if [ -z "$VAR_NOVA_IOTA_CORE_JWT_SALT" ]; then VAR_NOVA_IOTA_CORE_JWT_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1); fi
 		echo "IOTA_CORE_JWT_SALT=$VAR_NOVA_IOTA_CORE_JWT_SALT" >> .env
@@ -3935,11 +3944,14 @@ NovaIotacore() {
 			echo "# IOTA_CORE_STATIC_PEERS=" >> .env
 		fi
 
+		VAR_COMPOSE_PROFILES='monitoring'
+
 		echo "" >> .env; echo "### INX-VALIDATOR CONFIG ###" >> .env
 
 		if [ -n "$VAR_INX_VALIDATOR_ACCOUNT_ADDR" ]; then
 			echo "$VAR_INX_VALIDATOR_ACCOUNT_ADDR" >> .env
-			echo "$VAR_INX_VALIDATOR_PRV_KEY" >> .env			
+			echo "$VAR_INX_VALIDATOR_PRV_KEY" >> .env	
+			VAR_COMPOSE_PROFILES=$VAR_COMPOSE_PROFILES",validator"
 		else
 			echo "# INX_VALIDATOR_ACCOUNT_ADDR=" >> .env
 			echo "# INX_VALIDATOR_PRV_KEY=" >> .env	
@@ -3949,11 +3961,15 @@ NovaIotacore() {
 
 		if [ -n "$VAR_INX_BLOCKISSUER_ACCOUNT_ADDR" ]; then
 			echo "$VAR_INX_BLOCKISSUER_ACCOUNT_ADDR" >> .env
-			echo "$VAR_INX_BLOCKISSUER_PRV_KEY" >> .env			
+			echo "$VAR_INX_BLOCKISSUER_PRV_KEY" >> .env		
+			VAR_COMPOSE_PROFILES=$VAR_COMPOSE_PROFILES",blockissuer"
 		else
 			echo "# INX_BLOCKISSUER_ACCOUNT_ADDR=" >> .env
 			echo "# INX_BLOCKISSUER_PRV_KEY=" >> .env	
 		fi
+
+		echo "" >> .env; echo "### COMPOSE_PROFILES ###" >> .env
+		echo "COMPOSE_PROFILES=$VAR_COMPOSE_PROFILES" >> .env	
 
 		echo "" >> .env; echo "### CERTIFICATE ###" >> .env
 
@@ -4076,7 +4092,7 @@ NovaIotacore() {
 		if [ "$VAR_CERT" = 0 ]; then echo ufw allow '80/tcp' && ufw allow '80/tcp'; fi
 
 		echo ufw allow "$VAR_NOVA_IOTA_CORE_HTTPS_PORT/tcp" && ufw allow "$VAR_NOVA_IOTA_CORE_HTTPS_PORT/tcp"
-		echo ufw allow '15600/tcp' && ufw allow '15600/tcp'
+		echo ufw allow "$VAR_NOVA_IOTA_CORE_GOSSIP_PORT/tcp" && ufw allow "$VAR_NOVA_IOTA_CORE_GOSSIP_PORT/tcp"
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4142,6 +4158,8 @@ NovaIotacore() {
 		echo "═══════════════════════════════════════════════════════════════════════════════"
 		echo "domain name: $VAR_HOST"
 		echo "https port:  $VAR_NOVA_IOTA_CORE_HTTPS_PORT"
+		echo "-------------------------------------------------------------------------------"
+		echo "gossip port: $VAR_NOVA_IOTA_CORE_GOSSIP_PORT"
 		echo "-------------------------------------------------------------------------------"
 		echo "node dashboard: https://$VAR_HOST/dashboard"
 		echo "node username:  $VAR_USERNAME"
