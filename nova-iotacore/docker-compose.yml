@@ -288,11 +288,11 @@ services:
       inx-indexer:
         condition: service_started
     environment:
-      - "BLOCKISSUER_PRV_KEY=${IOTA_CORE_BLOCKISSUER_PRV_KEY:-}"
+      - "BLOCKISSUER_PRV_KEY=${INX_BLOCKISSUER_PRV_KEY:-}"
     command:
       - "--inx.address=iota-core:9029"
       - "--restAPI.bindAddress=inx-blockissuer:9086"
-      - "--blockIssuer.accountAddress=${IOTA_CORE_BLOCKISSUER_ACCOUNT_ADDR:-}"
+      - "--blockIssuer.accountAddress=${INX_BLOCKISSUER_ACCOUNT_ADDR:-}"
       - "--blockIssuer.proofOfWork.targetTrailingZeros=25"
     profiles:
       - blockissuer
@@ -310,11 +310,11 @@ services:
       iota-core:
         condition: service_started
     environment:
-      - "VALIDATOR_PRV_KEY=${IOTA_CORE_VALIDATOR_PRV_KEY:-}"
+      - "VALIDATOR_PRV_KEY=${INX_VALIDATOR_PRV_KEY:-}"
     command:
       - "--logger.level=debug"
       - "--inx.address=iota-core:9029"
-      - "--validator.accountAddress=${IOTA_CORE_VALIDATOR_ACCOUNT_ADDR:-}"
+      - "--validator.accountAddress=${INX_VALIDATOR_ACCOUNT_ADDR:-}"
     profiles:
       - validator
     logging:

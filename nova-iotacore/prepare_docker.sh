@@ -48,6 +48,7 @@ create_docker_network "nova"
 extract_file_from_image "iotaledger/iota-core" "${IOTA_CORE_VERSION}" "/app/${configFilenameInContainer}" "${configPath}"
 
 echo "Adapting config with values from .env..."
+set_config "${configPath}" ".node.alias"                             "\"${IOTA_CORE_NODE_ALIAS:-IOTA-CORE node}\""
 set_config "${configPath}" ".p2p.identityPrivateKeyFilePath"         "\"/app/data/p2p/identity.key\""
 set_config "${configPath}" ".profiling.bindAddress"                  "\"0.0.0.0:6060\""
 set_config "${configPath}" ".debugAPI.db.path"                       "\"/app/data/debug\""
