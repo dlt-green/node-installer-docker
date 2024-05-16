@@ -4186,7 +4186,7 @@ NovaWasp() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║          DLT.GREEN AUTOMATIC Nova-WASP INSTALLATION WITH DOCKER          ║"
+	echo "║         DLT.GREEN AUTOMATIC IOTA 2.0 WASP INSTALLATION WITH DOCKER          ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 	echo "$ca""Wasp is an INX-Plugin and can only be installed on the same Server as Nova!""$xx";
