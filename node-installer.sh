@@ -3790,8 +3790,6 @@ NovaIotacore() {
 
 	CheckConfiguration
 
-	VAR_JWT_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
-
 	if [ "$VAR_CONF_RESET" = 1 ]; then
 
 		clear
@@ -3859,13 +3857,6 @@ NovaIotacore() {
 		done
 		echo "$gn""Set pruning size: $VAR_NOVA_IOTA_CORE_PRUNING_SIZE""$xx"
 
-		VAR_NOVA_IOTA_CORE_STATIC_PEERS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_PEERS= | cut -d '=' -f 2)
-
-		VAR_INX_VALIDATOR_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_VALIDATOR_ACCOUNT_ADDR)
-		VAR_INX_VALIDATOR_PRV_KEY=$(cat .env 2>/dev/null | grep INX_VALIDATOR_PRV_KEY)
-		VAR_INX_BLOCKISSUER_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_ACCOUNT_ADDR)
-		VAR_INX_BLOCKISSUER_PRV_KEY=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_PRV_KEY)
-
 		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1);
@@ -3906,6 +3897,16 @@ NovaIotacore() {
 		if [ "$VAR_NOVA_IOTA_CORE_HTTPS_PORT" = "443" ]; then CheckCertificate; else VAR_CERT=1; fi
 
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
+
+		VAR_NOVA_IOTA_CORE_JWT_SALT=$(cat .env 2>/dev/null | grep VAR_JWT_SALT)
+		VAR_NOVA_IOTA_CORE_STATIC_PEERS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_PEERS= | cut -d '=' -f 2)
+
+		VAR_INX_VALIDATOR_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_VALIDATOR_ACCOUNT_ADDR)
+		VAR_INX_VALIDATOR_PRV_KEY=$(cat .env 2>/dev/null | grep INX_VALIDATOR_PRV_KEY)
+
+		VAR_INX_BLOCKISSUER_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_ACCOUNT_ADDR)
+		VAR_INX_BLOCKISSUER_PRV_KEY=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_PRV_KEY)
+
 		if [ -f .env ]; then rm .env; fi
 
 		echo "" >> .env; echo "### IOTA-CORE ###" >> .env
@@ -3918,8 +3919,10 @@ NovaIotacore() {
 		echo "IOTA_CORE_PRUNING_TARGET_SIZE=$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" >> .env
 		echo "IOTA_CORE_HTTPS_PORT=$VAR_NOVA_IOTA_CORE_HTTPS_PORT" >> .env
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
+
+		if [ -n "$VAR_NOVA_IOTA_CORE_JWT_SALT" ]; then VAR_JWT_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 		echo "IOTA_CORE_JWT_SALT=$VAR_JWT_SALT" >> .env
-		
+
 		echo "" >> .env; echo "### IOTA-CORE STATIC-PEERS ###" >> .env
 
 		if [ -n "$VAR_NOVA_IOTA_CORE_STATIC_PEERS" ]; then
