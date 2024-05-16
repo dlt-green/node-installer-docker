@@ -3898,7 +3898,8 @@ NovaIotacore() {
 
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 
-		VAR_NOVA_IOTA_CORE_JWT_SALT=$(cat .env 2>/dev/null | grep VAR_JWT_SALT= | cut -d '=' -f 2)
+		VAR_NOVA_IOTA_CORE_JWT_SALT=$(cat .env 2>/dev/null | grep IOTA_CORE_JWT_SALT= | cut -d '=' -f 2)
+		VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER=$(cat .env 2>/dev/null | grep IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER= | cut -d '=' -f 2)
 		VAR_NOVA_IOTA_CORE_STATIC_PEERS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_PEERS= | cut -d '=' -f 2)
 
 		VAR_INX_VALIDATOR_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_VALIDATOR_ACCOUNT_ADDR)
@@ -3913,15 +3914,18 @@ NovaIotacore() {
 
 		echo "IOTA_CORE_VERSION=$VAR_NOVA_IOTA_CORE_VERSION" >> .env
 		echo "IOTA_CORE_NETWORK=$VAR_NOVA_IOTA_CORE_NETWORK" >> .env
-
 		echo "IOTA_CORE_HOST=$VAR_HOST" >> .env
-#		echo "IOTA_CORE_NODE_ALIAS="$VAR_NOVA_IOTA_CORE_NODE_ALIAS" >> .env
+		echo "IOTA_CORE_NODE_ALIAS="'"'$VAR_NOVA_IOTA_CORE_NODE_ALIAS'"' >> .env
 		echo "IOTA_CORE_PRUNING_TARGET_SIZE=$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" >> .env
 		echo "IOTA_CORE_HTTPS_PORT=$VAR_NOVA_IOTA_CORE_HTTPS_PORT" >> .env
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
 
-		if [ -z "$VAR_NOVA_IOTA_CORE_JWT_SALT" ]; then VAR_JWT_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1); fi
-		echo "IOTA_CORE_JWT_SALT=$VAR_JWT_SALT" >> .env
+		if [ -z "$VAR_NOVA_IOTA_CORE_JWT_SALT" ]; then VAR_NOVA_IOTA_CORE_JWT_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1); fi
+		echo "IOTA_CORE_JWT_SALT=$VAR_NOVA_IOTA_CORE_JWT_SALT" >> .env
+
+		if [ -z "$VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER" ]; then VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER="/dns/access-0.h.nova-testnet.iotaledger.net/tcp/15600/p2p/12D3KooWRKnwe6FrswrVSq2jFuDTBEAb7iAKUTLkmCK6MDPBySMo"
+		echo "" >> .env; echo "### IOTA-CORE AUTOPEERING-BOOTSTRAP-PEER ###" >> .env
+		echo "IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER=$VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER" >> .env
 
 		echo "" >> .env; echo "### IOTA-CORE STATIC-PEERS ###" >> .env
 
