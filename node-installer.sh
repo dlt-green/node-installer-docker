@@ -3911,10 +3911,10 @@ NovaIotacore() {
 		echo "" >> .env; echo "### IOTA-CORE ###" >> .env
 
 		echo "IOTA_CORE_VERSION=$VAR_NOVA_IOTA_CORE_VERSION" >> .env
-
 		echo "IOTA_CORE_NETWORK=$VAR_NOVA_IOTA_CORE_NETWORK" >> .env
 
 		echo "IOTA_CORE_HOST=$VAR_HOST" >> .env
+		echo "IOTA_CORE_ALIAS=$VAR_NOVA_IOTA_CORE_ALIAS" >> .env
 		echo "IOTA_CORE_PRUNING_TARGET_SIZE=$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" >> .env
 		echo "IOTA_CORE_HTTPS_PORT=$VAR_NOVA_IOTA_CORE_HTTPS_PORT" >> .env
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
