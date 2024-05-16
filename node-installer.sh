@@ -4141,7 +4141,7 @@ NovaIotacore() {
 	RenameContainer
 
 	if [ -n "$VAR_PASSWORD" ]; then
-	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it nova-iotacore.grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 	else echo 'done...'; VAR_PASSWORD='********'; fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
