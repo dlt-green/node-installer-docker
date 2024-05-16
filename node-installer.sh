@@ -3823,6 +3823,9 @@ NovaIotacore() {
 		if [ -n "$VAR_TMP" ]; then VAR_NOVA_IOTA_CORE_HTTPS_PORT=$VAR_TMP; elif [ -z "$VAR_NOVA_IOTA_CORE_HTTPS_PORT" ]; then VAR_NOVA_IOTA_CORE_HTTPS_PORT=$VAR_DEFAULT; fi
 		echo "$gn""Set dashboard port: $VAR_NOVA_IOTA_CORE_HTTPS_PORT""$xx"
 
+		VAR_NOVA_IOTA_CORE_ALIAS=$(cat .env 2>/dev/null | grep IOTA_CORE_ALIAS= | cut -d '=' -f 2)
+		if [ -z "$VAR_NOVA_IOTA_CORE_ALIAS" ]; then VAR_NOVA_IOTA_CORE_ALIAS="DLT.GREEN iota-core node"
+
 		echo ''
 		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep IOTA_CORE_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
 		if [ -z "$bytes" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=0; else VAR_IOTA_HORNET_PRUNING_SIZE=$bytes; fi
