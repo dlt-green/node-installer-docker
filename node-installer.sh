@@ -3877,40 +3877,7 @@ NovaIotacore() {
 #		  echo "$rd""Set PoW / proof of work: $VAR_NOVA_IOTA_CORE_POW""$xx"
 #		fi
 
-#		echo ''
-#		VAR_NOVA_IOTA_CORE_AUTOPEERING=$(cat .env 2>/dev/null | grep IOTA_CORE_AUTOPEERING_ENABLED= | cut -d '=' -f 2)
-#		VAR_DEFAULT='true'
-#		if [ -z "$VAR_NOVA_IOTA_CORE_AUTOPEERING" ]; then
-#		  echo "Set autopeering (default: $ca$VAR_DEFAULT$xx):"; echo "Press [Enter] to use default value:"
-#		else
-#		  echo "Set autopeering (config: $ca$VAR_NOVA_IOTA_CORE_AUTOPEERING$xx)"; echo "Press [Enter] to use existing config:"
-#		fi
-#		read -r -p '> Press [E] to enable Autopeering... Press [X] key to disable... ' VAR_TMP;
-#		if [ -n "$VAR_TMP" ]; then
-#		  VAR_NOVA_IOTA_CORE_AUTOPEERING=$VAR_TMP
-#		  if  [ "$VAR_NOVA_IOTA_CORE_AUTOPEERING" = 'e' ] || [ "$VAR_NOVA_IOTA_CORE_AUTOPEERING" = 'E' ]; then
-#		    VAR_NOVA_IOTA_CORE_AUTOPEERING='true'
-#		  else
-#		    VAR_NOVA_IOTA_CORE_AUTOPEERING='false'
-#		fi
-#		elif [ -z "$VAR_NOVA_IOTA_CORE_AUTOPEERING" ]; then VAR_NOVA_IOTA_CORE_AUTOPEERING=$VAR_DEFAULT; fi
-#
-#		if  [ "$VAR_NOVA_IOTA_CORE_AUTOPEERING" = 'true'  ]; then
-#		  echo "$gn""Set autopeering: $VAR_NOVA_IOTA_CORE_AUTOPEERING""$xx"
-#		else
-#		  echo "$rd""Set autopeering: $VAR_NOVA_IOTA_CORE_AUTOPEERING""$xx"
-#		fi
-
-		VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_NEIGHBORS= | cut -d '=' -f 2)
-#		if [ "$VAR_NOVA_IOTA_CORE_AUTOPEERING" = 'false' ]; then
-#		echo ''
-#		VAR_DEFAULT='{nodeName}:/dns/{nodeURL}/tcp/15600/p2p/{nodeId},...';
-#		if [ -z "$VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS" ]; then
-#		  echo "Set static neighbor(s) (template: $ca""$VAR_DEFAULT""$xx):"; else echo "Set static neighbor(s) (config: ""$ca""\n""$(echo "$VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS" | tr ',' '\n')""\n""$xx)"; echo "Press [Enter] to use existing config (template: $ca""$VAR_DEFAULT""$xx):"; fi
-#		read -r -p '> ' VAR_TMP
-#		if [ -n "$VAR_TMP" ]; then VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS=$VAR_TMP; elif [ -z "$VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS" ]; then VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS=''; fi
-#		echo "$gn""Set static neighbor(s): ""\n""$(echo "$VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS" | tr ',' '\n')""$xx"
-#		fi
+		VAR_NOVA_IOTA_CORE_STATIC_PEERS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_PEERS= | cut -d '=' -f 2)
 
 		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
@@ -3964,8 +3931,8 @@ NovaIotacore() {
 		echo "IOTA_CORE_HTTPS_PORT=$VAR_NOVA_IOTA_CORE_HTTPS_PORT" >> .env
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
 
-		if [ -n "$VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS" ]; then
-			echo "IOTA_CORE_STATIC_NEIGHBORS=$VAR_NOVA_IOTA_CORE_STATIC_NEIGHBORS" >> .env
+		if [ -n "$VAR_NOVA_IOTA_CORE_STATIC_PEERS" ]; then
+			echo "IOTA_CORE_STATIC_PEERS=$VAR_NOVA_IOTA_CORE_STATIC_PEERS" >> .env
 		fi
 
 		echo "IOTA_CORE_JWT_SALT=$VAR_JWT_SALT" >> .env
