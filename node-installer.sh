@@ -3822,7 +3822,7 @@ NovaIotacore() {
 		echo "$gn""Set dashboard port: $VAR_NOVA_IOTA_CORE_HTTPS_PORT""$xx"
 
 		VAR_NOVA_IOTA_CORE_NODE_ALIAS=$(cat .env 2>/dev/null | grep IOTA_CORE_NODE_ALIAS= | cut -d '=' -f 2 | sed 's/ /-/g')
-		if [ -z "$VAR_NOVA_IOTA_CORE_NODE_ALIAS" ]; then VAR_NOVA_IOTA_CORE_NODE_ALIAS='DLT.GREEN:green_heart:IOTA-CORE-NODE'; fi
+		if [ -z "$VAR_NOVA_IOTA_CORE_NODE_ALIAS" ]; then VAR_NOVA_IOTA_CORE_NODE_ALIAS='DLT.GREEN-IOTA-CORE-NODE'; fi
 
 		echo ''
 		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep IOTA_CORE_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
