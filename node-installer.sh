@@ -3859,9 +3859,12 @@ NovaIotacore() {
 		done
 		echo "$gn""Set pruning size: $VAR_NOVA_IOTA_CORE_PRUNING_SIZE""$xx"
 
-		VAR_NOVA_IOTA_CORE_INX_VALIDATOR=$(cat .env 2>/dev/null | grep INX_VALIDATOR)
-		VAR_NOVA_IOTA_CORE_INX_BLOCKISSUER=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER)
 		VAR_NOVA_IOTA_CORE_STATIC_PEERS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_PEERS= | cut -d '=' -f 2)
+
+		VAR_INX_VALIDATOR_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_VALIDATOR_ACCOUNT_ADDR)
+		VAR_INX_VALIDATOR_PRV_KEY=$(cat .env 2>/dev/null | grep INX_VALIDATOR_PRV_KEY)
+		VAR_INX_BLOCKISSUER_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_ACCOUNT_ADDR)
+		VAR_INX_BLOCKISSUER_PRV_KEY=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_PRV_KEY)
 
 		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
@@ -3917,17 +3920,20 @@ NovaIotacore() {
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
 
 		if [ -n "$VAR_NOVA_IOTA_CORE_STATIC_PEERS" ]; then
+			echo "" >> .env; echo "### IOTA-CORE STATIC-PEERS ###" >> .env
 			echo "IOTA_CORE_STATIC_PEERS=$VAR_NOVA_IOTA_CORE_STATIC_PEERS" >> .env
 		fi
 
-		if [ -n "$VAR_NOVA_IOTA_CORE_INX_VALIDATOR" ]; then
-			echo "" >> .env; echo "### INX BLOCKISSUER ###" >> .env
-			echo "$VAR_NOVA_IOTA_CORE_INX_VALIDATOR" >> .env
+		if [ -n "$VAR_INX_VALIDATOR_ACCOUNT_ADDR" ]; then
+			echo "" >> .env; echo "### INX-VALIDATOR ###" >> .env
+			echo "$VAR_INX_VALIDATOR_ACCOUNT_ADDR" >> .env
+			echo "$VAR_INX_VALIDATOR_PRV_KEY" >> .env			
 		fi
 
-		if [ -n "$VAR_NOVA_IOTA_CORE_INX_BLOCKISSUER" ]; then
-			echo "" >> .env; echo "### INX BLOCKISSUER ###" >> .env
-			echo "$VAR_NOVA_IOTA_CORE_INX_BLOCKISSUER" >> .env
+		if [ -n "$VAR_INX_BLOCKISSUER_ACCOUNT_ADDR" ]; then
+			echo "" >> .env; echo "### INX-BLOCKISSUER ###" >> .env
+			echo "$VAR_INX_BLOCKISSUER_ACCOUNT_ADDR" >> .env
+			echo "$VAR_INX_BLOCKISSUER_PRV_KEY" >> .env			
 		fi
 
 		echo "IOTA_CORE_JWT_SALT=$VAR_JWT_SALT" >> .env
@@ -3964,6 +3970,8 @@ NovaIotacore() {
 			echo "IOTA_CORE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "IOTA_CORE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
+
+		echo "" >> .env; echo "### INX ###" >> .env
 
 		echo "INX_INDEXER_VERSION=$VAR_NOVA_INX_INDEXER_VERSION" >> .env
 		echo "INX_MQTT_VERSION=$VAR_NOVA_INX_MQTT_VERSION" >> .env
@@ -4016,6 +4024,8 @@ NovaIotacore() {
 		else
 		  echo "credentials not changed..."
 		fi
+
+		echo "" >> .env; echo "### CREDENTIALS ###" >> .env
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
