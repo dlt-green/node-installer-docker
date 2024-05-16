@@ -3911,11 +3911,11 @@ NovaIotacore() {
 		VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER=$(cat .env 2>/dev/null | grep IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER= | cut -d '=' -f 2)
 		VAR_NOVA_IOTA_CORE_STATIC_PEERS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_PEERS= | cut -d '=' -f 2)
 
-		VAR_INX_VALIDATOR_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_VALIDATOR_ACCOUNT_ADDR)
-		VAR_INX_VALIDATOR_PRV_KEY=$(cat .env 2>/dev/null | grep INX_VALIDATOR_PRV_KEY)
+		VAR_INX_VALIDATOR_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_VALIDATOR_ACCOUNT_ADDR | cut -d '=' -f 2)
+		VAR_INX_VALIDATOR_PRV_KEY=$(cat .env 2>/dev/null | grep INX_VALIDATOR_PRV_KEY | cut -d '=' -f 2)
 
-		VAR_INX_BLOCKISSUER_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_ACCOUNT_ADDR)
-		VAR_INX_BLOCKISSUER_PRV_KEY=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_PRV_KEY)
+		VAR_INX_BLOCKISSUER_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_ACCOUNT_ADDR | cut -d '=' -f 2)
+		VAR_INX_BLOCKISSUER_PRV_KEY=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER_PRV_KEY | cut -d '=' -f 2)
 
 		if [ -f .env ]; then rm .env; fi
 
@@ -3949,8 +3949,8 @@ NovaIotacore() {
 		echo "" >> .env; echo "### INX-VALIDATOR CONFIG ###" >> .env
 
 		if [ -n "$VAR_INX_VALIDATOR_ACCOUNT_ADDR" ]; then
-			echo "$VAR_INX_VALIDATOR_ACCOUNT_ADDR" >> .env
-			echo "$VAR_INX_VALIDATOR_PRV_KEY" >> .env	
+			echo "INX_VALIDATOR_ACCOUNT_ADDR=$VAR_INX_VALIDATOR_ACCOUNT_ADDR" >> .env
+			echo "INX_VALIDATOR_PRV_KEY=$VAR_INX_VALIDATOR_PRV_KEY" >> .env	
 			VAR_COMPOSE_PROFILES=$VAR_COMPOSE_PROFILES",validator"
 		else
 			echo "# INX_VALIDATOR_ACCOUNT_ADDR=" >> .env
@@ -3960,8 +3960,8 @@ NovaIotacore() {
 		echo "" >> .env; echo "### INX-BLOCKISSUER CONFIG ###" >> .env
 
 		if [ -n "$VAR_INX_BLOCKISSUER_ACCOUNT_ADDR" ]; then
-			echo "$VAR_INX_BLOCKISSUER_ACCOUNT_ADDR" >> .env
-			echo "$VAR_INX_BLOCKISSUER_PRV_KEY" >> .env		
+			echo "INX_BLOCKISSUER_ACCOUNT_ADDR=$VAR_INX_BLOCKISSUER_ACCOUNT_ADDR" >> .env
+			echo "INX_BLOCKISSUER_PRV_KEY=$VAR_INX_BLOCKISSUER_PRV_KEY" >> .env		
 			VAR_COMPOSE_PROFILES=$VAR_COMPOSE_PROFILES",blockissuer"
 		else
 			echo "# INX_BLOCKISSUER_ACCOUNT_ADDR=" >> .env
