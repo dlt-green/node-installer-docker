@@ -152,8 +152,8 @@ IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/d
 IotaWaspHash='8fa1dcc9ecd6c03c003dd352c3cd9328cf29a6ffe0e0574c66197269c0f279b5'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-NovaIotaCoreHash='30b170f64a09ee1a81529912ce6224e646dda2d3fc0e818a7875e2fbbf276c52'
-NovaIotaCorePackage="https://github.com/dlt-green/node-installer-docker/releases/download/iota-core-latest/nova-iotacore.tar.gz"
+NovaIotacoreHash='30b170f64a09ee1a81529912ce6224e646dda2d3fc0e818a7875e2fbbf276c52'
+NovaIotacorePackage="https://github.com/dlt-green/node-installer-docker/releases/download/iota-core-latest/nova-iotacore.tar.gz"
 
 NovaWaspHash='5a33a9bf38cb0bbc999ae8e24ae4b6d445f47163a330448398bb8bb919ed553b'
 NovaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/iota-core-latest/nova-wasp.tar.gz"
@@ -1208,7 +1208,7 @@ Dashboard() {
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   DashboardHelper ;;
 	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='nova-iotacore'
-	   if [ "$opt_mode" ]; then NovaIotaCore; clear; exit; else SubMenuMaintenance; fi ;;
+	   if [ "$opt_mode" ]; then NovaIotacore; clear; exit; else SubMenuMaintenance; fi ;;
 	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='nova-wasp'
 	   if [ "$opt_mode" ]; then NovaWasp; clear; exit; else SubMenuMaintenance; fi ;;
 	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='nova-wasp'
@@ -1776,7 +1776,7 @@ SubMenuMaintenance() {
 	case $n in
 	1) if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then IotaHornet; fi
 	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then IotaWasp; fi
-	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then NovaIotaCore; fi
+	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then NovaIotacore; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then NovaWasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then NovaChronicle; fi
 	   ;;
@@ -3729,7 +3729,7 @@ IotaWasp() {
 	if ! [ "$opt_mode" ]; then Dashboard; fi
 }
 
-NovaIotaCore() {
+NovaIotacore() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -3766,9 +3766,9 @@ NovaIotaCore() {
 
 	echo ""
 	echo "Download Package... install.tar.gz"
-	wget -cO - "$NovaIotaCorePackage" -q > install.tar.gz
+	wget -cO - "$NovaIotacorePackage" -q > install.tar.gz
 
-	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$NovaIotaCoreHash" ]; then
+	if [ "$(shasum -a 256 './install.tar.gz' | cut -d ' ' -f 1)" = "$NovaIotacoreHash" ]; then
 		echo "$gn"; echo 'Checking Hash of Package successful...'; echo "$xx"
 	else
 		echo "$rd"; echo 'Checking Hash of Package failed...'
