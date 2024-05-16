@@ -2013,8 +2013,8 @@ SubMenuMaintenance() {
 
 	      echo "Download latest full snapshot... $VAR_NOVA_IOTA_CORE_NETWORK"
 	      VAR_SNAPSHOT="https://files.nova-testnet.iotaledger.net/snapshots/latest-snapshot.bin"
-	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/snapshot.bin
-	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/snapshot.bin
+	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.binn
+	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
 	   fi
 
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ] && [ $VAR_NOVA_IOTA_CORE_NETWORK = 'mainnet' ]; then
@@ -3937,7 +3937,7 @@ NovaIotacore() {
 			echo "# INX_VALIDATOR_PRV_KEY=" >> .env	
 		fi
 
-		echo "" >> .env; echo "### INX-BLOCKISSUER CONFIG###" >> .env
+		echo "" >> .env; echo "### INX-BLOCKISSUER CONFIG ###" >> .env
 
 		if [ -n "$VAR_INX_BLOCKISSUER_ACCOUNT_ADDR" ]; then
 			echo "$VAR_INX_BLOCKISSUER_ACCOUNT_ADDR" >> .env
@@ -4087,8 +4087,8 @@ NovaIotacore() {
 
 		echo "Download latest full snapshot... $VAR_NOVA_IOTA_CORE_NETWORK"
 		VAR_SNAPSHOT="https://files.nova-testnet.iotaledger.net/snapshots/latest-snapshot.bin"
-		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/snapshot.bin
-		chmod 744 /var/lib/$VAR_DIR/data/snapshots/snapshot.bin
+		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
+		chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
