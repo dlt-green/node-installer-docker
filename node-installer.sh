@@ -3920,7 +3920,7 @@ NovaIotacore() {
 		echo "IOTA_CORE_HTTPS_PORT=$VAR_NOVA_IOTA_CORE_HTTPS_PORT" >> .env
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
 
-		if [ -n "$VAR_NOVA_IOTA_CORE_JWT_SALT" ]; then VAR_JWT_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
+		if [ -n "$VAR_NOVA_IOTA_CORE_JWT_SALT" ]; then VAR_JWT_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1); fi
 		echo "IOTA_CORE_JWT_SALT=$VAR_JWT_SALT" >> .env
 
 		echo "" >> .env; echo "### IOTA-CORE STATIC-PEERS ###" >> .env
