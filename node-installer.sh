@@ -3822,7 +3822,7 @@ NovaIotacore() {
 		echo "$gn""Set dashboard port: $VAR_NOVA_IOTA_CORE_HTTPS_PORT""$xx"
 
 		VAR_NOVA_IOTA_CORE_ALIAS=$(cat .env 2>/dev/null | grep IOTA_CORE_ALIAS= | cut -d '=' -f 2)
-		if [ -z "$VAR_NOVA_IOTA_CORE_ALIAS" ]; then VAR_NOVA_IOTA_CORE_ALIAS='/"DLT.GREEN IOTA-CORE NODE/"'; fi
+		if [ -z "$VAR_NOVA_IOTA_CORE_ALIAS" ]; then VAR_NOVA_IOTA_CORE_ALIAS='DLT.GREEN IOTA-CORE NODE'; fi
 
 		echo ''
 		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep IOTA_CORE_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
@@ -3898,7 +3898,7 @@ NovaIotacore() {
 
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 
-		VAR_NOVA_IOTA_CORE_JWT_SALT=$(cat .env 2>/dev/null | grep VAR_JWT_SALT)
+		VAR_NOVA_IOTA_CORE_JWT_SALT=$(cat .env 2>/dev/null | grep VAR_JWT_SALT= | cut -d '=' -f 2)
 		VAR_NOVA_IOTA_CORE_STATIC_PEERS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_PEERS= | cut -d '=' -f 2)
 
 		VAR_INX_VALIDATOR_ACCOUNT_ADDR=$(cat .env 2>/dev/null | grep INX_VALIDATOR_ACCOUNT_ADDR)
@@ -3915,7 +3915,7 @@ NovaIotacore() {
 		echo "IOTA_CORE_NETWORK=$VAR_NOVA_IOTA_CORE_NETWORK" >> .env
 
 		echo "IOTA_CORE_HOST=$VAR_HOST" >> .env
-		echo "IOTA_CORE_ALIAS=$VAR_NOVA_IOTA_CORE_ALIAS" >> .env
+		echo "IOTA_CORE_ALIAS=/""$VAR_NOVA_IOTA_CORE_ALIAS"/"" >> .env
 		echo "IOTA_CORE_PRUNING_TARGET_SIZE=$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" >> .env
 		echo "IOTA_CORE_HTTPS_PORT=$VAR_NOVA_IOTA_CORE_HTTPS_PORT" >> .env
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
