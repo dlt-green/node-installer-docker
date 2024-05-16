@@ -3859,27 +3859,8 @@ NovaIotacore() {
 		done
 		echo "$gn""Set pruning size: $VAR_NOVA_IOTA_CORE_PRUNING_SIZE""$xx"
 
-#		echo ''
-#		VAR_NOVA_IOTA_CORE_POW=$(cat .env 2>/dev/null | grep IOTA_CORE_POW_ENABLED= | cut -d '=' -f 2)
-#		VAR_DEFAULT='true';
-#		if [ -z "$VAR_NOVA_IOTA_CORE_POW" ]; then
-#		  echo "Set PoW / proof of work (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set PoW / proof of work (config: $ca""$VAR_NOVA_IOTA_CORE_POW""$xx)"; echo "Press [Enter] to use existing config:"; fi
-#		read -r -p '> Press [P] to enable Proof of Work... Press [X] key to disable... ' VAR_TMP;
-#		if [ -n "$VAR_TMP" ]; then
-#		  VAR_NOVA_IOTA_CORE_POW=$VAR_TMP
-#		  if  [ "$VAR_NOVA_IOTA_CORE_POW" = 'p' ] || [ "$VAR_NOVA_IOTA_CORE_POW" = 'P' ]; then
-#		    VAR_NOVA_IOTA_CORE_POW='true'
-#		  else
-#		    VAR_NOVA_IOTA_CORE_POW='false'
-#		  fi
-#		elif [ -z "$VAR_NOVA_IOTA_CORE_POW" ]; then VAR_NOVA_IOTA_CORE_POW=$VAR_DEFAULT; fi
-
-#		if  [ "$VAR_NOVA_IOTA_CORE_POW" ]; then
-#		  echo "$gn""Set PoW / proof of work: $VAR_NOVA_IOTA_CORE_POW""$xx"
-#		else
-#		  echo "$rd""Set PoW / proof of work: $VAR_NOVA_IOTA_CORE_POW""$xx"
-#		fi
-
+		VAR_NOVA_IOTA_CORE_INX_VALIDATOR=$(cat .env 2>/dev/null | grep INX_VALIDATOR)
+		VAR_NOVA_IOTA_CORE_INX_BLOCKISSUER=$(cat .env 2>/dev/null | grep INX_BLOCKISSUER)
 		VAR_NOVA_IOTA_CORE_STATIC_PEERS=$(cat .env 2>/dev/null | grep IOTA_CORE_STATIC_PEERS= | cut -d '=' -f 2)
 
 		echo ''
@@ -3924,13 +3905,14 @@ NovaIotacore() {
 		if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
 		if [ -f .env ]; then rm .env; fi
 
+		echo "" >> .env; echo "### IOTA-CORE ###" >> .env
+
 		echo "IOTA_CORE_VERSION=$VAR_NOVA_IOTA_CORE_VERSION" >> .env
 
 		echo "IOTA_CORE_NETWORK=$VAR_NOVA_IOTA_CORE_NETWORK" >> .env
 
 		echo "IOTA_CORE_HOST=$VAR_HOST" >> .env
 		echo "IOTA_CORE_PRUNING_TARGET_SIZE=$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" >> .env
-#		echo "IOTA_CORE_POW_ENABLED=$VAR_NOVA_IOTA_CORE_POW" >> .env
 		echo "IOTA_CORE_HTTPS_PORT=$VAR_NOVA_IOTA_CORE_HTTPS_PORT" >> .env
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
 
@@ -3938,7 +3920,19 @@ NovaIotacore() {
 			echo "IOTA_CORE_STATIC_PEERS=$VAR_NOVA_IOTA_CORE_STATIC_PEERS" >> .env
 		fi
 
+		if [ -n "$VAR_NOVA_IOTA_CORE_INX_VALIDATOR" ]; then
+			echo "" >> .env; echo "### INX BLOCKISSUER ###" >> .env
+			echo "$VAR_NOVA_IOTA_CORE_INX_VALIDATOR" >> .env
+		fi
+
+		if [ -n "$VAR_NOVA_IOTA_CORE_INX_BLOCKISSUER" ]; then
+			echo "" >> .env; echo "### INX BLOCKISSUER ###" >> .env
+			echo "$VAR_NOVA_IOTA_CORE_INX_BLOCKISSUER" >> .env
+		fi
+
 		echo "IOTA_CORE_JWT_SALT=$VAR_JWT_SALT" >> .env
+
+		echo "" >> .env; echo "### CERTIFICATE ###" >> .env
 
 		if [ "$VAR_CERT" = 0 ]
 		then
