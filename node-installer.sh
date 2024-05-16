@@ -3923,7 +3923,7 @@ NovaIotacore() {
 		if [ -z "$VAR_NOVA_IOTA_CORE_JWT_SALT" ]; then VAR_NOVA_IOTA_CORE_JWT_SALT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1); fi
 		echo "IOTA_CORE_JWT_SALT=$VAR_NOVA_IOTA_CORE_JWT_SALT" >> .env
 
-		if [ -z "$VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER" ]; then VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER=""
+		if [ -z "$VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER" ]; then VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER="/dns/access-0.h.nova-testnet.iotaledger.net/tcp/15600/p2p/12D3KooWRKnwe6FrswrVSq2jFuDTBEAb7iAKUTLkmCK6MDPBySMo"; fi
 		echo "" >> .env; echo "### IOTA-CORE AUTOPEERING-BOOTSTRAP-PEER ###" >> .env
 		echo "IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER=$VAR_NOVA_IOTA_CORE_AUTOPEERING_BOOTSTRAP_PEER" >> .env
 
