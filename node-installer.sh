@@ -4004,7 +4004,6 @@ NovaIotacore() {
 		if [ -f .env ]; then sed -i "s/INX_DASHBOARD_VERSION=.*/INX_DASHBOARD_VERSION=$VAR_NOVA_INX_DASHBOARD_VERSION/g" .env; fi
   
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
-		fgrep -q "JWT_SALT" .env || echo "JWT_SALT=$VAR_JWT_SALT" >> .env
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
