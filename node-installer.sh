@@ -3918,22 +3918,33 @@ NovaIotacore() {
 		echo "IOTA_CORE_PRUNING_TARGET_SIZE=$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" >> .env
 		echo "IOTA_CORE_HTTPS_PORT=$VAR_NOVA_IOTA_CORE_HTTPS_PORT" >> .env
 		echo "IOTA_CORE_GOSSIP_PORT=15600" >> .env
+		
+		echo "" >> .env; echo "### IOTA-CORE STATIC-PEERS ###" >> .env
 
 		if [ -n "$VAR_NOVA_IOTA_CORE_STATIC_PEERS" ]; then
-			echo "" >> .env; echo "### IOTA-CORE STATIC-PEERS ###" >> .env
 			echo "IOTA_CORE_STATIC_PEERS=$VAR_NOVA_IOTA_CORE_STATIC_PEERS" >> .env
+		else
+			echo "# IOTA_CORE_STATIC_PEERS=" >> .env
 		fi
+
+		echo "" >> .env; echo "### INX-VALIDATOR CONFIG ###" >> .env
 
 		if [ -n "$VAR_INX_VALIDATOR_ACCOUNT_ADDR" ]; then
-			echo "" >> .env; echo "### INX-VALIDATOR CONFIG ###" >> .env
 			echo "$VAR_INX_VALIDATOR_ACCOUNT_ADDR" >> .env
 			echo "$VAR_INX_VALIDATOR_PRV_KEY" >> .env			
+		else
+			echo "# INX_VALIDATOR_ACCOUNT_ADDR=" >> .env
+			echo "# INX_VALIDATOR_PRV_KEY=" >> .env	
 		fi
 
+		echo "" >> .env; echo "### INX-BLOCKISSUER CONFIG###" >> .env
+
 		if [ -n "$VAR_INX_BLOCKISSUER_ACCOUNT_ADDR" ]; then
-			echo "" >> .env; echo "### INX-BLOCKISSUER CONFIG###" >> .env
 			echo "$VAR_INX_BLOCKISSUER_ACCOUNT_ADDR" >> .env
 			echo "$VAR_INX_BLOCKISSUER_PRV_KEY" >> .env			
+		else
+			echo "# INX_BLOCKISSUER_ACCOUNT_ADDR=" >> .env
+			echo "# INX_BLOCKISSUER_PRV_KEY=" >> .env	
 		fi
 
 		echo "IOTA_CORE_JWT_SALT=$VAR_JWT_SALT" >> .env
