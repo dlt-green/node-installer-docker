@@ -2013,8 +2013,8 @@ SubMenuMaintenance() {
 
 	      echo "Download latest full snapshot... $VAR_NOVA_IOTA_CORE_NETWORK"
 	      VAR_SNAPSHOT="https://files.nova-testnet.iotaledger.net/snapshots/latest-snapshot.bin"
-	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
-	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
+	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/snapshot.bin
+	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/snapshot.bin
 	   fi
 
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ] && [ $VAR_NOVA_IOTA_CORE_NETWORK = 'mainnet' ]; then
@@ -3925,13 +3925,13 @@ NovaIotacore() {
 		fi
 
 		if [ -n "$VAR_INX_VALIDATOR_ACCOUNT_ADDR" ]; then
-			echo "" >> .env; echo "### INX-VALIDATOR ###" >> .env
+			echo "" >> .env; echo "### INX-VALIDATOR CONFIG ###" >> .env
 			echo "$VAR_INX_VALIDATOR_ACCOUNT_ADDR" >> .env
 			echo "$VAR_INX_VALIDATOR_PRV_KEY" >> .env			
 		fi
 
 		if [ -n "$VAR_INX_BLOCKISSUER_ACCOUNT_ADDR" ]; then
-			echo "" >> .env; echo "### INX-BLOCKISSUER ###" >> .env
+			echo "" >> .env; echo "### INX-BLOCKISSUER CONFIG###" >> .env
 			echo "$VAR_INX_BLOCKISSUER_ACCOUNT_ADDR" >> .env
 			echo "$VAR_INX_BLOCKISSUER_PRV_KEY" >> .env			
 		fi
@@ -3942,6 +3942,7 @@ NovaIotacore() {
 
 		if [ "$VAR_CERT" = 0 ]
 		then
+			echo "SSL_CONFIG=letsencrypt" >> .env
 			echo "IOTA_CORE_HTTP_PORT=80" >> .env
 			clear
 			echo ""
@@ -3965,13 +3966,13 @@ NovaIotacore() {
 			echo "$gn""Set mail for certificate renewal: $VAR_ACME_EMAIL""$xx"
 			echo "ACME_EMAIL=$VAR_ACME_EMAIL" >> .env
 		else
-			echo "IOTA_CORE_HTTP_PORT=8081" >> .env
 			echo "SSL_CONFIG=certs" >> .env
+			echo "IOTA_CORE_HTTP_PORT=8081" >> .env
 			echo "IOTA_CORE_SSL_CERT=/etc/letsencrypt/live/$VAR_HOST/fullchain.pem" >> .env
 			echo "IOTA_CORE_SSL_KEY=/etc/letsencrypt/live/$VAR_HOST/privkey.pem" >> .env
 		fi
 
-		echo "" >> .env; echo "### INX ###" >> .env
+		echo "" >> .env; echo "### INX-PLUGINS ###" >> .env
 
 		echo "INX_INDEXER_VERSION=$VAR_NOVA_INX_INDEXER_VERSION" >> .env
 		echo "INX_MQTT_VERSION=$VAR_NOVA_INX_MQTT_VERSION" >> .env
@@ -4075,8 +4076,8 @@ NovaIotacore() {
 
 		echo "Download latest full snapshot... $VAR_NOVA_IOTA_CORE_NETWORK"
 		VAR_SNAPSHOT="https://files.nova-testnet.iotaledger.net/snapshots/latest-snapshot.bin"
-		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
-		chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
+		wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/snapshot.bin
+		chmod 744 /var/lib/$VAR_DIR/data/snapshots/snapshot.bin
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
