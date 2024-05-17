@@ -3822,6 +3822,7 @@ NovaIotacore() {
 		echo ''
 		VAR_NOVA_IOTA_CORE_HTTPS_PORT=$(cat .env 2>/dev/null | grep IOTA_CORE_HTTPS_PORT= | cut -d '=' -f 2)
 		VAR_DEFAULT='443';
+		if [ -s "/var/lib/shimmer-hornet/.env" ]; then VAR_DEFAULT='444'; fi
 		if [ -z "$VAR_NOVA_IOTA_CORE_HTTPS_PORT" ]; then
 		  echo "Set dashboard port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set dashboard port (config: $ca""$VAR_NOVA_IOTA_CORE_HTTPS_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
@@ -3831,6 +3832,7 @@ NovaIotacore() {
 		echo ''
 		VAR_NOVA_IOTA_CORE_GOSSIP_PORT=$(cat .env 2>/dev/null | grep IOTA_CORE_GOSSIP_PORT= | cut -d '=' -f 2)
 		VAR_DEFAULT='15600';
+		if [ -s "/var/lib/shimmer-hornet/.env" ]; then VAR_DEFAULT='15601'; fi
 		if [ -z "$VAR_NOVA_IOTA_CORE_GOSSIP_PORT" ]; then
 		  echo "Set gossip port (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set gossip port (config: $ca""$VAR_NOVA_IOTA_CORE_GOSSIP_PORT""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
