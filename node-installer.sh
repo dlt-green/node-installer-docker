@@ -3884,13 +3884,15 @@ NovaIotacore() {
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_INX_DASHBOARD_PASSWORD=$VAR_TMP
+		  VAR_INX_DASHBOARD_SALT=""
 		  echo "$gn""Set dashboard password: new""$xx"
 		else
 		  if [ -z "$VAR_INX_DASHBOARD_PASSWORD" ]; then
 		    VAR_INX_DASHBOARD_PASSWORD=$VAR_DEFAULT
+		    VAR_INX_DASHBOARD_SALT=""
 		    echo "$gn""Set dashboard password: ""$VAR_DEFAULT""$xx"
 		  else
-		    VAR_INX_DASHBOARD_PASSWORD=''
+		    VAR_INX_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep INX_DASHBOARD_PASSWORD= | cut -d '=' -f 2)
 		    echo "$gn""Set dashboard password: use existing""$xx"
 		  fi
 		fi
@@ -4048,7 +4050,7 @@ NovaIotacore() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ -n "$VAR_INX_DASHBOARD_PASSWORD" ]; then
+		if [ -z "$VAR_INX_DASHBOARD_SALT" ]; then
 		  credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_INX_DASHBOARD_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_INX_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_INX_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
