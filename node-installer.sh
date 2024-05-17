@@ -3867,30 +3867,30 @@ NovaIotacore() {
 		echo "$gn""Set pruning size: $VAR_NOVA_IOTA_CORE_PRUNING_SIZE""$xx"
 
 		echo ''
-		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2 | sed 's/ /-/g')
+		VAR_INX_DASHBOARD_USERNAME=$(cat .env 2>/dev/null | grep INX_DASHBOARD_USERNAME= | cut -d '=' -f 2 | sed 's/ /-/g')
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1);
-		if [ -z "$VAR_USERNAME" ]; then
-		echo "Set dashboard username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		if [ -z "$VAR_INX_DASHBOARD_USERNAME" ]; then
+		echo "Set dashboard username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard username (config: $ca""$VAR_INX_DASHBOARD_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; elif [ -z "$VAR_USERNAME" ]; then VAR_USERNAME=$VAR_DEFAULT; fi
-		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
+		if [ -n "$VAR_TMP" ]; then VAR_INX_DASHBOARD_USERNAME=$VAR_TMP; elif [ -z "$VAR_INX_DASHBOARD_USERNAME" ]; then VAR_INX_DASHBOARD_USERNAME=$VAR_DEFAULT; fi
+		echo "$gn""Set dashboard username: $VAR_INX_DASHBOARD_USERNAME""$xx"
 
 		echo ''
-		VAR_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD= | cut -d '=' -f 2)
-		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
+		VAR_INX_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep INX_DASHBOARD_PASSWORD= | cut -d '=' -f 2)
+		VAR_INX_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep INX_DASHBOARD_SALT= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1);
-		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
+		if [ -z "$VAR_INX_DASHBOARD_PASSWORD" ]; then
 		echo "Set dashboard password / will be saved as hash ($ca""use generated""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
-		  VAR_PASSWORD=$VAR_TMP
+		  VAR_INX_DASHBOARD_PASSWORD=$VAR_TMP
 		  echo "$gn""Set dashboard password: new""$xx"
 		else
-		  if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
-		    VAR_PASSWORD=$VAR_DEFAULT
+		  if [ -z "$VAR_INX_DASHBOARD_PASSWORD" ]; then
+		    VAR_INX_DASHBOARD_PASSWORD=$VAR_DEFAULT
 		    echo "$gn""Set dashboard password: ""$VAR_DEFAULT""$xx"
 		  else
-		    VAR_PASSWORD=''
+		    VAR_INX_DASHBOARD_PASSWORD=''
 		    echo "$gn""Set dashboard password: use existing""$xx"
 		  fi
 		fi
@@ -4048,21 +4048,21 @@ NovaIotacore() {
 		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 		echo ""
 
-		if [ -n "$VAR_PASSWORD" ]; then
-		  credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
-		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
-		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		if [ -n "$VAR_INX_DASHBOARD_PASSWORD" ]; then
+		  credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_INX_DASHBOARD_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
+		  VAR_INX_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		  VAR_INX_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
+		  echo "passwordHash: "$VAR_INX_DASHBOARD_PASSWORD
+		  echo "passwordSalt: "$VAR_INX_DASHBOARD_SALT  
 		else
 		  echo "credentials not changed..."
 		fi
 
-		echo "" >> .env; echo "### CREDENTIALS ###" >> .env
+		echo "" >> .env; echo "### INX-DASHBOARD CONFIG ###" >> .env
 
-		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
-		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
-		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
+		echo "INX_DASHBOARD_USERNAME=$VAR_INX_DASHBOARD_USERNAME" >> .env
+		echo "INX_DASHBOARD_PASSWORD=$VAR_INX_DASHBOARD_PASSWORD" >> .env
+		echo "INX_DASHBOARD_SALT=$VAR_INX_DASHBOARD_SALT" >> .env
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
