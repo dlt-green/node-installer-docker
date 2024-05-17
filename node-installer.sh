@@ -1070,7 +1070,7 @@ Dashboard() {
 	t|T)
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   INST_VRSN_LATEST=$(curl https://api.github.com/repos/dlt-green/node-installer-docker/git/refs/tags | jq -r .[].ref | cut -d / -f 3 | tail -1) >/dev/null 2>&1
-	   sudo curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/$INST_VRSN_LATEST/node-installer.sh >> node-installer.sh && sh node-installer.sh
+	   cd /home && sudo curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/$INST_VRSN_LATEST/node-installer.sh >> node-installer.sh && sh node-installer.sh
 	   ;;
 	s|S)
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
