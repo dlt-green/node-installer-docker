@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.4.4"
-BUILD="20240514_124747"
+VRSN="v.4.4.5"
+BUILD="20240517_233041"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='a2d01ce8ba2fb23ccaabc8d6674378b1cca0df63a0cc7146a4aa8cca1e1bd3ac'
+IotaHornetHash='8af58776c1c6c44e6c7f01e31bf68fd34d94397d3186e26c461049db9a0f5038'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='8fa1dcc9ecd6c03c003dd352c3cd9328cf29a6ffe0e0574c66197269c0f279b5'
+IotaWaspHash='e3792008797ea3201f32f499f97f01ad69c304efab44af8d7ef9d8da5ddffd1b'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='30b170f64a09ee1a81529912ce6224e646dda2d3fc0e818a7875e2fbbf276c52'
+ShimmerHornetHash='88c504ed29e75eb4713e76087b7f80f72580084580e48afab013b8ed47f14488'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='5a33a9bf38cb0bbc999ae8e24ae4b6d445f47163a330448398bb8bb919ed553b'
+ShimmerWaspHash='bb612260ee5b16353e9817fdc15d4d2ce46593848a3b176a6541672bcb5f4bbd'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='dddce2efb8cc5ebc5b319371e262c589d02601dc071d43bf81307f33501b117b'
+ShimmerChronicleHash='de0e0572b63950c14c82da0abe8a0d5944eb81d24fa4ee5c485cac3a2bddffb2'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -201,6 +201,7 @@ CheckIota() {
 CheckShimmer() {
 	if [ -s "/var/lib/shimmer-hornet/.env" ]; then VAR_NETWORK=2; fi
 	if [ -s "/var/lib/shimmer-wasp/.env" ];   then VAR_NETWORK=2; fi
+	if [ -s "/var/lib/nova-iotacore/.env" ]; then VAR_NETWORK=2; fi
 }
 
 CheckAutostart() {
@@ -994,7 +995,7 @@ Dashboard() {
 	  echo "$gr""              maintenance: ""$(printf '%02d' "$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 2)")"":""$(printf '%02d' "$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 1)")"" | day: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 3)"" | month: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 4)"" | weekday: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 5)""$xx"
 	  echo ""
 	else echo ""; fi
-	echo "select menu item:"
+	echo "select menu item:            $lg[T] try iota-core-testnet additionally to shimmer$xx"
 
 	if [ "$opt_mode" = 'd' ]; then
 	  echo "$ca""unattended: Debugging...""$xx"
@@ -1066,6 +1067,10 @@ Dashboard() {
 
 	case $n in
 
+	t|T)
+	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	   sudo curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/iota-core-latest/node-installer.sh >> node-installer.sh && sh node-installer.sh
+	   ;;
 	s|S)
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   clear
