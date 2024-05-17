@@ -85,3 +85,26 @@ INX_VALIDATOR_VERSION=1.0-alpha
 | INX_VALIDATOR_ACCOUNT_ADDR           |    (x)    |                 | Account address used by inx-validator                                                                                                                                                                                               |
 | INX_VALIDATOR_PRV_KEY                |    (x)    |                 | Private key used by inx-validator                                                                                                                                                                                                   |
 | COMPOSE_PROFILES                     |           |                 | Allowed values: `monitoring`, `blockissuer`, `validator`                                                                                                                                                                            |
+
+## wallet-cli
+
+wallet-cli is delivered in a docker image. To use it execute the following steps:
+
+1. Evenutally create a file named `.env` and set parameters given in documentation below
+2. Run `./prepare_cli.sh` to prepare workdir.
+3. An _alias_ named wallet is automatically added to `~/.bash_aliases` for easier execution of wallet-cli in docker
+4. Execute `wallet init` to initialize the node connection and a wallet
+
+| Parameter          | Default | Description                                                                                      |
+|--------------------|---------|--------------------------------------------------------------------------------------------------|
+| WALLET_CLI_VERSION |         | Version to be used (see https://hub.docker.com/r/dltgreen/wallet-cli/tags for available version) |
+
+**Important hints:**
+
+- Execute `prepare_cli.sh` after each iotacore upgrade.
+- Uninstalling the wallet alias can be done with `prepare_cli.sh --uninstall`
+- `wallet init` automatically append `--node-url http://iota-core:14265` to the command. If you would like to set another node url, you can do it by adding `--node-url <url>` to the command.
+
+#### How can I generate a wallet?
+
+To generate a new wallet execute `wallet init`. The database and stronghold store is created in `data/wallet-cli`.

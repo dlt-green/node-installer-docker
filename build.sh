@@ -112,6 +112,40 @@ build_wasp_cli_image () {
   rm -Rf ${buildDirWaspCli}
 }
 
+build_wallet_cli_image () {
+  local version=$1
+  local skipDockerBuilder=${2:-false}
+
+  if [[ "${version}" == "" ]]; then
+    read -p "Which version should be downloaded and built? " version
+  fi
+
+  local walletCliUrlAmd64="https://github.com/iotaledger/iota-sdk/releases/download/cli-wallet-v${version}/wallet-linux"
+
+  local buildDirWalletCli=${BUILD_DIR}/wallet-cli
+  rm -Rf ${buildDirWalletCli}
+  local url=${walletCliUrlAmd64}
+
+  mkdir -p ${buildDirWalletCli}
+  (cd ${buildDirWalletCli}; curl -o wallet -L "${url}" )
+  (cd ${buildDirWalletCli}; mkdir ./app && mv wallet ./app && chmod +x ./app/wallet)
+
+#  echo "FROM gcr.io/distroless/cc-debian11:nonroot" > ${buildDirWalletCli}/Dockerfile
+  echo "FROM debian:bookworm-slim" > ${buildDirWalletCli}/Dockerfile
+  echo "RUN groupadd --gid 65532 nonroot && useradd --uid 65532 --gid 65532 -m nonroot" >> ${buildDirWalletCli}/Dockerfile
+  echo "RUN apt-get update && apt-get install -y --no-install-recommends libudev1 && apt-get clean && rm -rf /var/lib/apt/lists/*" >> ${buildDirWalletCli}/Dockerfile
+  echo "COPY --chown=nonroot:nonroot ./app  /app" >> ${buildDirWalletCli}/Dockerfile
+  echo "WORKDIR /app" >> ${buildDirWalletCli}/Dockerfile
+  echo "USER nonroot" >> ${buildDirWalletCli}/Dockerfile
+  echo "ENTRYPOINT [\"/app/wallet\"]" >> ${buildDirWalletCli}/Dockerfile
+
+  if [[ "${skipDockerBuilder}" != "true" ]]; then prepare_dockerx_builder; fi
+  (cd $buildDirWalletCli; docker buildx build --platform linux/amd64 -t dltgreen/wallet-cli:${version} --push .)
+  if [[ "${skipDockerBuilder}" != "true" ]]; then shutdown_dockerx_builder; fi
+
+  rm -Rf ${buildDirWalletCli}
+}
+
 prepare_dockerx_builder () {
   shutdown_dockerx_builder
   sudo apt-get install -y qemu qemu-user-static
@@ -320,13 +354,18 @@ NodePackagesMenu() {
 }
 
 DockerImagesMenu() {
-  print_menu "wasp-cli" "Back"
+  print_menu "wasp-cli" "wallet-cli" "Back"
 	read  -p '> ' n
 	case ${n} in
   1) print_line
      build_wasp_cli_image
      enter_to_continue
 	   DockerImagesMenu
+     ;;
+  2) print_line
+     build_wallet_cli_image
+     enter_to_continue
+     DockerImagesMenu
      ;;
 	*) MainMenu ;;
 	esac
@@ -369,6 +408,11 @@ if [ ! $# -eq 0 ]; then
         shift
         shift
         ;;
+      --wallet-cli-image)
+        walletCliImageVersion="$2"
+        shift
+        shift
+        ;;
       --skip-docker-builder)
         skipDockerBuilder="true"
         shift
@@ -407,6 +451,10 @@ if [ ! $# -eq 0 ]; then
   if [[ "${waspCliImageVersion}" != "" ]]; then
     build_wasp_cli_image ${waspCliImageVersion} ${skipDockerBuilder};
   fi
+
+  if [[ "${walletCliImageVersion}" != "" ]]; then
+      build_wallet_cli_image ${walletCliImageVersion} ${skipDockerBuilder};
+    fi
 else
   MainMenu
 fi
