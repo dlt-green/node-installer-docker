@@ -1069,7 +1069,7 @@ Dashboard() {
 
 	t|T)
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
-	   sudo curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/iota-core-latest/node-installer.sh >> node-installer.sh && sh node-installer.sh
+	   cd /home && sudo curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/iota-core-latest/node-installer.sh >> node-installer.sh && sh node-installer.sh
 	   ;;
 	s|S)
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
