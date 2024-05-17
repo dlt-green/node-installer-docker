@@ -201,6 +201,7 @@ CheckIota() {
 CheckShimmer() {
 	if [ -s "/var/lib/shimmer-hornet/.env" ]; then VAR_NETWORK=2; fi
 	if [ -s "/var/lib/shimmer-wasp/.env" ];   then VAR_NETWORK=2; fi
+	if [ -s "/var/lib/nova-iotacore/.env" ]; then VAR_NETWORK=2; fi
 }
 
 CheckAutostart() {
@@ -1066,6 +1067,10 @@ Dashboard() {
 
 	case $n in
 
+	t|T)
+	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
+	   sudo curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/iota-core-latest/node-installer.sh >> node-installer.sh && sh node-installer.sh
+	   ;;
 	s|S)
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   clear
