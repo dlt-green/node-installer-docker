@@ -267,9 +267,9 @@ services:
       - "--dashboard.bindAddress=inx-dashboard:8081"
       - "--dashboard.explorerURL=https://explorer.iota.org/iota2-testnet"
       - "--dashboard.auth.identityFilePath=/app/dashboard/identity.key"
-      - "--dashboard.auth.username=${DASHBOARD_USERNAME}"
-      - "--dashboard.auth.passwordHash=${DASHBOARD_PASSWORD}"
-      - "--dashboard.auth.passwordSalt=${DASHBOARD_SALT}"
+      - "--dashboard.auth.username=${INX_DASHBOARD_USERNAME}"
+      - "--dashboard.auth.passwordHash=${INX_DASHBOARD_PASSWORD}"
+      - "--dashboard.auth.passwordSalt=${INX_DASHBOARD_SALT}"
       - "--prometheus.enabled=true"
       - "--prometheus.bindAddress=inx-dashboard:9312"
     logging:
