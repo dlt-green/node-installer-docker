@@ -974,7 +974,7 @@ Dashboard() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║$rd DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN $xx║"
+	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $rd$VAR_VRN $xx║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
 	echo "║           ┌──────────────────┬  IOTA Stardust  ┬──────────────────┐         ║"
@@ -4953,7 +4953,7 @@ VAR_VRN=$text
 
 echo ""
 echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-echo "║$rd DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN $xx║"
+echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $rd$VAR_VRN $xx║"
 echo "║                                                                             ║"
 echo "║$lg      ____    _      _____         ____   ____    _____   _____   _   _      $xx║"
 echo "║$lg     |  _ \  | |    |_   _|       / ___| |  _ \  | ____| | ____| | \ | |     $xx║"
