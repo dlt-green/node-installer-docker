@@ -4964,7 +4964,7 @@ echo "║                                                                       
 echo "║                                                                             ║"
 echo "║                         for IOTA 2.0 Testnet Nodes                          ║"
 echo "║                                                                             ║"
-echo "║$rd              not production ready - for testing purposes only               ║"
+echo "║$rd              not production ready - for testing purposes only               $xx║"
 echo "║                                                                             ║"
 echo "║         Github: https://github.com/dlt-green/node-installer-docker          ║"
 echo "║                                                                             ║"
