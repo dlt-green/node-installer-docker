@@ -3890,10 +3890,10 @@ NovaIotacore() {
 		echo "$gn""Set dashboard username: $VAR_INX_DASHBOARD_USERNAME""$xx"
 
 		echo ''
-		VAR_INX_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep INX_DASHBOARD_PASSWORD= | cut -d '=' -f 2)
+		VAR_INX_DASHBOARD_HASH=$(cat .env 2>/dev/null | grep INX_DASHBOARD_PASSWORD= | cut -d '=' -f 2)
 		VAR_INX_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep INX_DASHBOARD_SALT= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1);
-		if [ -z "$VAR_INX_DASHBOARD_PASSWORD" ]; then
+		if [ -z "$VAR_INX_DASHBOARD_HASH" ]; then
 		echo "Set dashboard password / will be saved as hash ($ca""use generated""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
@@ -3906,8 +3906,8 @@ NovaIotacore() {
 		    VAR_INX_DASHBOARD_SALT=""
 		    echo "$gn""Set dashboard password: ""$VAR_DEFAULT""$xx"
 		  else
-		    VAR_INX_DASHBOARD_PASSWORD=$(cat .env 2>/dev/null | grep INX_DASHBOARD_PASSWORD= | cut -d '=' -f 2)
 		    echo "$gn""Set dashboard password: use existing""$xx"
+		    VAR_INX_DASHBOARD_PASSWORD=''
 		  fi
 		fi
 
@@ -4066,10 +4066,10 @@ NovaIotacore() {
 
 		if [ -z "$VAR_INX_DASHBOARD_SALT" ]; then
 		  credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_INX_DASHBOARD_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
-		  VAR_INX_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
+		  VAR_INX_DASHBOARD_HASH=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_INX_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-		  echo "passwordHash: "$VAR_INX_DASHBOARD_PASSWORD
-		  echo "passwordSalt: "$VAR_INX_DASHBOARD_SALT  
+		  echo "passwordHash: "$VAR_INX_DASHBOARD_HASH
+		  echo "passwordSalt: "$VAR_INX_DASHBOARD_SALT
 		else
 		  echo "credentials not changed..."
 		fi
@@ -4077,7 +4077,7 @@ NovaIotacore() {
 		echo "" >> .env; echo "### INX-DASHBOARD CONFIG ###" >> .env
 
 		echo "INX_DASHBOARD_USERNAME=$VAR_INX_DASHBOARD_USERNAME" >> .env
-		echo "INX_DASHBOARD_PASSWORD=$VAR_INX_DASHBOARD_PASSWORD" >> .env
+		echo "INX_DASHBOARD_PASSWORD=$VAR_INX_DASHBOARD_HASH" >> .env
 		echo "INX_DASHBOARD_SALT=$VAR_INX_DASHBOARD_SALT" >> .env
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -4156,9 +4156,9 @@ NovaIotacore() {
 
 	RenameContainer
 
-	if [ -n "$VAR_PASSWORD" ]; then
-	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it nova-iotacore.grafana grafana cli admin reset-admin-password "$VAR_PASSWORD"; fi
-	else echo 'done...'; VAR_PASSWORD='********'; fi
+	if [ -n "$VAR_INX_DASHBOARD_PASSWORD" ]; then
+	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it nova-iotacore.grafana grafana cli admin reset-admin-password "$VAR_INX_DASHBOARD_PASSWORD"; fi
+	else echo 'done...'; VAR_INX_DASHBOARD_PASSWORD='********'; fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
@@ -4177,13 +4177,13 @@ NovaIotacore() {
 		echo "-------------------------------------------------------------------------------"
 		echo "gossip port: $VAR_NOVA_IOTA_CORE_GOSSIP_PORT"
 		echo "-------------------------------------------------------------------------------"
-		echo "node dashboard:      https://$VAR_HOST/dashboard"
+		echo "node dashboard:      https://$VAR_HOST:$VAR_NOVA_IOTA_CORE_HTTPS_PORT/dashboard"
 		echo "dashboard username:  $VAR_INX_DASHBOARD_USERNAME"
 		echo "dashboard password:  $VAR_INX_DASHBOARD_PASSWORD"
 		echo "-------------------------------------------------------------------------------"
 		echo "api: https://$VAR_HOST:$VAR_NOVA_IOTA_CORE_HTTPS_PORT/api/core/v3/info"
 		echo "-------------------------------------------------------------------------------"
-		echo "grafana dashboard: https://$VAR_HOST/grafana"
+		echo "grafana dashboard: https://$VAR_HOST:$VAR_NOVA_IOTA_CORE_HTTPS_PORT/grafana"
 		echo "grafana username:  admin"
 		echo "grafana password:  <same as hornet password>"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
