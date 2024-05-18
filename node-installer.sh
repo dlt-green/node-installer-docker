@@ -3846,17 +3846,19 @@ NovaIotacore() {
 		if [ -z "$VAR_NOVA_IOTA_CORE_NODE_ALIAS" ]; then VAR_NOVA_IOTA_CORE_NODE_ALIAS='DLT.GREEN-IOTA-CORE-NODE'; fi
 
 		echo ''
-		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep IOTA_CORE_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
 		if [ -z "$bytes" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=0; else VAR_IOTA_HORNET_PRUNING_SIZE=$bytes; fi
+		FormatToBytes $(cat /var/lib/shimmer-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		if [ -z "$bytes" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=0; else VAR_SHIMMER_HORNET_PRUNING_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
 		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
 		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi
 		FormatToBytes "$(df -h /var/lib/"$VAR_DIR" | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
 		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi
-		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_IOTA_HORNET_PRUNING_SIZE)*9/10" | bc)
-		RESERVED_SPACE=$(echo "($VAR_IOTA_HORNET_PRUNING_SIZE)" | bc)
-		FormatFromBytes "$RESERVED_SPACE"; RESERVED_SPACE=$fbytes
+		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_IOTA_HORNET_PRUNING_SIZE-$VAR_SHIMMER_HORNET_PRUNING_SIZE)*5/10" | bc)
+		RESERVED_SPACE=$(echo "($VAR_IOTA_HORNET_PRUNING_SIZE+$VAR_SHIMMER_HORNET_PRUNING_SIZE)" | bc)
+		FormatFromB50GBytes "$RESERVED_SPACE"; RESERVED_SPACE=$fbytes
 		if [ $(($(echo "$VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE < $CALCULATED_SPACE" | bc))) -eq 1 ]; then CALCULATED_SPACE=$(echo "($VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE)" | bc); fi
 		FormatFromBytes "$CALCULATED_SPACE"; CALCULATED_SPACE=$fbytes
 
@@ -3867,7 +3869,7 @@ NovaIotacore() {
 		    echo "Set pruning size / max. storage size (calculated: $ca""$CALCULATED_SPACE""$xx)"; else echo "Set pruning size / max. storage size (config: $ca""$VAR_NOVA_IOTA_CORE_PRUNING_SIZE""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		  echo "$rd""Available diskspace: $(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B/$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B ($(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5) used) ""$xx"
 		  echo "$rd""Reserved diskspace through pruning by other nodes: ""$RESERVED_SPACE""$xx"
-		  echo "$ca""Calculated pruning size for HORNET (with 10% buffer): ""$CALCULATED_SPACE""$xx"
+		  echo "$ca""Calculated pruning size for IOTA-CORE (with 50% buffer): ""$CALCULATED_SPACE""$xx"
 		  read -r -p '> ' VAR_TMP
 		  if [ -n "$VAR_TMP" ]; then VAR_NOVA_IOTA_CORE_PRUNING_SIZE=$VAR_TMP; fi
 		  if [ -z "$VAR_TMP" ]; then if [ -z "$VAR_NOVA_IOTA_CORE_PRUNING_SIZE" ]; then VAR_NOVA_IOTA_CORE_PRUNING_SIZE=$CALCULATED_SPACE; fi; fi
@@ -3876,7 +3878,7 @@ NovaIotacore() {
 		    echo "$rd""Set pruning size: Please insert with unit!"; echo "$xx"
 		  fi
 		done
-		echo "$gn""Set pruning size: $VAR_NOVA_IOTA_CORE_PRUNING_SIZE""$xx"
+		echo "$gn""Set pruning size: $VAR_NOVA_IOTA_CORE_PRUNING_SIZE""$xx
 
 		echo ''
 		VAR_INX_DASHBOARD_USERNAME=$(cat .env 2>/dev/null | grep INX_DASHBOARD_USERNAME= | cut -d '=' -f 2 | sed 's/ /-/g')
