@@ -73,7 +73,7 @@ VAR_CRON_JOB_2m=' -m 0'
 VAR_CRON_JOB_2u=' -m u'
 VAR_CRON_END_2=' -t 0 -r 1"'
 
-NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
+NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp nova-iotacore shimmer-plugins/inx-chronicle"
 
 lg='\033[1m'
 or='\e[1;33m'
@@ -1084,10 +1084,11 @@ Dashboard() {
 	         cd "/var/lib/$NODE" || exit
 	         if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
 	           CheckIota; if [ "$VAR_NETWORK" = 1 ]; then docker network create iota >/dev/null 2>&1; fi
-	           CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; fi
+	           CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; docker network create nova >/dev/null 2>&1; fi
 			   NETWORK='';
 	           if [ "$NODE" = 'iota-hornet' ]; then NETWORK=" $VAR_IOTA_HORNET_NETWORK"; fi
 	           if [ "$NODE" = 'shimmer-hornet' ]; then NETWORK=" $VAR_SHIMMER_HORNET_NETWORK"; fi
+	           if [ "$NODE" = 'nova-iotacore' ]; then NETWORK=" testnet"; fi
 	           docker compose up -d
 	           sleep 60
 	           VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
@@ -1111,6 +1112,14 @@ Dashboard() {
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
+	               VAR_STATUS="$NODE$NETWORK: import snapshot"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	             fi
+	             if [ "$NODE" = 'nova-iotacore' ]; then
+	               VAR_STATUS="$NODE$NETWORK: reset node database"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	               rm -rf /var/lib/"$NODE"/data/storage/testnet/*
+	               rm -rf /var/lib/"$NODE"/data/snapshots/testnet/*
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
@@ -2661,7 +2670,7 @@ SystemMaintenance() {
 	      cd "/var/lib/$NODE" || exit
 	      if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
 	        CheckIota; if [ "$VAR_NETWORK" = 1 ]; then docker network create iota >/dev/null 2>&1; fi
-	        CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; fi
+	        CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; docker network create nova >/dev/null 2>&1; fi
 	        docker compose up --no-start
 	      fi
 	    fi
