@@ -2252,7 +2252,7 @@ SubMenuConfiguration() {
 		  VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep JWT_SALT | cut -d '=' -f 2);
 	      if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""Generate JWT-Token is not supported, please update your Node! ""$xx"
 		  else
-		     VAR_JWT=$(docker compose run --rm iota-core tools jwt-api --identityPrivateKeyFilePath data/p2p/identity.key --salt $VAR_RESTAPI_SALT)
+		     VAR_JWT=$(docker compose run --rm iota-core tools jwt-api --identityPrivateKeyFilePath data/p2p/identity.key --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
 		     echo "Your JWT-Token for secured API Access is generated:"
 		     echo "$gn"
 		     echo "$VAR_JWT""$xx"
