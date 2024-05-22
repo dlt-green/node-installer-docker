@@ -4077,7 +4077,7 @@ NovaIotacore() {
 		echo ""
 
 		if [ -z "$VAR_INX_DASHBOARD_SALT" ]; then
-		  credentials=$(docker compose run -rm iota-core tools pwd-hash --json --password "$VAR_INX_DASHBOARD_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
+		  credentials=$(docker compose run --rm iota-core tools pwd-hash --json --password "$VAR_INX_DASHBOARD_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_INX_DASHBOARD_HASH=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_INX_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  echo "passwordHash: "$VAR_INX_DASHBOARD_HASH
@@ -4443,7 +4443,7 @@ NovaWasp() {
 
 			if [ -d /var/lib/nova-iotacore ]; then cd /var/lib/nova-iotacore || VAR_PASSWORD=''; fi
 			if [ -n "$VAR_PASSWORD" ]; then
-			    credentials=$(docker compose run -rm iota-core tools pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
+			    credentials=$(docker compose run --rm iota-core tools pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 
