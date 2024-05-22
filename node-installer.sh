@@ -2248,10 +2248,8 @@ SubMenuConfiguration() {
 		     echo "$VAR_JWT""$xx"
 		  fi
 	   else
-	      echo "$rd""Generate JWT-Token is not supported, aborted! ""$xx"
-	   fi
     	   if ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
-		  VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
+		  VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep JWT_SALT | cut -d '=' -f 2);
 	      if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""Generate JWT-Token is not supported, please update your Node! ""$xx"
 		  else
 		     VAR_JWT=$(docker compose run --rm iota-core tools jwt-api --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
@@ -2262,6 +2260,8 @@ SubMenuConfiguration() {
 	   else
 	      echo "$rd""Generate JWT-Token is not supported, aborted! ""$xx"
 	   fi
+	   fi
+
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuConfiguration ;;
 	2) clear
