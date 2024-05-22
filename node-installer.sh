@@ -2242,7 +2242,7 @@ SubMenuConfiguration() {
 		  VAR_JWT_SALT=$(cat .env 2>/dev/null | grep JWT_SALT | cut -d '=' -f 2);
 	      if [ -z $VAR_JWT_SALT ]; then echo "$rd""Generate JWT-Token is not supported, please update your Node! ""$xx"
 		  else
-		     VAR_JWT=$(docker run --rm iotaledger/hornet tool jwt-api --salt $VAR_JWT_SALT | awk '{ print $5 }')
+		     VAR_JWT=$(docker run iotaledger/hornet tool jwt-api --salt $VAR_JWT_SALT | awk '{ print $5 }')
 		     echo "Your JWT-Token for secured API Access is generated:"
 		     echo "$gn"
 		     echo "$VAR_JWT""$xx"
