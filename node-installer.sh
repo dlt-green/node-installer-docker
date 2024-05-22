@@ -2238,11 +2238,23 @@ SubMenuConfiguration() {
 	   echo "$xx"
 
 	   cd /var/lib/$VAR_DIR || SubMenuConfiguration;
-	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]) || ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
-		  VAR_JWT_SALT=$(cat .env 2>/dev/null | grep JWT_SALT | cut -d '=' -f 2);
-	      if [ -z $VAR_JWT_SALT ]; then echo "$rd""Generate JWT-Token is not supported, please update your Node! ""$xx"
+	   if ([ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]); then
+		  VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
+	      if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""Generate JWT-Token is not supported, please update your Node! ""$xx"
 		  else
-		     VAR_JWT=$(docker compose run iota-core tools jwt-api --salt $VAR_JWT_SALT | awk '{ print $5 }')
+		     VAR_JWT=$(docker compose run --rm hornet tool jwt-api --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
+		     echo "Your JWT-Token for secured API Access is generated:"
+		     echo "$gn"
+		     echo "$VAR_JWT""$xx"
+		  fi
+	   else
+	      echo "$rd""Generate JWT-Token is not supported, aborted! ""$xx"
+	   fi
+    	   if ([ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]); then
+		  VAR_RESTAPI_SALT=$(cat .env 2>/dev/null | grep RESTAPI_SALT | cut -d '=' -f 2);
+	      if [ -z $VAR_RESTAPI_SALT ]; then echo "$rd""Generate JWT-Token is not supported, please update your Node! ""$xx"
+		  else
+		     VAR_JWT=$(docker compose run --rm iota-core tools jwt-api --salt $VAR_RESTAPI_SALT | awk '{ print $5 }')
 		     echo "Your JWT-Token for secured API Access is generated:"
 		     echo "$gn"
 		     echo "$VAR_JWT""$xx"
