@@ -987,7 +987,7 @@ Dashboard() {
 	echo "║                                                                             ║"
 	echo "║           ┌─────────────────┬ IOTA 2.0 ""$(echo "$VAR_NOVA_IOTA_CORE_NETWORK" | sed 's/.*/\u&/')"" ┬──────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
-	echo "║ │5│   ""$sh""IOTA-CORE""$xx""    │6│      ""$sw""WASP""$xx""      │7│   ""$sc""WASP-CLI""$xx""   │ │8│    ""$ix""PLUGINS""$xx""   │ ║"
+	echo "║ │5│   ""$sh""IOTA-CORE""$xx""    │6│      ""$sw""    ""$xx""      │7│   ""$sc""        ""$xx""   │ │8│    ""$ix""       ""$xx""   │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
 	echo "║                                                                             ║"
 	echo "║    Node-Status:  ""$gn""running | healthy""$xx"" / ""$rd""stopped | unhealthy""$xx"" / ""$gr""not installed""$xx""    ║"
@@ -1219,17 +1219,17 @@ Dashboard() {
 	   DashboardHelper ;;
 	5) VAR_NETWORK=2; VAR_NODE=5; VAR_DIR='nova-iotacore'
 	   if [ "$opt_mode" ]; then NovaIotacore; clear; exit; else SubMenuMaintenance; fi ;;
-	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='nova-wasp'
-	   if [ "$opt_mode" ]; then NovaWasp; clear; exit; else SubMenuMaintenance; fi ;;
-	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='nova-wasp'
-	   clear
-	   echo "$ca"
-	   echo 'Please wait, checking for Updates...'
-	   echo "$xx"
-	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
-	   SubMenuWaspCLI ;;
-	8) VAR_NETWORK=2; VAR_NODE=0; VAR_DIR='nova-plugins'
-	   if [ "$opt_mode" ]; then clear; exit; else SubMenuPlugins; fi ;;
+#	6) VAR_NETWORK=2; VAR_NODE=6; VAR_DIR='nova-wasp'
+#	   if [ "$opt_mode" ]; then NovaWasp; clear; exit; else SubMenuMaintenance; fi ;;
+#	7) VAR_NETWORK=2; VAR_NODE=7; VAR_DIR='nova-wasp'
+#	   clear
+#	   echo "$ca"
+#	   echo 'Please wait, checking for Updates...'
+#	   echo "$xx"
+#	   if [ -s "/var/lib/$VAR_DIR/wasp-cli-wrapper.sh" ]; then echo "$ca""Network/Node: $VAR_DIR | $(/var/lib/$VAR_DIR/wasp-cli-wrapper.sh -v)""$xx"; else echo "$ca""Network/Node: $VAR_DIR | wasp-cli not installed""$xx"; fi
+#	   SubMenuWaspCLI ;;
+#	8) VAR_NETWORK=2; VAR_NODE=0; VAR_DIR='nova-plugins'
+#	   if [ "$opt_mode" ]; then clear; exit; else SubMenuPlugins; fi ;;
 	21) VAR_NETWORK=2; VAR_NODE=21; VAR_DIR='nova-plugins/inx-chronicle'
 	   if [ "$opt_mode" ]; then NovaChronicle; clear; exit; else SubMenuMaintenance; fi ;;
 	e|E) clear
