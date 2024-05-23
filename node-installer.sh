@@ -1002,7 +1002,7 @@ Dashboard() {
 	  echo "$gr""              maintenance: ""$(printf '%02d' "$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 2)")"":""$(printf '%02d' "$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 1)")"" | day: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 3)"" | month: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 4)"" | weekday: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 5)""$xx"
 	  echo ""
 	else echo ""; fi
-	echo "select menu item:            $lg[""$no""T""$xx""] try iota-core-testnet additionally to shimmer$xx"
+	echo "select menu item:            $lg[""$no""T""$xx""$lg] try iota-core-testnet additionally to shimmer$xx"
 
 	if [ "$opt_mode" = 'd' ]; then
 	  echo "$ca""unattended: Debugging...""$xx"
