@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.4.4.8"
-BUILD="20240523_110333"
+BUILD="20240523_110845"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='38bc9056b18433f56d591b9de2f17f48d7747a12187afa1a9361cf9a0fbfb67c'
+IotaHornetHash='34e0de87881b4e38f89e058f4f56210cfadcb79d568c5a9e84481e6a81bea6f2'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='fafc0a29c7a65f30e33238685b1910e932b2163effefa3d8c174034c98fb1c88'
+IotaWaspHash='17989cbd8946ef83a0b34e0c578a15f394f7becef4b078200e043935f4d9ed58'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='74cfc9a16edd67b6f6f7a0c6df815d26f69f3c4f77974406b7e081992c47cd68'
+ShimmerHornetHash='31baf4f6208686937f79a060afb6d17995ec993300fc4972e8f45adb9dc47b3f'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='de89cce9026f4aca685aca5020c189c9a90b6038af2b89a863859e704da8a76b'
+ShimmerWaspHash='d30357eb78204bafa8828f9db17b0876f6ffabc51313c30c94a57f9fd5222083'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='0f3329709297744783dba735933f86cc5294179c03d8c2d8d5dbf79eb27cf4a1'
+ShimmerChronicleHash='baa4cfe08ab8cd6362f625e4a15bee7da106bdad147a64d91ec0ec2cd30893ff'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -935,7 +935,7 @@ Dashboard() {
 
 	VAR_NODE=3; if [ -f "/var/lib/iota-wasp/data/config/wasp-cli/wasp-cli.json" ]; then ic=$gn; elif [ -d /var/lib/iota-wasp ]; then ic=$or; else ic=$gr; fi
 
-	VAR_NODE=51; VAR_NodeHealthy=false; VAR_PORT="9999"
+	VAR_NODE=5; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-hornet/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/shimmer-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
