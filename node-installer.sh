@@ -3603,7 +3603,7 @@ IotaWasp() {
 
 			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
 			if [ -n "$VAR_PASSWORD" ]; then
-			    credentials=$(docker run iotaledger/iota-core:$VAR_NOVA_IOTA_CORE_VERSION tools pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
+			    credentials=$(docker run docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 
 			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
@@ -4077,7 +4077,7 @@ NovaIotacore() {
 		echo ""
 
 		if [ -z "$VAR_INX_DASHBOARD_SALT" ]; then
-		  credentials=$(docker run --rm iotaledger/hornet tool pwd-hash --json --password "$VAR_INX_DASHBOARD_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
+		  credentials=$(docker run  iotaledger/iota-core:$VAR_NOVA_IOTA_CORE_VERSION tools pwd-hash --json --password "$VAR_INX_DASHBOARD_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_INX_DASHBOARD_HASH=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_INX_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  echo "passwordHash: "$VAR_INX_DASHBOARD_HASH
