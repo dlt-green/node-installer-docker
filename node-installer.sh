@@ -971,6 +971,11 @@ Dashboard() {
 	  if [ ix != "$rd" ]; then ix=$gn; fi
 	elif [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then ix=$rd; else ix=$gr; fi
 
+	no=$gr
+	if [ "$(docker container inspect -f '{{.State.Health.Status}}' nova-iotacore 2>/dev/null)" = 'healthy' ]; then
+	  if [ no != "$rd" ]; then no=$gn; fi
+	elif [ -d /var/lib/nova-iotacore ]; then no=$rd; else no=$gr; fi
+
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -995,7 +1000,7 @@ Dashboard() {
 	  echo "$gr""              maintenance: ""$(printf '%02d' "$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 2)")"":""$(printf '%02d' "$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 1)")"" | day: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 3)"" | month: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 4)"" | weekday: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 5)""$xx"
 	  echo ""
 	else echo ""; fi
-	echo "select menu item:            $lg[T] try iota-core-testnet additionally to shimmer$xx"
+	echo "select menu item:            $lg[""$no""T""$xx""] try iota-core-testnet additionally to shimmer$xx"
 
 	if [ "$opt_mode" = 'd' ]; then
 	  echo "$ca""unattended: Debugging...""$xx"
