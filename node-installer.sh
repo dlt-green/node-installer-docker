@@ -4077,7 +4077,7 @@ NovaIotacore() {
 		echo ""
 
 		if [ -z "$VAR_INX_DASHBOARD_SALT" ]; then
-		  credentials=$(docker compose run --rm iota-core tools pwd-hash --json --password "$VAR_INX_DASHBOARD_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
+		  credentials=$(docker run --rm iotaledger/hornet tool pwd-hash --json --password "$VAR_INX_DASHBOARD_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
 		  VAR_INX_DASHBOARD_HASH=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_INX_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  echo "passwordHash: "$VAR_INX_DASHBOARD_HASH
