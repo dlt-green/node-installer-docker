@@ -514,6 +514,7 @@ CheckNodeHealthy() {
 	2) VAR_API="info"; OBJ=".Version" ;;
 	3) VAR_API="info"; OBJ=".tangleTime.synced" ;;
 	5) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
+  	51) VAR_API="api/core/v3/info"; OBJ=".status.isHealthy" ;;
 	6) VAR_API="v1/node/version"; OBJ=".version" ;;
 	*) ;;
 	esac
@@ -934,7 +935,7 @@ Dashboard() {
 
 	VAR_NODE=3; if [ -f "/var/lib/iota-wasp/data/config/wasp-cli/wasp-cli.json" ]; then ic=$gn; elif [ -d /var/lib/iota-wasp ]; then ic=$or; else ic=$gr; fi
 
-	VAR_NODE=5; VAR_NodeHealthy=false; VAR_PORT="9999"
+	VAR_NODE=51; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-hornet/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-hornet/.env | grep _HOST | cut -d '=' -f 2)
 	  VAR_PORT=$(cat "/var/lib/shimmer-hornet/.env" | grep HTTPS_PORT | cut -d '=' -f 2)
@@ -944,6 +945,12 @@ Dashboard() {
 	  VAR_SHIMMER_HORNET_NETWORK='mainnet'
 	fi
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi
+ 
+	VAR_NODE=51; VAR_NodeHealthy=false; VAR_PORT="9999"
+	if [ -f "/var/lib/nova-iotacore/.env" ]; then
+	  CheckNodeHealthy
+	fi
+	if $VAR_NodeHealthy; then no=$gn; elif [ -d /var/lib/nova-iotacore ]; then no=$rd; else no=$gr; fi
 
 	VAR_NODE=6; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-wasp/.env" ]; then
@@ -970,11 +977,6 @@ Dashboard() {
 	if [ "$(docker container inspect -f '{{.State.Status}}' shimmer-plugins'.inx-chronicle' 2>/dev/null)" = 'running' ]; then
 	  if [ ix != "$rd" ]; then ix=$gn; fi
 	elif [ -d /var/lib/shimmer-plugins/inx-chronicle ]; then ix=$rd; else ix=$gr; fi
-
-	no=$gr
-	if [ "$(docker container inspect -f '{{.State.Health.Status}}' nova-iotacore 2>/dev/null)" = 'healthy' ]; then
-	  if [ no != "$rd" ]; then no=$gn; fi
-	elif [ -d /var/lib/nova-iotacore ]; then no=$rd; else no=$gr; fi
 
 	clear
 	echo ""
