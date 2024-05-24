@@ -2025,6 +2025,7 @@ SubMenuMaintenance() {
 	      cd /var/lib/$VAR_DIR/data/database/$VAR_NOVA_IOTA_CORE_NETWORK || SubMenuMaintenance
 	      echo "Download latest full database... latest tanglepay full database"
 	      wget -q --show-progress --progress=bar $VAR_NOVA_FULL_DB -O - | tar xzv
+	      mv /var/lib/$VAR_DIR/data/database/testnet/database/* /var/lib/$VAR_DIR/data/database/testnet
 	      cd /var/lib/$VAR_DIR || SubMenuMaintenance
 	      chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 	   fi
