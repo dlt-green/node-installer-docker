@@ -2022,7 +2022,7 @@ SubMenuMaintenance() {
 	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_NOVA_IOTA_CORE_NETWORK/*
 
 	      VAR_NOVA_FULL_DB='https://cdn.tanglebay.com/snapshots/nova-testnet/database.tar.gz'
-	      cd /var/lib/$VAR_DIR/data/database || SubMenuMaintenance
+	      cd /var/lib/$VAR_DIR/data/database/$VAR_NOVA_IOTA_CORE_NETWORK || SubMenuMaintenance
 	      echo "Download latest full database... latest tanglepay full database"
 	      wget -q --show-progress --progress=bar $VAR_NOVA_FULL_DB -O - | tar xzv
 	      cd /var/lib/$VAR_DIR || SubMenuMaintenance
