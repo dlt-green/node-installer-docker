@@ -2018,7 +2018,7 @@ SubMenuMaintenance() {
 	   fi
 
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then
-	      rm -rf /var/lib/$VAR_DIR/data/storage/$VAR_NOVA_IOTA_CORE_NETWORK/*
+	      rm -rf /var/lib/$VAR_DIR/data/database/$VAR_NOVA_IOTA_CORE_NETWORK/*
 	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_NOVA_IOTA_CORE_NETWORK/*
 
 	      echo "Download latest full snapshot... $VAR_NOVA_IOTA_CORE_NETWORK"
