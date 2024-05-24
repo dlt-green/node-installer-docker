@@ -3336,7 +3336,7 @@ IotaHornet() {
 	RenameContainer
 
 	if [ -n "$VAR_PASSWORD" ]; then
-	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it grafana grafana cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it grafana cli admin reset-admin-password "$VAR_PASSWORD"; fi
 	else echo 'done...'; VAR_PASSWORD='********'; fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -3356,13 +3356,13 @@ IotaHornet() {
 		echo "-------------------------------------------------------------------------------"
 		echo "autopeering: $VAR_IOTA_HORNET_AUTOPEERING"
 		echo "-------------------------------------------------------------------------------"
-		echo "hornet dashboard: https://$VAR_HOST/dashboard"
+		echo "hornet dashboard: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/dashboard"
 		echo "hornet username:  $VAR_USERNAME"
 		echo "hornet password:  $VAR_PASSWORD"
 		echo "-------------------------------------------------------------------------------"
 		echo "api: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/api/core/v2/info"
 		echo "-------------------------------------------------------------------------------"
-		echo "grafana dashboard: https://$VAR_HOST/grafana"
+		echo "grafana dashboard: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/grafana"
 		echo "grafana username:  admin"
 		echo "grafana password:  <same as hornet password>"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -4186,7 +4186,7 @@ ShimmerHornet() {
 	RenameContainer
 
 	if [ -n "$VAR_PASSWORD" ]; then
-	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it grafana grafana cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it grafana cli admin reset-admin-password "$VAR_PASSWORD"; fi
 	else echo 'done...'; VAR_PASSWORD='********'; fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -4206,13 +4206,13 @@ ShimmerHornet() {
 		echo "-------------------------------------------------------------------------------"
 		echo "autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING"
 		echo "-------------------------------------------------------------------------------"
-		echo "hornet dashboard: https://$VAR_HOST/dashboard"
+		echo "hornet dashboard: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/dashboard"
 		echo "hornet username:  $VAR_USERNAME"
 		echo "hornet password:  $VAR_PASSWORD"
 		echo "-------------------------------------------------------------------------------"
 		echo "api: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/api/core/v2/info"
 		echo "-------------------------------------------------------------------------------"
-		echo "grafana dashboard: https://$VAR_HOST/grafana"
+		echo "grafana dashboard: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/grafana"
 		echo "grafana username:  admin"
 		echo "grafana password:  <same as hornet password>"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
