@@ -2021,10 +2021,12 @@ SubMenuMaintenance() {
 	      rm -rf /var/lib/$VAR_DIR/data/database/$VAR_NOVA_IOTA_CORE_NETWORK/*
 	      rm -rf /var/lib/$VAR_DIR/data/snapshots/$VAR_NOVA_IOTA_CORE_NETWORK/*
 
-	      echo "Download latest full snapshot... $VAR_NOVA_IOTA_CORE_NETWORK"
-	      VAR_SNAPSHOT="https://files.nova-testnet.iotaledger.net/snapshots/latest-snapshot.bin"
-	      wget -cO - "$VAR_SNAPSHOT" -q --show-progress --progress=bar > /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
-	      chmod 744 /var/lib/$VAR_DIR/data/snapshots/"$VAR_NOVA_IOTA_CORE_NETWORK"/snapshot.bin
+	      VAR_NOVA_FULL_DB='https://cdn.tanglebay.com/snapshots/nova-testnet/database.tar.gz'
+	      cd /var/lib/$VAR_DIR/data/nova-iotacore || SubMenuMaintenance
+	      echo "Download latest full database... latest tanglepay full database"
+	      wget -q --show-progress --progress=bar $VAR_NOVA_FULL_DB -O - | tar xzv
+	      cd /var/lib/$VAR_DIR || SubMenuMaintenance
+	      chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
 	   fi
 
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ] && [ $VAR_NOVA_IOTA_CORE_NETWORK = 'mainnet' ]; then
