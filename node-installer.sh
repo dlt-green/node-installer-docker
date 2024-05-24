@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.4.7"
-BUILD="20240520_181539"
+VRSN="v.4.4.8"
+BUILD="20240524_142107"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -13,7 +13,7 @@ VAR_CONF_RESET=0
 
 # IOTA-HORNET
 
-VAR_IOTA_HORNET_VERSION='2.0.1'
+VAR_IOTA_HORNET_VERSION='2.0.2'
 VAR_IOTA_HORNET_UPDATE=1
 
 VAR_IOTA_INX_INDEXER_VERSION='1.0'
@@ -35,7 +35,7 @@ VAR_IOTA_EVM_ADDR='iota1pzt3mstq6khgc3tl0mwuzk3eqddkryqnpdxmk4nr25re2466uxwm28qq
 
 # SHIMMER-HORNET
 
-VAR_SHIMMER_HORNET_VERSION='2.0.1'
+VAR_SHIMMER_HORNET_VERSION='2.0.2'
 VAR_SHIMMER_HORNET_UPDATE=1
 
 VAR_SHIMMER_INX_INDEXER_VERSION='1.0'
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='6bc58c296023e650ea1c6747bfa1b45a33e4488fb89f9c6a1c571527e80cde8a'
+IotaHornetHash='b69efb7a4644b4b31666dd2bdfba3a097deda19dedb710e164f7791a06ae9a09'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='8e8ed9b18f74f79b20df445654d5b46f918f746767088f0090038d3a486b5dd7'
+IotaWaspHash='8d46b33a75a72a45d8f75412e84569fbe28302ecf0920e8fa391d72d50d6ae24'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='3ac9a9c3cd2b3bef4e9608fbecca227cd3dfa69ed24f68911f6d36214b039ef7'
+ShimmerHornetHash='25ab2bf0a638ae6d72fcfbefc746106c81aea1b32ea4c21c26ac706aa2d33e86'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='c73191c7e25b37b7a06b036a6479fa0e8604e85c5b26734912e1dd5318ce084d'
+ShimmerWaspHash='c9c00e5911a1adad437661397280d757223a0a31c86eb0321c8c8c5ca45bb6a7'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='caa15c7844547b3bd6bfd7dc2f928ef2685d552f82b66833051e8b0b726b0cdf'
+ShimmerChronicleHash='166abe4dd3fb91204f930a0ec9415301876a2614e8be5e8e63bfb1467553d029'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -514,6 +514,7 @@ CheckNodeHealthy() {
 	2) VAR_API="info"; OBJ=".Version" ;;
 	3) VAR_API="info"; OBJ=".tangleTime.synced" ;;
 	5) VAR_API="api/core/v2/info"; OBJ=".status.isHealthy" ;;
+  	51) VAR_API="api/core/v3/info"; OBJ=".status.isHealthy" ;;
 	6) VAR_API="v1/node/version"; OBJ=".version" ;;
 	*) ;;
 	esac
@@ -944,6 +945,12 @@ Dashboard() {
 	  VAR_SHIMMER_HORNET_NETWORK='mainnet'
 	fi
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi
+ 
+	VAR_NODE=51; VAR_NodeHealthy=false; VAR_PORT="9999"
+	if [ -f "/var/lib/nova-iotacore/.env" ]; then
+	  CheckNodeHealthy
+	fi
+	if $VAR_NodeHealthy; then no=$gn; elif [ -d /var/lib/nova-iotacore ]; then no=$rd; else no=$gr; fi
 
 	VAR_NODE=6; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-wasp/.env" ]; then
@@ -995,7 +1002,7 @@ Dashboard() {
 	  echo "$gr""              maintenance: ""$(printf '%02d' "$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 2)")"":""$(printf '%02d' "$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 1)")"" | day: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 3)"" | month: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 4)"" | weekday: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 5)""$xx"
 	  echo ""
 	else echo ""; fi
-	echo "select menu item:            $lg[T] try iota-core-testnet additionally to shimmer$xx"
+	echo "select menu item:            $lg[""$no""T""$xx""$lg] try iota-core-testnet additionally to shimmer$xx"
 
 	if [ "$opt_mode" = 'd' ]; then
 	  echo "$ca""unattended: Debugging...""$xx"
@@ -3329,7 +3336,7 @@ IotaHornet() {
 	RenameContainer
 
 	if [ -n "$VAR_PASSWORD" ]; then
-	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it grafana grafana cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 	else echo 'done...'; VAR_PASSWORD='********'; fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -3349,13 +3356,13 @@ IotaHornet() {
 		echo "-------------------------------------------------------------------------------"
 		echo "autopeering: $VAR_IOTA_HORNET_AUTOPEERING"
 		echo "-------------------------------------------------------------------------------"
-		echo "hornet dashboard: https://$VAR_HOST/dashboard"
+		echo "hornet dashboard: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/dashboard"
 		echo "hornet username:  $VAR_USERNAME"
 		echo "hornet password:  $VAR_PASSWORD"
 		echo "-------------------------------------------------------------------------------"
 		echo "api: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/api/core/v2/info"
 		echo "-------------------------------------------------------------------------------"
-		echo "grafana dashboard: https://$VAR_HOST/grafana"
+		echo "grafana dashboard: https://$VAR_HOST:$VAR_IOTA_HORNET_HTTPS_PORT/grafana"
 		echo "grafana username:  admin"
 		echo "grafana password:  <same as hornet password>"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
@@ -4179,7 +4186,7 @@ ShimmerHornet() {
 	RenameContainer
 
 	if [ -n "$VAR_PASSWORD" ]; then
-	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it grafana grafana cli admin reset-admin-password "$VAR_PASSWORD"; fi
+	  if [ "$VAR_CONF_RESET" = 1 ]; then docker exec -it grafana grafana-cli admin reset-admin-password "$VAR_PASSWORD"; fi
 	else echo 'done...'; VAR_PASSWORD='********'; fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -4199,13 +4206,13 @@ ShimmerHornet() {
 		echo "-------------------------------------------------------------------------------"
 		echo "autopeering: $VAR_SHIMMER_HORNET_AUTOPEERING"
 		echo "-------------------------------------------------------------------------------"
-		echo "hornet dashboard: https://$VAR_HOST/dashboard"
+		echo "hornet dashboard: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/dashboard"
 		echo "hornet username:  $VAR_USERNAME"
 		echo "hornet password:  $VAR_PASSWORD"
 		echo "-------------------------------------------------------------------------------"
 		echo "api: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/api/core/v2/info"
 		echo "-------------------------------------------------------------------------------"
-		echo "grafana dashboard: https://$VAR_HOST/grafana"
+		echo "grafana dashboard: https://$VAR_HOST:$VAR_SHIMMER_HORNET_HTTPS_PORT/grafana"
 		echo "grafana username:  admin"
 		echo "grafana password:  <same as hornet password>"
 		echo "═══════════════════════════════════════════════════════════════════════════════"
