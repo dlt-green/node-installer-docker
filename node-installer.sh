@@ -3503,7 +3503,7 @@ IotaWasp() {
 		if [ -z "$VAR_USERNAME" ]; then
 		echo "Set dashboard username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; elif [ -z "$VAR_USERNAME" ]; then VAR_USERNAME=$VAR_DEFAULT; fi
+		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$(echo $VAR_TMP | tr '[:upper:]' '[:lower:]'); elif [ -z "$VAR_USERNAME" ]; then VAR_USERNAME=$VAR_DEFAULT; fi
 		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
 
 		echo ''
@@ -4353,7 +4353,7 @@ ShimmerWasp() {
 		if [ -z "$VAR_USERNAME" ]; then
 		echo "Set dashboard username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; elif [ -z "$VAR_USERNAME" ]; then VAR_USERNAME=$VAR_DEFAULT; fi
+		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$(echo $VAR_TMP | tr '[:upper:]' '[:lower:]'); elif [ -z "$VAR_USERNAME" ]; then VAR_USERNAME=$VAR_DEFAULT; fi
 		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
 
 		echo ''
