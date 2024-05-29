@@ -60,6 +60,7 @@ set_config "${configPath}" ".prometheus.enabled"                     "true"
 set_config "${configPath}" ".prometheus.bindAddress"                 "\"0.0.0.0:9311\""
 set_config "${configPath}" ".inx.enabled"                            "true"
 set_config "${configPath}" ".inx.bindAddress"                        "\"0.0.0.0:9029\""
+set_config "${configPath}" ".p2p.autopeering.maxPeers"               "${IOTA_CORE_MAX_AUTOPEERS:-5}"
 set_config "${configPath}" ".p2p.autopeering.externalMultiAddresses" "\"/dns/${IOTA_CORE_HOST}/tcp/15600\""
 
 set_array_config "${configPath}" ".p2p.bindMultiAddresses"           "\"/ip4/0.0.0.0/tcp/${IOTA_CORE_GOSSIP_PORT:-15600}\",\"/ip6/::/tcp/${IOTA_CORE_GOSSIP_PORT:-15600}\"" ","
