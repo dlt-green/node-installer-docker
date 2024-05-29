@@ -355,35 +355,35 @@ NotifyMessage() {
 
 	if [ "$opt_level" = "err!" ]; then
 	case $NotifyLevel in
-	info) send=0 ;;
-	warn) send=0 ;;
-	err!) send=1 ;;
+	info) send=0; priority='-H "X-Priority: 2"'; tags='-H "Tags: info"' ;;
+	warn) send=0; priority='-H "X-Priority: 4"'; tags='-H "Tags: warning"' ;;
+	err!) send=1; priority='-H "X-Priority: 5"'; tags='-H "Tags: error"' ;;
 	*) send=1 ;;
 	esac
 	fi
 
 	if [ "$opt_level" = "warn" ]; then
 	case $NotifyLevel in
-	info) send=0 ;;
-	warn) send=1 ;;
-	err!) send=1 ;;
+	info) send=0; priority='-H "X-Priority: 2"'; tags='-H "Tags: info"' ;;
+	warn) send=1; priority='-H "X-Priority: 4"'; tags='-H "Tags: warning"' ;;
+	err!) send=1; priority='-H "X-Priority: 5"'; tags='-H "Tags: error"' ;;
 	*) send=1 ;;
 	esac
 	fi
 
 	if [ "$opt_level" = "info" ]; then
 	case $NotifyLevel in
-	info) send=1 ;;
-	warn) send=1 ;;
-	err!) send=1 ;;
+	info) send=1; priority='-H "X-Priority: 2"'; tags='-H "Tags: info"' ;;
+	warn) send=1; priority='-H "X-Priority: 4"'; tags='-H "Tags: warning"' ;;
+	err!) send=1; priority='-H "X-Priority: 5"'; tags='-H "Tags: error"' ;;
 	*) send=1 ;;
 	esac
 	fi
 
 	if [ "$send" = 1 ]; then
 	if ! [ "$NotifyAlias" ]; then echo "$or""Send notification not enabled...""$xx"; else
-		NotifyResult=$($NotifyAlias """$1 | $NotifyDomain | $3""" 2>/dev/null)
-		if [ "$NotifyResult" = 'ok' ]; then echo "$gn""Send notification successfully...""$xx"; else echo "$rd""Send notification failed...""$xx"; fi
+		NotifyResult=$($NotifyAlias """$1 | $NotifyDomain | $3""" $priority $tags 2>/dev/null | jq -r '.time')
+		if [ -n "$NotifyResult" ]; then echo "$gn""Send notification successfully...""$xx"; else echo "$rd""Send notification failed...""$xx"; fi
 	fi
 	fi
 	sleep 3
@@ -1575,7 +1575,7 @@ SubMenuNotifyMe() {
 	     echo "ChannelId:   " "$VAR_NOTIFY_ID"
 	     echo "ChannelPage: " "$VAR_NOTIFY_URL/$VAR_NOTIFY_ID"
 	     echo ""
-	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ID" qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ID"
+	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ID"
  	     echo ""
 	   else
 	     echo "$rd""No Message Channel generated!""$xx"
@@ -1634,7 +1634,7 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 
 	   echo "ChannelId:   " "$VAR_NOTIFY"
-	   echo "ChannelPage: " "https://notify.dlt.green""$VAR_NOTIFY"
+	   echo "ChannelPage: " "https://notify.dlt.green/""$VAR_NOTIFY"
 
 	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
 	   VAR_NOTIFY_ID="$VAR_NOTIFY"
