@@ -1600,8 +1600,8 @@ SubMenuNotifyMe() {
 
 	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
 
-	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """info | $VAR_DOMAIN | message channel: activated""" 2>/dev/null)
-	   if [ "$NotifyResult" = 'ok' ]; then
+	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """info | $VAR_DOMAIN | message channel: activated""" 2>/dev/null | jq -r '.time')
+	   if [ -n "$NotifyResult" ]; then
 
 	     if [ -f ~/.bash_aliases ]; then
 	       headerLine=$(awk '/# DLT.GREEN Node-Installer-Docker/{ print NR; exit }' ~/.bash_aliases)
