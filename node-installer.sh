@@ -1615,7 +1615,7 @@ SubMenuNotifyMe() {
 	         echo "$rd""Error activating new Message Channel!""$xx"
 	       fi
 	     else
-	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"'"/g' ~/.bash_aliases
+	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
 	       echo "$gn""New Message Channel: activated...""$xx"
 	     fi
 	   fi
@@ -1636,7 +1636,7 @@ SubMenuNotifyMe() {
 	   echo "ChannelId:   " "$VAR_NOTIFY"
 	   echo "ChannelPage: " "https://notify.dlt.green/""$VAR_NOTIFY"
 
-	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"
+	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
 	   VAR_NOTIFY_ID="$VAR_NOTIFY"
 
 	   echo ""
@@ -1655,7 +1655,7 @@ SubMenuNotifyMe() {
 	         echo "$rd""Error generating new Message Channel!""$xx"
 	       fi
 	     else
-	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"'"/g' ~/.bash_aliases
+	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
 	       echo "$gn""New Message Channel generated...""$xx"
 	     fi
 	   fi
