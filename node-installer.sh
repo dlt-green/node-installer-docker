@@ -1567,16 +1567,15 @@ SubMenuNotifyMe() {
 	   echo "Show existing Message Channel..."
 	   echo "$xx"
 
-	   VAR_NOTIFY_URL='https://notify.run'
+	   VAR_NOTIFY_URL='https\:\/\/notify.dlt.green'
 	   VAR_NOTIFY_ENDPOINT=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2 | cut -d ' ' -f 2)
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
 
 	   if [ "$VAR_NOTIFY_ID" ]; then
 	     echo "ChannelId:   " "$VAR_NOTIFY_ID"
-	     echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
-	     echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
+	     echo "ChannelPage: " "$VAR_NOTIFY_URL/$VAR_NOTIFY_ID"
 	     echo ""
-	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
+	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ID"
  	     echo ""
 	   else
 	     echo "$rd""No Message Channel generated!""$xx"
@@ -1589,18 +1588,17 @@ SubMenuNotifyMe() {
 	   echo "Activate new Message Channel..."
 	   echo "$xx"
 
-	   VAR_NOTIFY_URL='https\:\/\/notify.run'
+	   VAR_NOTIFY_URL='https\:\/\/notify.dlt.green'
 
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
-	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null);
-	   VAR_DEFAULT=$(echo "$VAR_NOTIFY" | jq -r '.channelId')
+	   VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 	   if [ -z "$VAR_NOTIFY_ID" ]; then
 	     echo "Set Message Channel (random: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set Message Channel (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
 	   read -r -p '> ' VAR_TMP
 	   if [ -n "$VAR_TMP" ]; then VAR_NOTIFY_ID=$VAR_TMP; elif [ -z "$VAR_NOTIFY_ID" ]; then VAR_NOTIFY_ID=$VAR_DEFAULT; fi
 	   echo "$gn""Set Message Channel: $VAR_NOTIFY_ID""$xx"
 
-	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.run/'"$VAR_NOTIFY_ID"' -d'
+	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
 
 	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """info | $VAR_DOMAIN | message channel: activated""" 2>/dev/null)
 	   if [ "$NotifyResult" = 'ok' ]; then
@@ -1632,19 +1630,17 @@ SubMenuNotifyMe() {
 	   echo "Generate new Message Channel..."
 	   echo "$xx"
 
-	   VAR_NOTIFY_URL='https\:\/\/notify.run'
-	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null)
+	   VAR_NOTIFY_URL='https\:\/\/notify.dlt.green'
+	   VAR_NOTIFY=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 
-	   echo "ChannelId:   " $(echo "$VAR_NOTIFY" | jq -r '.channelId')
-	   echo "ChannelPage: " $(echo "$VAR_NOTIFY" | jq -r '.channel_page')
-	   echo "Endpoint:    " $(echo "$VAR_NOTIFY" | jq -r '.endpoint')
+	   echo "ChannelId:   " "$VAR_NOTIFY"
+	   echo "ChannelPage: " "https://notify.dlt.green""$VAR_NOTIFY"
 
-	   VAR_NOTIFY_ENDPOINT=$(echo "$VAR_NOTIFY" | jq -r '.endpoint')
-	   VAR_NOTIFY_ENDPOINT_URL='curl '$VAR_NOTIFY_ENDPOINT' -d'
-	   VAR_NOTIFY_ID=$(echo "$VAR_NOTIFY" | jq -r '.channelId')
+	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
+	   VAR_NOTIFY_ID="$VAR_NOTIFY"
 
 	   echo ""
-	   qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
+	   qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY"
 	   echo ""
 
 	   if [ -f ~/.bash_aliases ]; then
