@@ -355,35 +355,35 @@ NotifyMessage() {
 
 	if [ "$opt_level" = "err!" ]; then
 	case $NotifyLevel in
-	info) send=0 ;;
-	warn) send=0 ;;
-	err!) send=1 ;;
+	info) send=0; priority='X-Priority: 2'; tags='✅' ;;
+	warn) send=0; priority='X-Priority: 4'; tags='⚠️' ;;
+	err!) send=1; priority='X-Priority: 5'; tags='❌' ;;
 	*) send=1 ;;
 	esac
 	fi
 
 	if [ "$opt_level" = "warn" ]; then
 	case $NotifyLevel in
-	info) send=0 ;;
-	warn) send=1 ;;
-	err!) send=1 ;;
+	info) send=0; priority='X-Priority: 2'; tags='✅' ;;
+	warn) send=1; priority='X-Priority: 4'; tags='⚠️' ;;
+	err!) send=1; priority='X-Priority: 5'; tags='❌️' ;;
 	*) send=1 ;;
 	esac
 	fi
 
 	if [ "$opt_level" = "info" ]; then
 	case $NotifyLevel in
-	info) send=1 ;;
-	warn) send=1 ;;
-	err!) send=1 ;;
+	info) send=1; priority='X-Priority: 2'; tags='✅' ;;
+	warn) send=1; priority='X-Priority: 4'; tags='⚠️' ;;
+	err!) send=1; priority='X-Priority: 5'; tags='❌️' ;;
 	*) send=1 ;;
 	esac
 	fi
 
 	if [ "$send" = 1 ]; then
 	if ! [ "$NotifyAlias" ]; then echo "$or""Send notification not enabled...""$xx"; else
-		NotifyResult=$($NotifyAlias """$1 | $NotifyDomain | $3""" 2>/dev/null)
-		if [ "$NotifyResult" = 'ok' ]; then echo "$gn""Send notification successfully...""$xx"; else echo "$rd""Send notification failed...""$xx"; fi
+		NotifyResult=$($NotifyAlias """$3 """ -H """Title: $tags $NotifyDomain""" -H """$priority""" -H """Tags: dlt.green""" 2>/dev/null | jq -r '.time')
+		if [ -n "$NotifyResult" ]; then echo "$gn""Send notification successfully...""$xx"; else echo "$rd""Send notification failed...""$xx"; fi
 	fi
 	fi
 	sleep 3
@@ -1567,16 +1567,15 @@ SubMenuNotifyMe() {
 	   echo "Show existing Message Channel..."
 	   echo "$xx"
 
-	   VAR_NOTIFY_URL='https://notify.run'
+	   VAR_NOTIFY_URL='https://notify.dlt.green'
 	   VAR_NOTIFY_ENDPOINT=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2 | cut -d ' ' -f 2)
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
 
 	   if [ "$VAR_NOTIFY_ID" ]; then
 	     echo "ChannelId:   " "$VAR_NOTIFY_ID"
-	     echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
-	     echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
+	     echo "ChannelPage: " "$VAR_NOTIFY_URL/$VAR_NOTIFY_ID"
 	     echo ""
-	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
+	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ID"
  	     echo ""
 	   else
 	     echo "$rd""No Message Channel generated!""$xx"
@@ -1589,21 +1588,21 @@ SubMenuNotifyMe() {
 	   echo "Activate new Message Channel..."
 	   echo "$xx"
 
-	   VAR_NOTIFY_URL='https\:\/\/notify.run'
+	   VAR_NOTIFY_URL='https\:\/\/notify.dlt.green'
 
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
-	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null);
-	   VAR_DEFAULT=$(echo "$VAR_NOTIFY" | jq -r '.channelId')
+	   VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 	   if [ -z "$VAR_NOTIFY_ID" ]; then
 	     echo "Set Message Channel (random: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set Message Channel (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
 	   read -r -p '> ' VAR_TMP
 	   if [ -n "$VAR_TMP" ]; then VAR_NOTIFY_ID=$VAR_TMP; elif [ -z "$VAR_NOTIFY_ID" ]; then VAR_NOTIFY_ID=$VAR_DEFAULT; fi
 	   echo "$gn""Set Message Channel: $VAR_NOTIFY_ID""$xx"
 
-	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.run/'"$VAR_NOTIFY_ID"' -d'
+	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
 
-	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """info | $VAR_DOMAIN | message channel: activated""" 2>/dev/null)
-	   if [ "$NotifyResult" = 'ok' ]; then
+	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """message channel: activated """ -H """Title: ✅ $(echo "$VAR_DOMAIN" | tr -d " ")""" -H """X-Priority: 2""" -H """Tags: dlt.green""" 2>/dev/null | jq -r '.time')
+
+	   if [ -n "$NotifyResult" ]; then
 
 	     if [ -f ~/.bash_aliases ]; then
 	       headerLine=$(awk '/# DLT.GREEN Node-Installer-Docker/{ print NR; exit }' ~/.bash_aliases)
@@ -1632,19 +1631,17 @@ SubMenuNotifyMe() {
 	   echo "Generate new Message Channel..."
 	   echo "$xx"
 
-	   VAR_NOTIFY_URL='https\:\/\/notify.run'
-	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null)
+	   VAR_NOTIFY_URL='https\:\/\/notify.dlt.green'
+	   VAR_NOTIFY=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 
-	   echo "ChannelId:   " $(echo "$VAR_NOTIFY" | jq -r '.channelId')
-	   echo "ChannelPage: " $(echo "$VAR_NOTIFY" | jq -r '.channel_page')
-	   echo "Endpoint:    " $(echo "$VAR_NOTIFY" | jq -r '.endpoint')
+	   echo "ChannelId:   " "$VAR_NOTIFY"
+	   echo "ChannelPage: " "https://notify.dlt.green/""$VAR_NOTIFY"
 
-	   VAR_NOTIFY_ENDPOINT=$(echo "$VAR_NOTIFY" | jq -r '.endpoint')
-	   VAR_NOTIFY_ENDPOINT_URL='curl '$VAR_NOTIFY_ENDPOINT' -d'
-	   VAR_NOTIFY_ID=$(echo "$VAR_NOTIFY" | jq -r '.channelId')
+	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
+	   VAR_NOTIFY_ID="$VAR_NOTIFY"
 
 	   echo ""
-	   qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
+	   qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY"
 	   echo ""
 
 	   if [ -f ~/.bash_aliases ]; then
@@ -1697,9 +1694,9 @@ SubMenuLicense() {
 	echo "║                                                                             ║"
 	echo "║    https://github.com/dlt-green/node-installer-docker/blob/main/license     ║"
 	echo "║                                                                             ║"
-	echo "║                                 MIT License                                 ║"
+	echo "║                       GNU General Public License v2.0                       ║"
 	echo "║                                                                             ║"
-	echo "║        https://github.com/notify-run/notify-run-rs/blob/main/LICENSE        ║"
+	echo "║        https://github.com/binwiederhier/ntfy/blob/main/LICENSE.GPLv2        ║"
 	echo "║                                                                             ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
