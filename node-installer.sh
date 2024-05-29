@@ -1600,7 +1600,8 @@ SubMenuNotifyMe() {
 
 	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
 
-	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """info | $VAR_DOMAIN | message channel: activated""" 2>/dev/null | jq -r '.time')
+	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """message channel: activated """ -H """Title: ✅ $(echo "$VAR_DOMAIN" | tr -d " ")""" -H """X-Priority: 2""" -H """Tags: dlt.green""" 2>/dev/null | jq -r '.time')
+
 	   if [ -n "$NotifyResult" ]; then
 
 	     if [ -f ~/.bash_aliases ]; then
