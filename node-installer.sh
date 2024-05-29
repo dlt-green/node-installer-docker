@@ -382,7 +382,7 @@ NotifyMessage() {
 
 	if [ "$send" = 1 ]; then
 	if ! [ "$NotifyAlias" ]; then echo "$or""Send notification not enabled...""$xx"; else
-		NotifyResult=$($NotifyAlias -d """$3 """ -H """Title: $tags $NotifyDomain""" -H """$priority""" -H """Tags: dlt.green""" 2>/dev/null | jq -r '.time')
+		NotifyResult=$($NotifyAlias """$3 """ -H """Title: $tags $NotifyDomain""" -H """$priority""" -H """Tags: dlt.green""" 2>/dev/null | jq -r '.time')
 		if [ -n "$NotifyResult" ]; then echo "$gn""Send notification successfully...""$xx"; else echo "$rd""Send notification failed...""$xx"; fi
 	fi
 	fi
