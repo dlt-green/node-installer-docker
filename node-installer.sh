@@ -355,34 +355,34 @@ NotifyMessage() {
 
 	if [ "$opt_level" = "err!" ]; then
 	case $NotifyLevel in
-	info) send=0; priority='-H "X-Priority: 2"'; tags='-H "Tags: info"' ;;
-	warn) send=0; priority='-H "X-Priority: 4"'; tags='-H "Tags: warning"' ;;
-	err!) send=1; priority='-H "X-Priority: 5"'; tags='-H "Tags: error"' ;;
+	info) send=0; priority='X-Priority: 2'; tags='✅' ;;
+	warn) send=0; priority='X-Priority: 4'; tags='⚠️' ;;
+	err!) send=1; priority='X-Priority: 5'; tags='❌' ;;
 	*) send=1 ;;
 	esac
 	fi
 
 	if [ "$opt_level" = "warn" ]; then
 	case $NotifyLevel in
-	info) send=0; priority='-H "X-Priority: 2"'; tags='-H "Tags: info"' ;;
-	warn) send=1; priority='-H "X-Priority: 4"'; tags='-H "Tags: warning"' ;;
-	err!) send=1; priority='-H "X-Priority: 5"'; tags='-H "Tags: error"' ;;
+	info) send=0; priority='X-Priority: 2'; tags='✅' ;;
+	warn) send=1; priority='X-Priority: 4'; tags='⚠️' ;;
+	err!) send=1; priority='X-Priority: 5'; tags='❌️' ;;
 	*) send=1 ;;
 	esac
 	fi
 
 	if [ "$opt_level" = "info" ]; then
 	case $NotifyLevel in
-	info) send=1; priority='-H "X-Priority: 2"'; tags='-H "Tags: info"' ;;
-	warn) send=1; priority='-H "X-Priority: 4"'; tags='-H "Tags: warning"' ;;
-	err!) send=1; priority='-H "X-Priority: 5"'; tags='-H "Tags: error"' ;;
+	info) send=1; priority='X-Priority: 2'; tags='✅' ;;
+	warn) send=1; priority='X-Priority: 4'; tags='⚠️' ;;
+	err!) send=1; priority='X-Priority: 5'; tags='❌️' ;;
 	*) send=1 ;;
 	esac
 	fi
 
 	if [ "$send" = 1 ]; then
 	if ! [ "$NotifyAlias" ]; then echo "$or""Send notification not enabled...""$xx"; else
-		NotifyResult=$($NotifyAlias """$1 | $NotifyDomain | $3""" $priority $tags 2>/dev/null | jq -r '.time')
+		NotifyResult=$($NotifyAlias -d """$3 """ -H """Title: $tags $NotifyDomain""" -H """$priority""" -H """Tags: dlt.green""" 2>/dev/null | jq -r '.time')
 		if [ -n "$NotifyResult" ]; then echo "$gn""Send notification successfully...""$xx"; else echo "$rd""Send notification failed...""$xx"; fi
 	fi
 	fi
