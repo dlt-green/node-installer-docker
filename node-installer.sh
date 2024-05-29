@@ -1567,7 +1567,7 @@ SubMenuNotifyMe() {
 	   echo "Show existing Message Channel..."
 	   echo "$xx"
 
-	   VAR_NOTIFY_URL='https\:\/\/notify.dlt.green'
+	   VAR_NOTIFY_URL='https://notify.dlt.green'
 	   VAR_NOTIFY_ENDPOINT=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2 | cut -d ' ' -f 2)
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
 
@@ -1575,7 +1575,7 @@ SubMenuNotifyMe() {
 	     echo "ChannelId:   " "$VAR_NOTIFY_ID"
 	     echo "ChannelPage: " "$VAR_NOTIFY_URL/$VAR_NOTIFY_ID"
 	     echo ""
-	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ID"
+	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ID" qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ID"
  	     echo ""
 	   else
 	     echo "$rd""No Message Channel generated!""$xx"
