@@ -81,7 +81,7 @@ Utilize these options according to your needs to automate node management tasks 
 
 ### Node-Installer Notification Mode
 
-There is the option to receive status reports from your nodes. You do not have to register or reveal any of your personal data. These notifications are delivered directly to your mobile or desktop device using our in-house push notification service. To receive notifications on your phone, install the app, either via Google Play or F-Droid. Once installed, open it and add the shown MessageId in the installer (Notify-Me) to a topic. In the settings of each topic you can define also your own description.
+There is the option to receive status reports from your nodes. You do not have to register or reveal any of your personal data. These notifications are delivered directly to your mobile or desktop device using our in-house push notification service. To receive notifications on your phone, install the app, either via Google Play, F-Droid or Apple. Once installed, open it and add the shown MessageId in the installer (Notify-Me) to a topic. In the settings of each topic you can define also your own description.
 
 The notification level can be set in the installation menu [ info | warn | err! ]. In addition, depending on the notification level, messages are sent with different priorities. This means that information is sent and a log is available, but it is not disruptive due to the frequency. Warnings and errors then immediately raise an alarm with pushes. If necessary, the sleep mode on the cell phone can also be interrupted in the event of errors.
 
