@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.4.8"
-BUILD="20240524_142107"
+VRSN="v.4.5.0"
+BUILD="20240530_174641"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='b69efb7a4644b4b31666dd2bdfba3a097deda19dedb710e164f7791a06ae9a09'
+IotaHornetHash='fbe6304f84ff818206629df688341cbad6661189db3913aefc29ae7a49f23369'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='8d46b33a75a72a45d8f75412e84569fbe28302ecf0920e8fa391d72d50d6ae24'
+IotaWaspHash='b94929faa48c8bb9a11302892c40665881264c316ae9a4e91b66ec6c84a3b2a0'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='25ab2bf0a638ae6d72fcfbefc746106c81aea1b32ea4c21c26ac706aa2d33e86'
+ShimmerHornetHash='ca1ed5c5cfe0e25da7598000561d6aef96af6578e384efd81ef198eea112fe38'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='c9c00e5911a1adad437661397280d757223a0a31c86eb0321c8c8c5ca45bb6a7'
+ShimmerWaspHash='2006a83b404f941616f3d53e44bdad4a84c23ee2ef927db44b47c48b77563641'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='166abe4dd3fb91204f930a0ec9415301876a2614e8be5e8e63bfb1467553d029'
+ShimmerChronicleHash='d7cdeba799848a085bee8eb94a2ffec0572403931bfbb8a9a899229d9e854e18'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -355,35 +355,35 @@ NotifyMessage() {
 
 	if [ "$opt_level" = "err!" ]; then
 	case $NotifyLevel in
-	info) send=0 ;;
-	warn) send=0 ;;
-	err!) send=1 ;;
+	info) send=0; priority='X-Priority: 2'; tags='✅' ;;
+	warn) send=0; priority='X-Priority: 4'; tags='⚠️' ;;
+	err!) send=1; priority='X-Priority: 5'; tags='❌' ;;
 	*) send=1 ;;
 	esac
 	fi
 
 	if [ "$opt_level" = "warn" ]; then
 	case $NotifyLevel in
-	info) send=0 ;;
-	warn) send=1 ;;
-	err!) send=1 ;;
+	info) send=0; priority='X-Priority: 2'; tags='✅' ;;
+	warn) send=1; priority='X-Priority: 4'; tags='⚠️' ;;
+	err!) send=1; priority='X-Priority: 5'; tags='❌️' ;;
 	*) send=1 ;;
 	esac
 	fi
 
 	if [ "$opt_level" = "info" ]; then
 	case $NotifyLevel in
-	info) send=1 ;;
-	warn) send=1 ;;
-	err!) send=1 ;;
+	info) send=1; priority='X-Priority: 2'; tags='✅' ;;
+	warn) send=1; priority='X-Priority: 4'; tags='⚠️' ;;
+	err!) send=1; priority='X-Priority: 5'; tags='❌️' ;;
 	*) send=1 ;;
 	esac
 	fi
 
 	if [ "$send" = 1 ]; then
 	if ! [ "$NotifyAlias" ]; then echo "$or""Send notification not enabled...""$xx"; else
-		NotifyResult=$($NotifyAlias """$1 | $NotifyDomain | $3""" 2>/dev/null)
-		if [ "$NotifyResult" = 'ok' ]; then echo "$gn""Send notification successfully...""$xx"; else echo "$rd""Send notification failed...""$xx"; fi
+		NotifyResult=$($NotifyAlias """$3 """ -H """Title: $tags $NotifyDomain""" -H """$priority""" -H """Tags: dlt.green""" 2>/dev/null | jq -r '.time')
+		if [ -n "$NotifyResult" ]; then echo "$gn""Send notification successfully...""$xx"; else echo "$rd""Send notification failed...""$xx"; fi
 	fi
 	fi
 	sleep 3
@@ -1567,16 +1567,15 @@ SubMenuNotifyMe() {
 	   echo "Show existing Message Channel..."
 	   echo "$xx"
 
-	   VAR_NOTIFY_URL='https://notify.run'
+	   VAR_NOTIFY_URL='https://notify.dlt.green'
 	   VAR_NOTIFY_ENDPOINT=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2 | cut -d ' ' -f 2)
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
 
 	   if [ "$VAR_NOTIFY_ID" ]; then
 	     echo "ChannelId:   " "$VAR_NOTIFY_ID"
-	     echo "ChannelPage: " "$VAR_NOTIFY_URL/c/$VAR_NOTIFY_ID"
-	     echo "Endpoint:    " "$VAR_NOTIFY_ENDPOINT"
+	     echo "ChannelPage: " "$VAR_NOTIFY_URL/$VAR_NOTIFY_ID"
 	     echo ""
-	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
+	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ID"
  	     echo ""
 	   else
 	     echo "$rd""No Message Channel generated!""$xx"
@@ -1589,21 +1588,21 @@ SubMenuNotifyMe() {
 	   echo "Activate new Message Channel..."
 	   echo "$xx"
 
-	   VAR_NOTIFY_URL='https\:\/\/notify.run'
+	   VAR_NOTIFY_URL='https\:\/\/notify.dlt.green'
 
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
-	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null);
-	   VAR_DEFAULT=$(echo "$VAR_NOTIFY" | jq -r '.channelId')
+	   VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 	   if [ -z "$VAR_NOTIFY_ID" ]; then
 	     echo "Set Message Channel (random: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set Message Channel (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
 	   read -r -p '> ' VAR_TMP
 	   if [ -n "$VAR_TMP" ]; then VAR_NOTIFY_ID=$VAR_TMP; elif [ -z "$VAR_NOTIFY_ID" ]; then VAR_NOTIFY_ID=$VAR_DEFAULT; fi
 	   echo "$gn""Set Message Channel: $VAR_NOTIFY_ID""$xx"
 
-	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.run/'"$VAR_NOTIFY_ID"' -d'
+	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
 
-	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """info | $VAR_DOMAIN | message channel: activated""" 2>/dev/null)
-	   if [ "$NotifyResult" = 'ok' ]; then
+	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """message channel: activated """ -H """Title: ✅ $(echo "$VAR_DOMAIN" | tr -d " ")""" -H """X-Priority: 2""" -H """Tags: dlt.green""" 2>/dev/null | jq -r '.time')
+
+	   if [ -n "$NotifyResult" ]; then
 
 	     if [ -f ~/.bash_aliases ]; then
 	       headerLine=$(awk '/# DLT.GREEN Node-Installer-Docker/{ print NR; exit }' ~/.bash_aliases)
@@ -1632,19 +1631,17 @@ SubMenuNotifyMe() {
 	   echo "Generate new Message Channel..."
 	   echo "$xx"
 
-	   VAR_NOTIFY_URL='https\:\/\/notify.run'
-	   VAR_NOTIFY=$(curl -X POST https://notify.run/api/register_channel 2>/dev/null)
+	   VAR_NOTIFY_URL='https\:\/\/notify.dlt.green'
+	   VAR_NOTIFY=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 
-	   echo "ChannelId:   " $(echo "$VAR_NOTIFY" | jq -r '.channelId')
-	   echo "ChannelPage: " $(echo "$VAR_NOTIFY" | jq -r '.channel_page')
-	   echo "Endpoint:    " $(echo "$VAR_NOTIFY" | jq -r '.endpoint')
+	   echo "ChannelId:   " "$VAR_NOTIFY"
+	   echo "ChannelPage: " "https://notify.dlt.green/""$VAR_NOTIFY"
 
-	   VAR_NOTIFY_ENDPOINT=$(echo "$VAR_NOTIFY" | jq -r '.endpoint')
-	   VAR_NOTIFY_ENDPOINT_URL='curl '$VAR_NOTIFY_ENDPOINT' -d'
-	   VAR_NOTIFY_ID=$(echo "$VAR_NOTIFY" | jq -r '.channelId')
+	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
+	   VAR_NOTIFY_ID="$VAR_NOTIFY"
 
 	   echo ""
-	   qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ENDPOINT"
+	   qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY"
 	   echo ""
 
 	   if [ -f ~/.bash_aliases ]; then
@@ -1697,9 +1694,9 @@ SubMenuLicense() {
 	echo "║                                                                             ║"
 	echo "║    https://github.com/dlt-green/node-installer-docker/blob/main/license     ║"
 	echo "║                                                                             ║"
-	echo "║                                 MIT License                                 ║"
+	echo "║                       GNU General Public License v2.0                       ║"
 	echo "║                                                                             ║"
-	echo "║        https://github.com/notify-run/notify-run-rs/blob/main/LICENSE        ║"
+	echo "║        https://github.com/binwiederhier/ntfy/blob/main/LICENSE.GPLv2        ║"
 	echo "║                                                                             ║"
 	echo "║                              X. Maintenance Menu                            ║"
 	echo "║                                                                             ║"
@@ -3503,7 +3500,7 @@ IotaWasp() {
 		if [ -z "$VAR_USERNAME" ]; then
 		echo "Set dashboard username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; elif [ -z "$VAR_USERNAME" ]; then VAR_USERNAME=$VAR_DEFAULT; fi
+		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$(echo $VAR_TMP | tr '[:upper:]' '[:lower:]'); elif [ -z "$VAR_USERNAME" ]; then VAR_USERNAME=$VAR_DEFAULT; fi
 		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
 
 		echo ''
@@ -4353,7 +4350,7 @@ ShimmerWasp() {
 		if [ -z "$VAR_USERNAME" ]; then
 		echo "Set dashboard username (generated: $ca""$VAR_DEFAULT""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard username (config: $ca""$VAR_USERNAME""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$VAR_TMP; elif [ -z "$VAR_USERNAME" ]; then VAR_USERNAME=$VAR_DEFAULT; fi
+		if [ -n "$VAR_TMP" ]; then VAR_USERNAME=$(echo $VAR_TMP | tr '[:upper:]' '[:lower:]'); elif [ -z "$VAR_USERNAME" ]; then VAR_USERNAME=$VAR_DEFAULT; fi
 		echo "$gn""Set dashboard username: $VAR_USERNAME""$xx"
 
 		echo ''

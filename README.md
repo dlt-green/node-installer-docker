@@ -79,6 +79,22 @@ Each flag represents a different configuration option:
 
 Utilize these options according to your needs to automate node management tasks efficiently.
 
+### Node-Installer Notification Mode
+
+There is the option to receive status reports from your nodes. You do not have to register or reveal any of your personal data. These notifications are delivered directly to your mobile or desktop device using our in-house push notification service. To receive notifications on your phone, install the app, either via Google Play, F-Droid or Apple. Once installed, open it and add the shown MessageId in the installer (Notify-Me) to a topic. In the settings of each topic you can define also your own description.
+
+The notification level can be set in the installation menu [ info | warn | err! ]. In addition, depending on the notification level, messages are sent with different priorities. This means that information is sent and a log is available, but it is not disruptive due to the frequency. Warnings and errors then immediately raise an alarm with pushes. If necessary, the sleep mode on the cell phone can also be interrupted in the event of errors.
+
+#### Mobile App:
+
+![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/00703d7e-f3f6-4c79-a94b-8eb805c708a6)  ![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/42730846-59f5-4cad-ac9a-7a08f53b512c)
+
+[![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/db8a1d0f-c7e8-4048-992f-14a24de674c3)](https://play.google.com/store/apps/details?id=io.heckel.ntfy) [![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/c9670c2e-ef99-46e1-9dac-fbf6d53a48c9)](https://f-droid.org/en/packages/io.heckel.ntfy/) [![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/78ce7ad3-3502-4130-b951-3c4ac103d471)](https://apps.apple.com/us/app/ntfy/id1625396347)
+
+#### Desktop:
+
+![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/cf34ccb6-2780-40a7-9211-48a1c0b5df16)
+
 ### Operation Tutorial
 
 For a visual aid on installing IOTA/Shimmer Nodes using our script, visit our [video tutorials](https://www.youtube.com/channel/UCg1PgTJ1NzdoS1JYcnJtDUg).
