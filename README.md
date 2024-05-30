@@ -87,7 +87,7 @@ The notification level can be set in the installation menu [ info | warn | err! 
 
 #### Mobile App:
 
-![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/00703d7e-f3f6-4c79-a94b-8eb805c708a6)
+![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/00703d7e-f3f6-4c79-a94b-8eb805c708a6)  ![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/42730846-59f5-4cad-ac9a-7a08f53b512c)
 
 [![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/db8a1d0f-c7e8-4048-992f-14a24de674c3)](https://play.google.com/store/apps/details?id=io.heckel.ntfy) [![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/c9670c2e-ef99-46e1-9dac-fbf6d53a48c9)](https://f-droid.org/en/packages/io.heckel.ntfy/) [![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/78ce7ad3-3502-4130-b951-3c4ac103d471)](https://apps.apple.com/us/app/ntfy/id1625396347)
 
