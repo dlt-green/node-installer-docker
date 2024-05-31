@@ -1549,9 +1549,9 @@ SubMenuNotifyMe() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                              1. Show existing Message Channel Id            ║"
-	echo "║                              2. Activate new Message Channel Id             ║"
-	echo "║                              3. Generate new Message Channel Id             ║"
+	echo "║                              1. Show existing Message Channel ID            ║"
+	echo "║                              2. Activate new Message Channel ID             ║"
+	echo "║                              3. Generate new Message Channel ID             ║"
 	echo "║                              4. Switch Notify-Level: [""$nmi""info""$xx""|""$nmw""warn""$xx""|""$nme""err!""$xx""]       ║"
 	echo "║                              5. Revoke Notify-Me                            ║"
 	echo "║                              X. Management Dashboard                        ║"
@@ -1564,7 +1564,7 @@ SubMenuNotifyMe() {
 	case $n in
 	1) clear
 	   echo "$ca"
-	   echo "Show existing Message Channel Id..."
+	   echo "Show existing Message Channel ID..."
 	   echo "$xx"
 
 	   VAR_NOTIFY_URL='https://notify.dlt.green'
@@ -1572,20 +1572,20 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
 
 	   if [ "$VAR_NOTIFY_ID" ]; then
-	     echo "Channel Id:   " "$VAR_NOTIFY_ID"
+	     echo "Channel ID:   " "$VAR_NOTIFY_ID"
 	     echo "Channel Page: " "$VAR_NOTIFY_URL/$VAR_NOTIFY_ID"
 	     echo ""
 	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ID"
  	     echo ""
 	   else
-	     echo "$rd""No Message Channel Id generated!""$xx"
+	     echo "$rd""No Message Channel ID generated!""$xx"
 	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
 	2) clear
 	   echo "$ca"
-	   echo "Activate new Message Channel Id..."
+	   echo "Activate new Message Channel ID..."
 	   echo "$xx"
 
 	   VAR_NOTIFY_URL='https\:\/\/notify.dlt.green'
@@ -1593,14 +1593,14 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
 	   VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 	   if [ -z "$VAR_NOTIFY_ID" ]; then
-	     echo "Set Message Channel Id (random: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set Message Channel Id (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
+	     echo "Set Message Channel ID (random: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set Message Channel ID (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
 	   read -r -p '> ' VAR_TMP
 	   if [ -n "$VAR_TMP" ]; then VAR_NOTIFY_ID=$VAR_TMP; elif [ -z "$VAR_NOTIFY_ID" ]; then VAR_NOTIFY_ID=$VAR_DEFAULT; fi
-	   echo "$gn""Set Message Channel Id: $VAR_NOTIFY_ID""$xx"
+	   echo "$gn""Set Message Channel ID: $VAR_NOTIFY_ID""$xx"
 
 	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
 
-	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """message channel id: activated """ -H """Title: ✅ $(echo "$VAR_DOMAIN" | tr -d " ")""" -H """X-Priority: 2""" -H """Tags: dlt.green""" 2>/dev/null | jq -r '.time')
+	   NotifyResult=$($VAR_NOTIFY_ENDPOINT_URL """message channel: activated """ -H """Title: ✅ $(echo "$VAR_DOMAIN" | tr -d " ")""" -H """X-Priority: 2""" -H """Tags: dlt.green""" 2>/dev/null | jq -r '.time')
 
 	   if [ -n "$NotifyResult" ]; then
 
@@ -1611,30 +1611,30 @@ SubMenuNotifyMe() {
 	         if [ ! -z "$headerLine" ]; then
 	         insertLine=$(($headerLine))
 	         sed -i "$insertLine a alias dlt.green-msg=\"""$VAR_NOTIFY_ENDPOINT_URL"""\" ~/.bash_aliases
-	         echo "$gn""New Message Channel Id: activated...""$xx"
+	         echo "$gn""New Message Channel ID: activated...""$xx"
 	       else
-	         echo "$rd""Error activating new Message Channel Id!""$xx"
+	         echo "$rd""Error activating new Message Channel ID!""$xx"
 	       fi
 	     else
 	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
-	       echo "$gn""New Message Channel Id: activated...""$xx"
+	       echo "$gn""New Message Channel ID: activated...""$xx"
 	     fi
 	   fi
 
-           else echo "$rd""Error activating new Message Channel Id!""$xx"; fi
+           else echo "$rd""Error activating new Message Channel ID!""$xx"; fi
 
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
 	3) clear
 	   echo "$ca"
-	   echo "Generate new Message Channel Id..."
+	   echo "Generate new Message Channel ID..."
 	   echo "$xx"
 
 	   VAR_NOTIFY_URL='https\:\/\/notify.dlt.green'
 	   VAR_NOTIFY=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 
-	   echo "Channel Id:   " "$VAR_NOTIFY"
+	   echo "Channel ID:   " "$VAR_NOTIFY"
 	   echo "Channel Page: " "https://notify.dlt.green/""$VAR_NOTIFY"
 
 	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
@@ -1651,13 +1651,13 @@ SubMenuNotifyMe() {
 	         if [ ! -z "$headerLine" ]; then
 	           insertLine=$(($headerLine))
 	         sed -i "$insertLine a alias dlt.green-msg=\"""$VAR_NOTIFY_ENDPOINT_URL"""\" ~/.bash_aliases
-	         echo "$gn""New Message Channel Id generated...""$xx"
+	         echo "$gn""New Message Channel ID generated...""$xx"
 	       else
-	         echo "$rd""Error generating new Message Channel Id!""$xx"
+	         echo "$rd""Error generating new Message Channel ID!""$xx"
 	       fi
 	     else
 	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
-	       echo "$gn""New Message Channel Id generated...""$xx"
+	       echo "$gn""New Message Channel ID generated...""$xx"
 	     fi
 	   fi
 
