@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.5.0"
-BUILD="20240530_174641"
+VRSN="v.4.5.1"
+BUILD="20240531_121413"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='fbe6304f84ff818206629df688341cbad6661189db3913aefc29ae7a49f23369'
+IotaHornetHash='d6eaa60cf1a53c4c323aaca6c50a2380ec69f793f37cb0eaa1c8c53e0772e0d8'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='b94929faa48c8bb9a11302892c40665881264c316ae9a4e91b66ec6c84a3b2a0'
+IotaWaspHash='9e62a2daf5f29d044effe82fd397b951e245b378448331403f3c251af92b653e'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='ca1ed5c5cfe0e25da7598000561d6aef96af6578e384efd81ef198eea112fe38'
+ShimmerHornetHash='97a0106252e3bd123c20fe3034964ecb95933e2f62ea3c48add3fc4a8b314581'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='2006a83b404f941616f3d53e44bdad4a84c23ee2ef927db44b47c48b77563641'
+ShimmerWaspHash='9dc4545a4dc14c7f82eefc68291a518eb2229eca05db29d98d8dd6b96fe76a60'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='d7cdeba799848a085bee8eb94a2ffec0572403931bfbb8a9a899229d9e854e18'
+ShimmerChronicleHash='72ff6cf0a3d0f68e978f90a9665c5622eafe6732ca5935e6c8622396ddd00cf3'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1549,9 +1549,9 @@ SubMenuNotifyMe() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║                              1. Show existing Message Channel               ║"
-	echo "║                              2. Activate new Message Channel                ║"
-	echo "║                              3. Generate new Message Channel                ║"
+	echo "║                              1. Show existing Message Channel ID            ║"
+	echo "║                              2. Activate new Message Channel ID             ║"
+	echo "║                              3. Generate new Message Channel ID             ║"
 	echo "║                              4. Switch Notify-Level: [""$nmi""info""$xx""|""$nmw""warn""$xx""|""$nme""err!""$xx""]       ║"
 	echo "║                              5. Revoke Notify-Me                            ║"
 	echo "║                              X. Management Dashboard                        ║"
@@ -1564,7 +1564,7 @@ SubMenuNotifyMe() {
 	case $n in
 	1) clear
 	   echo "$ca"
-	   echo "Show existing Message Channel..."
+	   echo "Show existing Message Channel ID..."
 	   echo "$xx"
 
 	   VAR_NOTIFY_URL='https://notify.dlt.green'
@@ -1572,20 +1572,20 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
 
 	   if [ "$VAR_NOTIFY_ID" ]; then
-	     echo "ChannelId:   " "$VAR_NOTIFY_ID"
-	     echo "ChannelPage: " "$VAR_NOTIFY_URL/$VAR_NOTIFY_ID"
+	     echo "Channel ID:   " "$VAR_NOTIFY_ID"
+	     echo "Channel Page: " "$VAR_NOTIFY_URL/$VAR_NOTIFY_ID"
 	     echo ""
 	     qrencode -m 2 -o - -t ANSIUTF8 "$VAR_NOTIFY_ID"
  	     echo ""
 	   else
-	     echo "$rd""No Message Channel generated!""$xx"
+	     echo "$rd""No Message Channel ID generated!""$xx"
 	   fi
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
 	2) clear
 	   echo "$ca"
-	   echo "Activate new Message Channel..."
+	   echo "Activate new Message Channel ID..."
 	   echo "$xx"
 
 	   VAR_NOTIFY_URL='https\:\/\/notify.dlt.green'
@@ -1593,10 +1593,10 @@ SubMenuNotifyMe() {
 	   VAR_NOTIFY_ID=$(cat ~/.bash_aliases | grep "msg" | cut -d '=' -f 2| cut -d ' ' -f 2 | cut -d '/' -f 4)
 	   VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 	   if [ -z "$VAR_NOTIFY_ID" ]; then
-	     echo "Set Message Channel (random: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set Message Channel (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
+	     echo "Set Message Channel ID (random: $ca""$VAR_DEFAULT""$xx):"; echo "Press [Enter] to use random value:"; else echo "Set Message Channel ID (config: $ca""$VAR_NOTIFY_ID""$xx)"; echo "Press [Enter] to use existing config:"; fi
 	   read -r -p '> ' VAR_TMP
 	   if [ -n "$VAR_TMP" ]; then VAR_NOTIFY_ID=$VAR_TMP; elif [ -z "$VAR_NOTIFY_ID" ]; then VAR_NOTIFY_ID=$VAR_DEFAULT; fi
-	   echo "$gn""Set Message Channel: $VAR_NOTIFY_ID""$xx"
+	   echo "$gn""Set Message Channel ID: $VAR_NOTIFY_ID""$xx"
 
 	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
 
@@ -1611,31 +1611,31 @@ SubMenuNotifyMe() {
 	         if [ ! -z "$headerLine" ]; then
 	         insertLine=$(($headerLine))
 	         sed -i "$insertLine a alias dlt.green-msg=\"""$VAR_NOTIFY_ENDPOINT_URL"""\" ~/.bash_aliases
-	         echo "$gn""New Message Channel: activated...""$xx"
+	         echo "$gn""New Message Channel ID: activated...""$xx"
 	       else
-	         echo "$rd""Error activating new Message Channel!""$xx"
+	         echo "$rd""Error activating new Message Channel ID!""$xx"
 	       fi
 	     else
 	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
-	       echo "$gn""New Message Channel: activated...""$xx"
+	       echo "$gn""New Message Channel ID: activated...""$xx"
 	     fi
 	   fi
 
-           else echo "$rd""Error activating new Message Channel!""$xx"; fi
+           else echo "$rd""Error activating new Message Channel ID!""$xx"; fi
 
 
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuNotifyMe ;;
 	3) clear
 	   echo "$ca"
-	   echo "Generate new Message Channel..."
+	   echo "Generate new Message Channel ID..."
 	   echo "$xx"
 
 	   VAR_NOTIFY_URL='https\:\/\/notify.dlt.green'
 	   VAR_NOTIFY=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1)
 
-	   echo "ChannelId:   " "$VAR_NOTIFY"
-	   echo "ChannelPage: " "https://notify.dlt.green/""$VAR_NOTIFY"
+	   echo "Channel ID:   " "$VAR_NOTIFY"
+	   echo "Channel Page: " "https://notify.dlt.green/""$VAR_NOTIFY"
 
 	   VAR_NOTIFY_ENDPOINT_URL='curl https://notify.dlt.green/'"$VAR_NOTIFY_ID"' -d'
 	   VAR_NOTIFY_ID="$VAR_NOTIFY"
@@ -1651,13 +1651,13 @@ SubMenuNotifyMe() {
 	         if [ ! -z "$headerLine" ]; then
 	           insertLine=$(($headerLine))
 	         sed -i "$insertLine a alias dlt.green-msg=\"""$VAR_NOTIFY_ENDPOINT_URL"""\" ~/.bash_aliases
-	         echo "$gn""New Message Channel generated...""$xx"
+	         echo "$gn""New Message Channel ID generated...""$xx"
 	       else
-	         echo "$rd""Error generating new Message Channel!""$xx"
+	         echo "$rd""Error generating new Message Channel ID!""$xx"
 	       fi
 	     else
 	       sed -i 's/alias dlt.green-msg=.*/alias dlt.green-msg="curl '"$VAR_NOTIFY_URL""\/""$VAR_NOTIFY_ID"' -d"/g' ~/.bash_aliases
-	       echo "$gn""New Message Channel generated...""$xx"
+	       echo "$gn""New Message Channel ID generated...""$xx"
 	     fi
 	   fi
 
