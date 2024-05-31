@@ -93,7 +93,7 @@ The notification level can be set in the installation menu [ info | warn | err! 
 
 ![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/e53615ae-85a8-4487-8d42-dc005fcff171)   ![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/0045238a-6447-401b-8936-ceb150c7a53e)
 
-Hint: In the Android app there are in the moment a lot more additional features such as renaming channels and various notification settings.
+Hint: In the Android app there are at the moment a lot more additional features such as renaming channels and various notification settings.
 
 [![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/db8a1d0f-c7e8-4048-992f-14a24de674c3)](https://play.google.com/store/apps/details?id=io.heckel.ntfy) [![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/c9670c2e-ef99-46e1-9dac-fbf6d53a48c9)](https://f-droid.org/en/packages/io.heckel.ntfy/) [![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/78ce7ad3-3502-4130-b951-3c4ac103d471)](https://apps.apple.com/us/app/ntfy/id1625396347)
 
