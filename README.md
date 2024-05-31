@@ -79,7 +79,7 @@ Each flag represents a different configuration option:
 
 Utilize these options according to your needs to automate node management tasks efficiently.
 
-### Node-Installer Automatic Mantenaince and Automatic Node Update Mode
+### Node-Installer Automatic Maintenance and Automatic Node Update Mode
 
 There is an option to automate automatic system relevant updates, during which the nodes are terminated in the meantime. In addition, the nodes themselves can also be updated automatically. The installer's Github pipeline is used chronologically for the updates. In exceptional cases, manual intervention must be carried out, but you will be notified via a notification service if activated. If necessary, the server will be automatically restarted and the nodes are then also automatically restarted.
 
