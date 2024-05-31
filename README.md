@@ -98,7 +98,7 @@ The notification level can be set in the installation menu [ info | warn | err! 
 
 #### Desktop:
 
-![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/cf34ccb6-2780-40a7-9211-48a1c0b5df16)
+![image](https://github.com/dlt-green/node-installer-docker/assets/89119285/cbbe1dfe-b647-45f4-9c77-a629031136ea)
 
 ### Operation Tutorial
 
