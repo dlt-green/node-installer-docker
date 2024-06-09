@@ -3559,23 +3559,34 @@ IotaWasp() {
 		  WASP_TRUSTED_ACCESSNODE=$(cat .env | grep WASP_TRUSTED_ACCESSNODE)
 		rm .env; fi
 
+		echo "" >> .env; echo "### WASP ###" >> .env
+
 		echo "WASP_VERSION=$VAR_IOTA_WASP_VERSION" >> .env
 		echo "WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION" >> .env
-		echo "WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION" >> .env
+		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_HOST=$VAR_HOST" >> .env
 		echo "WASP_HTTPS_PORT=$VAR_IOTA_WASP_HTTPS_PORT" >> .env
 		echo "WASP_API_PORT=$VAR_IOTA_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_IOTA_WASP_PEERING_PORT" >> .env
-		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
-		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
+
 		echo "" >> .env; echo "### IDENTITY-PRIVATE-KEY  ###" >> .env
 
 		echo "WASP_IDENTITY_PRIVATE_KEY=$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" >> .env		
+
+		echo "" >> .env; echo "### WASP-CLI ###" >> .env
+
+		echo "WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION" >> .env
+
+		echo "" >> .env; echo "### COMPOSE_PROFILES ###" >> .env
+
 		echo "WASP_LOG_LEVEL=debug" >> .env
 		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
+
+		echo "" >> .env; echo "### CERTIFICATE ###" >> .env
 		
 		if [ "$VAR_CERT" = 0 ]
 		then
+			echo "SSL_CONFIG=letsencrypt" >> .env
 			echo "WASP_HTTP_PORT=80" >> .env
 			clear
 			echo ""
