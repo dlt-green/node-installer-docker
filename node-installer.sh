@@ -2673,8 +2673,8 @@ SystemMaintenance() {
 			sed -i 's/^NTP=.*/NTP=pool.ntp.org/g' /etc/systemd/timesyncd.conf
 		fi
 
-		sudo timedatectl set-ntp true
-		sudo systemctl restart systemd-timesyncd.service
+		sudo timedatectl set-ntp true >/dev/null
+		sudo systemctl restart systemd-timesyncd.service >/dev/null
 
 		if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
 			echo "$gn""time synchronized""$xx"
