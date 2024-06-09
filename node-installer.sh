@@ -4453,41 +4453,10 @@ ShimmerWasp() {
 
 	else
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
-		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
-		VAR_DASHBOARD_VERSION=$(cat .env 2>/dev/null | grep WASP_DASHBOARD_VERSION | cut -d '=' -f 2)
-		VAR_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT | cut -d '=' -f 2)
-		VAR_CLI=$(cat .env 2>/dev/null | grep WASP_CLI_VERSION | cut -d '=' -f 2)
-
-		if [ -z "$VAR_DASHBOARD_VERSION" ]; then
-		    echo "WASP_DASHBOARD_VERSION=$VAR_SHIMMER_WASP_DASHBOARD_VERSION" >> .env
-		fi
-
-		if [ -z "$VAR_CLI" ]; then
-		    echo "WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION" >> .env
-		fi
-
 		if [ -f .env ]; then sed -i "s/WASP_CLI_VERSION=.*/WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_DASHBOARD_VERSION=.*/WASP_DASHBOARD_VERSION=$VAR_SHIMMER_WASP_DASHBOARD_VERSION/g" .env; fi
 
-		if [ -z "$VAR_SALT" ]; then
-		    VAR_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
-
-			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
-			if [ -n "$VAR_PASSWORD" ]; then
-			    credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
-
-			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-
-			    if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
-
-			    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD=.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
-			    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
-
-			fi
-			if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
-		fi
-
+		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
