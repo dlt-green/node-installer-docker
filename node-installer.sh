@@ -3571,7 +3571,8 @@ IotaWasp() {
 
 		echo "" >> .env; echo "### IDENTITY-PRIVATE-KEY  ###" >> .env
 
-		echo "WASP_IDENTITY_PRIVATE_KEY=$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" >> .env		
+		echo "WASP_IDENTITY_PRIVATE_KEY=$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" >> .env
+		unset WASP_IDENTITY_PRIVATE_KEY
 
 		echo "" >> .env; echo "### WASP-CLI ###" >> .env
 
