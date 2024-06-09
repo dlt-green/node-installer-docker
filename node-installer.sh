@@ -3523,6 +3523,25 @@ IotaWasp() {
 		  fi
 		fi
 
+		echo ''
+		VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY=$(cat .env 2>/dev/null | grep WASP_IDENTITY_PRIVATE_KEY= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" ]; then VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY=$(cat ./data/waspdb/identity/identity.key 2>/dev/null | grep -v '^-----'); fi
+		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alnum:]' | fold -w "${1:-64}" | head -n 1);
+		if [ -z "$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" ]; then
+		  echo "Set identity private key (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set identity private key (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY=$VAR_TMP
+		  echo "$gn""Set identity private key: new""$xx"
+		else
+		  if [ -z "$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" ]; then
+		    VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY=$VAR_DEFAULT
+		    echo "$gn""Set identity private key: ""$VAR_DEFAULT""$xx"
+		  else
+		    echo "$gn""Set identity private key: use existing""$xx"
+		  fi
+		fi
+
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
 		echo ""
@@ -3549,6 +3568,9 @@ IotaWasp() {
 		echo "WASP_PEERING_PORT=$VAR_IOTA_WASP_PEERING_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
+		echo "" >> .env; echo "### IDENTITY-PRIVATE-KEY  ###" >> .env
+
+		echo "WASP_IDENTITY_PRIVATE_KEY=$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" >> .env		
 		echo "WASP_LOG_LEVEL=debug" >> .env
 		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
 		
