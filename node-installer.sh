@@ -3571,7 +3571,7 @@ IotaWasp() {
 		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
 
 		echo "" >> .env; echo "### IDENTITY-PRIVATE-KEY  ###" >> .env
-		echo "" >> .env; echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		echo "WASP_IDENTITY_PRIVATE_KEY=$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" >> .env
 		unset WASP_IDENTITY_PRIVATE_KEY
@@ -3661,21 +3661,21 @@ IotaWasp() {
 		fi
 
 		echo "" >> .env; echo "### WASP-DASHBOARD CONFIG ###" >> .env
-		echo "" >> .env; echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
 		echo "" >> .env; echo "### TRUSTED PEERING ACCESSNODES ###" >> .env
-		echo "" >> .env; echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		if [ -n "$WASP_TRUSTED_ACCESSNODE" ]; then
 		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env	
 		fi
 
 		echo "" >> .env; echo "### TRUSTED PEERING NODES ###" >> .env
-		echo "" >> .env; echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		if [ -n "$WASP_TRUSTED_NODE" ]; then
 		  echo "$WASP_TRUSTED_NODE" >> .env
@@ -4429,7 +4429,7 @@ ShimmerWasp() {
 		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
 
 		echo "" >> .env; echo "### IDENTITY-PRIVATE-KEY  ###" >> .env
-		echo "" >> .env; echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		echo "WASP_IDENTITY_PRIVATE_KEY=$VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY" >> .env
 		unset WASP_IDENTITY_PRIVATE_KEY
@@ -4519,21 +4519,21 @@ ShimmerWasp() {
 		fi
 
 		echo "" >> .env; echo "### WASP-DASHBOARD CONFIG ###" >> .env
-		echo "" >> .env; echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
 		echo "" >> .env; echo "### TRUSTED PEERING ACCESSNODES ###" >> .env
-		echo "" >> .env; echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		if [ -n "$WASP_TRUSTED_ACCESSNODE" ]; then
 		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env	
 		fi
 
 		echo "" >> .env; echo "### TRUSTED PEERING NODES ###" >> .env
-		echo "" >> .env; echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		if [ -n "$WASP_TRUSTED_NODE" ]; then
 		  echo "$WASP_TRUSTED_NODE" >> .env
