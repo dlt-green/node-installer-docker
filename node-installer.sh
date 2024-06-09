@@ -4403,24 +4403,35 @@ ShimmerWasp() {
 		  WASP_TRUSTED_ACCESSNODE=$(cat .env | grep WASP_TRUSTED_ACCESSNODE)
 		rm .env; fi
 
+		echo "" >> .env; echo "### WASP ###" >> .env
+
 		echo "WASP_VERSION=$VAR_SHIMMER_WASP_VERSION" >> .env
 		echo "WASP_DASHBOARD_VERSION=$VAR_SHIMMER_WASP_DASHBOARD_VERSION" >> .env
-		echo "WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION" >> .env
+		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_HOST=$VAR_HOST" >> .env
 		echo "WASP_HTTPS_PORT=$VAR_SHIMMER_WASP_HTTPS_PORT" >> .env
 		echo "WASP_API_PORT=$VAR_SHIMMER_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_SHIMMER_WASP_PEERING_PORT" >> .env
-		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
+
 		echo "" >> .env; echo "### IDENTITY-PRIVATE-KEY  ###" >> .env
 
 		echo "WASP_IDENTITY_PRIVATE_KEY=$VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY" >> .env
 		unset WASP_IDENTITY_PRIVATE_KEY
 
+		echo "" >> .env; echo "### WASP-CLI ###" >> .env
+
+		echo "WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION" >> .env
+
+		echo "" >> .env; echo "### COMPOSE_PROFILES ###" >> .env
+
 		echo "WASP_LOG_LEVEL=debug" >> .env
 		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
+
+		echo "" >> .env; echo "### CERTIFICATE ###" >> .env
 		
 		if [ "$VAR_CERT" = 0 ]
 		then
+			echo "SSL_CONFIG=letsencrypt" >> .env
 			echo "WASP_HTTP_PORT=80" >> .env
 			clear
 			echo ""
@@ -4491,12 +4502,13 @@ ShimmerWasp() {
 		  echo "credentials not changed..."
 		fi
 
+		echo "" >> .env; echo "### WASP-DASHBOARD CONFIG ###" >> .env
+
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
-		echo "" >> .env
-		echo "### TRUSTED PEERING ACCESSNODES ###" >> .env
+		echo "" >> .env; echo "### TRUSTED PEERING ACCESSNODES ###" >> .env
 
 		if [ -n "$WASP_TRUSTED_ACCESSNODE" ]; then
 		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env	
@@ -4507,8 +4519,7 @@ ShimmerWasp() {
 		  fi
 		fi
 
-		echo "" >> .env
-		echo "### TRUSTED PEERING NODES ###" >> .env
+		echo "" >> .env; echo "### TRUSTED PEERING NODES ###" >> .env
 
 		if [ -n "$WASP_TRUSTED_NODE" ]; then
 		  echo "$WASP_TRUSTED_NODE" >> .env
