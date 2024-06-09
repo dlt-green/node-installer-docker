@@ -3508,7 +3508,7 @@ IotaWasp() {
 		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1);
 		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
-		echo "Set dashboard password / will be saved as hash ($ca""use generated""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		  echo "Set dashboard password / will be saved as hash ($ca""use generated""$xx):"; echo "Press [Enter] to use default value:"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_PASSWORD=$VAR_TMP
