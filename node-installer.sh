@@ -3586,41 +3586,10 @@ IotaWasp() {
 
 	else
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_IOTA_WASP_VERSION/g" .env; fi
-		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
-		VAR_DASHBOARD_VERSION=$(cat .env 2>/dev/null | grep WASP_DASHBOARD_VERSION | cut -d '=' -f 2)
-		VAR_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT | cut -d '=' -f 2)
-		VAR_CLI=$(cat .env 2>/dev/null | grep WASP_CLI_VERSION | cut -d '=' -f 2)
-
-		if [ -z "$VAR_DASHBOARD_VERSION" ]; then
-		    echo "WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION" >> .env
-		fi
-
-		if [ -z "$VAR_CLI" ]; then
-		    echo "WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION" >> .env
-		fi
-
 		if [ -f .env ]; then sed -i "s/WASP_CLI_VERSION=.*/WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_DASHBOARD_VERSION=.*/WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION/g" .env; fi
 
-		if [ -z "$VAR_SALT" ]; then
-		    VAR_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
-
-			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
-			if [ -n "$VAR_PASSWORD" ]; then
-			    credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
-
-			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-
-			    if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
-
-			    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD=.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
-			    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
-
-			fi
-			if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
-		fi
-
+		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -3655,19 +3624,19 @@ IotaWasp() {
 		  echo "credentials not changed..."
 		fi
 
+		echo "" >> .env; echo "### WASP-DASHBOARD CONFIG ###" >> .env
+
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
-		echo "" >> .env
-		echo "### TRUSTED PEERING ACCESSNODES ###" >> .env
+		echo "" >> .env; echo "### TRUSTED PEERING ACCESSNODES ###" >> .env
 
 		if [ -n "$WASP_TRUSTED_ACCESSNODE" ]; then
 		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env	
 		fi
 
-		echo "" >> .env
-		echo "### TRUSTED PEERING NODES ###" >> .env
+		echo "" >> .env; echo "### TRUSTED PEERING NODES ###" >> .env
 
 		if [ -n "$WASP_TRUSTED_NODE" ]; then
 		  echo "$WASP_TRUSTED_NODE" >> .env
@@ -4336,15 +4305,6 @@ ShimmerWasp() {
 		echo "$gn""Set peering port: $VAR_SHIMMER_WASP_PEERING_PORT""$xx"
 
 		echo ''
-		VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
-		VAR_DEFAULT='100000';
-		if [ -z "$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then
-		  echo "Set pruning min states to keep (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set pruning min states to keep (config: $ca""$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx)"; echo "Press [Enter] to use existing config:"; fi
-		read -r -p '> ' VAR_TMP
-		if [ -n "$VAR_TMP" ]; then VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_TMP; elif [ -z "$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" ]; then VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_DEFAULT; fi
-		echo "$gn""Set pruning min states to keep: $VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP""$xx"
-
-		echo ''
 		VAR_USERNAME=$(cat .env 2>/dev/null | grep DASHBOARD_USERNAME= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-10}" | head -n 1 | tr '[:upper:]' '[:lower:]');
 		if [ -z "$VAR_USERNAME" ]; then
@@ -4398,7 +4358,7 @@ ShimmerWasp() {
 		echo "WASP_API_PORT=$VAR_SHIMMER_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_SHIMMER_WASP_PEERING_PORT" >> .env
 		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
-		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
+		echo "WASP_IDENTITY_PRIVATE_KEY=$VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY" >> .env
 		echo "WASP_LOG_LEVEL=debug" >> .env
 		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
 		
