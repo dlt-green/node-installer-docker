@@ -2653,6 +2653,32 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                        Network Time Synchronization                         ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -f /etc/systemd/timesyncd.conf ]; then 
+		if [ $(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2) != 'active' ]; then
+			sudo ufw allow ntp >/dev/null
+		fi
+		VAR_NTP=$(cat /etc/systemd/timesyncd.conf 2>/dev/null | grep NTP= | cut -d '=' -f 2)
+		if [ -z "$VAR_NTP" ]; then 
+			sed -i "s/NTP=.*/NTP=pool.ntp.org/g" /etc/systemd/timesyncd.conf
+			sudo timedatectl set-ntp true
+			sudo systemctl restart systemd-timesyncd.service
+		fi
+		if [ -z LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep "System clock synchronized: yes" ]; then
+			if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+		else
+			if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronized"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+		fi
+	fi
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"	clear
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                       Delete Docker Containers/Images                       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
