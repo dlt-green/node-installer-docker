@@ -2668,9 +2668,11 @@ SystemMaintenance() {
 			sudo systemctl restart systemd-timesyncd.service
 		fi
 		if [ -z LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep "System clock synchronized: yes" ]; then
-			if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+			echo "$gn""time synchronized""$xx"
+			if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 		else
-			if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronized"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+			echo "$or""time not synchronized""$xx"
+			if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 		fi
 	fi
 
@@ -2725,7 +2727,7 @@ SystemMaintenance() {
 	  if [ "$opt_mode" ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
 	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 90 ] && [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -lt 95 ]; then
-	  echo "$or""diskspace waring: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
+	  echo "$or""diskspace warning: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
 	  if [ "$opt_mode" ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
 	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 97 ]; then
