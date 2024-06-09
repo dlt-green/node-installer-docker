@@ -2678,11 +2678,14 @@ SystemMaintenance() {
 
 		if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
 			echo "$gn""time synchronized""$xx"
-			if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+			if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronized"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 		else
 			echo "$or""time not synchronized""$xx"
-			if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+			if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 		fi
+	else
+		echo "$rd""Error time synchronization!""$xx"
+		if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronization failed"; NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"	clear
@@ -2824,7 +2827,7 @@ SystemMaintenance() {
 	if [ $CERT -gt 1 ]; then echo "$rd";
 	  echo "Misconfiguration with Certificates from your Nodes detected""$xx"
 	  if [ "$opt_mode" ]; then
-	      VAR_STATUS="ssl-certificate: misconfiguration detected!"
+	      VAR_STATUS="ssl-certificate: misconfiguration detected"
 	      NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS";
 	  fi
 	fi
