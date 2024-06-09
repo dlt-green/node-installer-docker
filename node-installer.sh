@@ -4512,11 +4512,6 @@ ShimmerWasp() {
 
 		if [ -n "$WASP_TRUSTED_ACCESSNODE" ]; then
 		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env	
-		else
-		  if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl | cut -d '=' -f 2)" ]; then
-			echo "$WASP_TRUSTED_NODE" | sed -e 's/WASP_TRUSTED_NODE_/WASP_TRUSTED_ACCESSNODE_/g' >> .env
-			unset WASP_TRUSTED_NODE
-		  fi
 		fi
 
 		echo "" >> .env; echo "### TRUSTED PEERING NODES ###" >> .env
@@ -4527,13 +4522,6 @@ ShimmerWasp() {
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
-	else
-		WASP_TRUSTED_ACCESSNODE=$(cat .env | grep WASP_TRUSTED_ACCESSNODE)
-		if [ -z "$WASP_TRUSTED_ACCESSNODE" ]; then
-		  if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl | cut -d '=' -f 2)" ]; then
-			sed -i 's/WASP_TRUSTED_NODE_/WASP_TRUSTED_ACCESSNODE_/g' .env
-		  fi
-		fi
 	fi
 
 	echo ""
