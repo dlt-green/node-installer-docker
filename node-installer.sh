@@ -858,13 +858,6 @@ DebugInfo() {
     echo "$ca""=== DLT.GREEN Installer  ===""$xx"
     echo "Version: $VRSN"
     echo "Build: $BUILD"
-    echo "$ca""=== APT Up-to-date Check ===""$xx"
-    apt update > /dev/null 2>&1
-    if [ $? -eq 0 ]; then
-        echo "APT: ""$gn""up-to-date."
-    else
-        echo "APT: ""$rd""not up-to-date."
-    fi
     echo "$ca""=== Time Synchronization ===""$xx"
     if [ -f /etc/systemd/timesyncd.conf ]; then 
 
@@ -877,6 +870,13 @@ DebugInfo() {
         fi
     else
         echo "time: ""$rd""error synchronization!""$xx"
+    fi
+    echo "$ca""=== APT Up-to-date Check ===""$xx"
+    apt update > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        echo "APT: ""$gn""up-to-date."
+    else
+        echo "APT: ""$rd""not up-to-date."
     fi
 }
 
