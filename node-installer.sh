@@ -868,6 +868,11 @@ DebugInfo() {
         else
             echo "time: ""$or""not synchronized""$xx"
         fi
+        if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'NTPservice: active')" ]; then
+            echo "NTPservice: ""$gn""active""$xx"
+        else
+            echo "NTPservice: ""$or""not active""$xx"
+        fi		
     else
         echo "time: ""$rd""error synchronization!""$xx"
     fi
