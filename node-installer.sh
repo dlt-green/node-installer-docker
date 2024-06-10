@@ -874,9 +874,9 @@ DebugInfo() {
     echo "$ca""=== APT Up-to-date Check ===""$xx"
     apt update > /dev/null 2>&1
     if [ $? -eq 0 ]; then
-        echo "APT: ""$gn""up-to-date"
+        echo "APT: ""$gn""up-to-date""$xx"
     else
-        echo "APT: ""$rd""not up-to-date"
+        echo "APT: ""$rd""not up-to-date""$xx"
     fi
 }
 
