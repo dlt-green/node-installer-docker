@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.5.1"
-BUILD="20240531_121413"
+VRSN="v.4.5.2"
+BUILD="20240610_193556"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='d6eaa60cf1a53c4c323aaca6c50a2380ec69f793f37cb0eaa1c8c53e0772e0d8'
+IotaHornetHash='695f453ba5fcb8f043772e958ca1154ad8df69ce61cb6a40572f40339473ee69'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='9e62a2daf5f29d044effe82fd397b951e245b378448331403f3c251af92b653e'
+IotaWaspHash='bc04fb5b26a6407295ae84da13c1034cc38478d112fa65ff0f2c4b41c74e45b7'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='97a0106252e3bd123c20fe3034964ecb95933e2f62ea3c48add3fc4a8b314581'
+ShimmerHornetHash='7aebdabb1a2f10933433dfb7c5f466fbd796e8baf302b7398ed5379cfea574fc'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='9dc4545a4dc14c7f82eefc68291a518eb2229eca05db29d98d8dd6b96fe76a60'
+ShimmerWaspHash='15199bccfdc230956697aae436f016332bca8cbd8b9cf3f74c031c381ae714ea'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='72ff6cf0a3d0f68e978f90a9665c5622eafe6732ca5935e6c8622396ddd00cf3'
+ShimmerChronicleHash='302b0606a98d0bd747462e22981063ecdcf681c47d69985b80f627bb614e9bed'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -858,12 +858,25 @@ DebugInfo() {
     echo "$ca""=== DLT.GREEN Installer  ===""$xx"
     echo "Version: $VRSN"
     echo "Build: $BUILD"
+    echo "$ca""=== Time Synchronization ===""$xx"
+    if [ -f /etc/systemd/timesyncd.conf ]; then 
+
+        sudo systemctl restart systemd-timesyncd.service >/dev/null
+
+        if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
+            echo "time: ""$gn""synchronized""$xx"
+        else
+            echo "time: ""$or""not synchronized""$xx"
+        fi
+    else
+        echo "time: ""$rd""error synchronization!""$xx"
+    fi
     echo "$ca""=== APT Up-to-date Check ===""$xx"
     apt update > /dev/null 2>&1
     if [ $? -eq 0 ]; then
-        echo "APT is up-to-date."
+        echo "APT: ""$gn""up-to-date""$xx"
     else
-        echo "APT is not up-to-date."
+        echo "APT: ""$rd""not up-to-date""$xx"
     fi
 }
 
@@ -2653,6 +2666,46 @@ SystemMaintenance() {
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	echo "║                         Check Time Synchronization                          ║"
+	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+	echo ""
+
+	if [ -f /etc/systemd/timesyncd.conf ]; then 
+
+		if [ "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2)" = 'active' ]; then
+			sudo ufw allow ntp >/dev/null
+		fi
+
+		VAR_NTP="$(cat /etc/systemd/timesyncd.conf 2>/dev/null | grep ^#NTP= | cut -d '=' -f 2)"
+		if [ -z "$VAR_NTP" ]; then
+			sed -i 's/^#NTP=.*/NTP=/g' /etc/systemd/timesyncd.conf
+		fi
+
+		VAR_NTP="$(cat /etc/systemd/timesyncd.conf 2>/dev/null | grep ^NTP= | cut -d '=' -f 2)"
+		if [ -z "$VAR_NTP" ]; then
+			sed -i 's/^NTP=.*/NTP=pool.ntp.org/g' /etc/systemd/timesyncd.conf
+		fi
+
+		sudo timedatectl set-ntp true >/dev/null
+		sudo systemctl restart systemd-timesyncd.service >/dev/null
+
+		if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
+			echo "$gn""time synchronized""$xx"
+			if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronized"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+		else
+			echo "$or""time not synchronized""$xx"
+			if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+		fi
+	else
+		echo "$rd""Error time synchronization!""$xx"
+		if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronization failed"; NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	fi
+
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"	clear
+
+	clear
+	echo ""
+	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
 	echo "║                       Delete Docker Containers/Images                       ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
@@ -2699,7 +2752,7 @@ SystemMaintenance() {
 	  if [ "$opt_mode" ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
 	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 90 ] && [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -lt 95 ]; then
-	  echo "$or""diskspace waring: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
+	  echo "$or""diskspace warning: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
 	  if [ "$opt_mode" ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
 	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 97 ]; then
@@ -2787,7 +2840,7 @@ SystemMaintenance() {
 	if [ $CERT -gt 1 ]; then echo "$rd";
 	  echo "Misconfiguration with Certificates from your Nodes detected""$xx"
 	  if [ "$opt_mode" ]; then
-	      VAR_STATUS="ssl-certificate: misconfiguration detected!"
+	      VAR_STATUS="ssl-certificate: misconfiguration detected"
 	      NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS";
 	  fi
 	fi
@@ -3508,7 +3561,7 @@ IotaWasp() {
 		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1);
 		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
-		echo "Set dashboard password / will be saved as hash ($ca""use generated""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		  echo "Set dashboard password / will be saved as hash ($ca""use generated""$xx):"; echo "Press [Enter] to use default value:"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_PASSWORD=$VAR_TMP
@@ -3520,6 +3573,25 @@ IotaWasp() {
 		  else
 		    VAR_PASSWORD=''
 		    echo "$gn""Set dashboard password: use existing""$xx"
+		  fi
+		fi
+
+		echo ''
+		VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY=$(cat .env 2>/dev/null | grep WASP_IDENTITY_PRIVATE_KEY= | cut -d '=' -f 2)
+		if [ -z "$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" ]; then VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY=$(cat ./data/waspdb/identity/identity.key 2>/dev/null | grep -v '^-----'); fi
+		VAR_DEFAULT=$(openssl genpkey -algorithm ed25519 2>/dev/null | grep -v '^-----')
+		if [ -z "$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" ]; then
+		  echo "Set identity private key ($ca""use generated""$xx):"; echo "Press [Enter] to use default value:"; else echo "Set identity private key (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY=$VAR_TMP
+		  echo "$gn""Set identity private key: new""$xx"
+		else
+		  if [ -z "$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" ]; then
+		    VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY=$VAR_DEFAULT
+		    echo "$gn""Set identity private key: ""$VAR_DEFAULT""$xx"
+		  else
+		    echo "$gn""Set identity private key: use existing""$xx"
 		  fi
 		fi
 
@@ -3540,20 +3612,37 @@ IotaWasp() {
 		  WASP_TRUSTED_ACCESSNODE=$(cat .env | grep WASP_TRUSTED_ACCESSNODE)
 		rm .env; fi
 
+		echo "" >> .env; echo "### WASP ###" >> .env
+
 		echo "WASP_VERSION=$VAR_IOTA_WASP_VERSION" >> .env
 		echo "WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION" >> .env
-		echo "WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION" >> .env
+		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_HOST=$VAR_HOST" >> .env
 		echo "WASP_HTTPS_PORT=$VAR_IOTA_WASP_HTTPS_PORT" >> .env
 		echo "WASP_API_PORT=$VAR_IOTA_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_IOTA_WASP_PEERING_PORT" >> .env
-		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_IOTA_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
+
+		echo "" >> .env; echo "### IDENTITY-PRIVATE-KEY  ###" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
+
+		echo "WASP_IDENTITY_PRIVATE_KEY=$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" >> .env
+		unset WASP_IDENTITY_PRIVATE_KEY
+
+		echo "" >> .env; echo "### WASP-CLI ###" >> .env
+
+		echo "WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION" >> .env
+
+		echo "" >> .env; echo "### COMPOSE_PROFILES ###" >> .env
+
 		echo "WASP_LOG_LEVEL=debug" >> .env
 		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
+
+		echo "" >> .env; echo "### CERTIFICATE ###" >> .env
 		
 		if [ "$VAR_CERT" = 0 ]
 		then
+			echo "SSL_CONFIG=letsencrypt" >> .env
 			echo "WASP_HTTP_PORT=80" >> .env
 			clear
 			echo ""
@@ -3586,41 +3675,10 @@ IotaWasp() {
 
 	else
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_IOTA_WASP_VERSION/g" .env; fi
-		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
-		VAR_DASHBOARD_VERSION=$(cat .env 2>/dev/null | grep WASP_DASHBOARD_VERSION | cut -d '=' -f 2)
-		VAR_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT | cut -d '=' -f 2)
-		VAR_CLI=$(cat .env 2>/dev/null | grep WASP_CLI_VERSION | cut -d '=' -f 2)
-
-		if [ -z "$VAR_DASHBOARD_VERSION" ]; then
-		    echo "WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION" >> .env
-		fi
-
-		if [ -z "$VAR_CLI" ]; then
-		    echo "WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION" >> .env
-		fi
-
 		if [ -f .env ]; then sed -i "s/WASP_CLI_VERSION=.*/WASP_CLI_VERSION=$VAR_IOTA_WASP_CLI_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_DASHBOARD_VERSION=.*/WASP_DASHBOARD_VERSION=$VAR_IOTA_WASP_DASHBOARD_VERSION/g" .env; fi
 
-		if [ -z "$VAR_SALT" ]; then
-		    VAR_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
-
-			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
-			if [ -n "$VAR_PASSWORD" ]; then
-			    credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
-
-			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-
-			    if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
-
-			    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD=.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
-			    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
-
-			fi
-			if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
-		fi
-
+		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -3655,19 +3713,22 @@ IotaWasp() {
 		  echo "credentials not changed..."
 		fi
 
+		echo "" >> .env; echo "### WASP-DASHBOARD CONFIG ###" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
+
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
-		echo "" >> .env
-		echo "### TRUSTED PEERING ACCESSNODES ###" >> .env
+		echo "" >> .env; echo "### TRUSTED PEERING ACCESSNODES ###" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		if [ -n "$WASP_TRUSTED_ACCESSNODE" ]; then
 		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env	
 		fi
 
-		echo "" >> .env
-		echo "### TRUSTED PEERING NODES ###" >> .env
+		echo "" >> .env; echo "### TRUSTED PEERING NODES ###" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		if [ -n "$WASP_TRUSTED_NODE" ]; then
 		  echo "$WASP_TRUSTED_NODE" >> .env
@@ -4358,7 +4419,7 @@ ShimmerWasp() {
 		VAR_DASHBOARD_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT= | cut -d '=' -f 2)
 		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w "${1:-20}" | head -n 1);
 		if [ -z "$VAR_DASHBOARD_PASSWORD" ]; then
-		echo "Set dashboard password / will be saved as hash ($ca""use generated""$xx):"; echo "to use generated value press [Enter]:"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		  echo "Set dashboard password / will be saved as hash ($ca""use generated""$xx):"; echo "Press [Enter] to use default value:"; else echo "Set dashboard password / will be saved as hash (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_PASSWORD=$VAR_TMP
@@ -4370,6 +4431,25 @@ ShimmerWasp() {
 		  else
 		    VAR_PASSWORD=''
 		    echo "$gn""Set dashboard password: use existing""$xx"
+		  fi
+		fi
+
+		echo ''
+		VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY=$(cat .env 2>/dev/null | grep WASP_IDENTITY_PRIVATE_KEY= | cut -d '=' -f 2)
+		if [ -z "$VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY" ]; then VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY=$(cat ./data/waspdb/identity/identity.key 2>/dev/null | grep -v '^-----'); fi
+		VAR_DEFAULT=$(openssl genpkey -algorithm ed25519 2>/dev/null | grep -v '^-----')
+		if [ -z "$VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY" ]; then
+		  echo "Set identity private key ($ca""use generated""$xx):"; echo "Press [Enter] to use default value:"; else echo "Set identity private key (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		read -r -p '> ' VAR_TMP
+		if [ -n "$VAR_TMP" ]; then
+		  VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY=$VAR_TMP
+		  echo "$gn""Set identity private key: new""$xx"
+		else
+		  if [ -z "$VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY" ]; then
+		    VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY=$VAR_DEFAULT
+		    echo "$gn""Set identity private key: ""$VAR_DEFAULT""$xx"
+		  else
+		    echo "$gn""Set identity private key: use existing""$xx"
 		  fi
 		fi
 
@@ -4390,20 +4470,37 @@ ShimmerWasp() {
 		  WASP_TRUSTED_ACCESSNODE=$(cat .env | grep WASP_TRUSTED_ACCESSNODE)
 		rm .env; fi
 
+		echo "" >> .env; echo "### WASP ###" >> .env
+
 		echo "WASP_VERSION=$VAR_SHIMMER_WASP_VERSION" >> .env
 		echo "WASP_DASHBOARD_VERSION=$VAR_SHIMMER_WASP_DASHBOARD_VERSION" >> .env
-		echo "WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION" >> .env
+		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_HOST=$VAR_HOST" >> .env
 		echo "WASP_HTTPS_PORT=$VAR_SHIMMER_WASP_HTTPS_PORT" >> .env
 		echo "WASP_API_PORT=$VAR_SHIMMER_WASP_API_PORT" >> .env
 		echo "WASP_PEERING_PORT=$VAR_SHIMMER_WASP_PEERING_PORT" >> .env
-		echo "WASP_LEDGER_NETWORK=$VAR_WASP_LEDGER_NETWORK" >> .env
 		echo "WASP_PRUNING_MIN_STATES_TO_KEEP=$VAR_SHIMMER_WASP_PRUNING_MIN_STATES_TO_KEEP" >> .env
+
+		echo "" >> .env; echo "### IDENTITY-PRIVATE-KEY  ###" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
+
+		echo "WASP_IDENTITY_PRIVATE_KEY=$VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY" >> .env
+		unset WASP_IDENTITY_PRIVATE_KEY
+
+		echo "" >> .env; echo "### WASP-CLI ###" >> .env
+
+		echo "WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION" >> .env
+
+		echo "" >> .env; echo "### COMPOSE_PROFILES ###" >> .env
+
 		echo "WASP_LOG_LEVEL=debug" >> .env
 		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
+
+		echo "" >> .env; echo "### CERTIFICATE ###" >> .env
 		
 		if [ "$VAR_CERT" = 0 ]
 		then
+			echo "SSL_CONFIG=letsencrypt" >> .env
 			echo "WASP_HTTP_PORT=80" >> .env
 			clear
 			echo ""
@@ -4436,41 +4533,10 @@ ShimmerWasp() {
 
 	else
 		if [ -f .env ]; then sed -i "s/WASP_VERSION=.*/WASP_VERSION=$VAR_SHIMMER_WASP_VERSION/g" .env; fi
-		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
-		VAR_DASHBOARD_VERSION=$(cat .env 2>/dev/null | grep WASP_DASHBOARD_VERSION | cut -d '=' -f 2)
-		VAR_SALT=$(cat .env 2>/dev/null | grep DASHBOARD_SALT | cut -d '=' -f 2)
-		VAR_CLI=$(cat .env 2>/dev/null | grep WASP_CLI_VERSION | cut -d '=' -f 2)
-
-		if [ -z "$VAR_DASHBOARD_VERSION" ]; then
-		    echo "WASP_DASHBOARD_VERSION=$VAR_SHIMMER_WASP_DASHBOARD_VERSION" >> .env
-		fi
-
-		if [ -z "$VAR_CLI" ]; then
-		    echo "WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION" >> .env
-		fi
-
 		if [ -f .env ]; then sed -i "s/WASP_CLI_VERSION=.*/WASP_CLI_VERSION=$VAR_SHIMMER_WASP_CLI_VERSION/g" .env; fi
 		if [ -f .env ]; then sed -i "s/WASP_DASHBOARD_VERSION=.*/WASP_DASHBOARD_VERSION=$VAR_SHIMMER_WASP_DASHBOARD_VERSION/g" .env; fi
 
-		if [ -z "$VAR_SALT" ]; then
-		    VAR_PASSWORD=$(cat .env 2>/dev/null | grep DASHBOARD_PASSWORD | cut -d '=' -f 2)
-
-			if [ -d /var/lib/shimmer-hornet ]; then cd /var/lib/shimmer-hornet || VAR_PASSWORD=''; fi
-			if [ -n "$VAR_PASSWORD" ]; then
-			    credentials=$(docker run iotaledger/hornet tool pwd-hash --json --password "$VAR_PASSWORD" | sed -e 's/\r//g') >/dev/null 2>&1
-
-			    VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
-			    VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
-
-			    if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
-
-			    if [ -f .env ]; then sed -i "s/DASHBOARD_PASSWORD=.*/DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD/g" .env; fi
-			    echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
-
-			fi
-			if [ -d /var/lib/"$VAR_DIR" ]; then cd /var/lib/"$VAR_DIR" || exit; fi
-		fi
-
+		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
@@ -4505,24 +4571,22 @@ ShimmerWasp() {
 		  echo "credentials not changed..."
 		fi
 
+		echo "" >> .env; echo "### WASP-DASHBOARD CONFIG ###" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
+
 		echo "DASHBOARD_USERNAME=$VAR_USERNAME" >> .env
 		echo "DASHBOARD_PASSWORD=$VAR_DASHBOARD_PASSWORD" >> .env
 		echo "DASHBOARD_SALT=$VAR_DASHBOARD_SALT" >> .env
 
-		echo "" >> .env
-		echo "### TRUSTED PEERING ACCESSNODES ###" >> .env
+		echo "" >> .env; echo "### TRUSTED PEERING ACCESSNODES ###" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		if [ -n "$WASP_TRUSTED_ACCESSNODE" ]; then
 		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env	
-		else
-		  if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl | cut -d '=' -f 2)" ]; then
-			echo "$WASP_TRUSTED_NODE" | sed -e 's/WASP_TRUSTED_NODE_/WASP_TRUSTED_ACCESSNODE_/g' >> .env
-			unset WASP_TRUSTED_NODE
-		  fi
 		fi
 
-		echo "" >> .env
-		echo "### TRUSTED PEERING NODES ###" >> .env
+		echo "" >> .env; echo "### TRUSTED PEERING NODES ###" >> .env
+		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		if [ -n "$WASP_TRUSTED_NODE" ]; then
 		  echo "$WASP_TRUSTED_NODE" >> .env
@@ -4530,13 +4594,6 @@ ShimmerWasp() {
 
 		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"; clear
 
-	else
-		WASP_TRUSTED_ACCESSNODE=$(cat .env | grep WASP_TRUSTED_ACCESSNODE)
-		if [ -z "$WASP_TRUSTED_ACCESSNODE" ]; then
-		  if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep smr1prxvwqvwf7nru5q5xvh5thwg54zsm2y4wfnk6yk56hj3exxkg92mx20wl | cut -d '=' -f 2)" ]; then
-			sed -i 's/WASP_TRUSTED_NODE_/WASP_TRUSTED_ACCESSNODE_/g' .env
-		  fi
-		fi
 	fi
 
 	echo ""
@@ -5019,7 +5076,7 @@ echo "> $gn""$InstallerHash""$xx"
 echo "  $gr""$(cat /etc/issue | cut -d ' ' -f 1)"" | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
 DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
-DEBIAN_FRONTEND=noninteractive sudo apt-get install qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt install openssl systemd-timesyncd qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 sleep 1
 

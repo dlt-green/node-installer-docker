@@ -334,17 +334,12 @@ generate_peering_json() {
 configure_wasp_trusted_peers() {
   local trustedPeersPath="$1"
 
-  if [ ! -f "${trustedPeersPath}" ]; then echo "{\"trustedPeers\": []}" > "${trustedPeersPath}"; fi
+  echo "{\"trustedPeers\": []}" > "${trustedPeersPath}";
 
   if ! grep -q -E "^WASP_TRUSTED_NODE_[0-9]+_URL" .env && \
      ! grep -q -E "^WASP_TRUSTED_ACCESSNODE_[0-9]+_URL" .env; then
     echo "  Cleared all trusted peers: No peers defined in .env"
-    jq '.trustedPeers |= map(select(.name == "me"))' \
-      "${trustedPeersPath}" > "${trustedPeersPath}.tmp" && mv -f "${trustedPeersPath}.tmp" "${trustedPeersPath}"
   else
-    jq '.trustedPeers |= map(select(.name == "me"))' \
-      "${trustedPeersPath}" > "${trustedPeersPath}.tmp" && mv -f "${trustedPeersPath}.tmp" "${trustedPeersPath}"
-
     local configPrefixes=("WASP_TRUSTED_ACCESSNODE" "WASP_TRUSTED_NODE")
     for configPrefix in "${configPrefixes[@]}"; do
       grep -E "^${configPrefix}_[0-9]+_URL" .env | sort | while IFS= read -r trustedNodeUrl; do
@@ -399,4 +394,19 @@ configure_wasp_chain_access_nodes() {
   fi
 
   chown 65532:65532 "${chainRegistryPath}"
+}
+
+create_wasp_identity_file() {
+  local identityFilePath="$1"
+  local privateKey="$2"
+  local identityFileDir="$(dirname "${identityFilePath}")"
+
+  rm -Rf "${identityFileDir}"
+  mkdir -p "${identityFileDir}"
+  chown 65532:65532 "${identityFileDir}"
+  chmod 700 "${identityFileDir}"
+
+  echo -e "-----BEGIN PRIVATE KEY-----\n${privateKey}\n-----END PRIVATE KEY-----" > "${identityFilePath}"
+  chown 65532:65532 "${identityFilePath}"
+  chmod 640 "${identityFilePath}"
 }
