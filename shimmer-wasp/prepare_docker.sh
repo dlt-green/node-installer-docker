@@ -33,7 +33,6 @@ sed -i 's|"waspdb/|"/app/waspdb/|g' "${configPath}"
 set_config "${configPath}" ".logger.outputPaths"                       "[\"stdout\"]"
 set_config "${configPath}" ".logger.level"                             "\"${WASP_LOG_LEVEL:-info}\""
 set_config "${configPath}" ".inx.address"                              "\"hornet:9029\""
-set_config "${configPath}" ".p2p.identity.privateKey"                  "\"${WASP_IDENTITY_PRIVATE_KEY}\""
 set_config "${configPath}" ".peering.port"                             "${WASP_PEERING_PORT:-4000}"
 set_config "${configPath}" ".peering.peeringURL"                       "\"${WASP_HOST}:${WASP_PEERING_PORT:-4000}\""
 set_config "${configPath}" ".webapi.auth.scheme"                       "\"${WASP_WEBAPI_AUTH_SCHEME:-jwt}\""
@@ -46,6 +45,11 @@ set_config "${configPath}" ".snapshots.localPath"                      "\"/app/w
 set_config "${configPath}" ".snapshots.networkPaths"                   "\"https://files.shimmer.shimmer.network/wasp_snapshots\""
 
 set_config_if_present_in_env "${configPath}" "WASP_PRUNING_MIN_STATES_TO_KEEP" ".stateManager.pruningMinStatesToKeep"
+
+if [ -n "${WASP_IDENTITY_PRIVATE_KEY}" ]; then
+  echo "Restore identity..."
+  create_wasp_identity_file "${dataDir}/waspdb/identity/identity.key" "${WASP_IDENTITY_PRIVATE_KEY}"
+fi
 
 echo "Configure users defined in .env..."
 echo "{}" > "${usersConfigPath}"
