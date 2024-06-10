@@ -861,9 +861,9 @@ DebugInfo() {
     echo "$ca""=== APT Up-to-date Check ===""$xx"
     apt update > /dev/null 2>&1
     if [ $? -eq 0 ]; then
-        echo "APT is up-to-date."
+        echo "APT: ""$gn""up-to-date."
     else
-        echo "APT is not up-to-date."
+        echo "APT: ""$rd""not up-to-date."
     fi
     echo "$ca""=== Time Synchronization ===""$xx"
     if [ -f /etc/systemd/timesyncd.conf ]; then 
@@ -871,12 +871,12 @@ DebugInfo() {
         sudo systemctl restart systemd-timesyncd.service >/dev/null
 
         if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
-            echo "$gn""time synchronized""$xx"
+            echo "time: ""$gn""synchronized""$xx"
         else
-            echo "$or""time not synchronized""$xx"
+            echo "time: ""$or""not synchronized""$xx"
         fi
     else
-        echo "$rd""Error time synchronization!""$xx"
+        echo "time: ""$rd""error synchronization!""$xx"
     fi
 }
 
