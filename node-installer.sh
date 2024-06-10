@@ -3579,7 +3579,7 @@ IotaWasp() {
 		echo ''
 		VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY=$(cat .env 2>/dev/null | grep WASP_IDENTITY_PRIVATE_KEY= | cut -d '=' -f 2)
 		if [ -z "$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" ]; then VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY=$(cat ./data/waspdb/identity/identity.key 2>/dev/null | grep -v '^-----'); fi
-		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alnum:]' | fold -w "${1:-64}" | head -n 1);
+		VAR_DEFAULT=$(openssl genpkey -algorithm ed25519 2>/dev/null | grep -v '^-----')
 		if [ -z "$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" ]; then
 		  echo "Set identity private key (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set identity private key (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
@@ -4437,7 +4437,7 @@ ShimmerWasp() {
 		echo ''
 		VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY=$(cat .env 2>/dev/null | grep WASP_IDENTITY_PRIVATE_KEY= | cut -d '=' -f 2)
 		if [ -z "$VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY" ]; then VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY=$(cat ./data/waspdb/identity/identity.key 2>/dev/null | grep -v '^-----'); fi
-		VAR_DEFAULT=$(cat /dev/urandom | tr -dc '[:alnum:]' | fold -w "${1:-64}" | head -n 1);
+		VAR_DEFAULT=$(openssl genpkey -algorithm ed25519 2>/dev/null | grep -v '^-----')
 		if [ -z "$VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY" ]; then
 		  echo "Set identity private key (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set identity private key (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
@@ -5076,7 +5076,7 @@ echo "> $gn""$InstallerHash""$xx"
 echo "  $gr""$(cat /etc/issue | cut -d ' ' -f 1)"" | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
 DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
-DEBIAN_FRONTEND=noninteractive sudo apt install systemd-timesyncd qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt install openssl systemd-timesyncd qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 sleep 1
 
