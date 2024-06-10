@@ -865,6 +865,19 @@ DebugInfo() {
     else
         echo "APT is not up-to-date."
     fi
+    echo "$ca""=== Time Synchronization ===""$xx"
+    if [ -f /etc/systemd/timesyncd.conf ]; then 
+
+        sudo systemctl restart systemd-timesyncd.service >/dev/null
+
+        if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
+            echo "$gn""time synchronized""$xx"
+        else
+            echo "$or""time not synchronized""$xx"
+        fi
+    else
+        echo "$rd""Error time synchronization!""$xx"
+    fi
 }
 
 SetCertificateGlobal() {
