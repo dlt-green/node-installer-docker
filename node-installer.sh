@@ -3581,7 +3581,7 @@ IotaWasp() {
 		if [ -z "$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" ]; then VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY=$(cat ./data/waspdb/identity/identity.key 2>/dev/null | grep -v '^-----'); fi
 		VAR_DEFAULT=$(openssl genpkey -algorithm ed25519 2>/dev/null | grep -v '^-----')
 		if [ -z "$VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY" ]; then
-		  echo "Set identity private key (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set identity private key (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		  echo "Set identity private key ($ca""use generated""$xx):"; echo "Press [Enter] to use default value:"; else echo "Set identity private key (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_IOTA_WASP_IDENTITY_PRIVATE_KEY=$VAR_TMP
@@ -4439,7 +4439,7 @@ ShimmerWasp() {
 		if [ -z "$VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY" ]; then VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY=$(cat ./data/waspdb/identity/identity.key 2>/dev/null | grep -v '^-----'); fi
 		VAR_DEFAULT=$(openssl genpkey -algorithm ed25519 2>/dev/null | grep -v '^-----')
 		if [ -z "$VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY" ]; then
-		  echo "Set identity private key (default: $ca"$VAR_DEFAULT"$xx):"; echo "Press [Enter] to use default value:"; else echo "Set identity private key (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
+		  echo "Set identity private key ($ca""use generated""$xx):"; echo "Press [Enter] to use default value:"; else echo "Set identity private key (config: $ca""use existing""$xx)"; echo "Press [Enter] to use existing config:"; fi
 		read -r -p '> ' VAR_TMP
 		if [ -n "$VAR_TMP" ]; then
 		  VAR_SHIMMER_WASP_IDENTITY_PRIVATE_KEY=$VAR_TMP
