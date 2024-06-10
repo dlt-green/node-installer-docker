@@ -868,20 +868,15 @@ DebugInfo() {
         else
             echo "time: ""$or""not synchronized""$xx"
         fi
-        if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'NTPservice: active')" ]; then
-            echo "NTPservice: ""$gn""active""$xx"
-        else
-            echo "NTPservice: ""$or""not active""$xx"
-        fi		
     else
         echo "time: ""$rd""error synchronization!""$xx"
     fi
     echo "$ca""=== APT Up-to-date Check ===""$xx"
     apt update > /dev/null 2>&1
     if [ $? -eq 0 ]; then
-        echo "APT: ""$gn""up-to-date."
+        echo "APT: ""$gn""up-to-date"
     else
-        echo "APT: ""$rd""not up-to-date."
+        echo "APT: ""$rd""not up-to-date"
     fi
 }
 
