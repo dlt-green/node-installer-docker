@@ -25,6 +25,12 @@ The DLT.GREEN Node-Installer-Docker provides an easy-to-use script that streamli
 - **Storage:** 250 GB SSD minimum
 - **Operating System:** Ubuntu 22.04.04 LTS (Jammy Jellyfish) or Debian 12 (Bookworm)
 
+#### For EVM Nodes
+- **RAM:** 16 GB minimum
+- **CPU Cores:** 6+
+- **Storage:** 500 GB SSD minimum with pruning | 1 TB SSD minimum for full database
+- **Operating System:** Ubuntu 22.04.04 LTS (Jammy Jellyfish) or Debian 12 (Bookworm)
+
 ## Installation Guide
 
 ### Prerequisites
