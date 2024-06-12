@@ -2531,7 +2531,7 @@ SubMenuWaspCLI() {
 	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
 			peers="$(docker logs iota-wasp | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq)"
 			if [ -n "$peers" ]; then
-				echo "$rd""$peers"
+				echo "$rd"; echo "$peers"
 			else
 				echo "$gn""no dead peers"
 			fi
@@ -2548,7 +2548,7 @@ SubMenuWaspCLI() {
 	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
 			peers="$(docker logs shimmer-wasp | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq)"
 			if [ -n "$peers" ]; then
-				echo "$rd""$peers"
+				echo "$rd"; echo "$peers"
 			else
 				echo "$gn""no dead peers"
 			fi
