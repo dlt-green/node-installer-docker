@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.4.5.4"
-BUILD="20240612_223858"
+BUILD="20240612_225225"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='bcabc003bada8c53c0710325d1507f909a15e5e67a64b992a41c85f5d4386f50'
+IotaHornetHash='7cc952b4f7526844a7e4893aeae77c9e550223c071745107485272253b881cbe'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='5f5690b8a6e510cf2ab6a4010b2b7f9017e585fad0f8e39bd16f47915516369b'
+IotaWaspHash='214292b0c83c35c4eb82862d29b9f7e3a4e486ea1b69f5c9b0b7d5521c6ee4e2'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='4af2efc241ccb7bc7bf31f97cbb5ec1d1c5c074992ffc28ed0ab4e76b1f0f98f'
+ShimmerHornetHash='ec25082ce52da72deb7524c9072bc7d50d4589fcc565a9f9754725a065c617cf'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='8a877d8cc03c34fc891fad17877e9baff14d047fc41d5ad1c48723a31a188f5d'
+ShimmerWaspHash='81e6351d3b4a3799eb8bb2f3a3f61e88bc128e1657ad9df716ec951df3efdb06'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='d012db64700a100bd6802177f6b471325813412431cc6f28773f1febe98f52b3'
+ShimmerChronicleHash='ef3dcc5218e3d924f115baeb1be1854895ef6bb100db3b1fdbdab713ce6a520f'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -2529,7 +2529,7 @@ SubMenuWaspCLI() {
 		if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
-			echo "$rd" && docker logs iota-wasp | grep WARN | cut -d ':' -f 5 | grep '\.' | sort | uniq
+			echo "$rd" && docker logs iota-wasp | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq
 	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
 		else
 	      echo "$rd""Install $VAR_DIR first!""$xx"
@@ -2541,7 +2541,7 @@ SubMenuWaspCLI() {
 		if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
-			echo "$rd" && docker logs shimmer-wasp | grep WARN | cut -d ':' -f 5 | grep '\.' | sort | uniq
+			echo "$rd" && docker logs shimmer-wasp | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq
 	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
 		else
 	      echo "$rd""Install $VAR_DIR first!""$xx"
