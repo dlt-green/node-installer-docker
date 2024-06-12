@@ -2547,7 +2547,7 @@ SubMenuWaspCLI() {
 	      echo "$rd""Install $VAR_DIR first!""$xx"
 		fi
 	   fi
-	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   echo "$xx$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
 	9) clear
