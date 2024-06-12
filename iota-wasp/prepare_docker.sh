@@ -60,8 +60,8 @@ set_config "${usersConfigPath}" ".users.users[\"${DASHBOARD_USERNAME:-wasp}\"].p
 echo "Configure trusted peers..."
 configure_wasp_trusted_peers "${trustedPeersPath}"
 
-#echo "Configure chain access nodes for IotaEVM..."
-#configure_wasp_chain_access_nodes "${chainRegistryPath}" "IotaEVM" "iota1..."
+echo "Configure chain access nodes for IotaEVM..."
+configure_wasp_chain_access_nodes "${chainRegistryPath}" "IotaEVM" "iota1pzt3mstq6khgc3tl0mwuzk3eqddkryqnpdxmk4nr25re2466uxwm28qqxu5"
 
 echo ""
 echo "Finished"
