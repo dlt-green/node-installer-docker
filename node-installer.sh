@@ -2533,7 +2533,7 @@ SubMenuWaspCLI() {
 			if [ -n "$peers" ]; then
 				echo "$rd"; echo "$peers"
 			else
-				echo "$gn""no dead peers"
+				echo "$gn"; echo "no dead peers"
 			fi
 	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
 		else
@@ -2550,7 +2550,7 @@ SubMenuWaspCLI() {
 			if [ -n "$peers" ]; then
 				echo "$rd"; echo "$peers"
 			else
-				echo "$gn""no dead peers"
+				echo "$gn"; echo "no dead peers"
 			fi
 	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
 		else
