@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.5.3"
-BUILD="20240612_155740"
+VRSN="v.4.5.4"
+BUILD="20240612_225225"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='fcfc501881efbc208bc4044c999a5e75a980be9670368d0ad3bffa12c1ed192d'
+IotaHornetHash='7cc952b4f7526844a7e4893aeae77c9e550223c071745107485272253b881cbe'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='782f928e9c66128e1e70995964cd456a5d878721784c0cabf10aa9897bad08b1'
+IotaWaspHash='214292b0c83c35c4eb82862d29b9f7e3a4e486ea1b69f5c9b0b7d5521c6ee4e2'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='62e5dfc928c424d4a03aed39d418f4602f1bfa36e8acd1d8c4ddf73b191f7a89'
+ShimmerHornetHash='ec25082ce52da72deb7524c9072bc7d50d4589fcc565a9f9754725a065c617cf'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='7b4f64d0feff1ecd681b955203a003a3987fd12be68366b6ea2bf6508c6ba15d'
+ShimmerWaspHash='81e6351d3b4a3799eb8bb2f3a3f61e88bc128e1657ad9df716ec951df3efdb06'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='a9ad1a7a84ee46eed48d713de869c445a8c24e87fe670d7ab463c7ea8dd3934c'
+ShimmerChronicleHash='ef3dcc5218e3d924f115baeb1be1854895ef6bb100db3b1fdbdab713ce6a520f'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -2387,15 +2387,16 @@ SubMenuWaspCLI() {
 	echo "║                              5. Show wallet address                         ║"
 	echo "║                              6. Show wallet balance                         ║"
 	echo "║                              7. Show peering info                           ║"
-	echo "║                              8. Show deployed chains                        ║"
+	echo "║                              8. Show dead peers                             ║"
+	echo "║                              9. Show deployed chains                        ║"
 	if [ "$VAR_NODE" = 3 ] ; then
-	echo "║                              9. Add IOTA-EVM chain                          ║"
+	echo "║                             10. Add IOTA-EVM chain                          ║"
 	fi
 	if [ "$VAR_NODE" = 7 ] ; then
-	echo "║                              9. Add Shimmer-EVM chain                       ║"
+	echo "║                             10. Add Shimmer-EVM chain                       ║"
 	fi
-	echo "║                             10. Help                                        ║"	
-	echo "║                             11. Deinstall/Remove                            ║"
+	echo "║                             11. Help                                        ║"	
+	echo "║                             12. Deinstall/Remove                            ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
@@ -2522,6 +2523,34 @@ SubMenuWaspCLI() {
 	   SubMenuWaspCLI
 	   ;;
 	8) clear
+	   if [ "$VAR_NODE" = 3 ] ; then
+		echo "$ca"
+		echo 'Show dead peers...'"$xx"
+		if [ -d /var/lib/$VAR_DIR ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
+			echo "$rd" && docker logs iota-wasp | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq
+	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
+		else
+	      echo "$rd""Install $VAR_DIR first!""$xx"
+		fi
+	   fi
+	   if [ "$VAR_NODE" = 7 ] ; then
+		echo "$ca"
+		echo 'Show dead peers...'"$xx"
+		if [ -d /var/lib/$VAR_DIR ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
+			echo "$rd" && docker logs shimmer-wasp | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq
+	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
+		else
+	      echo "$rd""Install $VAR_DIR first!""$xx"
+		fi
+	   fi
+	   echo "$xx$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuWaspCLI
+	   ;;
+	9) clear
 	   echo "$ca"
 	   echo 'Show deployed chains...'"$xx"
 	   if [ -d /var/lib/$VAR_DIR ]; then
@@ -2533,7 +2562,7 @@ SubMenuWaspCLI() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
-	9) clear
+	10) clear
 	   if [ "$VAR_NODE" = 3 ] ; then
 		echo "$ca"
 		echo 'Add IOTA-EVM chain...'"$xx"
@@ -2623,7 +2652,7 @@ SubMenuWaspCLI() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
-	10) clear
+	11) clear
 	   echo "$ca"
 	   echo 'Help...'"$xx"
 	   echo "$xx"
@@ -2636,7 +2665,7 @@ SubMenuWaspCLI() {
 	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 	   SubMenuWaspCLI
 	   ;;
-	11) clear
+	12) clear
 	   echo "$ca"
 	   echo 'Deinstall/Remove Wasp-CLI...'
 	   echo "$xx"
