@@ -2529,7 +2529,7 @@ SubMenuWaspCLI() {
 		if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
-			peers="$(docker logs iota-wasp | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq)"
+			peers="$(docker logs iota-wasp 2>/dev/null | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq)"
 			if [ -n "$peers" ]; then
 				echo "$rd"; echo "$peers"
 			else
@@ -2544,7 +2544,7 @@ SubMenuWaspCLI() {
 		if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
-			peers="$(docker logs iota-wasp | grep 'unknown peer' | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq)"
+			peers="$(docker logs iota-wasp 2>/dev/null | grep "unknown peer" | tail -n 100 | cut -d ' ' -f 7 | sort | uniq)"
 			if [ -n "$peers" ]; then
 				echo "$or"; echo "$peers"
 			else
@@ -2561,7 +2561,7 @@ SubMenuWaspCLI() {
 		if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
-			peers="$(docker logs shimmer-wasp | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq)"
+			peers="$(docker logs shimmer-wasp 2>/dev/null | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq)"
 			if [ -n "$peers" ]; then
 				echo "$rd"; echo "$peers"
 			else
@@ -2576,7 +2576,7 @@ SubMenuWaspCLI() {
 		if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
-			peers="$(docker logs shimmer-wasp | grep 'unknown peer' | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq)"
+			peers="$(docker logs shimmer-wasp 2>/dev/null | grep "unknown peer" | tail -n 100 | cut -d ' ' -f 7 | sort | uniq)"
 			if [ -n "$peers" ]; then
 				echo "$or"; echo "$peers"
 			else
