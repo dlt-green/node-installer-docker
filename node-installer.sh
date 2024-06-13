@@ -2387,7 +2387,7 @@ SubMenuWaspCLI() {
 	echo "║                              5. Show wallet address                         ║"
 	echo "║                              6. Show wallet balance                         ║"
 	echo "║                              7. Show peering info                           ║"
-	echo "║                              8. Show dead peers                             ║"
+	echo "║                              8. Show unknown/dead peers                     ║"
 	echo "║                              9. Show deployed chains                        ║"
 	if [ "$VAR_NODE" = 3 ] ; then
 	echo "║                             10. Add IOTA-EVM chain                          ║"
@@ -2529,11 +2529,26 @@ SubMenuWaspCLI() {
 		if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
-			peers="$(docker logs iota-wasp | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq)"
+			peers="$(docker logs iota-wasp 2>/dev/null | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq)"
 			if [ -n "$peers" ]; then
 				echo "$rd"; echo "$peers"
 			else
 				echo "$gn"; echo "no dead peers"
+			fi
+	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
+		else
+	      echo "$rd""Install $VAR_DIR first!""$xx"
+		fi
+		echo "$ca"
+		echo 'Show unknown peers...'"$xx"
+		if [ -d /var/lib/$VAR_DIR ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
+			peers="$(docker logs iota-wasp 2>/dev/null | grep "unknown peer" | tail -n 100 | cut -d ' ' -f 7 | sort | uniq)"
+			if [ -n "$peers" ]; then
+				echo "$or"; echo "$peers"
+			else
+				echo "$gn"; echo "no unknown peers"
 			fi
 	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
 		else
@@ -2546,11 +2561,26 @@ SubMenuWaspCLI() {
 		if [ -d /var/lib/$VAR_DIR ]; then
 	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
 	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
-			peers="$(docker logs shimmer-wasp | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq)"
+			peers="$(docker logs shimmer-wasp 2>/dev/null | grep WARN | tail -n 100 | cut -d ':' -f 5 | grep '\.' | sort | uniq)"
 			if [ -n "$peers" ]; then
 				echo "$rd"; echo "$peers"
 			else
 				echo "$gn"; echo "no dead peers"
+			fi
+	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
+		else
+	      echo "$rd""Install $VAR_DIR first!""$xx"
+		fi
+		echo "$ca"
+		echo 'Show unknown peers...'"$xx"
+		if [ -d /var/lib/$VAR_DIR ]; then
+	      if [ -d /var/lib/$VAR_DIR ]; then cd /var/lib/$VAR_DIR || SubMenuWaspCLI; fi
+	      if [ -f "./data/config/wasp-cli/wasp-cli.json" ]; then
+			peers="$(docker logs shimmer-wasp 2>/dev/null | grep "unknown peer" | tail -n 100 | cut -d ' ' -f 7 | sort | uniq)"
+			if [ -n "$peers" ]; then
+				echo "$or"; echo "$peers"
+			else
+				echo "$gn"; echo "no unknown peers"
 			fi
 	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
 		else
