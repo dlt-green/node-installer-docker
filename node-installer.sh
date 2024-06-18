@@ -2622,15 +2622,11 @@ SubMenuWaspCLI() {
 				./wasp-cli-wrapper.sh login
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 				clear
-				echo "$ca"; echo 'Add IOTA-EVM chain...'"$xx"
+				echo "$ca"; echo 'Add/Activate IOTA-EVM chain...'"$xx"
 				./wasp-cli-wrapper.sh chain add iota-evm $VAR_IOTA_EVM_ADDR
-				if [ -n $(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep $VAR_IOTA_EVM_ADDR | cut -d '=' -f 2) ]; then
-					echo "$gn"; echo 'IOTA-EVM chain successfully added...'"$xx"
-					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-					clear
-					echo "$ca"; echo 'Activate IOTA-EVM chain...'"$xx"
-					./wasp-cli-wrapper.sh chain activate --chain iota-evm
-					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				./wasp-cli-wrapper.sh chain activate --chain iota-evm
+				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+				if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep $VAR_IOTA_EVM_ADDR | cut -d '=' -f 2)" ]; then
 					clear
 					echo "$ca"; echo 'Prepare wasp...'; echo "$xx"
 					./prepare_docker.sh
@@ -2639,7 +2635,7 @@ SubMenuWaspCLI() {
 					echo "$ca"; echo 'Restart wasp...'; echo "$xx"
 					docker stop iota-wasp
 					docker compose up -d
-				else echo "$rd"; echo "Error adding IOTA-EVM chain!""$xx"; fi
+				else echo "$rd"; echo "Error adding/activating IOTA-EVM chain!""$xx"; fi
 			else echo "$rd""Set at least two trusted accessnodes in the wasp config first!""$xx"; fi
 	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
 		else
@@ -2665,15 +2661,11 @@ SubMenuWaspCLI() {
 				./wasp-cli-wrapper.sh login
 				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 				clear
-				echo "$ca"; echo 'Add Shimmer-EVM chain...'"$xx"
+				echo "$ca"; echo 'Add/Activate Shimmer-EVM chain...'"$xx"
 				./wasp-cli-wrapper.sh chain add shimmer-evm $VAR_SHIMMER_EVM_ADDR
+				./wasp-cli-wrapper.sh chain activate --chain shimmer-evm
+				echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 				if [ -n "$(cat ./data/waspdb/chains/chain_registry.json 2>/dev/null | grep $VAR_SHIMMER_EVM_ADDR | cut -d '=' -f 2)" ]; then
-					echo "$gn"; echo 'Shimmer-EVM chain successfully added...'"$xx"
-					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-					clear
-					echo "$ca"; echo 'Activate Shimmer-EVM chain...'"$xx"
-					./wasp-cli-wrapper.sh chain activate --chain shimmer-evm
-					echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 					clear
 					echo "$ca"; echo 'Prepare wasp...'; echo "$xx"
 					./prepare_docker.sh
@@ -2682,7 +2674,7 @@ SubMenuWaspCLI() {
 					echo "$ca"; echo 'Restart wasp...'; echo "$xx"
 					docker stop shimmer-wasp
 					docker compose up -d
-				else echo "$rd"; echo "Error adding Shimmer-EVM chain!""$xx"; fi
+				else echo "$rd"; echo "Error adding/activating Shimmer-EVM chain!""$xx"; fi
 			else echo "$rd""Set at least two trusted accessnodes in the wasp config first!""$xx"; fi
 	      else echo "$rd""Install/prepare Wasp-CLI first!""$xx"; fi
 		else
