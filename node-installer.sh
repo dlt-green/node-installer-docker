@@ -2732,10 +2732,10 @@ SystemMaintenance() {
 	echo ""
 
 	if [ "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2)" = 'active' ]; then
-		
+		sudo ufw allow ntp >/dev/null
 	fi
 
-	sudo systemctl start ntp >/dev/null
+	sudo systemctl start ntp 2>/dev/null
 		VAR_NTP="$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 service ntp status | grep running)" 2>/dev/null
 	if [ -z "$VAR_NTP" ]; then
 		echo "$or""ntp service not running""$xx"
