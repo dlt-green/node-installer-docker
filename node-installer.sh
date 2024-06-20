@@ -2731,35 +2731,30 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ -f /etc/systemd/timesyncd.conf ]; then 
+	if [ "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2)" = 'active' ]; then
+		sudo ufw allow ntp >/dev/null
+	fi
 
-		if [ "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2)" = 'active' ]; then
-			sudo ufw allow ntp >/dev/null
-		fi
+	sudo systemctl start ntp >/dev/null
+		VAR_NTP="$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 service ntp status | grep running)"
+	if [ -z "$VAR_NTP" ]; then
+		echo "$or""ntp service not running""$xx"
+		if [ "$opt_mode" ]; then VAR_STATUS="system: ntp service not running"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	fi
 
-		VAR_NTP="$(cat /etc/systemd/timesyncd.conf 2>/dev/null | grep ^#NTP= | cut -d '=' -f 2)"
-		if [ -z "$VAR_NTP" ]; then
-			sed -i 's/^#NTP=.*/NTP=/g' /etc/systemd/timesyncd.conf
-		fi
+	sudo systemctl enable ntp >/dev/null
+	VAR_NTP="$(sudo service ntp status | grep 'ntp.service; enabled')"
+	if [ -z "$VAR_NTP" ]; then
+		echo "$or""ntp not enabled""$xx"
+		if [ "$opt_mode" ]; then VAR_STATUS="system: ntp not enabled"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	fi
 
-		VAR_NTP="$(cat /etc/systemd/timesyncd.conf 2>/dev/null | grep ^NTP= | cut -d '=' -f 2)"
-		if [ -z "$VAR_NTP" ]; then
-			sed -i 's/^NTP=.*/NTP=pool.ntp.org/g' /etc/systemd/timesyncd.conf
-		fi
-
-		sudo timedatectl set-ntp true >/dev/null
-		sudo systemctl restart systemd-timesyncd.service >/dev/null
-
-		if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
-			echo "$gn""time synchronized""$xx"
-			if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronized"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-		else
-			echo "$or""time not synchronized""$xx"
-			if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-		fi
+	if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ntpstat | grep 'time correct')" ]; then
+		echo "$gn""time synchronized""$xx"
+		if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronized"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	else
-		echo "$rd""Error time synchronization!""$xx"
-		if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronization failed"; NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+		echo "$or""time not synchronized""$xx"
+		if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"	clear
@@ -5137,7 +5132,7 @@ echo "> $gn""$InstallerHash""$xx"
 echo "  $gr""$(cat /etc/issue | cut -d ' ' -f 1)"" | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
 DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
-DEBIAN_FRONTEND=noninteractive sudo apt install openssl systemd-timesyncd qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt install openssl ntp ntpstat qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 sleep 1
 
