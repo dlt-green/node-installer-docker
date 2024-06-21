@@ -2753,7 +2753,9 @@ SystemMaintenance() {
 		echo "$gn""ntp enabled""$xx"
 	fi
 
-	if [ -z "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ntpstat | grep 'time correct') 2>/dev/null" ]; then
+ 	sudo systemctl restart ntp.service 2>/dev/null
+
+	if [ -z "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ntpstat | grep 'time correct')" ]; then
 		echo "$or""time not synchronized""$xx"
 		if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	else
