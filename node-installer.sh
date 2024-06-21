@@ -2736,7 +2736,7 @@ SystemMaintenance() {
 	fi
 
 	sudo systemctl start ntp 2>/dev/null
-		VAR_NTP="$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 service ntp status | grep running)" 2>/dev/null
+	VAR_NTP="$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 service ntp status | grep running)" 2>/dev/null
 	if [ -z "$VAR_NTP" ]; then
 		echo "$or""ntp service not running""$xx"
 		if [ "$opt_mode" ]; then VAR_STATUS="system: ntp service not running"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
@@ -2745,6 +2745,7 @@ SystemMaintenance() {
 	fi
 
 	sudo systemctl enable ntp 2>/dev/null
+ 
 	VAR_NTP="$(sudo service ntp status | grep 'ntp.service; enabled')" 2>/dev/null
 	if [ -z "$VAR_NTP" ]; then
 		echo "$or""ntp not enabled""$xx"
@@ -2754,9 +2755,11 @@ SystemMaintenance() {
 	fi
 
  	sudo systemctl restart ntp.service 2>/dev/null
-
-	if [ -z "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ntpstat | grep 'time correct')" ]; then
-		echo "$or""time not synchronized""$xx"
+	sleep 10
+ 
+	VAR_NTP="$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ntpstat status | grep 'time correct')" 2>/dev/null
+	if [ -z "$VAR_NTP" ]; then
+  		echo "$or""time not synchronized""$xx"
 		if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	else
 		echo "$gn""time synchronized""$xx"
