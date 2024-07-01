@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.4.5.8"
-BUILD="20240701_174135"
+BUILD="20240701_174756"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='c2581e7abea4905695d5490671ada3979b39737c88db9e375326f55c809da18f'
+IotaHornetHash='c05efc765eda028e67090fd3bde394bf85e74accf88f10e3a887571e2be452ee'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='5d873383ba6f39b31838c1f80fbbfeb1c736b946a5dc2556dd5e82c4be687e82'
+IotaWaspHash='36ff4dbed0dff72097ea702d3e7e18f57fd91a7933a85eb299085e1602fa0ba4'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='bbd6c1e77d01ca98ceb667304aff82b61122629fe997906637d288bfb8105b7c'
+ShimmerHornetHash='48a0cb8799a174be343cd49081ce3437ada5182a5735d1cc124a67b8d17b493a'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='fa1c60d79e72a16af047ec3ae82390b18802a9b540c27882703bdf40579eb3f7'
+ShimmerWaspHash='caaafb0cff9b42b252fb9b2f95ee0f821909d6175496cb45f0c177244ba326c1'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='8a8002bdf1632f302b352764e934391e6d71f7f186276a123a8a14cdef9eee6b'
+ShimmerChronicleHash='842738510d5f935890dc93da1b4aec312bcefd583b1b86b978da3a67aa4a5c8c'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -2731,39 +2731,38 @@ SystemMaintenance() {
 	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 	echo ""
 
-	if [ "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2)" = 'active' ]; then
-		sudo ufw allow ntp >/dev/null
-	fi
+	if [ -f /etc/systemd/timesyncd.conf ]; then 
 
-	sudo systemctl start ntp 2>/dev/null
-	VAR_NTP="$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 service ntp status | grep running)" 2>/dev/null
-	if [ -z "$VAR_NTP" ]; then
-		echo "$or""ntp service not running""$xx"
-		if [ "$opt_mode" ]; then VAR_STATUS="system: ntp service not running"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+		if [ "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2)" = 'active' ]; then
+			sudo ufw allow ntp >/dev/null
+		fi
+
+		VAR_NTP="$(cat /etc/systemd/timesyncd.conf 2>/dev/null | grep ^#NTP= | cut -d '=' -f 2)"
+		if [ -z "$VAR_NTP" ]; then
+			sed -i 's/^#NTP=.*/NTP=/g' /etc/systemd/timesyncd.conf
+		fi
+
+		VAR_NTP="$(cat /etc/systemd/timesyncd.conf 2>/dev/null | grep ^NTP= | cut -d '=' -f 2)"
+		if [ -z "$VAR_NTP" ]; then
+			sed -i 's/^NTP=.*/NTP=pool.ntp.org/g' /etc/systemd/timesyncd.conf
+		fi
+
+		sudo timedatectl set-ntp true >/dev/null
+		sudo systemctl restart systemd-timesyncd.service >/dev/null
+
+		if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
+			echo "$gn""time synchronized""$xx"
+			if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronized"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+		else
+			echo "$or""time not synchronized""$xx"
+			if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+		fi
 	else
-		echo "$gn""ntp service running""$xx"
+		echo "$rd""Error time synchronization!""$xx"
+		if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronization failed"; NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
 
-	sudo systemctl enable ntp 2>/dev/null
- 
-	VAR_NTP="$(sudo service ntp status | grep 'ntp.service; enabled')" 2>/dev/null
-	if [ -z "$VAR_NTP" ]; then
-		echo "$or""ntp not enabled""$xx"
-		if [ "$opt_mode" ]; then VAR_STATUS="system: ntp not enabled"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-	else
-		echo "$gn""ntp enabled""$xx"
-	fi
-
-	VAR_NTP="$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ntpstat status | grep 'time correct')" 2>/dev/null
-	if [ -z "$VAR_NTP" ]; then
-  		echo "$or""time not synchronized""$xx"
-		if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-	else
-		echo "$gn""time synchronized""$xx"
-		if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronized"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-	fi
-
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"	clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
 	echo ""
@@ -5138,7 +5137,7 @@ echo "> $gn""$InstallerHash""$xx"
 echo "  $gr""$(cat /etc/issue | cut -d ' ' -f 1)"" | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
 DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
-DEBIAN_FRONTEND=noninteractive sudo apt install openssl ntp ntpstat qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt install openssl systemd-timesyncd qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 sleep 1
 
