@@ -2754,9 +2754,6 @@ SystemMaintenance() {
 		echo "$gn""ntp enabled""$xx"
 	fi
 
- 	sudo systemctl restart ntp.service 2>/dev/null
-	sleep 10
- 
 	VAR_NTP="$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ntpstat status | grep 'time correct')" 2>/dev/null
 	if [ -z "$VAR_NTP" ]; then
   		echo "$or""time not synchronized""$xx"
