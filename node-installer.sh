@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.5.7"
-BUILD="20240618_225742"
+VRSN="v.4.5.8"
+BUILD="20240701_174756"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -25,11 +25,11 @@ VAR_IOTA_INX_DASHBOARD_VERSION='1.0'
 
 # IOTA-WASP
 
-VAR_IOTA_WASP_VERSION='1.1.0'
+VAR_IOTA_WASP_VERSION='1.3.0'
 VAR_IOTA_WASP_UPDATE=1
 
 VAR_IOTA_WASP_DASHBOARD_VERSION='0.1.9'
-VAR_IOTA_WASP_CLI_VERSION='1.1.0'
+VAR_IOTA_WASP_CLI_VERSION='1.3.0'
 
 VAR_IOTA_EVM_ADDR='iota1pzt3mstq6khgc3tl0mwuzk3eqddkryqnpdxmk4nr25re2466uxwm28qqxu5'
 
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='7865d182d19385a404046aad4e532a9566781c776e97a3b0d1b2d3f55e09f379'
+IotaHornetHash='c05efc765eda028e67090fd3bde394bf85e74accf88f10e3a887571e2be452ee'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='40d373f5d7a76afc9b120b64266725e99e4929cce0c76434ef764149dfd2ea60'
+IotaWaspHash='36ff4dbed0dff72097ea702d3e7e18f57fd91a7933a85eb299085e1602fa0ba4'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='ba8dc7945707d26a43881383157a89e0d7d0e1a114bde2701ac8efc11bbe3c3e'
+ShimmerHornetHash='48a0cb8799a174be343cd49081ce3437ada5182a5735d1cc124a67b8d17b493a'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='e63a890e65f2b129d83291f260903354df430ac98950eb2ba9ff550758fb8a0b'
+ShimmerWaspHash='caaafb0cff9b42b252fb9b2f95ee0f821909d6175496cb45f0c177244ba326c1'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='091c12aa9434eb43e3de7743d56dafa0c81b292f2d394e05584b2abc466aa143'
+ShimmerChronicleHash='842738510d5f935890dc93da1b4aec312bcefd583b1b86b978da3a67aa4a5c8c'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -2762,7 +2762,7 @@ SystemMaintenance() {
 		if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronization failed"; NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
 
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"	clear
+	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 	clear
 	echo ""
