@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.5.8"
-BUILD="20240701_174756"
+VRSN="v.4.5.9"
+BUILD="20240703_174153"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='c05efc765eda028e67090fd3bde394bf85e74accf88f10e3a887571e2be452ee'
+IotaHornetHash='fbebc2264bc1bd40a2382821ea687ca2a950fc47ae8a1a091d8b16341f105246'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='36ff4dbed0dff72097ea702d3e7e18f57fd91a7933a85eb299085e1602fa0ba4'
+IotaWaspHash='6f497f041a89559bb667559f634e9dd5fcc5dbc129ad94e9f2834a4b3354399c'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='48a0cb8799a174be343cd49081ce3437ada5182a5735d1cc124a67b8d17b493a'
+ShimmerHornetHash='3e91e9f20d30ef1f6319f67b10d77598edc512287894c79706f13dabf89c273b'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='caaafb0cff9b42b252fb9b2f95ee0f821909d6175496cb45f0c177244ba326c1'
+ShimmerWaspHash='22ec5c6e74f40b8e98b4f9d921d8cd086f0c7aaf097a29bc76809208308bc69a'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='842738510d5f935890dc93da1b4aec312bcefd583b1b86b978da3a67aa4a5c8c'
+ShimmerChronicleHash='f2f9ec95778beb7608859cf4c4bb9ea49de9c9f37c2fa2b5a2597c6254ef6814'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -2724,46 +2724,46 @@ SystemMaintenance() {
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
-	clear
-	echo ""
-	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
-	echo "║                         Check Time Synchronization                          ║"
-	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
-	echo ""
-
-	if [ -f /etc/systemd/timesyncd.conf ]; then 
-
-		if [ "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2)" = 'active' ]; then
-			sudo ufw allow ntp >/dev/null
-		fi
-
-		VAR_NTP="$(cat /etc/systemd/timesyncd.conf 2>/dev/null | grep ^#NTP= | cut -d '=' -f 2)"
-		if [ -z "$VAR_NTP" ]; then
-			sed -i 's/^#NTP=.*/NTP=/g' /etc/systemd/timesyncd.conf
-		fi
-
-		VAR_NTP="$(cat /etc/systemd/timesyncd.conf 2>/dev/null | grep ^NTP= | cut -d '=' -f 2)"
-		if [ -z "$VAR_NTP" ]; then
-			sed -i 's/^NTP=.*/NTP=pool.ntp.org/g' /etc/systemd/timesyncd.conf
-		fi
-
-		sudo timedatectl set-ntp true >/dev/null
-		sudo systemctl restart systemd-timesyncd.service >/dev/null
-
-		if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
-			echo "$gn""time synchronized""$xx"
-			if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronized"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-		else
-			echo "$or""time not synchronized""$xx"
-			if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-		fi
-	else
-		echo "$rd""Error time synchronization!""$xx"
-		if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronization failed"; NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-	fi
-
-	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
-
+#	clear
+#	echo ""
+#	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+#	echo "║                         Check Time Synchronization                          ║"
+#	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+#	echo ""
+#
+#	if [ -f /etc/systemd/timesyncd.conf ]; then 
+#
+#		if [ "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2)" = 'active' ]; then
+#			sudo ufw allow ntp >/dev/null
+#		fi
+#
+#		VAR_NTP="$(cat /etc/systemd/timesyncd.conf 2>/dev/null | grep ^#NTP= | cut -d '=' -f 2)"
+#		if [ -z "$VAR_NTP" ]; then
+#			sed -i 's/^#NTP=.*/NTP=/g' /etc/systemd/timesyncd.conf
+#		fi
+#
+#		VAR_NTP="$(cat /etc/systemd/timesyncd.conf 2>/dev/null | grep ^NTP= | cut -d '=' -f 2)"
+#		if [ -z "$VAR_NTP" ]; then
+#			sed -i 's/^NTP=.*/NTP=pool.ntp.org/g' /etc/systemd/timesyncd.conf
+#		fi
+#
+#		sudo timedatectl set-ntp true >/dev/null
+#		sudo systemctl restart systemd-timesyncd.service >/dev/null
+#
+#		if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
+#			echo "$gn""time synchronized""$xx"
+#			if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronized"; NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+#		else
+#			echo "$or""time not synchronized""$xx"
+#			if [ "$opt_mode" ]; then VAR_STATUS="system: time not synchronized"; NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+#		fi
+#	else
+#		echo "$rd""Error time synchronization!""$xx"
+#		if [ "$opt_mode" ]; then VAR_STATUS="system: time synchronization failed"; NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+#	fi
+#
+#	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+#
 	clear
 	echo ""
 	echo "╔═════════════════════════════════════════════════════════════════════════════╗"
@@ -5137,7 +5137,7 @@ echo "> $gn""$InstallerHash""$xx"
 echo "  $gr""$(cat /etc/issue | cut -d ' ' -f 1)"" | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
 DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
-DEBIAN_FRONTEND=noninteractive sudo apt install openssl systemd-timesyncd qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt install openssl qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 sleep 1
 
