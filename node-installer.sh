@@ -541,7 +541,7 @@ CheckEventsIota() {
 	else
 	   echo "Event IDs can be found at:"
 	   echo 'https://github.com/iotaledger/participation-events'
-	   echo 'https://github.com/iota-community/governance-participation-events'	   
+	   echo 'https://github.com/iota-community/governance-participation-events'
 	   echo "Event Data will be saved locally under '/var/lib/iota-hornet/verify-events'"
 	   echo ''
 	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
@@ -634,7 +634,7 @@ CheckEventsShimmer() {
 	else
 	   echo "Event IDs can be found at:"
 	   echo 'https://github.com/iotaledger/participation-events'
-	   echo 'https://github.com/iota-community/governance-participation-events'	 
+	   echo 'https://github.com/iota-community/governance-participation-events'
 	   echo "Event Data will be saved locally under '/var/lib/shimmer-hornet/verify-events'"
 	   echo ''
 	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
@@ -859,7 +859,7 @@ DebugInfo() {
     echo "Version: $VRSN"
     echo "Build: $BUILD"
     echo "$ca""=== Time Synchronization ===""$xx"
-    if [ -f /etc/systemd/timesyncd.conf ]; then 
+    if [ -f /etc/systemd/timesyncd.conf ]; then
 
         sudo systemctl restart systemd-timesyncd.service >/dev/null
 
@@ -958,7 +958,7 @@ Dashboard() {
 	  VAR_SHIMMER_HORNET_NETWORK='mainnet'
 	fi
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi
- 
+
 	VAR_NODE=51; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/nova-iotacore/.env" ]; then
 	  CheckNodeHealthy
@@ -1172,7 +1172,7 @@ Dashboard() {
 	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
 	             fi
-	           fi	
+	           fi
 
 	           if [ "$NODE" = 'shimmer-hornet' ]; then
 	             VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "shimmer-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
@@ -1276,17 +1276,17 @@ PositionVersion() {
 	window_width=78
 	text_left_width=57
 	text_right_width=2
-	version_with=$(echo "$1" | wc -c)
-	window_left=$(($window_width - $text_left_width - $text_right_width - $version_with))
+	version_width=$(echo "$1" | wc -c)
+	window_left=$(($window_width - $text_left_width - $text_right_width - $version_width))
 	text=$(printf "%*s%s" $window_left)"$1"
 }
 
 PositionCenter() {
 	text=''
 	window_width=78
-	text_with=$(echo "$1" | wc -c)
-	window_left=$(($window_width / 2 - $text_with / 2))
-	window_right=$(($window_width - $text_with - $window_left))
+	text_width=$(echo "$1" | wc -c)
+	window_left=$(($window_width / 2 - $text_width / 2))
+	window_right=$(($window_width - $text_width - $window_left))
 	text=$(printf "%*s%s" $window_left)"$1"$(printf "%*s%s" $window_right)
 }
 
@@ -1311,7 +1311,7 @@ MainMenu() {
 	echo "║                              5. Cron-Jobs                                   ║"
 	echo "║                              6. Notify-Me                                   ║"
 	echo "║                              7. Debug Information (for reporting an Issue)  ║"
-	echo "║                              8. License Information                         ║"	
+	echo "║                              8. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                              Q. Quit                                        ║"
 	echo "║                                                                             ║"
@@ -2073,7 +2073,7 @@ SubMenuMaintenance() {
 	      else
 			cd /var/lib/$VAR_DIR/data/waspdb/snap/$VAR_SHIMMER_EVM_ADDR || SubMenuMaintenance
 			VAR_EVM_SNAPSHOT_ID=$(curl -Ls https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/INDEX)
-			VAR_EVM_SNAPSHOT_URL="https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"   
+			VAR_EVM_SNAPSHOT_URL="https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"
 			echo "Download latest snapshot... $VAR_EVM_SNAPSHOT_ID"
 			wget -q --show-progress --progress=bar $VAR_EVM_SNAPSHOT_URL
 			cd /var/lib/$VAR_DIR || SubMenuMaintenance
@@ -2395,7 +2395,7 @@ SubMenuWaspCLI() {
 	if [ "$VAR_NODE" = 7 ] ; then
 	echo "║                             10. Add Shimmer-EVM chain                       ║"
 	fi
-	echo "║                             11. Help                                        ║"	
+	echo "║                             11. Help                                        ║"
 	echo "║                             12. Deinstall/Remove                            ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
@@ -2731,7 +2731,7 @@ SystemMaintenance() {
 #	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 #	echo ""
 #
-#	if [ -f /etc/systemd/timesyncd.conf ]; then 
+#	if [ -f /etc/systemd/timesyncd.conf ]; then
 #
 #		if [ "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2)" = 'active' ]; then
 #			sudo ufw allow ntp >/dev/null
@@ -3114,16 +3114,16 @@ IotaHornet() {
 		echo "$gn""Set dashboard port: $VAR_IOTA_HORNET_HTTPS_PORT""$xx"
 
 		echo ''
-		FormatToBytes $(cat /var/lib/shimmer-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
-		if [ -z "$bytes" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=0; else VAR_SHIMMER_HORNET_PRUNING_SIZE=$bytes; fi
+		FormatToBytes $(cat /var/lib/"$VAR_DIR"/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		if [ -z "$bytes" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=0; else VAR_IOTA_HORNET_PRUNING_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
 		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
 		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi
 		FormatToBytes "$(df -h /var/lib/"$VAR_DIR" | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
 		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi
-		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_SHIMMER_HORNET_PRUNING_SIZE)*9/10" | bc)
-		RESERVED_SPACE=$(echo "($VAR_SHIMMER_HORNET_PRUNING_SIZE)" | bc)
+		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_IOTA_HORNET_PRUNING_SIZE)*9/10" | bc)
+		RESERVED_SPACE=$(echo "($VAR_IOTA_HORNET_PRUNING_SIZE)" | bc)
 		FormatFromBytes "$RESERVED_SPACE"; RESERVED_SPACE=$fbytes
 		if [ $(($(echo "$VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE < $CALCULATED_SPACE" | bc))) -eq 1 ]; then CALCULATED_SPACE=$(echo "($VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE)" | bc); fi
 		FormatFromBytes "$CALCULATED_SPACE"; CALCULATED_SPACE=$fbytes
@@ -3318,7 +3318,7 @@ IotaHornet() {
 		if [ -z "$VAR_IOTA_HORNET_AUTOPEERING" ]; then
 		    echo "HORNET_AUTOPEERING_ENABLED=true" >> .env
 		fi
-   
+
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
@@ -3350,7 +3350,7 @@ IotaHornet() {
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
-		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		  echo "passwordSalt: "$VAR_DASHBOARD_SALT
 		else
 		  echo "credentials not changed..."
 		fi
@@ -3700,7 +3700,7 @@ IotaWasp() {
 		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
 
 		echo "" >> .env; echo "### CERTIFICATE ###" >> .env
-		
+
 		if [ "$VAR_CERT" = 0 ]
 		then
 			echo "SSL_CONFIG=letsencrypt" >> .env
@@ -3769,7 +3769,7 @@ IotaWasp() {
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
-		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		  echo "passwordSalt: "$VAR_DASHBOARD_SALT
 		else
 		  echo "credentials not changed..."
 		fi
@@ -3785,7 +3785,7 @@ IotaWasp() {
 		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		if [ -n "$WASP_TRUSTED_ACCESSNODE" ]; then
-		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env	
+		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env
 		fi
 
 		echo "" >> .env; echo "### TRUSTED PEERING NODES ###" >> .env
@@ -3972,16 +3972,16 @@ ShimmerHornet() {
 		echo "$gn""Set dashboard port: $VAR_SHIMMER_HORNET_HTTPS_PORT""$xx"
 
 		echo ''
-		FormatToBytes $(cat /var/lib/iota-hornet/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
-		if [ -z "$bytes" ]; then VAR_IOTA_HORNET_PRUNING_SIZE=0; else VAR_IOTA_HORNET_PRUNING_SIZE=$bytes; fi
+		FormatToBytes $(cat /var/lib/"$VAR_DIR"/.env 2>/dev/null | grep HORNET_PRUNING_TARGET_SIZE= | cut -d '=' -f 2)
+		if [ -z "$bytes" ]; then VAR_SHIMMER_HORNET_PRUNING_SIZE=0; else VAR_SHIMMER_HORNET_PRUNING_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 2)B"
 		if [ -z "$bytes" ]; then VAR_DISK_SIZE=0; else VAR_DISK_SIZE=$bytes; fi
 		FormatToBytes "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
 		if [ -z "$bytes" ]; then VAR_AVAILABLE_SIZE=0; else VAR_AVAILABLE_SIZE=$bytes; fi
 		FormatToBytes "$(df -h /var/lib/"$VAR_DIR" | tail -1 | tr -s ' ' | cut -d ' ' -f 4)B"
 		if [ -z "$bytes" ]; then VAR_SELF_SIZE=0; else VAR_SELF_SIZE=$bytes; fi
-		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_IOTA_HORNET_PRUNING_SIZE)*9/10" | bc)
-		RESERVED_SPACE=$(echo "($VAR_IOTA_HORNET_PRUNING_SIZE)" | bc)
+		CALCULATED_SPACE=$(echo "($VAR_DISK_SIZE-$VAR_SHIMMER_HORNET_PRUNING_SIZE)*9/10" | bc)
+		RESERVED_SPACE=$(echo "($VAR_SHIMMER_HORNET_PRUNING_SIZE)" | bc)
 		FormatFromBytes "$RESERVED_SPACE"; RESERVED_SPACE=$fbytes
 		if [ $(($(echo "$VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE < $CALCULATED_SPACE" | bc))) -eq 1 ]; then CALCULATED_SPACE=$(echo "($VAR_AVAILABLE_SIZE+$VAR_SELF_SIZE)" | bc); fi
 		FormatFromBytes "$CALCULATED_SPACE"; CALCULATED_SPACE=$fbytes
@@ -4176,7 +4176,7 @@ ShimmerHornet() {
 		if [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
 		    echo "HORNET_AUTOPEERING_ENABLED=true" >> .env
 		fi
-  
+
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
@@ -4208,7 +4208,7 @@ ShimmerHornet() {
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
-		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		  echo "passwordSalt: "$VAR_DASHBOARD_SALT
 		else
 		  echo "credentials not changed..."
 		fi
@@ -4558,7 +4558,7 @@ ShimmerWasp() {
 		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
 
 		echo "" >> .env; echo "### CERTIFICATE ###" >> .env
-		
+
 		if [ "$VAR_CERT" = 0 ]
 		then
 			echo "SSL_CONFIG=letsencrypt" >> .env
@@ -4627,7 +4627,7 @@ ShimmerWasp() {
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
-		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		  echo "passwordSalt: "$VAR_DASHBOARD_SALT
 		else
 		  echo "credentials not changed..."
 		fi
@@ -4643,7 +4643,7 @@ ShimmerWasp() {
 		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		if [ -n "$WASP_TRUSTED_ACCESSNODE" ]; then
-		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env	
+		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env
 		fi
 
 		echo "" >> .env; echo "### TRUSTED PEERING NODES ###" >> .env
