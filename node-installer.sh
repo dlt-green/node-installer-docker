@@ -5137,7 +5137,7 @@ echo "> $gn""$InstallerHash""$xx"
 echo "  $gr""$(cat /etc/issue | cut -d ' ' -f 1)"" | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
 DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
-DEBIAN_FRONTEND=noninteractive sudo apt install openssl qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt install libdigest-sha-perl openssl qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 sleep 1
 
