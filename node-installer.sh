@@ -858,19 +858,19 @@ DebugInfo() {
     echo "$ca""=== DLT.GREEN Installer  ===""$xx"
     echo "Version: $VRSN"
     echo "Build: $BUILD"
-    echo "$ca""=== Time Synchronization ===""$xx"
-    if [ -f /etc/systemd/timesyncd.conf ]; then
-
-        sudo systemctl restart systemd-timesyncd.service >/dev/null
-
-        if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
-            echo "time: ""$gn""synchronized""$xx"
-        else
-            echo "time: ""$or""not synchronized""$xx"
-        fi
-    else
-        echo "time: ""$rd""error synchronization!""$xx"
-    fi
+#    echo "$ca""=== Time Synchronization ===""$xx"
+#    if [ -f /etc/systemd/timesyncd.conf ]; then
+#
+#        sudo systemctl restart systemd-timesyncd.service >/dev/null
+#
+#        if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
+#            echo "time: ""$gn""synchronized""$xx"
+#        else
+#            echo "time: ""$or""not synchronized""$xx"
+#        fi
+#    else
+#        echo "time: ""$rd""error synchronization!""$xx"
+#    fi
     echo "$ca""=== APT Up-to-date Check ===""$xx"
     apt update > /dev/null 2>&1
     if [ $? -eq 0 ]; then
