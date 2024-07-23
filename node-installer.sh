@@ -1127,6 +1127,35 @@ Dashboard() {
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
+	             if [ "$NODE" = 'iota-wasp' ]; then if [ -d "/data/waspdb/wal/$VAR_IOTA_EVM_ADDR" ]; then
+	               VAR_STATUS="$NODE: reset iota-evm database"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/data/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/consensus/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/index/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/snap/$VAR_IOTA_EVM_ADDR/*
+
+	               VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+
+	               if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
+					VAR_STATUS="$NODE: download full iota-evm database (latest-wasp_chains_wal)"
+					if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi		  
+					VAR_EVM_FULL_DB='https://files.stardust-mainnet.iotaledger.net/dbs/wasp/latest-wasp_chains_wal.tgz'
+					cd /var/lib/"$NODE"/data/waspdb || cd /var/lib/"$NODE"
+					echo "Download latest full database... latest-wasp_chains_wal"
+					wget -q --show-progress --progress=bar $VAR_EVM_FULL_DB -O - | tar xzv
+					cd /var/lib/"$NODE"
+	               else
+					cd /var/lib/"$NODE"/data/waspdb/snap/$VAR_IOTA_EVM_ADDR || cd /var/lib/"$NODE"
+					VAR_EVM_SNAPSHOT_ID=$(curl -Ls https://files.stardust-mainnet.iotaledger.net/wasp_snapshots/$VAR_IOTA_EVM_ADDR/INDEX)
+					VAR_EVM_SNAPSHOT_URL="https://files.stardust-mainnet.iotaledger.net/wasp_snapshots/$VAR_IOTA_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"
+					VAR_STATUS="$NODE: import iota-evm snapshot $VAR_EVM_SNAPSHOT_ID"
+					if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi	
+					wget -q --show-progress --progress=bar $VAR_EVM_SNAPSHOT_URL
+					cd /var/lib/"$NODE" || SubMenuMaintenance
+	               fi
+	               chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
+	             fi
 	             if [ "$NODE" = 'shimmer-hornet' ]; then
 	               VAR_STATUS="$NODE$NETWORK: reset node database"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
