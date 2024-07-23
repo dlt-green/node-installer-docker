@@ -1077,7 +1077,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
-	  VAR_STATUS='system: start all nodes'
+	  VAR_STATUS='installer: start all nodes'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='s'
