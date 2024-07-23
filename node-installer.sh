@@ -1127,7 +1127,7 @@ Dashboard() {
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
-	             if [ "$NODE" = 'iota-wasp' ]; then if [ -d "/data/waspdb/wal/$VAR_IOTA_EVM_ADDR" ]; then
+	             if [ "$NODE" = 'iota-wasp' ]; then if [ -d /var/lib/"$NODE"/data/waspdb/wal/$VAR_IOTA_EVM_ADDR ]; then
 	               VAR_STATUS="$NODE: reset iota-evm database"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/data/*
