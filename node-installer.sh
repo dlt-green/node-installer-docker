@@ -1149,7 +1149,7 @@ Dashboard() {
 					cd /var/lib/"$NODE"/data/waspdb/snap/$VAR_IOTA_EVM_ADDR || cd /var/lib/"$NODE"
 					VAR_EVM_SNAPSHOT_ID=$(curl -Ls https://files.stardust-mainnet.iotaledger.net/wasp_snapshots/$VAR_IOTA_EVM_ADDR/INDEX)
 					VAR_EVM_SNAPSHOT_URL="https://files.stardust-mainnet.iotaledger.net/wasp_snapshots/$VAR_IOTA_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"
-					VAR_STATUS="$NODE: import iota-evm snapshot $VAR_EVM_SNAPSHOT_ID"
+					VAR_STATUS="$NODE: import iota-evm snapshot "$(echo $VAR_EVM_SNAPSHOT_ID | cut -d "." -f 1)
 					if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi	
 					wget -q --show-progress --progress=bar $VAR_EVM_SNAPSHOT_URL
 					cd /var/lib/"$NODE" || SubMenuMaintenance
