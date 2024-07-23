@@ -1155,7 +1155,7 @@ Dashboard() {
 					cd /var/lib/"$NODE" || SubMenuMaintenance
 	               fi
 	               chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
-	             fi
+	             fi; fi
 	             if [ "$NODE" = 'shimmer-hornet' ]; then
 	               VAR_STATUS="$NODE$NETWORK: reset node database"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
