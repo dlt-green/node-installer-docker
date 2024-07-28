@@ -1173,11 +1173,40 @@ Dashboard() {
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
+	             if [ "$NODE" = 'shimmer-wasp' ]; then if [ -d /var/lib/"$NODE"/data/waspdb/wal/$VAR_SHIMMER_EVM_ADDR ]; then
+	               VAR_STATUS="$NODE: reset shimmer-evm database"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/data/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/consensus/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/index/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/snap/$VAR_SHIMMER_EVM_ADDR/*
+
+	               VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+
+	               if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
+					VAR_STATUS="$NODE: download shimmer-evm latest full database (syncing from chain wal files)"
+					if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi		  
+					VAR_EVM_FULL_DB='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
+					cd /var/lib/"$NODE"/data/waspdb || cd /var/lib/"$NODE"
+					echo "Download shimmer-evm latest full database (syncing from chain wal files)"
+					wget -q --show-progress --progress=bar $VAR_EVM_FULL_DB -O - | tar xzv
+					cd /var/lib/"$NODE"
+	               else
+					cd /var/lib/"$NODE"/data/waspdb/snap/$VAR_SHIMMER_EVM_ADDR || cd /var/lib/"$NODE"
+					VAR_EVM_SNAPSHOT_ID=$(curl -Ls https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/INDEX)
+					VAR_EVM_SNAPSHOT_URL="https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"
+					echo "Download shimmer-evm latest snapshot... $VAR_EVM_SNAPSHOT_ID"
+					VAR_STATUS="$NODE: download shimmer-evm latest snapshot "$(echo $VAR_EVM_SNAPSHOT_ID | cut -d "." -f 1)
+					if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi	
+					wget -q --show-progress --progress=bar $VAR_EVM_SNAPSHOT_URL
+					cd /var/lib/"$NODE" || SubMenuMaintenance
+	               fi
+	               chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
+	             fi; fi
 	             docker compose up -d
 	             sleep 60
 	             VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
 	           fi
-
 	           if [ "$NODE" = 'iota-hornet' ]; then
 	             VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "iota-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
 	             if ! [ "$VAR_STATUS_HORNET_INX_PARTICIPATION" = 'running' ]; then
