@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.5.9"
-BUILD="20240703_174153"
+VRSN="v.4.6.0"
+BUILD="20240729_194937"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='fbebc2264bc1bd40a2382821ea687ca2a950fc47ae8a1a091d8b16341f105246'
+IotaHornetHash='33db5967886a35536dc36fa71b5b8b5659210ffe6b8f862eef024c88922e9ede'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='6f497f041a89559bb667559f634e9dd5fcc5dbc129ad94e9f2834a4b3354399c'
+IotaWaspHash='5d015528828f681ff85caf0ab1f9b3536a0b7ba6dc3d06975e5c1959bcd4f940'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='3e91e9f20d30ef1f6319f67b10d77598edc512287894c79706f13dabf89c273b'
+ShimmerHornetHash='f3712e55ff33b6d06b44601a97943bc54ab1c2fb93f40aa0dc856b43453a1025'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='22ec5c6e74f40b8e98b4f9d921d8cd086f0c7aaf097a29bc76809208308bc69a'
+ShimmerWaspHash='7848b5dd6f7bd96671a2c7cbe408c9c13a36b1d8ec045abb74da7a5d935dabec'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='f2f9ec95778beb7608859cf4c4bb9ea49de9c9f37c2fa2b5a2597c6254ef6814'
+ShimmerChronicleHash='7e04a9ed72ccd80a8239150c7496d38c9029285a2b0c1db28bce3625607370aa'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -541,7 +541,7 @@ CheckEventsIota() {
 	else
 	   echo "Event IDs can be found at:"
 	   echo 'https://github.com/iotaledger/participation-events'
-	   echo 'https://github.com/iota-community/governance-participation-events'	   
+	   echo 'https://github.com/iota-community/governance-participation-events'
 	   echo "Event Data will be saved locally under '/var/lib/iota-hornet/verify-events'"
 	   echo ''
 	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
@@ -634,7 +634,7 @@ CheckEventsShimmer() {
 	else
 	   echo "Event IDs can be found at:"
 	   echo 'https://github.com/iotaledger/participation-events'
-	   echo 'https://github.com/iota-community/governance-participation-events'	 
+	   echo 'https://github.com/iota-community/governance-participation-events'
 	   echo "Event Data will be saved locally under '/var/lib/shimmer-hornet/verify-events'"
 	   echo ''
 	   echo "Set the Event ID for verifying ($ca""keep empty to verify all Events of your Node""$xx):"
@@ -858,19 +858,19 @@ DebugInfo() {
     echo "$ca""=== DLT.GREEN Installer  ===""$xx"
     echo "Version: $VRSN"
     echo "Build: $BUILD"
-    echo "$ca""=== Time Synchronization ===""$xx"
-    if [ -f /etc/systemd/timesyncd.conf ]; then 
-
-        sudo systemctl restart systemd-timesyncd.service >/dev/null
-
-        if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
-            echo "time: ""$gn""synchronized""$xx"
-        else
-            echo "time: ""$or""not synchronized""$xx"
-        fi
-    else
-        echo "time: ""$rd""error synchronization!""$xx"
-    fi
+#    echo "$ca""=== Time Synchronization ===""$xx"
+#    if [ -f /etc/systemd/timesyncd.conf ]; then
+#
+#        sudo systemctl restart systemd-timesyncd.service >/dev/null
+#
+#        if [ -n "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 timedatectl status | grep 'System clock synchronized: yes')" ]; then
+#            echo "time: ""$gn""synchronized""$xx"
+#        else
+#            echo "time: ""$or""not synchronized""$xx"
+#        fi
+#    else
+#        echo "time: ""$rd""error synchronization!""$xx"
+#    fi
     echo "$ca""=== APT Up-to-date Check ===""$xx"
     apt update > /dev/null 2>&1
     if [ $? -eq 0 ]; then
@@ -958,7 +958,7 @@ Dashboard() {
 	  VAR_SHIMMER_HORNET_NETWORK='mainnet'
 	fi
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi
- 
+
 	VAR_NODE=51; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/nova-iotacore/.env" ]; then
 	  CheckNodeHealthy
@@ -1077,7 +1077,7 @@ Dashboard() {
 
 	if [ "$opt_mode" = 's' ]; then
 	  echo "$ca""unattended: Start all Nodes...""$xx"
-	  VAR_STATUS='system: start all nodes'
+	  VAR_STATUS='installer: start all nodes'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	  sleep 3
 	  n='s'
@@ -1127,6 +1127,36 @@ Dashboard() {
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
+	             if [ "$NODE" = 'iota-wasp' ]; then if [ -d /var/lib/"$NODE"/data/waspdb/wal/$VAR_IOTA_EVM_ADDR ]; then
+	               VAR_STATUS="$NODE: reset iota-evm database"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/data/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/consensus/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/index/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/snap/$VAR_IOTA_EVM_ADDR/*
+
+	               VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+
+	               if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
+					VAR_STATUS="$NODE: download iota-evm latest full database (syncing from chain wal files)"
+					if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi		  
+					VAR_EVM_FULL_DB='https://files.stardust-mainnet.iotaledger.net/dbs/wasp/latest-wasp_chains_wal.tgz'
+					cd /var/lib/"$NODE"/data/waspdb || cd /var/lib/"$NODE"
+					echo "Download iota-evm latest full database (syncing from chain wal files)"
+					wget -q --show-progress --progress=bar $VAR_EVM_FULL_DB -O - | tar xzv
+					cd /var/lib/"$NODE"
+	               else
+					cd /var/lib/"$NODE"/data/waspdb/snap/$VAR_IOTA_EVM_ADDR || cd /var/lib/"$NODE"
+					VAR_EVM_SNAPSHOT_ID=$(curl -Ls https://files.stardust-mainnet.iotaledger.net/wasp_snapshots/$VAR_IOTA_EVM_ADDR/INDEX)
+					VAR_EVM_SNAPSHOT_URL="https://files.stardust-mainnet.iotaledger.net/wasp_snapshots/$VAR_IOTA_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"
+					echo "Download iota-evm latest snapshot... $VAR_EVM_SNAPSHOT_ID"
+					VAR_STATUS="$NODE: download iota-evm latest snapshot "$(echo $VAR_EVM_SNAPSHOT_ID | cut -d "." -f 1)
+					if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi	
+					wget -q --show-progress --progress=bar $VAR_EVM_SNAPSHOT_URL
+					cd /var/lib/"$NODE" || SubMenuMaintenance
+	               fi
+	               chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
+	             fi; fi
 	             if [ "$NODE" = 'shimmer-hornet' ]; then
 	               VAR_STATUS="$NODE$NETWORK: reset node database"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
@@ -1143,11 +1173,40 @@ Dashboard() {
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
+	             if [ "$NODE" = 'shimmer-wasp' ]; then if [ -d /var/lib/"$NODE"/data/waspdb/wal/$VAR_SHIMMER_EVM_ADDR ]; then
+	               VAR_STATUS="$NODE: reset shimmer-evm database"
+	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/data/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/consensus/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/index/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/snap/$VAR_SHIMMER_EVM_ADDR/*
+
+	               VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+
+	               if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
+					VAR_STATUS="$NODE: download shimmer-evm latest full database (syncing from chain wal files)"
+					if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi		  
+					VAR_EVM_FULL_DB='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
+					cd /var/lib/"$NODE"/data/waspdb || cd /var/lib/"$NODE"
+					echo "Download shimmer-evm latest full database (syncing from chain wal files)"
+					wget -q --show-progress --progress=bar $VAR_EVM_FULL_DB -O - | tar xzv
+					cd /var/lib/"$NODE"
+	               else
+					cd /var/lib/"$NODE"/data/waspdb/snap/$VAR_SHIMMER_EVM_ADDR || cd /var/lib/"$NODE"
+					VAR_EVM_SNAPSHOT_ID=$(curl -Ls https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/INDEX)
+					VAR_EVM_SNAPSHOT_URL="https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"
+					echo "Download shimmer-evm latest snapshot... $VAR_EVM_SNAPSHOT_ID"
+					VAR_STATUS="$NODE: download shimmer-evm latest snapshot "$(echo $VAR_EVM_SNAPSHOT_ID | cut -d "." -f 1)
+					if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi	
+					wget -q --show-progress --progress=bar $VAR_EVM_SNAPSHOT_URL
+					cd /var/lib/"$NODE" || SubMenuMaintenance
+	               fi
+	               chown -R 65532:65532 /var/lib/"$VAR_DIR"/data
+	             fi; fi
 	             docker compose up -d
 	             sleep 60
 	             VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
 	           fi
-
 	           if [ "$NODE" = 'iota-hornet' ]; then
 	             VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "iota-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
 	             if ! [ "$VAR_STATUS_HORNET_INX_PARTICIPATION" = 'running' ]; then
@@ -1172,7 +1231,7 @@ Dashboard() {
 	               VAR_STATUS_HORNET_INX_PARTICIPATION="$NODE$NETWORK: participation healthy"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS_HORNET_INX_PARTICIPATION"; fi
 	             fi
-	           fi	
+	           fi
 
 	           if [ "$NODE" = 'shimmer-hornet' ]; then
 	             VAR_STATUS_HORNET_INX_PARTICIPATION="$(docker inspect "$(echo "shimmer-hornet.inx-participation" | sed 's/\//./g')" | jq -r '.[] .State .Status')"
@@ -1276,17 +1335,17 @@ PositionVersion() {
 	window_width=78
 	text_left_width=57
 	text_right_width=2
-	version_with=$(echo "$1" | wc -c)
-	window_left=$(($window_width - $text_left_width - $text_right_width - $version_with))
+	version_width=$(echo "$1" | wc -c)
+	window_left=$(($window_width - $text_left_width - $text_right_width - $version_width))
 	text=$(printf "%*s%s" $window_left)"$1"
 }
 
 PositionCenter() {
 	text=''
 	window_width=78
-	text_with=$(echo "$1" | wc -c)
-	window_left=$(($window_width / 2 - $text_with / 2))
-	window_right=$(($window_width - $text_with - $window_left))
+	text_width=$(echo "$1" | wc -c)
+	window_left=$(($window_width / 2 - $text_width / 2))
+	window_right=$(($window_width - $text_width - $window_left))
 	text=$(printf "%*s%s" $window_left)"$1"$(printf "%*s%s" $window_right)
 }
 
@@ -1311,7 +1370,7 @@ MainMenu() {
 	echo "║                              5. Cron-Jobs                                   ║"
 	echo "║                              6. Notify-Me                                   ║"
 	echo "║                              7. Debug Information (for reporting an Issue)  ║"
-	echo "║                              8. License Information                         ║"	
+	echo "║                              8. License Information                         ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                              Q. Quit                                        ║"
 	echo "║                                                                             ║"
@@ -2025,14 +2084,14 @@ SubMenuMaintenance() {
 	      if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
 			VAR_EVM_FULL_DB='https://files.stardust-mainnet.iotaledger.net/dbs/wasp/latest-wasp_chains_wal.tgz'
 			cd /var/lib/$VAR_DIR/data/waspdb || SubMenuMaintenance
-			echo "Download latest full database... latest-wasp_chains_wal"
+			echo "Download iota-evm latest full database (syncing from chain wal files)"
 			wget -q --show-progress --progress=bar $VAR_EVM_FULL_DB -O - | tar xzv
 			cd /var/lib/$VAR_DIR || SubMenuMaintenance
 	      else
 			cd /var/lib/$VAR_DIR/data/waspdb/snap/$VAR_IOTA_EVM_ADDR || SubMenuMaintenance
 			VAR_EVM_SNAPSHOT_ID=$(curl -Ls https://files.stardust-mainnet.iotaledger.net/wasp_snapshots/$VAR_IOTA_EVM_ADDR/INDEX)
 			VAR_EVM_SNAPSHOT_URL="https://files.stardust-mainnet.iotaledger.net/wasp_snapshots/$VAR_IOTA_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"
-			echo "Download latest snapshot... $VAR_EVM_SNAPSHOT_ID"
+			echo "Download iota-evm latest snapshot... "$(echo $VAR_EVM_SNAPSHOT_ID | cut -d "." -f 1)
 			wget -q --show-progress --progress=bar $VAR_EVM_SNAPSHOT_URL
 			cd /var/lib/$VAR_DIR || SubMenuMaintenance
 	      fi
@@ -2067,14 +2126,14 @@ SubMenuMaintenance() {
 	      if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
 			VAR_EVM_FULL_DB='https://files.shimmer.shimmer.network/dbs/wasp/latest-wasp_chains_wal.tgz'
 			cd /var/lib/$VAR_DIR/data/waspdb || SubMenuMaintenance
-			echo "Download latest full database... latest-wasp_chains_wal"
+			echo "Download shimmer-evm latest full database (syncing from chain wal files)"
 			wget -q --show-progress --progress=bar $VAR_EVM_FULL_DB -O - | tar xzv
 			cd /var/lib/$VAR_DIR || SubMenuMaintenance
 	      else
 			cd /var/lib/$VAR_DIR/data/waspdb/snap/$VAR_SHIMMER_EVM_ADDR || SubMenuMaintenance
 			VAR_EVM_SNAPSHOT_ID=$(curl -Ls https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/INDEX)
-			VAR_EVM_SNAPSHOT_URL="https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"   
-			echo "Download latest snapshot... $VAR_EVM_SNAPSHOT_ID"
+			VAR_EVM_SNAPSHOT_URL="https://files.shimmer.shimmer.network/wasp_snapshots/$VAR_SHIMMER_EVM_ADDR/$VAR_EVM_SNAPSHOT_ID"
+			echo "Download shimmer-evm latest snapshot... "$(echo $VAR_EVM_SNAPSHOT_ID | cut -d "." -f 1)
 			wget -q --show-progress --progress=bar $VAR_EVM_SNAPSHOT_URL
 			cd /var/lib/$VAR_DIR || SubMenuMaintenance
 	      fi
@@ -2395,7 +2454,7 @@ SubMenuWaspCLI() {
 	if [ "$VAR_NODE" = 7 ] ; then
 	echo "║                             10. Add Shimmer-EVM chain                       ║"
 	fi
-	echo "║                             11. Help                                        ║"	
+	echo "║                             11. Help                                        ║"
 	echo "║                             12. Deinstall/Remove                            ║"
 	echo "║                              X. Management Dashboard                        ║"
 	echo "║                                                                             ║"
@@ -2731,7 +2790,7 @@ SystemMaintenance() {
 #	echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 #	echo ""
 #
-#	if [ -f /etc/systemd/timesyncd.conf ]; then 
+#	if [ -f /etc/systemd/timesyncd.conf ]; then
 #
 #		if [ "$(LC_ALL=en_GB.UTF-8 LC_LANG=en_GB.UTF-8 ufw status | grep 'Status:' | cut -d ' ' -f 2)" = 'active' ]; then
 #			sudo ufw allow ntp >/dev/null
@@ -3318,7 +3377,7 @@ IotaHornet() {
 		if [ -z "$VAR_IOTA_HORNET_AUTOPEERING" ]; then
 		    echo "HORNET_AUTOPEERING_ENABLED=true" >> .env
 		fi
-   
+
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
@@ -3350,7 +3409,7 @@ IotaHornet() {
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
-		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		  echo "passwordSalt: "$VAR_DASHBOARD_SALT
 		else
 		  echo "credentials not changed..."
 		fi
@@ -3700,7 +3759,7 @@ IotaWasp() {
 		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
 
 		echo "" >> .env; echo "### CERTIFICATE ###" >> .env
-		
+
 		if [ "$VAR_CERT" = 0 ]
 		then
 			echo "SSL_CONFIG=letsencrypt" >> .env
@@ -3769,7 +3828,7 @@ IotaWasp() {
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
-		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		  echo "passwordSalt: "$VAR_DASHBOARD_SALT
 		else
 		  echo "credentials not changed..."
 		fi
@@ -3785,7 +3844,7 @@ IotaWasp() {
 		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		if [ -n "$WASP_TRUSTED_ACCESSNODE" ]; then
-		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env	
+		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env
 		fi
 
 		echo "" >> .env; echo "### TRUSTED PEERING NODES ###" >> .env
@@ -4176,7 +4235,7 @@ ShimmerHornet() {
 		if [ -z "$VAR_SHIMMER_HORNET_AUTOPEERING" ]; then
 		    echo "HORNET_AUTOPEERING_ENABLED=true" >> .env
 		fi
-  
+
 		VAR_HOST=$(cat .env 2>/dev/null | grep _HOST | cut -d '=' -f 2)
 		fgrep -q "RESTAPI_SALT" .env || echo "RESTAPI_SALT=$VAR_SALT" >> .env
 	fi
@@ -4208,7 +4267,7 @@ ShimmerHornet() {
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
-		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		  echo "passwordSalt: "$VAR_DASHBOARD_SALT
 		else
 		  echo "credentials not changed..."
 		fi
@@ -4558,7 +4617,7 @@ ShimmerWasp() {
 		echo "WASP_DEBUG_SKIP_HEALTH_CHECK=true" >> .env
 
 		echo "" >> .env; echo "### CERTIFICATE ###" >> .env
-		
+
 		if [ "$VAR_CERT" = 0 ]
 		then
 			echo "SSL_CONFIG=letsencrypt" >> .env
@@ -4627,7 +4686,7 @@ ShimmerWasp() {
 		  VAR_DASHBOARD_PASSWORD=$(echo "$credentials" | jq -r '.passwordHash')
 		  VAR_DASHBOARD_SALT=$(echo "$credentials" | jq -r '.passwordSalt')
 		  echo "passwordHash: "$VAR_DASHBOARD_PASSWORD
-		  echo "passwordSalt: "$VAR_DASHBOARD_SALT  
+		  echo "passwordSalt: "$VAR_DASHBOARD_SALT
 		else
 		  echo "credentials not changed..."
 		fi
@@ -4643,7 +4702,7 @@ ShimmerWasp() {
 		echo "#!! DO NOT SHARE THIS DATA WITH ANYONE !!#" >> .env
 
 		if [ -n "$WASP_TRUSTED_ACCESSNODE" ]; then
-		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env	
+		  echo "$WASP_TRUSTED_ACCESSNODE" >> .env
 		fi
 
 		echo "" >> .env; echo "### TRUSTED PEERING NODES ###" >> .env
@@ -5137,7 +5196,7 @@ echo "> $gn""$InstallerHash""$xx"
 echo "  $gr""$(cat /etc/issue | cut -d ' ' -f 1)"" | m=\"$opt_mode\" | t=\"$opt_time\" | r=\"$opt_reboot\" | c=\"$opt_check\" | l=\"$opt_level\"""$xx"
 
 DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
-DEBIAN_FRONTEND=noninteractive sudo apt install openssl qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive sudo apt install libdigest-sha-perl openssl qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 sleep 1
 
