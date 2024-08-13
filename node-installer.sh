@@ -2891,7 +2891,7 @@ SystemMaintenance() {
 
 	docker stop $(docker ps -a -q) 2>/dev/null
 	if [ "$opt_mode" ]; then
-	  VAR_STATUS='system: stop all nodes'
+	  VAR_STATUS='installer: stop all nodes'
 	  NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"
 	fi
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
