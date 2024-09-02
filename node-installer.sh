@@ -10,7 +10,6 @@ VAR_CERT=0
 VAR_NETWORK=0
 VAR_NODE=0
 VAR_CONF_RESET=0
-VAR_DB_RESET=0
 
 # IOTA-HORNET
 
@@ -1113,19 +1112,6 @@ Dashboard() {
 	           docker compose up -d
 	           sleep 60
 	           VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
-
-	           if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 98 ]; then
-	             if [ "$NODE" = 'iota-wasp' ]; then if [ -d /var/lib/"$NODE"/data/waspdb/wal/$VAR_IOTA_EVM_ADDR ]; then
-	               echo "$rd""diskspace error: ""reset iota-evm database activated""$xx"
-	               if [ "$opt_mode" ]; then NotifyMessage "!err" "$VAR_DOMAIN" 'installer: reset iota-evm database activated'; fi
-	               VAR_STATUS = 'unhealthy'
-	             fi; fi
-	             if [ "$NODE" = 'shimmer-wasp' ]; then if [ -d /var/lib/"$NODE"/data/waspdb/wal/$VAR_SHIMMER_EVM_ADDR ]; then
-	               echo "$rd""diskspace error: ""reset shimmer-evm database activated""$xx"
-	               if [ "$opt_mode" ]; then NotifyMessage "!err" "$VAR_DOMAIN" 'installer: reset shimmer-evm database activated'; fi
-	               VAR_STATUS = 'unhealthy'
-	             fi; fi
-	           fi
 
 	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
 	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
@@ -2890,7 +2876,7 @@ SystemMaintenance() {
 	  if [ "$opt_mode" ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
 	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 97 ]; then
-	  echo "$rd""diskspace critical: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
+	  echo "$ge""diskspace critical: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
 	  if [ "$opt_mode" ]; then NotifyMessage "!err" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
 
