@@ -1105,7 +1105,7 @@ Dashboard() {
 	         if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
 	           CheckIota; if [ "$VAR_NETWORK" = 1 ]; then docker network create iota >/dev/null 2>&1; fi
 	           CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; docker network create nova >/dev/null 2>&1; fi
-			   NETWORK='';
+	           NETWORK='';
 	           if [ "$NODE" = 'iota-hornet' ]; then NETWORK=" $VAR_IOTA_HORNET_NETWORK"; fi
 	           if [ "$NODE" = 'shimmer-hornet' ]; then NETWORK=" $VAR_SHIMMER_HORNET_NETWORK"; fi
 	           if [ "$NODE" = 'nova-iotacore' ]; then NETWORK=" testnet"; fi
@@ -1113,17 +1113,17 @@ Dashboard() {
 	           sleep 60
 	           VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
 
-	           if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 98 ]; then
-	             if [ "$NODE" = 'iota-wasp' ]; then if [ -d /var/lib/"$NODE"/data/waspdb/wal/$VAR_IOTA_EVM_ADDR ]; then
-	               echo "$rd""diskspace error: ""reset iota-evm database activated""$xx"
-	               if [ "$opt_mode" ]; then NotifyMessage "!err" "$VAR_DOMAIN" 'installer: reset iota-evm database activated'; fi
-	               VAR_STATUS = 'unhealthy'
-	             fi; fi
-	             if [ "$NODE" = 'shimmer-wasp' ]; then if [ -d /var/lib/"$NODE"/data/waspdb/wal/$VAR_SHIMMER_EVM_ADDR ]; then
-	               echo "$rd""diskspace error: ""reset shimmer-evm database activated""$xx"
-	               if [ "$opt_mode" ]; then NotifyMessage "!err" "$VAR_DOMAIN" 'installer: reset shimmer-evm database activated'; fi
-	               VAR_STATUS = 'unhealthy'
-	             fi; fi
+	           if [ "$cjb" = "$gn" ] && [ -n "$cjb" ]; then
+	             if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 97 ]; then
+	               if [ "$NODE" = 'iota-wasp' ] && [ -d /var/lib/"$NODE"/data/waspdb/wal/$VAR_IOTA_EVM_ADDR ]; then
+	                 VAR_STATUS='unhealthy'
+	                 sed -i "s/WASP_PRUNING_MIN_STATES_TO_KEEP=.*/WASP_PRUNING_MIN_STATES_TO_KEEP=100000/g" /var/lib/iota-wasp/.env
+	               fi
+	               if [ "$NODE" = 'shimmer-wasp' ] && [ -d /var/lib/"$NODE"/data/waspdb/wal/$VAR_SHIMMER_EVM_ADDR ]; then
+	                 VAR_STATUS='unhealthy'
+	                 sed -i "s/WASP_PRUNING_MIN_STATES_TO_KEEP=.*/WASP_PRUNING_MIN_STATES_TO_KEEP=100000/g" /var/lib/shimmer-wasp/.env
+	               fi
+	             fi
 	           fi
 
 	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
@@ -1147,8 +1147,9 @@ Dashboard() {
 	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/consensus/*
 	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/index/*
 	               rm -rf /var/lib/"$NODE"/data/waspdb/snap/$VAR_IOTA_EVM_ADDR/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/wal/$VAR_IOTA_EVM_ADDR/*
 
-	               VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+	               VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat /var/lib/"$NODE"/.env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
 
 	               if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
 					VAR_STATUS="$NODE: download iota-evm latest full database (syncing from chain wal files)"
@@ -1193,8 +1194,9 @@ Dashboard() {
 	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/consensus/*
 	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/index/*
 	               rm -rf /var/lib/"$NODE"/data/waspdb/snap/$VAR_SHIMMER_EVM_ADDR/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/wal/$VAR_SHIMMER_EVM_ADDR/*
 
-	               VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+	               VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat /var/lib/"$NODE"/.env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
 
 	               if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
 					VAR_STATUS="$NODE: download shimmer-evm latest full database (syncing from chain wal files)"
@@ -2884,13 +2886,13 @@ SystemMaintenance() {
 	  echo "$gn""diskspace: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
 	  if [ "$opt_mode" ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
-	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 90 ] && [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -lt 95 ]; then
+	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 89 ] && [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -lt 97 ]; then
 	  echo "$or""diskspace warning: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
 	  if [ "$opt_mode" ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
-	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 97 ]; then
+	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 96 ]; then
 	  echo "$rd""diskspace critical: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
-	  if [ "$opt_mode" ]; then NotifyMessage "!err" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	  if [ "$opt_mode" ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
