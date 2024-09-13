@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.6.3"
-BUILD="20240904_130201"
+VRSN="v.4.7.0"
+BUILD="20240913_220024"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='c63d41eb75201b89da47674ab9d888e476fea0f29b75e6635588951562588fb8'
+IotaHornetHash='931357cb98f7ede5e6987661650771f3b8c8c2d641d59ceca17e968cced16b2a'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='6e6a052453867c83f18324652535d80af681d83a970a6c128897e88d52acc009'
+IotaWaspHash='63e8ae1c05638d4e7ea6bda7e8d718eb8ac0a84a24056672d0349d2c3c14d599'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='f431dc56e06595474408b141d6145f9c3c6c609603e9cbed23b94ce8eca48115'
+ShimmerHornetHash='868b084ba29eca85bf68cd068ed53a4f22c6b7747a714244b75f0648b0ed8ad8'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='5792fffa78677d84afb68b3a6310efceed15710fb590471226ad1ab234a4d4e7'
+ShimmerWaspHash='07a341520ce6dbf9e56ac298bd4229c7913433c98a06359a8fbc829db3b7a692'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='7a9fb5199d414bb8f2dd865ce242c41ce5baed70f5fdb9da640f9ac8d395dc31'
+ShimmerChronicleHash='3dd5674f206151be88625b4f4e87702877610ddff66d2c9442054d846b8b42c0'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1105,13 +1105,26 @@ Dashboard() {
 	         if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
 	           CheckIota; if [ "$VAR_NETWORK" = 1 ]; then docker network create iota >/dev/null 2>&1; fi
 	           CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; docker network create nova >/dev/null 2>&1; fi
-			   NETWORK='';
+	           NETWORK='';
 	           if [ "$NODE" = 'iota-hornet' ]; then NETWORK=" $VAR_IOTA_HORNET_NETWORK"; fi
 	           if [ "$NODE" = 'shimmer-hornet' ]; then NETWORK=" $VAR_SHIMMER_HORNET_NETWORK"; fi
 	           if [ "$NODE" = 'nova-iotacore' ]; then NETWORK=" testnet"; fi
 	           docker compose up -d
 	           sleep 60
 	           VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
+
+	           if [ "$cjb" = "$gn" ] && [ -n "$cjb" ]; then
+	             if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 97 ]; then
+	               if [ "$NODE" = 'iota-wasp' ] && [ -d /var/lib/"$NODE"/data/waspdb/wal/$VAR_IOTA_EVM_ADDR ]; then
+	                 VAR_STATUS='unhealthy'
+	                 sed -i "s/WASP_PRUNING_MIN_STATES_TO_KEEP=.*/WASP_PRUNING_MIN_STATES_TO_KEEP=100000/g" /var/lib/iota-wasp/.env
+	               fi
+	               if [ "$NODE" = 'shimmer-wasp' ] && [ -d /var/lib/"$NODE"/data/waspdb/wal/$VAR_SHIMMER_EVM_ADDR ]; then
+	                 VAR_STATUS='unhealthy'
+	                 sed -i "s/WASP_PRUNING_MIN_STATES_TO_KEEP=.*/WASP_PRUNING_MIN_STATES_TO_KEEP=100000/g" /var/lib/shimmer-wasp/.env
+	               fi
+	             fi
+	           fi
 
 	           if [ "$VAR_STATUS" = 'unhealthy' ]; then
 	             VAR_STATUS="$NODE$NETWORK: $VAR_STATUS"
@@ -1134,8 +1147,9 @@ Dashboard() {
 	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/consensus/*
 	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/index/*
 	               rm -rf /var/lib/"$NODE"/data/waspdb/snap/$VAR_IOTA_EVM_ADDR/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/wal/$VAR_IOTA_EVM_ADDR/*
 
-	               VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+	               VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat /var/lib/"$NODE"/.env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
 
 	               if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
 					VAR_STATUS="$NODE: download iota-evm latest full database (syncing from chain wal files)"
@@ -1180,8 +1194,9 @@ Dashboard() {
 	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/consensus/*
 	               rm -rf /var/lib/"$NODE"/data/waspdb/chains/index/*
 	               rm -rf /var/lib/"$NODE"/data/waspdb/snap/$VAR_SHIMMER_EVM_ADDR/*
+	               rm -rf /var/lib/"$NODE"/data/waspdb/wal/$VAR_SHIMMER_EVM_ADDR/*
 
-	               VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat .env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
+	               VAR_WASP_PRUNING_MIN_STATES_TO_KEEP=$(cat /var/lib/"$NODE"/.env 2>/dev/null | grep WASP_PRUNING_MIN_STATES_TO_KEEP= | cut -d '=' -f 2)
 
 	               if [ "$VAR_WASP_PRUNING_MIN_STATES_TO_KEEP" = "0" ]; then
 					VAR_STATUS="$NODE: download shimmer-evm latest full database (syncing from chain wal files)"
@@ -2871,13 +2886,13 @@ SystemMaintenance() {
 	  echo "$gn""diskspace: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
 	  if [ "$opt_mode" ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
-	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 90 ] && [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -lt 95 ]; then
+	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 89 ] && [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -lt 97 ]; then
 	  echo "$or""diskspace warning: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
 	  if [ "$opt_mode" ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
-	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 97 ]; then
-	  echo "$ge""diskspace critical: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
-	  if [ "$opt_mode" ]; then NotifyMessage "!err" "$VAR_DOMAIN" "$VAR_STATUS"; fi
+	if [ "$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5 | sed 's/%//g')" -gt 96 ]; then
+	  echo "$rd""diskspace critical: ""$(df -h ./ | tail -1 | tr -s ' ' | cut -d ' ' -f 5)"' full'"$xx"
+	  if [ "$opt_mode" ]; then NotifyMessage "err!" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	fi
 
 	echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"

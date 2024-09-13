@@ -89,6 +89,11 @@ Utilize these options according to your needs to automate node management tasks 
 
 There is an option to automate automatic system relevant updates, during which the nodes are terminated in the meantime. In addition, the nodes themselves can also be updated automatically. The installer's Github pipeline is used chronologically for the updates. In exceptional cases, manual intervention must be carried out, but you will be notified via a notification service if activated. If necessary, the server will be automatically restarted and the nodes are then also automatically restarted.
 
+If errors occur in the database during node startup, the databases are reset according to the settings specified in the env configuration file to ensure high availability. If there is a shortage of storage space, an actual snapshot of the EVM is always loaded and the entire database is deleted beforehand to gain storage space.
+
+Discspace:
+0-89%: good | 90-96%: warning | >96%: critical | >97%: automatic EVM DB reset
+
 ### Node-Installer Notification Mode
 
 There is an option to receive status reports from automated processes of your nodes. You do not have to register or reveal any of your personal data. These notifications are delivered directly to your mobile or desktop device using our in-house push notification service. To receive notifications on your phone, install the app, either via Google Play, F-Droid or Apple. Once installed, open it and add the shown Message Channel ID in the installer (Notify-Me) to a topic. In the settings of each topic you can define also your own description.
