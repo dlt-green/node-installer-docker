@@ -312,7 +312,7 @@ CheckFirewall() {
 }
 
 CheckIotaCore() {
-	if [ -f "/var/lib/nova-iotacore/.env" ]; then
+	if [ -f "/var/lib/nova-iotacore/.env" ];
 	then
 		clear
 		echo ""
