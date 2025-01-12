@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.7.2"
-BUILD="20241031_061031"
+VRSN="v.4.8.0"
+BUILD="20250112_135702"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -73,7 +73,7 @@ VAR_CRON_JOB_2m=' -m 0'
 VAR_CRON_JOB_2u=' -m u'
 VAR_CRON_END_2=' -t 0 -r 1"'
 
-NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp nova-iotacore shimmer-plugins/inx-chronicle"
+NODES="iota-hornet iota-wasp shimmer-hornet shimmer-wasp shimmer-plugins/inx-chronicle"
 
 lg='\033[1m'
 or='\e[1;33m'
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='4bec10daf4d7e2a628ef9369381f85df24d953dbeb5284092b333c71b7f6452a'
+IotaHornetHash='f0818ca3a102aa2f2de2b2443a2f3b7c8dc7f6626040893d30ef6add84128050'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='863bb8240c323afd0f243f5c9841cbcb3d194e0182fbec7584d72326bbf058bb'
+IotaWaspHash='bd05becd82ff806b5d26ae74c2379483a5e5413784b2a1247928ac43249be378'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='82d00ee7398763c3aa200253548a28785cdff68cace3aee0057b1573aa4d3ca0'
+ShimmerHornetHash='d8a4dbadd5fcbb103ae7caa2320cc7b83f1c06f704a2bcedf3fa487a84b4ae69'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='54212c5568a64ff59d107a191e7053e608428fcb89fac5180e308bf77765586b'
+ShimmerWaspHash='997372b668bff4a433b3fa80af2ed8f4d7e1193f66b867c639794dfc4c5d747e'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='aae3789b98540dd0e8537f3b960a54b2ec9c3772aab7c3c457edc3baffb3862e'
+ShimmerChronicleHash='d75639c59ea302ce4ad61adc93ce8d7c88d1518a9bcc50873cd2f301f10d709a'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -201,7 +201,6 @@ CheckIota() {
 CheckShimmer() {
 	if [ -s "/var/lib/shimmer-hornet/.env" ]; then VAR_NETWORK=2; fi
 	if [ -s "/var/lib/shimmer-wasp/.env" ];   then VAR_NETWORK=2; fi
-	if [ -s "/var/lib/nova-iotacore/.env" ]; then VAR_NETWORK=2; fi
 }
 
 CheckAutostart() {
@@ -305,6 +304,52 @@ CheckFirewall() {
 			 echo ufw allow "$VAR_SSH_PORT/tcp" && ufw allow "$VAR_SSH_PORT/tcp"
 
 			 sudo ufw --force enable
+
+			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+			 ;;
+		esac
+	fi
+}
+
+CheckIotaCore() {
+	if [ -f "/var/lib/nova-iotacore/.env" ];
+	then
+		clear
+		echo ""
+		echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+		echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
+		echo "║                                                                             ║"
+		echo "║$rd            _   _____  _____  _____  _   _  _____  ___  ___   _   _          $xx║"
+		echo "║$rd           / \ |_   _||_   _|| ____|| \ | ||_   _||_ _|/ _ \ | \ | |         $xx║"
+		echo "║$rd          / _ \  | |    | |  |  _|  |  \| |  | |   | || | | ||  \| |         $xx║"
+		echo "║$rd         / ___ \ | |    | |  | |___ | |\  |  | |   | || |_| || |\  |         $xx║"
+		echo "║$rd        /_/   \_\|_|    |_|  |_____||_| \_|  |_|  |___|\___/ |_| \_|         $xx║"
+		echo "║                                                                             ║"
+		echo "║                                                                             ║"
+		echo "║             !!! Nova-IOTA-Core Testnet is no longer suppurted !!!            $xx║"
+		echo "║                                                                             ║"
+		echo "║             If you continue, it will be automatically uninstalled           ║"
+		echo "║                                                                             ║"
+		echo "║                     press [X] to continue, [Q] to quit                      ║"
+		echo "║                                                                             ║"
+		echo "║                       GNU General Public License v3.0                       ║"
+		echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+		echo ""
+		echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] for [X]... [P] to pause / [q] to quit"; echo "$xx"
+
+		case $W in
+		q|Q) clear; exit ;;
+		*) clear
+		     echo "$ca"
+		     echo 'Deinstall Nova-IOTA-Core Testnet...'
+		     echo "$xx"
+		     sleep 3
+
+			 cd /var/lib/nova-iotacore || exit
+			 docker compose stop
+			 cd /var/lib || exit
+			 rm -rf /var/lib/nova-iotacore
+			 docker network rm nova >/dev/null 2>&1
 
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 ;;
@@ -959,12 +1004,6 @@ Dashboard() {
 	fi
 	if $VAR_NodeHealthy; then sh=$gn; elif [ -d /var/lib/shimmer-hornet ]; then sh=$rd; else sh=$gr; fi
 
-	VAR_NODE=51; VAR_NodeHealthy=false; VAR_PORT="9999"
-	if [ -f "/var/lib/nova-iotacore/.env" ]; then
-	  CheckNodeHealthy
-	fi
-	if $VAR_NodeHealthy; then no=$gn; elif [ -d /var/lib/nova-iotacore ]; then no=$rd; else no=$gr; fi
-
 	VAR_NODE=6; VAR_NodeHealthy=false; VAR_PORT="9999"
 	if [ -f "/var/lib/shimmer-wasp/.env" ]; then
 	  VAR_DOMAIN=$(cat /var/lib/shimmer-wasp/.env | grep _HOST | cut -d '=' -f 2)
@@ -1015,7 +1054,7 @@ Dashboard() {
 	  echo "$gr""              maintenance: ""$(printf '%02d' "$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 2)")"":""$(printf '%02d' "$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 1)")"" | day: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 3)"" | month: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 4)"" | weekday: ""$(crontab -l | grep -v ^'#' | grep "$VAR_CRON_URL" | grep "$VAR_CRON_JOB_2m\|$VAR_CRON_JOB_2u" | cut -d ' ' -f 5)""$xx"
 	  echo ""
 	else echo ""; fi
-	echo "select menu item:            $lg[""$no""T""$xx""$lg] try iota-core-testnet additionally to shimmer$xx"
+	echo "select menu item:"
 
 	if [ "$opt_mode" = 'd' ]; then
 	  echo "$ca""unattended: Debugging...""$xx"
@@ -1087,10 +1126,6 @@ Dashboard() {
 
 	case $n in
 
-	t|T)
-	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
-	   cd /home && sudo curl -Ls https://github.com/dlt-green/node-installer-docker/releases/download/iota-core-latest/node-installer.sh >> node-installer.sh && sh node-installer.sh
-	   ;;
 	s|S)
 	   VAR_NETWORK=0; VAR_NODE=0; VAR_DIR=''
 	   clear
@@ -1104,11 +1139,10 @@ Dashboard() {
 	         cd "/var/lib/$NODE" || exit
 	         if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
 	           CheckIota; if [ "$VAR_NETWORK" = 1 ]; then docker network create iota >/dev/null 2>&1; fi
-	           CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; docker network create nova >/dev/null 2>&1; fi
+	           CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; fi
 	           NETWORK='';
 	           if [ "$NODE" = 'iota-hornet' ]; then NETWORK=" $VAR_IOTA_HORNET_NETWORK"; fi
 	           if [ "$NODE" = 'shimmer-hornet' ]; then NETWORK=" $VAR_SHIMMER_HORNET_NETWORK"; fi
-	           if [ "$NODE" = 'nova-iotacore' ]; then NETWORK=" testnet"; fi
 	           docker compose up -d
 	           sleep 60
 	           VAR_STATUS="$(docker inspect "$(echo "$NODE" | sed 's/\//./g')" | jq -r '.[] .State .Health .Status')"
@@ -1176,14 +1210,6 @@ Dashboard() {
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	               rm -rf /var/lib/"$NODE"/data/storage/"$VAR_SHIMMER_HORNET_NETWORK"/*
 	               rm -rf /var/lib/"$NODE"/data/snapshots/"$VAR_SHIMMER_HORNET_NETWORK"/*
-	               VAR_STATUS="$NODE$NETWORK: import snapshot"
-	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-	             fi
-	             if [ "$NODE" = 'nova-iotacore' ]; then
-	               VAR_STATUS="$NODE$NETWORK: reset node database"
-	               if [ "$opt_mode" = 's' ]; then NotifyMessage "warn" "$VAR_DOMAIN" "$VAR_STATUS"; fi
-	               rm -rf /var/lib/"$NODE"/data/storage/testnet/*
-	               rm -rf /var/lib/"$NODE"/data/snapshots/testnet/*
 	               VAR_STATUS="$NODE$NETWORK: import snapshot"
 	               if [ "$opt_mode" = 's' ]; then NotifyMessage "info" "$VAR_DOMAIN" "$VAR_STATUS"; fi
 	             fi
@@ -2862,7 +2888,7 @@ SystemMaintenance() {
 	      cd "/var/lib/$NODE" || exit
 	      if [ -f "/var/lib/$NODE/docker-compose.yml" ]; then
 	        CheckIota; if [ "$VAR_NETWORK" = 1 ]; then docker network create iota >/dev/null 2>&1; fi
-	        CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; docker network create nova >/dev/null 2>&1; fi
+	        CheckShimmer; if [ "$VAR_NETWORK" = 2 ]; then docker network create shimmer >/dev/null 2>&1; fi
 	        docker compose up --no-start
 	      fi
 	    fi
@@ -5214,6 +5240,8 @@ DEBIAN_FRONTEND=noninteractive sudo apt update >/dev/null 2>&1
 DEBIAN_FRONTEND=noninteractive sudo apt install libdigest-sha-perl openssl qrencode nano curl jq expect dnsutils ufw bc -y -qq >/dev/null 2>&1
 
 sleep 1
+
+CheckIotaCore
 
 if [ "$opt_check" = 1 ]; then
 	CheckFirewall
