@@ -24,7 +24,7 @@ prepare_data_dir "${dataDir}" "config" "waspdb" "waspdb/chains"
 create_docker_network "iota"
 
 # Generate config
-configUrl="https://raw.githubusercontent.com/iotaledger/wasp/v${WASP_VERSION}/config_defaults.json"
+configUrl="https://raw.githubusercontent.com/iotaledger/wasp/v1.5.1/config_defaults.json"
 echo "Downloading config from ${configUrl}..."
 curl -L -s -o "${configPath}" "${configUrl}"
 
