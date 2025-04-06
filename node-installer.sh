@@ -1036,7 +1036,7 @@ Dashboard() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║           ┌───────────────┬ IOTA Stardust (""$rd""EOL""$xx"") ┬──────────────────┐        ║"
+	echo "║           ┌───────────────┬ IOTA Stardust (""$rd""EOL""$xx"") ┬─────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
 	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│   ""$ic""WASP-CLI""$xx""   │ │4│      -       │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
