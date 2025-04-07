@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.8.2"
-BUILD="20250221_170555"
+VRSN="v.4.8.3"
+BUILD="20250406_171537"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='8b5b1143ca00f156823623e1946acf9913487a6150da7bdb02ebb7a1fe0dd58f'
+IotaHornetHash='23d4381ddd3432cf943db9c68d7c4e2221b29f03e983fea94efe0850108c80fa'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='81e55f010addfb92182b9b7ffe6c7db3ea726008ab3843419c8a7fc08c4a2dad'
+IotaWaspHash='ad2960f47f29c85e2948f1187bfc5cb22ce72aed5246b6f00745935ed5cc30e1'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='fef51e4dfb1dbc8aae7f8878367c28f4e7454ea083021b6bb0d330127f8380ab'
+ShimmerHornetHash='75934f344c58c52537b6966e90c46526189f02846f64370134257f11f27ea450'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='4ad58119d076aee02a03cb121266028ad7c88a9b4bfcf72a91b66d20737f920f'
+ShimmerWaspHash='fd194e06a34cee8545e59bb04f620944bed259694e5e3dee86742cd3be0f4cb9'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='751d09875182b735c41b5be8ed9c439f2d1b141ee66201db8da447521875cc21'
+ShimmerChronicleHash='5f06923f86cc9c4f307aa645baf39f5162de1882b2a377bdb8f756f7cba5f3da'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -1036,7 +1036,7 @@ Dashboard() {
 	echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
 	echo "║""$ca""$VAR_DOMAIN""$xx""║"
 	echo "║                                                                             ║"
-	echo "║           ┌──────────────────┬  IOTA Stardust  ┬──────────────────┐         ║"
+	echo "║           ┌───────────────┬ IOTA Stardust (""$rd""EOL""$xx"") ┬─────────────────┐         ║"
 	echo "║ ┌─┬────────────────┬─┬────────────────┬─┬──────────────┐ ┌─┬──────────────┐ ║"
 	echo "║ │1│     ""$ih""HORNET""$xx""     │2│      ""$iw""WASP""$xx""      │3│   ""$ic""WASP-CLI""$xx""   │ │4│      -       │ ║"
 	echo "║ └─┴────────────────┴─┴────────────────┴─┴──────────────┘ └─┴──────────────┘ ║"
@@ -1906,8 +1906,58 @@ SubMenuMaintenance() {
 
 	read -r -p '> ' n
 	case $n in
-	1) if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then IotaHornet; fi
-	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then IotaWasp; fi
+	1) if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 1 ]; then
+	   clear
+	   echo ""
+	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	   echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
+	   echo "║                                                                             ║"
+	   echo "║                                                                             ║"
+	   echo "║    ""$rd""IOTA Stardust is EOL | IOTA Rebased ist not supported at the moment!""$xx""     ║"
+	   echo "║                                                                             ║"
+	   echo "║                 ""$rd""please use the official installation docs:""$xx""                  ║"
+	   echo "║                                                                             ║"
+	   echo "║             ""$rd""'https://docs.iota.org/operator/full-node/docker'""$xx""               ║"
+	   echo "║                                                                             ║"
+	   echo "║                                                                             ║"
+	   echo "║    ""$gn""If you are interested in joining a DLT.GREEN node pool in the future,""$xx""    ║"
+	   echo "║    ""$gn""or would you like to contribute with your ideas or support to improve""$xx""    ║"
+	   echo "║        ""$gn""our service, we look forward to hear from you in our Discord!""$xx""        ║"
+	   echo "║                                                                             ║"
+	   echo "║                                                                             ║"
+	   echo "║                       GNU General Public License v3.0                       ║"
+	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuMaintenance
+	   fi
+
+	   if [ "$VAR_NETWORK" = 1 ] && [ "$VAR_NODE" = 2 ]; then
+	   clear
+	   echo ""
+	   echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+	   echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
+	   echo "║                                                                             ║"
+	   echo "║                                                                             ║"
+	   echo "║    ""$rd""IOTA Stardust is EOL | IOTA Rebased ist not supported at the moment!""$xx""     ║"
+	   echo "║                                                                             ║"
+	   echo "║                 ""$rd""please use the official installation docs:""$xx""                  ║"
+	   echo "║                                                                             ║"
+	   echo "║             ""$rd""'https://docs.iota.org/operator/full-node/docker'""$xx""               ║"
+	   echo "║                                                                             ║"
+	   echo "║                                                                             ║"
+	   echo "║    ""$gn""If you are interested in joining a DLT.GREEN node pool in the future,""$xx""    ║"
+	   echo "║    ""$gn""or would you like to contribute with your ideas or support to improve""$xx""    ║"
+	   echo "║        ""$gn""our service, we look forward to hear from you in our Discord!""$xx""        ║"
+	   echo "║                                                                             ║"
+	   echo "║                                                                             ║"
+	   echo "║                       GNU General Public License v3.0                       ║"
+	   echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+
+	   echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+	   SubMenuMaintenance
+	   fi
+
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 5 ]; then ShimmerHornet; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 6 ]; then ShimmerWasp; fi
 	   if [ "$VAR_NETWORK" = 2 ] && [ "$VAR_NODE" = 21 ]; then ShimmerChronicle; fi
@@ -5241,7 +5291,28 @@ DEBIAN_FRONTEND=noninteractive sudo apt install libdigest-sha-perl openssl qrenc
 
 sleep 1
 
-CheckIotaCore
+clear
+echo ""
+echo "╔═════════════════════════════════════════════════════════════════════════════╗"
+echo "║ DLT.GREEN           AUTOMATIC NODE-INSTALLER WITH DOCKER $VAR_VRN ║"
+echo "║                                                                             ║"
+echo "║                                                                             ║"
+echo "║    ""$rd""IOTA Stardust is EOL | IOTA Rebased ist not supported at the moment!""$xx""     ║"
+echo "║                                                                             ║"
+echo "║                 ""$rd""please use the official installation docs:""$xx""                  ║"
+echo "║                                                                             ║"
+echo "║             ""$rd""'https://docs.iota.org/operator/full-node/docker'""$xx""               ║"
+echo "║                                                                             ║"
+echo "║                                                                             ║"
+echo "║    ""$gn""If you are interested in joining a DLT.GREEN node pool in the future,""$xx""    ║"
+echo "║    ""$gn""or would you like to contribute with your ideas or support to improve""$xx""    ║"
+echo "║        ""$gn""our service, we look forward to hear from you in our Discord!""$xx""        ║"
+echo "║                                                                             ║"
+echo "║                                                                             ║"
+echo "║                       GNU General Public License v3.0                       ║"
+echo "╚═════════════════════════════════════════════════════════════════════════════╝"
+
+echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 
 if [ "$opt_check" = 1 ]; then
 	CheckFirewall
