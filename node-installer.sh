@@ -1,7 +1,7 @@
 #!/bin/sh
 
-VRSN="v.4.8.3"
-BUILD="20250406_171537"
+VRSN="v.5.0.0"
+BUILD="20250507_224132"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='23d4381ddd3432cf943db9c68d7c4e2221b29f03e983fea94efe0850108c80fa'
+IotaHornetHash='639f986e60acff37dbbaf3f8529274cf543f8a06ddf966db7e6d4d69fbaec0b6'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='ad2960f47f29c85e2948f1187bfc5cb22ce72aed5246b6f00745935ed5cc30e1'
+IotaWaspHash='b3a34bb545bb62f75f40cbdd69ecdfd0eca5486267390d0e0b936e46a0adf25d'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='75934f344c58c52537b6966e90c46526189f02846f64370134257f11f27ea450'
+ShimmerHornetHash='86c0a5855d850cc540a27093a6d80527f331a49726c0c4180d3efaed6117bdfc'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='fd194e06a34cee8545e59bb04f620944bed259694e5e3dee86742cd3be0f4cb9'
+ShimmerWaspHash='a78c039fd5d51c8a71478ae9578282737753fafc5aff9f10bfcce4811e3b8174'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='5f06923f86cc9c4f307aa645baf39f5162de1882b2a377bdb8f756f7cba5f3da'
+ShimmerChronicleHash='895f7c51ab0792b6356fe4507f8f36f9b18a2dbbe5b21d1b948a602f62e7d29e'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -311,8 +311,8 @@ CheckFirewall() {
 	fi
 }
 
-CheckIotaCore() {
-	if [ -f "/var/lib/nova-iotacore/.env" ];
+CheckIotaStardust() {
+	if [ -f "/var/lib/iota-hornet/.env" ];
 	then
 		clear
 		echo ""
@@ -326,7 +326,7 @@ CheckIotaCore() {
 		echo "║$rd        /_/   \_\|_|    |_|  |_____||_| \_|  |_|  |___|\___/ |_| \_|         $xx║"
 		echo "║                                                                             ║"
 		echo "║                                                                             ║"
-		echo "║             !!! Nova-IOTA-Core Testnet is no longer suppurted !!!            $xx║"
+		echo "║                !!! IOTA-Stardust is no longer suppurted !!!              $xx║"
 		echo "║                                                                             ║"
 		echo "║             If you continue, it will be automatically uninstalled           ║"
 		echo "║                                                                             ║"
@@ -341,16 +341,25 @@ CheckIotaCore() {
 		q|Q) clear; exit ;;
 		*) clear
 		     echo "$ca"
-		     echo 'Deinstall Nova-IOTA-Core Testnet...'
+		     echo 'Deinstall IOTA-Stardust: Hornet...'
 		     echo "$xx"
 		     sleep 3
 
-			 cd /var/lib/nova-iotacore || exit
+			 cd /var/lib/iota-hornet || exit
 			 docker compose stop
 			 cd /var/lib || exit
-			 rm -rf /var/lib/nova-iotacore
-			 docker network rm nova >/dev/null 2>&1
+			 rm -rf /var/lib/iota-hornet
+			 clear
+		     echo "$ca"
+		     echo 'Deinstall IOTA-Stardust: Wasp...'
+		     echo "$xx"
+		     sleep 3
 
+			 cd /var/lib/iota-wasp || exit
+			 docker compose stop
+			 cd /var/lib || exit
+			 rm -rf /var/lib/iota-wasp
+			 docker network rm iota >/dev/null 2>&1
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 ;;
 		esac
@@ -5313,6 +5322,8 @@ echo "║                       GNU General Public License v3.0                 
 echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 
 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+CheckIotaStardust
 
 if [ "$opt_check" = 1 ]; then
 	CheckFirewall
