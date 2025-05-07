@@ -311,8 +311,8 @@ CheckFirewall() {
 	fi
 }
 
-CheckIotaCore() {
-	if [ -f "/var/lib/nova-iotacore/.env" ];
+CheckIotaStardust() {
+	if [ -f "/var/lib/iota-hornet/.env" ];
 	then
 		clear
 		echo ""
@@ -326,7 +326,7 @@ CheckIotaCore() {
 		echo "║$rd        /_/   \_\|_|    |_|  |_____||_| \_|  |_|  |___|\___/ |_| \_|         $xx║"
 		echo "║                                                                             ║"
 		echo "║                                                                             ║"
-		echo "║             !!! Nova-IOTA-Core Testnet is no longer suppurted !!!            $xx║"
+		echo "║                !!! IOTA-Stardust is no longer suppurted !!!              $xx║"
 		echo "║                                                                             ║"
 		echo "║             If you continue, it will be automatically uninstalled           ║"
 		echo "║                                                                             ║"
@@ -341,15 +341,15 @@ CheckIotaCore() {
 		q|Q) clear; exit ;;
 		*) clear
 		     echo "$ca"
-		     echo 'Deinstall Nova-IOTA-Core Testnet...'
+		     echo 'Deinstall IOTA-Stardust...'
 		     echo "$xx"
 		     sleep 3
 
-			 cd /var/lib/nova-iotacore || exit
+			 cd /var/lib/iota-hornet || exit
 			 docker compose stop
 			 cd /var/lib || exit
-			 rm -rf /var/lib/nova-iotacore
-			 docker network rm nova >/dev/null 2>&1
+			 rm -rf /var/lib/iota-hornet
+			 docker network rm iota >/dev/null 2>&1
 
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 ;;
@@ -5313,6 +5313,8 @@ echo "║                       GNU General Public License v3.0                 
 echo "╚═════════════════════════════════════════════════════════════════════════════╝"
 
 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
+
+CheckIotaStardust
 
 if [ "$opt_check" = 1 ]; then
 	CheckFirewall
