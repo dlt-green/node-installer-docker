@@ -349,7 +349,7 @@ CheckIotaStardust() {
 			 docker compose stop
 			 cd /var/lib || exit
 			 rm -rf /var/lib/iota-hornet
-
+			 clear
 		     echo "$ca"
 		     echo 'Deinstall IOTA-Stardust: Wasp...'
 		     echo "$xx"
