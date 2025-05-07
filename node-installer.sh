@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VRSN="v.4.8.3"
-BUILD="20250406_171537"
+BUILD="20250406_165041"
 
 VAR_DOMAIN=''
 VAR_HOST=''
@@ -147,19 +147,19 @@ DEBIAN_FRONTEND=noninteractive sudo apt-get install curl -y -qq >/dev/null 2>&1
 
 InstallerHash=$(curl -L https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/checksum.txt) >/dev/null 2>&1
 
-IotaHornetHash='23d4381ddd3432cf943db9c68d7c4e2221b29f03e983fea94efe0850108c80fa'
+IotaHornetHash='de12fa92a042ce6a2d94dcb9964e22baace9bf6e0320f709a4b0445105960767'
 IotaHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-hornet.tar.gz"
 
-IotaWaspHash='ad2960f47f29c85e2948f1187bfc5cb22ce72aed5246b6f00745935ed5cc30e1'
+IotaWaspHash='3c4a4583e9d26d5909b011f79f25665ac92282293df0f77893357df5fb251c6d'
 IotaWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/iota-wasp.tar.gz"
 
-ShimmerHornetHash='75934f344c58c52537b6966e90c46526189f02846f64370134257f11f27ea450'
+ShimmerHornetHash='71cbf09ebac9b467e9b09d3c929dc83d48e459673d9b97df6f70263fc2525854'
 ShimmerHornetPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-hornet.tar.gz"
 
-ShimmerWaspHash='fd194e06a34cee8545e59bb04f620944bed259694e5e3dee86742cd3be0f4cb9'
+ShimmerWaspHash='441b4ebfddad60733680d8f53660dd8eef3df6b6e41930d8eb7995381932a0d2'
 ShimmerWaspPackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-wasp.tar.gz"
 
-ShimmerChronicleHash='5f06923f86cc9c4f307aa645baf39f5162de1882b2a377bdb8f756f7cba5f3da'
+ShimmerChronicleHash='47dc71589b519bfc4b44a7c5049fc74d1bcc91c60084904fb18fce933abb9dce'
 ShimmerChroniclePackage="https://github.com/dlt-green/node-installer-docker/releases/download/$VRSN/shimmer-chronicle.tar.gz"
 
 if [ "$VRSN" = 'dev-latest' ]; then VRSN=$BUILD; fi
@@ -341,7 +341,7 @@ CheckIotaStardust() {
 		q|Q) clear; exit ;;
 		*) clear
 		     echo "$ca"
-		     echo 'Deinstall IOTA-Stardust...'
+		     echo 'Deinstall IOTA-Stardust: Hornet...'
 		     echo "$xx"
 		     sleep 3
 
@@ -349,8 +349,17 @@ CheckIotaStardust() {
 			 docker compose stop
 			 cd /var/lib || exit
 			 rm -rf /var/lib/iota-hornet
-			 docker network rm iota >/dev/null 2>&1
 
+		     echo "$ca"
+		     echo 'Deinstall IOTA-Stardust: Wasp...'
+		     echo "$xx"
+		     sleep 3
+
+			 cd /var/lib/iota-wasp || exit
+			 docker compose stop
+			 cd /var/lib || exit
+			 rm -rf /var/lib/iota-wasp
+			 docker network rm iota >/dev/null 2>&1
 			 echo "$fl"; PromptMessage "$opt_time" "Press [Enter] / wait ["$opt_time"s] to continue... Press [P] to pause / [C] to cancel"; echo "$xx"
 			 ;;
 		esac
